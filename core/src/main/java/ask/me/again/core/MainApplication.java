@@ -4,10 +4,11 @@ public class MainApplication {
 
   public static void main(String[] input) {
     var result = new ReactiveKafka<TestContext>()
-      .topic("topic-a",false)
+      .read("topic-a")
       .run(new ProcessorA())
       .run(new ProcessorA())
-      .topic("topic-b",true)
+      .write("topic-b")
+      .write("topic-b")
       .run(new ProcessorA())
       .run(new ProcessorA())
       .build();

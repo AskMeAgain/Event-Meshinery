@@ -7,14 +7,8 @@ import lombok.Value;
 @Builder
 public class Operation<C extends Context> {
 
-  String topicName;
-  boolean passthrough;
+  String read;
+  String write;
   ReactiveProcessor<C> processor;
 
-  public String toString() {
-    if(topicName != null)
-      return topicName;
-
-    return "processor";
-  }
 }

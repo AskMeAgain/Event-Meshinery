@@ -23,10 +23,17 @@ public class ReactiveKafka<C extends Context> {
     }
   }
 
-  public ReactiveKafka<C> topic(String input, boolean passthrough) {
+  public ReactiveKafka<C> read(String input) {
     inputs.add(Operation.<C>builder()
-      .topicName(input)
-      .passthrough(passthrough)
+      .read(input)
+      .build());
+    return new ReactiveKafka<>(this);
+  }
+
+  public ReactiveKafka<C> write(String input) {
+    inputs.add(Operation.<C>builder()
+      .read(input)
+      .passthrough(true)
       .build());
     return new ReactiveKafka<>(this);
   }
@@ -46,11 +53,15 @@ public class ReactiveKafka<C extends Context> {
     for (int i = 0; i < inputs.size(); i++) {
 
       var operation = inputs.get(i);
-      if (operation.isPassthrough()) {
-        list.add(new PassthroughProcessor<C>(operation.getTopicName()));
+      if (operation.getWrite() != null) {
+        list.add(new PassthroughProcessor<C>(operation.getWrite()));
       } else if (operation.getProcessor() != null) {
         list.add(operation.getProcessor());
+      }else if(operation.getRead() != null){
+
       }
+
+      i++;
     }
 
     return list;
