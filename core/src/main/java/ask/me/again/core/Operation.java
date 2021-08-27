@@ -5,10 +5,11 @@ import lombok.Value;
 
 @Value
 @Builder
-public class Operation {
+public class Operation<C extends Context> {
 
   String topicName;
-  ReactiveProcessor<? extends Context> processor;
+  boolean passthrough;
+  ReactiveProcessor<C> processor;
 
   public String toString() {
     if(topicName != null)
