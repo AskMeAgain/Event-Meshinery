@@ -6,7 +6,6 @@ import lombok.SneakyThrows;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class ReactiveKafka<C extends Context> {
@@ -33,7 +32,7 @@ public class ReactiveKafka<C extends Context> {
     return new ReactiveKafka<>(clazz, operations);
   }
 
-  public ReactiveKafka<C> run(ReactiveProcessor<C> processor) {
+  public ReactiveKafka<C> process(ReactiveProcessor<C> processor) {
     operations.add(Operation.<C>builder()
       .processor(processor)
       .build());
@@ -57,6 +56,6 @@ public class ReactiveKafka<C extends Context> {
       }
     }
 
-    new OperationEngine<C>(new ArrayList<>(tasks.values()));
+    new WorkerService<C>(new ArrayList<>(tasks.values()));
   }
 }

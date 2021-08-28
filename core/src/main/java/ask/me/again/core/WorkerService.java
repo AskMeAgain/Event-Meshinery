@@ -1,22 +1,18 @@
 package ask.me.again.core;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class OperationEngine<C extends Context> implements Runnable {
+public class WorkerService<C extends Context> implements Runnable {
 
   private final ConcurrentLinkedQueue<TaskRun<C>> todoQueue = new ConcurrentLinkedQueue<>();
 
-  public OperationEngine(List<ReactiveTask<C>> tasks) throws InterruptedException {
+  public WorkerService(List<ReactiveTask<C>> tasks) {
     //the producer
     Executors.newSingleThreadExecutor().execute(() -> {
       for (int i = 0; i < 10; i++) {
@@ -33,12 +29,9 @@ public class OperationEngine<C extends Context> implements Runnable {
       }
     });
 
-    Thread.sleep(1000);
     //the worker
     Executors.newSingleThreadExecutor().execute(this);
-
   }
-
 
   @Override
   @SneakyThrows
@@ -47,29 +40,21 @@ public class OperationEngine<C extends Context> implements Runnable {
     System.out.println("Thread started");
 
     while (!todoQueue.isEmpty()) {
-      var workingOn = todoQueue.remove();
+      var currentTask = todoQueue.remove();
 
-      if (workingOn.future.isDone()) {
+      if (currentTask.future.isDone()) {
 
-        if (workingOn.queue.isEmpty()) {
+        if (currentTask.queue.isEmpty()) {
           continue;
         }
 
-        var nextProcessor = workingOn.queue.remove();
-        C context = workingOn.future.get();
-        System.out.println("Received id: " + context.getId());
-        workingOn.setFuture(nextProcessor.processAsync(context));
+        var nextProcessor = currentTask.queue.remove();
+        C context = currentTask.future.get();
+
+        currentTask.setFuture(nextProcessor.processAsync(context));
       }
 
-      todoQueue.add(workingOn);
+      todoQueue.add(currentTask);
     }
   }
-
-  private C getInputFromKafkaTopic(String id) {
-    return (C) TestContext.builder()
-      .testValue1(10)
-      .id(id)
-      .build();
-  }
-
 }
