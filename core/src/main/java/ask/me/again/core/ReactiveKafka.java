@@ -1,69 +1,59 @@
 package ask.me.again.core;
 
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class ReactiveKafka<C extends Context> {
 
-  @Getter
-  private final List<Operation<C>> inputs;
+  private final Class<C> clazz;
+  private final List<Operation<C>> operations;
 
-  public ReactiveKafka() {
-    this(null);
+  public ReactiveKafka(Class<C> clazz) {
+    this(clazz, new ArrayList<>());
   }
 
-  public ReactiveKafka(ReactiveKafka<C> reactiveKafka) {
-
-    if (reactiveKafka == null) {
-      inputs = new ArrayList<>();
-    } else {
-      inputs = reactiveKafka.getInputs();
-    }
-  }
-
-  public ReactiveKafka<C> read(String input) {
-    inputs.add(Operation.<C>builder()
-      .read(input)
+  public ReactiveKafka<C> read(String inputTopic, String name) {
+    operations.add(Operation.<C>builder()
+      .read(inputTopic)
+      .name(name)
       .build());
-    return new ReactiveKafka<>(this);
+    return new ReactiveKafka<>(clazz, operations);
   }
 
   public ReactiveKafka<C> write(String input) {
-    inputs.add(Operation.<C>builder()
-      .read(input)
-      .passthrough(true)
+    operations.add(Operation.<C>builder()
+      .write(input)
       .build());
-    return new ReactiveKafka<>(this);
+    return new ReactiveKafka<>(clazz, operations);
   }
 
   public ReactiveKafka<C> run(ReactiveProcessor<C> processor) {
-    inputs.add(Operation.<C>builder()
+    operations.add(Operation.<C>builder()
       .processor(processor)
       .build());
-    return new ReactiveKafka<>(this);
+    return new ReactiveKafka<>(clazz, operations);
   }
 
+  public void build() {
 
-  public List<ReactiveProcessor<C>> build() {
+    var tasks = new HashMap<String, List<ReactiveProcessor<C>>>();
+    List<ReactiveProcessor<C>> currentList = new ArrayList<>();
 
-    var list = new ArrayList<ReactiveProcessor<C>>();
-
-    for (int i = 0; i < inputs.size(); i++) {
-
-      var operation = inputs.get(i);
+    for (var operation : operations) {
       if (operation.getWrite() != null) {
-        list.add(new PassthroughProcessor<C>(operation.getWrite()));
+        currentList.add(new PassthroughProcessor<>(operation.getWrite()));
       } else if (operation.getProcessor() != null) {
-        list.add(operation.getProcessor());
-      }else if(operation.getRead() != null){
-
+        currentList.add(operation.getProcessor());
+      } else if (operation.getRead() != null) {
+        currentList = new ArrayList<>();
+        tasks.put(operation.getName(), currentList);
       }
-
-      i++;
     }
 
-    return list;
+    tasks.forEach(OperationEngine::construct);
   }
 }

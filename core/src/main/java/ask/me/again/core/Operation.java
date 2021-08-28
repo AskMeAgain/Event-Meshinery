@@ -7,6 +7,7 @@ import lombok.Value;
 @Builder
 public class Operation<C extends Context> {
 
+  String name;
   String read;
   String write;
   ReactiveProcessor<C> processor;

@@ -3,20 +3,13 @@ package ask.me.again.core;
 public class MainApplication {
 
   public static void main(String[] input) {
-    var result = new ReactiveKafka<TestContext>()
-      .read("topic-a")
-      .run(new ProcessorA())
+    new ReactiveKafka<>(TestContext.class)
+      .read("topic-a", "cool name")
       .run(new ProcessorA())
       .write("topic-b")
-      .write("topic-b")
       .run(new ProcessorA())
+      .write("topic-b")
       .run(new ProcessorA())
       .build();
-
-    var orig = TestContext.builder().build();
-
-    for(var processor: result){
-      orig = processor.process(orig);
-    }
   }
 }
