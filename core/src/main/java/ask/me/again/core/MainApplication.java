@@ -10,7 +10,14 @@ public class MainApplication {
       .run(new ProcessorA())
       .write("topic-b")
       .run(new ProcessorA())
+      .write("topic-b-FINISHED")
+      .read("topic-a", "cool name2")
+      .run(new ProcessorA())
       .write("topic-b")
+      .run(new ProcessorA())
+      .write("topic-b")
+      .run(new ProcessorA())
+      .write("topic-c-FINISHED")
       .build();
   }
 }

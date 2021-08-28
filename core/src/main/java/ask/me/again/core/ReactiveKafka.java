@@ -1,10 +1,12 @@
 package ask.me.again.core;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class ReactiveKafka<C extends Context> {
@@ -38,22 +40,23 @@ public class ReactiveKafka<C extends Context> {
     return new ReactiveKafka<>(clazz, operations);
   }
 
+  @SneakyThrows
   public void build() {
 
-    var tasks = new HashMap<String, List<ReactiveProcessor<C>>>();
-    List<ReactiveProcessor<C>> currentList = new ArrayList<>();
+    var tasks = new HashMap<String, ReactiveTask<C>>();
+    var processorList = new ReactiveTask<C>();
 
     for (var operation : operations) {
       if (operation.getWrite() != null) {
-        currentList.add(new PassthroughProcessor<>(operation.getWrite()));
+        processorList.add(new PassthroughProcessor<>(operation.getWrite()));
       } else if (operation.getProcessor() != null) {
-        currentList.add(operation.getProcessor());
+        processorList.add(operation.getProcessor());
       } else if (operation.getRead() != null) {
-        currentList = new ArrayList<>();
-        tasks.put(operation.getName(), currentList);
+        processorList = new ReactiveTask<>();
+        tasks.put(operation.getName(), processorList);
       }
     }
 
-    tasks.forEach(OperationEngine::construct);
+    new OperationEngine<C>(new ArrayList<>(tasks.values()));
   }
 }
