@@ -10,6 +10,7 @@ public class MainApplication {
       .run(new ProcessorA())
       .write("topic-b")
       .run(new ProcessorA())
+      .write("topic-b")
       .build();
   }
 }

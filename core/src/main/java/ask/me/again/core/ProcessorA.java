@@ -14,10 +14,10 @@ public class ProcessorA implements ReactiveProcessor<TestContext> {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      System.out.println("Received: " + context.getTestvalue1());
+      System.out.println("Received: " + context.getTestValue1());
 
       return context.toBuilder()
-        .testvalue1(context.getTestvalue1() + 1)
+        .testValue1(context.getTestValue1() + 1)
         .build();
 
     });

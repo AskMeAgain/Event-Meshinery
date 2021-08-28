@@ -5,8 +5,10 @@ import lombok.Value;
 
 @Value
 @Builder(toBuilder = true)
-public class TestContext implements Context{
+public class TestContext implements Context, IdAware {
 
-  int testvalue1;
+  int testValue1;
+
+  String id;
 
 }
