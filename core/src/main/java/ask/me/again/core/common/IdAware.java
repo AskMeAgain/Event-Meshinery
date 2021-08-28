@@ -1,4 +1,4 @@
-package ask.me.again.core;
+package ask.me.again.core.common;
 
 public interface IdAware {
 

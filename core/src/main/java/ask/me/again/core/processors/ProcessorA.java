@@ -1,11 +1,15 @@
-package ask.me.again.core;
+package ask.me.again.core.processors;
+
+import ask.me.again.core.common.ReactiveProcessor;
+import ask.me.again.core.example.TestContext;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 public class ProcessorA implements ReactiveProcessor<TestContext> {
 
   @Override
-  public CompletableFuture<TestContext> processAsync(TestContext context) {
+  public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
     return CompletableFuture.supplyAsync(() -> {
 
       System.out.println("Rest call");
@@ -20,6 +24,6 @@ public class ProcessorA implements ReactiveProcessor<TestContext> {
         .testValue1(context.getTestValue1() + 1)
         .build();
 
-    });
+    }, executor);
   }
 }

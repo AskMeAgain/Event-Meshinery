@@ -1,5 +1,7 @@
-package ask.me.again.core;
+package ask.me.again.core.example;
 
+import ask.me.again.core.common.Context;
+import ask.me.again.core.common.IdAware;
 import lombok.Builder;
 import lombok.Value;
 

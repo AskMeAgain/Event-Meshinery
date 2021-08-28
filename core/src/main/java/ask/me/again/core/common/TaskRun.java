@@ -1,16 +1,18 @@
-package ask.me.again.core;
+package ask.me.again.core.common;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 
-@RequiredArgsConstructor
 public class TaskRun<C extends Context> {
 
   @Setter
+  @Getter
   CompletableFuture<C> future;
+
+  @Getter
   Queue<ReactiveProcessor<C>> queue;
 
   public TaskRun(CompletableFuture<C> future, Queue<ReactiveProcessor<C>> queue) {

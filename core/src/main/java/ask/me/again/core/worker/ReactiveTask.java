@@ -1,5 +1,7 @@
-package ask.me.again.core;
+package ask.me.again.core.worker;
 
+import ask.me.again.core.common.Context;
+import ask.me.again.core.common.ReactiveProcessor;
 import lombok.Getter;
 
 import java.util.ArrayList;

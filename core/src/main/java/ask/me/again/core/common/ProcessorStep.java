@@ -1,11 +1,11 @@
-package ask.me.again.core;
+package ask.me.again.core.common;
 
 import lombok.Builder;
 import lombok.Value;
 
 @Value
 @Builder
-public class Operation<C extends Context> {
+public class ProcessorStep<C extends Context> {
 
   String name;
   String read;
