@@ -39,10 +39,10 @@ public class WorkerService<K, C extends Context> {
         for (var reactiveTask : tasks) {
           List<C> inputList = inputSource.<K>getInputs(reactiveTask.getInputKey());
 
-          var processorQueue = new LinkedList<>(reactiveTask.getProcessorList());
           var executorService = reactiveTask.getExecutorService();
 
           for (var input : inputList) {
+            var processorQueue = new LinkedList<>(reactiveTask.getProcessorList());
             var taskRun = new TaskRun<C>(CompletableFuture.completedFuture(input), processorQueue, executorService);
             todoQueue.add(taskRun);
           }

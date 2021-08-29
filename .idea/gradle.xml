@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/modules/examples" />
             <option value="$PROJECT_DIR$/modules/examples/base-app" />
             <option value="$PROJECT_DIR$/modules/examples/spring-app" />
+            <option value="$PROJECT_DIR$/modules/examples/spring-kafka-app" />
             <option value="$PROJECT_DIR$/modules/kafka-connector" />
             <option value="$PROJECT_DIR$/modules/spring-config" />
           </set>
