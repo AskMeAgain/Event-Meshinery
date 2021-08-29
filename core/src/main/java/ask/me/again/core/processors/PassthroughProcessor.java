@@ -17,6 +17,8 @@ public class PassthroughProcessor<K, C extends Context> implements ReactiveProce
   @Override
   public CompletableFuture<C> processAsync(C context, Executor executor) {
     System.out.println("Writing into Kafka Topic: " + key);
+    outputSource.writeOutput(key, context);
+
     return CompletableFuture.completedFuture(context);
   }
 }

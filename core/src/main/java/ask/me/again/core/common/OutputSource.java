@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface OutputSource<K, C extends Context> {
 
-  void writeOutput(K key, List<C> output);
+  void writeOutput(K key, C output);
 
 }

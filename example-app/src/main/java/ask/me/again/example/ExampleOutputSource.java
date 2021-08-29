@@ -7,7 +7,7 @@ import java.util.List;
 public class ExampleOutputSource implements OutputSource<String, TestContext> {
 
   @Override
-  public void writeOutput(String key, List<TestContext> output) {
+  public void writeOutput(String key, TestContext output) {
     System.out.println("Received for topic: " + key);
   }
 }

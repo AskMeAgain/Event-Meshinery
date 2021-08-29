@@ -4,9 +4,7 @@ import ask.me.again.core.builder.ReactiveTask;
 import ask.me.again.core.worker.WorkerService;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainApplication {
@@ -15,7 +13,7 @@ public class MainApplication {
 
     var processor = new ProcessorA();
     var singleThread = Executors.newSingleThreadExecutor();
-    var fixedThread = Executors.newFixedThreadPool(4);
+    var fixedThread = new ThreadPoolExecutor(4, 30, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue());
 
     var atomicBoolean = new AtomicBoolean(true);
 
@@ -26,31 +24,31 @@ public class MainApplication {
       ReactiveTask.<String, TestContext>builder()
         .taskName("cool name")
         .outputSource(outputSource)
-        .read("topic-a", singleThread)
-        .process(processor)
-        .write("topic-b")
-        .process(processor)
-        .write("topic-b")
-        .process(processor)
-        .write("topic-b-FINISHED")
-        .build(),
-      ReactiveTask.<String, TestContext>builder()
-        .outputSource(outputSource)
-        .taskName("Cool task 2")
         .read("topic-a", fixedThread)
         .process(processor)
         .write("topic-b")
         .process(processor)
-        .write("topic-b")
+        .write("topic-c")
         .process(processor)
-        .write("topic-c-FINISHED")
+        .write("topic-d-FINISHED")
+        .build(),
+      ReactiveTask.<String, TestContext>builder()
+        .outputSource(outputSource)
+        .taskName("Cool task 2")
+        .read("topic-x", fixedThread)
+        .process(processor)
+        .write("topic-y")
+        .process(processor)
+        .write("topic-z")
+        .process(processor)
+        .write("topic-w-FINISHED")
         .build());
 
     new WorkerService<>(tasks, inputSource).start(atomicBoolean);
 
     CompletableFuture.runAsync(() -> {
       try {
-        Thread.sleep(10000);
+        Thread.sleep(15000);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }

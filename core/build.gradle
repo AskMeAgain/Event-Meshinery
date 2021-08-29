@@ -1,5 +1,5 @@
 plugins {
-    id 'ReactiveKafka.java-library-conventions'
+    id 'java'
 }
 
 repositories {
