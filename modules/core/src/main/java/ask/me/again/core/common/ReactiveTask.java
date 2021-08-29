@@ -1,9 +1,6 @@
-package ask.me.again.core.builder;
+package ask.me.again.core.common;
 
-import ask.me.again.core.common.Context;
-import ask.me.again.core.common.OutputSource;
-import ask.me.again.core.common.ReactiveProcessor;
-import ask.me.again.core.processors.PassthroughProcessor;
+import ask.me.again.core.processors.OutputProcessor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -52,7 +49,7 @@ public class ReactiveTask<K, C extends Context> {
     }
 
     public ReactiveTaskBuilder<K, C> write(K input) {
-      processorList.add(new PassthroughProcessor<K, C>(input, outputSource));
+      processorList.add(new OutputProcessor<K, C>(input, outputSource));
       return this;
     }
 

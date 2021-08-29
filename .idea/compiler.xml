@@ -14,10 +14,12 @@
         <module name="ReactiveKafka.modules.examples.base-app.main" />
         <module name="ReactiveKafka.modules.spring-config.main" />
         <module name="ReactiveKafka.modules.examples.spring-app.main" />
+        <module name="ReactiveKafka.modules.kafka-connector.main" />
         <module name="ReactiveKafka.modules.spring-config.test" />
         <module name="ReactiveKafka.modules.examples.base-app.test" />
         <module name="ReactiveKafka.modules.core.test" />
         <module name="ReactiveKafka.modules.examples.spring-app.test" />
+        <module name="ReactiveKafka.modules.kafka-connector.test" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11" />

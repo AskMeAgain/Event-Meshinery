@@ -1,8 +1,8 @@
 package ask.me.again.springconfig;
 
-import ask.me.again.core.builder.ReactiveTask;
+import ask.me.again.core.common.ReactiveTask;
 import ask.me.again.core.common.InputSource;
-import ask.me.again.core.worker.WorkerService;
+import ask.me.again.core.service.WorkerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 

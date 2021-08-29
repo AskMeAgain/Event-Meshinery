@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 @RequiredArgsConstructor
-public class PassthroughProcessor<K, C extends Context> implements ReactiveProcessor<C> {
+public class OutputProcessor<K, C extends Context> implements ReactiveProcessor<C> {
 
   private final K key;
   private final OutputSource<K, C> outputSource;

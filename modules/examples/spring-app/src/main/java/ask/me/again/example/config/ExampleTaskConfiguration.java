@@ -1,6 +1,6 @@
 package ask.me.again.example.config;
 
-import ask.me.again.core.builder.ReactiveTask;
+import ask.me.again.core.common.ReactiveTask;
 import ask.me.again.core.common.OutputSource;
 import ask.me.again.example.TestContext;
 import ask.me.again.example.entities.ProcessorA;

@@ -1,7 +1,7 @@
 package ask.me.again.example;
 
-import ask.me.again.core.builder.ReactiveTask;
-import ask.me.again.core.worker.WorkerService;
+import ask.me.again.core.common.ReactiveTask;
+import ask.me.again.core.service.WorkerService;
 import ask.me.again.example.entities.ExampleInputSource;
 import ask.me.again.example.entities.ExampleOutputSource;
 import ask.me.again.example.entities.ProcessorA;
