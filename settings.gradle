@@ -1,7 +1,8 @@
-rootProject.name = 'ReactiveKafka'
+rootProject.name = 'Meshinery'
+
 include('modules:core')
 include('modules:kafka-connector')
-include('modules:examples:base-app')
-include('modules:examples:spring-app')
-include('modules:examples:spring-kafka-app')
+include('examples:base-app')
+include('examples:spring-app')
+include('examples:spring-kafka-app')
 include('modules:spring-config')

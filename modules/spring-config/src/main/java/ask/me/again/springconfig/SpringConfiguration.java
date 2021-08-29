@@ -1,8 +1,8 @@
 package ask.me.again.springconfig;
 
-import ask.me.again.core.common.InputSource;
-import ask.me.again.core.common.MeshineryTask;
-import ask.me.again.core.service.MeshineryWorker;
+import ask.me.again.meshinery.core.common.InputSource;
+import ask.me.again.meshinery.core.common.MeshineryTask;
+import ask.me.again.meshinery.core.service.MeshineryWorker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 

@@ -1,7 +1,7 @@
 package ask.me.again.kafka;
 
-import ask.me.again.core.common.Context;
-import ask.me.again.core.common.InputSource;
+import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.InputSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;

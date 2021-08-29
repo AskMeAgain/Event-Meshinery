@@ -1,7 +1,7 @@
 package ask.me.again.kafka;
 
-import ask.me.again.core.common.Context;
-import ask.me.again.core.common.OutputSource;
+import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.OutputSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.producer.KafkaProducer;
