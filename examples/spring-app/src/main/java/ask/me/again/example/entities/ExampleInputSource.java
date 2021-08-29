@@ -1,10 +1,13 @@
-package ask.me.again.example;
+package ask.me.again.example.entities;
 
 import ask.me.again.core.common.InputSource;
+import ask.me.again.example.TestContext;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class ExampleInputSource implements InputSource<String, TestContext> {
 
   private int counter = 0;

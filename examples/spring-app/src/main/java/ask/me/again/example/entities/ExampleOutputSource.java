@@ -1,9 +1,10 @@
-package ask.me.again.example;
+package ask.me.again.example.entities;
 
 import ask.me.again.core.common.OutputSource;
+import ask.me.again.example.TestContext;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
-
+@Component
 public class ExampleOutputSource implements OutputSource<String, TestContext> {
 
   @Override

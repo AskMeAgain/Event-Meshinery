@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -57,7 +56,7 @@ public class WorkerService<K, C extends Context> {
 
     System.out.println("Thread started");
 
-    while (atomicBoolean.get()) {
+    while (atomicBoolean.get() || !todoQueue.isEmpty()) {
       var currentTask = todoQueue.poll();
 
       if (currentTask == null) {
