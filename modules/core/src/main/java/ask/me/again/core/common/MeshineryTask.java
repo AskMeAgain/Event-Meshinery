@@ -10,10 +10,10 @@ import java.util.concurrent.ExecutorService;
 
 
 @Builder
-public class ReactiveTask<K, C extends Context> {
+public class MeshineryTask<K, C extends Context> {
 
   @Getter
-  List<ReactiveProcessor<C>> processorList;
+  List<MeshineryProcessor<C>> processorList;
 
   @Getter
   ExecutorService executorService;
@@ -25,21 +25,21 @@ public class ReactiveTask<K, C extends Context> {
 
   String taskName;
 
-  public static class ReactiveTaskBuilder<K, C extends Context> {
+  public static class MeshineryTaskBuilder<K, C extends Context> {
 
-    private ReactiveTaskBuilder<K, C> executorService(ExecutorService executorService) {
+    private MeshineryTaskBuilder<K, C> executorService(ExecutorService executorService) {
       return this;
     }
 
-    private ReactiveTaskBuilder<K, C> inputKey(K inputKey) {
+    private MeshineryTaskBuilder<K, C> inputKey(K inputKey) {
       return this;
     }
 
-    private ReactiveTaskBuilder<K, C> processorList(List<ReactiveProcessor<C>> processorList) {
+    private MeshineryTaskBuilder<K, C> processorList(List<MeshineryProcessor<C>> processorList) {
       return this;
     }
 
-    public ReactiveTaskBuilder<K, C> read(K inputKey, ExecutorService executor) {
+    public MeshineryTaskBuilder<K, C> read(K inputKey, ExecutorService executor) {
 
       this.processorList = new ArrayList<>();
       this.inputKey = inputKey;
@@ -48,12 +48,12 @@ public class ReactiveTask<K, C extends Context> {
       return this;
     }
 
-    public ReactiveTaskBuilder<K, C> write(K input) {
+    public MeshineryTaskBuilder<K, C> write(K input) {
       processorList.add(new OutputProcessor<K, C>(input, outputSource));
       return this;
     }
 
-    public ReactiveTaskBuilder<K, C> process(ReactiveProcessor<C> processor) {
+    public MeshineryTaskBuilder<K, C> process(MeshineryProcessor<C> processor) {
       processorList.add(processor);
       return this;
     }

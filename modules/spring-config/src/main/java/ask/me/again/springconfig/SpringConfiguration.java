@@ -1,8 +1,8 @@
 package ask.me.again.springconfig;
 
-import ask.me.again.core.common.ReactiveTask;
 import ask.me.again.core.common.InputSource;
-import ask.me.again.core.service.WorkerService;
+import ask.me.again.core.common.MeshineryTask;
+import ask.me.again.core.service.MeshineryWorker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class SpringConfiguration {
 
-  private final List<ReactiveTask<?, ?>> tasks;
+  private final List<MeshineryTask<?, ?>> tasks;
 
   private final InputSource<?, ?> inputSource;
 
@@ -22,7 +22,7 @@ public class SpringConfiguration {
 
   @PostConstruct
   public void setup() {
-    new WorkerService(tasks, inputSource).start(atomicBoolean);
+    new MeshineryWorker(tasks, inputSource).start(atomicBoolean);
   }
 
 }

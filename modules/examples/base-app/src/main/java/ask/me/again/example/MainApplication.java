@@ -1,13 +1,15 @@
 package ask.me.again.example;
 
-import ask.me.again.core.common.ReactiveTask;
-import ask.me.again.core.service.WorkerService;
+import ask.me.again.core.common.MeshineryTask;
+import ask.me.again.core.service.MeshineryWorker;
 import ask.me.again.example.entities.ExampleInputSource;
 import ask.me.again.example.entities.ExampleOutputSource;
 import ask.me.again.example.entities.ProcessorA;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainApplication {
@@ -16,7 +18,7 @@ public class MainApplication {
 
     var processor = new ProcessorA();
     var singleThread = Executors.newSingleThreadExecutor();
-    var fixedThread = new ThreadPoolExecutor(4, 30, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue());
+    var fixedThread = Executors.newFixedThreadPool(4);
 
     var atomicBoolean = new AtomicBoolean(true);
 
@@ -24,7 +26,7 @@ public class MainApplication {
     var outputSource = new ExampleOutputSource();
 
     var tasks = List.of(
-      ReactiveTask.<String, TestContext>builder()
+      MeshineryTask.<String, TestContext>builder()
         .taskName("cool name")
         .outputSource(outputSource)
         .read("topic-a", fixedThread)
@@ -35,7 +37,7 @@ public class MainApplication {
         .process(processor)
         .write("topic-d-FINISHED")
         .build(),
-      ReactiveTask.<String, TestContext>builder()
+      MeshineryTask.<String, TestContext>builder()
         .outputSource(outputSource)
         .taskName("Cool task 2")
         .read("topic-x", fixedThread)
@@ -47,7 +49,7 @@ public class MainApplication {
         .write("topic-w-FINISHED")
         .build());
 
-    new WorkerService<>(tasks, inputSource).start(atomicBoolean);
+    new MeshineryWorker<>(tasks, inputSource).start(atomicBoolean);
 
     CompletableFuture.runAsync(() -> {
       try {

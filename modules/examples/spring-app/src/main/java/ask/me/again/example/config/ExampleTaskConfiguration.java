@@ -1,6 +1,6 @@
 package ask.me.again.example.config;
 
-import ask.me.again.core.common.ReactiveTask;
+import ask.me.again.core.common.MeshineryTask;
 import ask.me.again.core.common.OutputSource;
 import ask.me.again.example.TestContext;
 import ask.me.again.example.entities.ProcessorA;
@@ -25,8 +25,8 @@ public class ExampleTaskConfiguration {
   }
 
   @Bean
-  public ReactiveTask<String, TestContext> task1() {
-    return ReactiveTask.<String, TestContext>builder()
+  public MeshineryTask<String, TestContext> task1() {
+    return MeshineryTask.<String, TestContext>builder()
       .outputSource(outputSource)
       .taskName("Cool task 1")
       .read("topic-x", executorService)
@@ -40,8 +40,8 @@ public class ExampleTaskConfiguration {
   }
 
   @Bean
-  public ReactiveTask<String, TestContext> task2() {
-    return ReactiveTask.<String, TestContext>builder()
+  public MeshineryTask<String, TestContext> task2() {
+    return MeshineryTask.<String, TestContext>builder()
       .outputSource(outputSource)
       .taskName("Cool task 2")
       .read("topic-a", executorService)

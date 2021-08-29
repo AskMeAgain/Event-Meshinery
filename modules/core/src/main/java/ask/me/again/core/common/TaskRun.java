@@ -18,9 +18,9 @@ public class TaskRun<C extends Context> {
   ExecutorService executorService;
 
   @Getter
-  Queue<ReactiveProcessor<C>> queue;
+  Queue<MeshineryProcessor<C>> queue;
 
-  public TaskRun(CompletableFuture<C> future, Queue<ReactiveProcessor<C>> queue, ExecutorService executorService) {
+  public TaskRun(CompletableFuture<C> future, Queue<MeshineryProcessor<C>> queue, ExecutorService executorService) {
     this.future = future;
     this.queue = queue;
     this.executorService = executorService;

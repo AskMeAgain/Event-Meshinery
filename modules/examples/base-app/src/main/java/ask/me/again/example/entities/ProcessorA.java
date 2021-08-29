@@ -1,12 +1,12 @@
 package ask.me.again.example.entities;
 
-import ask.me.again.core.common.ReactiveProcessor;
+import ask.me.again.core.common.MeshineryProcessor;
 import ask.me.again.example.TestContext;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class ProcessorA implements ReactiveProcessor<TestContext> {
+public class ProcessorA implements MeshineryProcessor<TestContext> {
 
   @Override
   public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {

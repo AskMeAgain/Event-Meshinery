@@ -2,7 +2,7 @@ package ask.me.again.core.service;
 
 import ask.me.again.core.common.Context;
 import ask.me.again.core.common.InputSource;
-import ask.me.again.core.common.ReactiveTask;
+import ask.me.again.core.common.MeshineryTask;
 import ask.me.again.core.common.TaskRun;
 import lombok.SneakyThrows;
 
@@ -13,13 +13,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class WorkerService<K, C extends Context> {
+public class MeshineryWorker<K, C extends Context> {
 
   private final ConcurrentLinkedQueue<TaskRun<C>> todoQueue = new ConcurrentLinkedQueue<>();
-  private final List<ReactiveTask<K, C>> tasks;
+  private final List<MeshineryTask<K, C>> tasks;
   private final InputSource<K, C> inputSource;
 
-  public WorkerService(List<ReactiveTask<K, C>> tasks, InputSource<K, C> inputSource) {
+  public MeshineryWorker(List<MeshineryTask<K, C>> tasks, InputSource<K, C> inputSource) {
     this.tasks = tasks;
     this.inputSource = inputSource;
   }
