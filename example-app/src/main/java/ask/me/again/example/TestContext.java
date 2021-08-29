@@ -1,13 +1,12 @@
-package ask.me.again.core.example;
+package ask.me.again.example;
 
 import ask.me.again.core.common.Context;
-import ask.me.again.core.common.IdAware;
 import lombok.Builder;
 import lombok.Value;
 
 @Value
 @Builder(toBuilder = true)
-public class TestContext implements Context, IdAware {
+public class TestContext implements Context {
 
   int testValue1;
 

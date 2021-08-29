@@ -1,8 +1,9 @@
 package ask.me.again.core.worker;
 
+import ask.me.again.core.builder.ReactiveTask;
 import ask.me.again.core.common.Context;
+import ask.me.again.core.common.InputSource;
 import ask.me.again.core.common.TaskRun;
-import ask.me.again.core.example.TestContext;
 import lombok.SneakyThrows;
 
 import java.util.LinkedList;
@@ -11,53 +12,58 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class WorkerService<C extends Context> {
+public class WorkerService<K, C extends Context> {
 
   private final ConcurrentLinkedQueue<TaskRun<C>> todoQueue = new ConcurrentLinkedQueue<>();
-  private final List<ReactiveTask<C>> tasks;
-  private final ExecutorService executorService;
+  private final List<ReactiveTask<K, C>> tasks;
+  private final InputSource<K, C> inputSource;
 
-  public WorkerService(List<ReactiveTask<C>> tasks, ExecutorService executorService) {
+  public WorkerService(List<ReactiveTask<K, C>> tasks, InputSource<K, C> inputSource) {
     this.tasks = tasks;
-    this.executorService = executorService;
+    this.inputSource = inputSource;
   }
 
   @SneakyThrows
-  public void start() {
+  public void start(AtomicBoolean atomicBoolean) {
     //the producer
-    createScheduler();
+    createScheduler(atomicBoolean);
 
     //the worker
-    Executors.newSingleThreadExecutor().execute(this::run);
+    Executors.newSingleThreadExecutor().execute(() -> run(atomicBoolean));
   }
 
-  private void createScheduler() {
+  private void createScheduler(AtomicBoolean atomicBoolean) {
     Executors.newSingleThreadExecutor().execute(() -> {
-      for (int i = 0; i < 10; i++) {
-        var input = (C) TestContext.builder()
-          .testValue1(i)
-          .id(i + "")
-          .build();
-        System.out.println("Scheduled another Task");
-        todoQueue.add(new TaskRun<C>(CompletableFuture.completedFuture(input), new LinkedList<>(tasks.get(i % tasks.size()).getProcessorList())));
+      while (atomicBoolean.get()) {
+        for (var reactiveTask : tasks) {
+          List<C> inputList = inputSource.<K>getInputs(reactiveTask.getInputKey());
 
-        try {
-          Thread.sleep(200);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
+          var processorQueue = new LinkedList<>(reactiveTask.getProcessorList());
+          var executorService = reactiveTask.getExecutorService();
+
+          for (var input : inputList) {
+            var taskRun = new TaskRun<C>(CompletableFuture.completedFuture(input), processorQueue, executorService);
+            todoQueue.add(taskRun);
+          }
         }
       }
     });
   }
 
   @SneakyThrows
-  public void run() {
+  public void run(AtomicBoolean atomicBoolean) {
 
     System.out.println("Thread started");
 
-    while (!todoQueue.isEmpty()) {
-      var currentTask = todoQueue.remove();
+    while (atomicBoolean.get()) {
+      var currentTask = todoQueue.poll();
+
+      if (currentTask == null) {
+        Thread.sleep(500);
+        continue;
+      }
 
       if (currentTask.getFuture().isDone()) {
 
@@ -68,13 +74,10 @@ public class WorkerService<C extends Context> {
         var nextProcessor = currentTask.getQueue().remove();
         C context = currentTask.getFuture().get();
 
-        currentTask.setFuture(nextProcessor.processAsync(context, executorService));
+        currentTask.setFuture(nextProcessor.processAsync(context, currentTask.getExecutorService()));
       }
 
       todoQueue.add(currentTask);
     }
-
-    System.out.println("Thread finished");
-    executorService.shutdown();
   }
 }
