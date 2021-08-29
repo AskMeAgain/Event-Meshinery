@@ -10,11 +10,12 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/buildSrc" />
-            <option value="$PROJECT_DIR$/core" />
-            <option value="$PROJECT_DIR$/examples" />
-            <option value="$PROJECT_DIR$/examples/base-app" />
-            <option value="$PROJECT_DIR$/examples/spring-app" />
-            <option value="$PROJECT_DIR$/spring-config" />
+            <option value="$PROJECT_DIR$/modules" />
+            <option value="$PROJECT_DIR$/modules/core" />
+            <option value="$PROJECT_DIR$/modules/examples" />
+            <option value="$PROJECT_DIR$/modules/examples/base-app" />
+            <option value="$PROJECT_DIR$/modules/examples/spring-app" />
+            <option value="$PROJECT_DIR$/modules/spring-config" />
           </set>
         </option>
       </GradleProjectSettings>

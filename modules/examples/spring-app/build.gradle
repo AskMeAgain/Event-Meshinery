@@ -1,6 +1,5 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '2.5.4'
+    id 'java-library'
 }
 
 repositories {
@@ -16,5 +15,6 @@ dependencies {
 
     implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
 
-    implementation project(':core')
+    api project(':modules:core');
+    api project(':modules:spring-config');
 }

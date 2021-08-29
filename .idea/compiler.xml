@@ -10,14 +10,14 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.20/18bcea7d5df4d49227b4a0743a536208ce4825bb/lombok-1.18.20.jar" />
         </processorPath>
-        <module name="ReactiveKafka.spring-config.main" />
-        <module name="ReactiveKafka.examples.base-app.main" />
-        <module name="ReactiveKafka.spring-config.test" />
-        <module name="ReactiveKafka.examples.base-app.test" />
-        <module name="ReactiveKafka.examples.spring-app.test" />
-        <module name="ReactiveKafka.core.test" />
-        <module name="ReactiveKafka.examples.spring-app.main" />
-        <module name="ReactiveKafka.core.main" />
+        <module name="ReactiveKafka.modules.core.main" />
+        <module name="ReactiveKafka.modules.examples.base-app.main" />
+        <module name="ReactiveKafka.modules.spring-config.main" />
+        <module name="ReactiveKafka.modules.examples.spring-app.main" />
+        <module name="ReactiveKafka.modules.spring-config.test" />
+        <module name="ReactiveKafka.modules.examples.base-app.test" />
+        <module name="ReactiveKafka.modules.core.test" />
+        <module name="ReactiveKafka.modules.examples.spring-app.test" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11" />

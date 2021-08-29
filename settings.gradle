@@ -1,5 +1,5 @@
 rootProject.name = 'ReactiveKafka'
-include('core')
-include('examples:base-app')
-include('examples:spring-app')
-include('spring-config')
+include('modules:core')
+include('modules:examples:base-app')
+include('modules:examples:spring-app')
+include('modules:spring-config')
