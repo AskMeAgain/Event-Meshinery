@@ -1,9 +1,9 @@
-package ask.me.again.meshinery.core.service;
+package ask.me.again.meshinery.core.schedulers;
 
 import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.common.TaskRun;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.util.LinkedList;
@@ -13,16 +13,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class MeshineryWorker<K, C extends Context> {
+@RequiredArgsConstructor
+public class RoundRobinScheduler<K, C extends Context> {
 
   private final ConcurrentLinkedQueue<TaskRun<C>> todoQueue = new ConcurrentLinkedQueue<>();
   private final List<MeshineryTask<K, C>> tasks;
-  private final InputSource<K, C> inputSource;
-
-  public MeshineryWorker(List<MeshineryTask<K, C>> tasks, InputSource<K, C> inputSource) {
-    this.tasks = tasks;
-    this.inputSource = inputSource;
-  }
 
   @SneakyThrows
   public void start(AtomicBoolean atomicBoolean) {
@@ -37,13 +32,13 @@ public class MeshineryWorker<K, C extends Context> {
     Executors.newSingleThreadExecutor().execute(() -> {
       while (atomicBoolean.get()) {
         for (var reactiveTask : tasks) {
-          List<C> inputList = inputSource.<K>getInputs(reactiveTask.getInputKey());
+          var inputList = reactiveTask.getInputSource().getInputs(reactiveTask.getInputKey());
 
           var executorService = reactiveTask.getExecutorService();
 
           for (var input : inputList) {
             var processorQueue = new LinkedList<>(reactiveTask.getProcessorList());
-            var taskRun = new TaskRun<C>(CompletableFuture.completedFuture(input), processorQueue, executorService);
+            var taskRun = new TaskRun<>(CompletableFuture.completedFuture(input), processorQueue, executorService);
             todoQueue.add(taskRun);
           }
         }

@@ -2,26 +2,27 @@ package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.processors.OutputProcessor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 
+@Value
 @Builder
 public class MeshineryTask<K, C extends Context> {
 
-  @Getter
   List<MeshineryProcessor<C>> processorList;
+  List<K> outputKeys;
 
-  @Getter
   ExecutorService executorService;
 
-  @Getter
   K inputKey;
 
   OutputSource<K, C> outputSource;
+
+  InputSource<K, C> inputSource;
 
   String taskName;
 
@@ -42,6 +43,7 @@ public class MeshineryTask<K, C extends Context> {
     public MeshineryTaskBuilder<K, C> read(K inputKey, ExecutorService executor) {
 
       this.processorList = new ArrayList<>();
+      this.outputKeys = new ArrayList<>();
       this.inputKey = inputKey;
       this.executorService = executor;
 
@@ -49,6 +51,7 @@ public class MeshineryTask<K, C extends Context> {
     }
 
     public MeshineryTaskBuilder<K, C> write(K input) {
+      outputKeys.add(input);
       processorList.add(new OutputProcessor<K, C>(input, outputSource));
       return this;
     }

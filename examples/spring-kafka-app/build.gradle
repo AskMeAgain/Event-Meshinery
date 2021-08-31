@@ -16,6 +16,7 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
 
     api project(':modules:core');
+    api project(':modules:draw');
     api project(':modules:spring-config');
     api project(':modules:kafka-connector');
 }

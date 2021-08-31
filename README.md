@@ -1,4 +1,4 @@
-# Meshinery
+# Event Meshinery
 
 This framework is a state store independent event framework and designed to easily structure long running, multi step,
 processing tasks in a transparent way. The underlying state stores can be exchanged and combined to suit your needs.
@@ -34,7 +34,6 @@ processing again.
 * You can resume a process in case of error and you will start exactly where you left off
 * Fine granular configs for your thread management
 * Processing is done stateless. No need to worry about race conditions
-* Ready for project loom!
 * Easily integrated (using Spring or by constructing everything by hand)
 
 ## Setup

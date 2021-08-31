@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.example;
 
 import ask.me.again.meshinery.core.common.MeshineryTask;
-import ask.me.again.meshinery.core.service.MeshineryWorker;
+import ask.me.again.meshinery.core.schedulers.RoundRobinScheduler;
 import ask.me.again.meshinery.example.entities.ExampleInputSource;
 import ask.me.again.meshinery.example.entities.ExampleOutputSource;
 import ask.me.again.meshinery.example.entities.ProcessorA;
@@ -29,6 +29,7 @@ public class MainApplication {
       MeshineryTask.<String, TestContext>builder()
         .taskName("cool name")
         .outputSource(outputSource)
+        .inputSource(inputSource)
         .read("topic-a", fixedThread)
         .process(processor)
         .write("topic-b")
@@ -38,8 +39,9 @@ public class MainApplication {
         .write("topic-d-FINISHED")
         .build(),
       MeshineryTask.<String, TestContext>builder()
-        .outputSource(outputSource)
         .taskName("Cool task 2")
+        .outputSource(outputSource)
+        .inputSource(inputSource)
         .read("topic-x", fixedThread)
         .process(processor)
         .write("topic-y")
@@ -49,7 +51,7 @@ public class MainApplication {
         .write("topic-w-FINISHED")
         .build());
 
-    new MeshineryWorker<>(tasks, inputSource).start(atomicBoolean);
+    new RoundRobinScheduler<>(tasks).start(atomicBoolean);
 
     CompletableFuture.runAsync(() -> {
       try {

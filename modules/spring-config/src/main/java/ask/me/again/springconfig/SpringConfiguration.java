@@ -1,8 +1,7 @@
 package ask.me.again.springconfig;
 
-import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryTask;
-import ask.me.again.meshinery.core.service.MeshineryWorker;
+import ask.me.again.meshinery.core.schedulers.RoundRobinScheduler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,13 +15,11 @@ public class SpringConfiguration {
 
   private final List<MeshineryTask<?, ?>> tasks;
 
-  private final InputSource<?, ?> inputSource;
-
   private final AtomicBoolean atomicBoolean;
 
   @PostConstruct
   public void setup() {
-    new MeshineryWorker(tasks, inputSource).start(atomicBoolean);
+    new RoundRobinScheduler(tasks).start(atomicBoolean);
   }
 
 }

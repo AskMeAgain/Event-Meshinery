@@ -1,7 +1,9 @@
-rootProject.name = 'Meshinery'
+rootProject.name = 'EventMeshinery'
 
 include('modules:core')
+include('modules:draw')
 include('modules:kafka-connector')
+include('modules:mysql-connector')
 include('examples:base-app')
 include('examples:spring-app')
 include('examples:spring-kafka-app')

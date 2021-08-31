@@ -1,5 +1,6 @@
 package ask.me.again.meshinery.example.config;
 
+import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.example.TestContext;
@@ -16,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ExampleTaskConfiguration {
 
   private final OutputSource<String, TestContext> outputSource;
+  private final InputSource<String, TestContext> inputSource;
   private final ExecutorService executorService;
   private final ProcessorA processorA;
 
@@ -27,6 +29,7 @@ public class ExampleTaskConfiguration {
   @Bean
   public MeshineryTask<String, TestContext> task1() {
     return MeshineryTask.<String, TestContext>builder()
+      .inputSource(inputSource)
       .outputSource(outputSource)
       .taskName("Cool task 1")
       .read("topic-x", executorService)
@@ -42,6 +45,7 @@ public class ExampleTaskConfiguration {
   @Bean
   public MeshineryTask<String, TestContext> task2() {
     return MeshineryTask.<String, TestContext>builder()
+      .inputSource(inputSource)
       .outputSource(outputSource)
       .taskName("Cool task 2")
       .read("topic-a", executorService)
