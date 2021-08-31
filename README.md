@@ -17,7 +17,10 @@ Doing long running (blocking) calls via Kafka Streams represents a challenge as 
 processing other messages. To solve this problem, this framework removes a guarantee:
 **Messages are not processed in order, but processed as they arrive.**
 This is useful if your events need to be processed in a specific (long running) way, but events are completely
-independent of each other.
+independent of each other (not important if you process msg A with offset 10 before msg B with offset 2).
+
+You can easily scale this an application written with Event Meshinery by running them in parallel and using kafka
+consumer groups and you are now able to process multiple messages per partition simultaneously.
 
 ## On Failure
 
@@ -28,9 +31,9 @@ processing again.
 
 ## Advantages
 
-* This framework lets you structure your code in a really transparent way
-* The underlying state store is not needed. You can always exchange them (tests run in memory)
-* This framework is lightweight. Checking the inner workings is easy!
+* This framework lets you structure your code in a really transparent way by providing a state store independent api
+* You can separate the business from the underlying implementation layer
+* This framework is lightweight. Checking the inner workings is easy! Providing your own custom classes is super easy
 * You can resume a process in case of error and you will start exactly where you left off
 * Fine granular configs for your thread management
 * Processing is done stateless. No need to worry about race conditions
@@ -39,9 +42,10 @@ processing again.
 ## Draw the Graph
 
 This framework provides you with the possibility to draw graph diagrams! Provide a list of tasks to the
-MeshinaryDrawer.start() method and it returns a byte[] stream:
+MeshinaryDrawer.start() method and it returns a byte[] stream. This is done
+via  [GraphStream](https://graphstream-project.org/) and you can even style them by yourself.
 
-![asd](example-graph.png)
+![example-graph](example-graph.png)
 
 ## Setup
 
@@ -92,8 +96,8 @@ implementation is the same as the one provided in MeshineryTask.
 
 ### Execution
 
-The execution of all Tasks is done by providing the list of tasks to the MeshineryScheduler, and calling start via an
-atomic boolean, which is used to shutdown the MeshineryWorker. Also make sure to close the existing ExecutorService or
-else the application wont shut down.
+The execution of all Tasks is done by providing the list of tasks to a MeshineryScheduler (currently only
+RoundRobinScheduler is supported), and calling start via an atomic boolean, which is used to shutdown the
+MeshineryWorker. Also make sure to close the existing ExecutorService or else the application wont shut down.
 
     new MeshineryWorker<>(List.of(meshineryTask), inputSource).start(atomicBoolean);
