@@ -36,6 +36,13 @@ processing again.
 * Processing is done stateless. No need to worry about race conditions
 * Easily integrated (using Spring or by constructing everything by hand)
 
+## Draw the Graph
+
+This framework provides you with the possibility to draw graph diagrams! Provide a list of tasks to the
+MeshinaryDrawer.start() method and it returns a byte[] stream:
+
+![asd](example-graph.png)
+
 ## Setup
 
 This project contains lots of example apps, which show how to setup Meshinery.
