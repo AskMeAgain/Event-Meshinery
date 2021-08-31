@@ -45,34 +45,26 @@ MeshinaryDrawer.start() method and it returns a byte[] stream:
 
 ## Setup
 
-This project contains lots of example apps, which show how to setup Meshinery.
+This project contains lots of example apps, which show how to setup Meshinery and each consists of 3 basic classes:
 
-### Tasks
+### MeshineryTasks
 
-MeshineryTask represent an input event and the handling of such an event. This definition is done in order. We triggered
-event-b before executing processorB and we execute processorB before we trigger event "event-c"
+MeshineryTask represent an input event and the handling of such an event. This definition is worked on in order. We
+trigger event-b before executing processorB and we execute processorB before we trigger/write event "event-c"
 
     var meshineryTask = MeshineryTask.<String, TestContext>builder()
         .read("state-a", executorService) //Input state & thread config
         .taskName("cool task name") //Task Name for logging
         .outputSource(outputSource) //Output implementation 
         .process(processorA) //Processing step
-        .write("event-b") //Event "event-b" is triggered
+        .write("event-b") //Event "event-b" is triggered/written
         .process(processorB) //Another Processing step
-        .write("event-c") //Event "event-c" is triggeed
+        .write("event-c") //Event "event-c" is triggered/written
         .build()
-
-### Execution
-
-The execution of such Task is done by providing the list of tasks to the MeshineryWorker, and calling start via an
-atomic boolean, which is used to shutdown the MeshineryWorker. Also make sure to close the existing ExecutorService or
-else the application wont shut down
-
-    new MeshineryWorker<>(List.of(meshineryTask), inputSource).start(atomicBoolean);
 
 ### MeshineryProcessor
 
-Processors return a CompletableFuture, which is handled by a provided Executor implementation. The executor
+Processors return all CompletableFuture's, which are handled by a provided Executor implementation. The executor
 implementation is the same as the one provided in MeshineryTask.
 
     @Component
@@ -97,3 +89,11 @@ implementation is the same as the one provided in MeshineryTask.
               }, executor);
         }
     }
+
+### Execution
+
+The execution of all Tasks is done by providing the list of tasks to the MeshineryScheduler, and calling start via an
+atomic boolean, which is used to shutdown the MeshineryWorker. Also make sure to close the existing ExecutorService or
+else the application wont shut down.
+
+    new MeshineryWorker<>(List.of(meshineryTask), inputSource).start(atomicBoolean);
