@@ -48,7 +48,10 @@ public class ExampleController {
 
   @GetMapping("picture")
   public ResponseEntity picture() throws IOException {
-    byte[] result = new MeshineryDrawer().draw(tasks);
+    byte[] result = MeshineryDrawer.builder()
+      .tasks(tasks)
+      .build()
+      .draw();
 
     var headers = new HttpHeaders();
     headers.setCacheControl(CacheControl.noCache().getHeaderValue());

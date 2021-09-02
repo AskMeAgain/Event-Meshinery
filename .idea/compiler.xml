@@ -17,9 +17,11 @@
         <module name="EventMeshinery.examples.spring-kafka-app.test" />
         <module name="EventMeshinery.modules.kafka-connector.test" />
         <module name="EventMeshinery.examples.base-app.test" />
+        <module name="EventMeshinery.modules.draw-config.test" />
         <module name="EventMeshinery.examples.base-app.main" />
         <module name="EventMeshinery.modules.draw.main" />
         <module name="EventMeshinery.examples.spring-kafka-app.main" />
+        <module name="EventMeshinery.modules.draw-config.main" />
         <module name="EventMeshinery.modules.kafka-connector.main" />
         <module name="EventMeshinery.modules.spring-config.main" />
         <module name="EventMeshinery.examples.spring-app.test" />

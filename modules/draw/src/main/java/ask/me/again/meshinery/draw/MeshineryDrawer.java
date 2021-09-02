@@ -2,7 +2,6 @@ package ask.me.again.meshinery.draw;
 
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import lombok.Builder;
-import lombok.Value;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.stream.file.FileSinkImages;
 
@@ -11,11 +10,20 @@ import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.List;
 
+@Builder
 public class MeshineryDrawer {
 
-  public byte[] draw(List<MeshineryTask<?, ?>> tasks) throws IOException {
-    var graph = new DefaultGraph("my beautiful graph");
-    var fileSinkImages = new FileSinkImages(FileSinkImages.OutputType.PNG, FileSinkImages.Resolutions.VGA);
+  private final List<MeshineryTask<?, ?>> tasks;
+
+  @Builder.Default
+  private final FileSinkImages.OutputType outputType = FileSinkImages.OutputType.PNG;
+
+  private final ApplyNode nodeAssignment;
+  private final ApplyEdge edgeAssignment;
+
+  public byte[] draw() throws IOException {
+    var graph = new DefaultGraph("id");
+    var fileSinkImages = new FileSinkImages(outputType, FileSinkImages.Resolutions.VGA);
 
     fileSinkImages.setLayoutPolicy(FileSinkImages.LayoutPolicy.COMPUTED_FULLY_AT_NEW_IMAGE);
 
@@ -35,12 +43,8 @@ public class MeshineryDrawer {
       }
     }
 
-    nodeSet.forEach(graph::addNode);
-    edges.forEach(container -> {
-      var edge = graph.addEdge(container.id, container.from, container.to);
-      edge.addAttribute("ui.label", container.getName());
-      edge.addAttribute("ui.style", "size: 2px; text-alignment: center;");
-    });
+    nodeSet.forEach(nodeName -> nodeAssignment.onEachNode(graph, nodeName));
+    edges.forEach(container -> edgeAssignment.onEachEdge(graph, container));
 
     var tempFile = Files.createTempFile("meshinary", ".jpg");
 
@@ -48,12 +52,4 @@ public class MeshineryDrawer {
     return Files.readAllBytes(tempFile);
   }
 
-  @Value
-  @Builder
-  private static class Container {
-    String name;
-    String id;
-    String from;
-    String to;
-  }
 }
