@@ -48,7 +48,7 @@ public class ExampleController {
 
   @GetMapping("picture")
   public ResponseEntity picture() throws IOException {
-    byte[] result = MeshineryDrawer.builder()
+    var result = MeshineryDrawer.builder()
       .tasks(tasks)
       .build()
       .draw();

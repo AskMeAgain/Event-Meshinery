@@ -68,6 +68,10 @@ public class RoundRobinScheduler<K, C extends Context> {
         var nextProcessor = currentTask.getQueue().remove();
         C context = currentTask.getFuture().get();
 
+        if (context == null) {
+          continue;
+        }
+
         currentTask.setFuture(nextProcessor.processAsync(context, currentTask.getExecutorService()));
       }
 

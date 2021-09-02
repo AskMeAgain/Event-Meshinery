@@ -1,12 +1,14 @@
 package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.processors.OutputProcessor;
+import ask.me.again.meshinery.core.processors.SkipProcessor;
 import lombok.Builder;
 import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 
 
 @Value
@@ -50,9 +52,18 @@ public class MeshineryTask<K, C extends Context> {
       return this;
     }
 
+    public MeshineryTaskBuilder<K, C> skipIf(Function<C, Boolean> skipIf) {
+      processorList.add(new SkipProcessor<>(skipIf));
+      return this;
+    }
+
     public MeshineryTaskBuilder<K, C> write(K input) {
+      return write(input, x -> true);
+    }
+
+    public MeshineryTaskBuilder<K, C> write(K input, Function<C, Boolean> writeIf) {
       outputKeys.add(input);
-      processorList.add(new OutputProcessor<K, C>(input, outputSource));
+      processorList.add(new OutputProcessor<>(writeIf, input, outputSource));
       return this;
     }
 
