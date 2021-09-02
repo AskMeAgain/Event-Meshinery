@@ -61,6 +61,7 @@ public class RoundRobinScheduler<K, C extends Context> {
 
       if (currentTask.getFuture().isDone()) {
 
+        //we stop if we reached the end of the queue
         if (currentTask.getQueue().isEmpty()) {
           continue;
         }
@@ -68,6 +69,7 @@ public class RoundRobinScheduler<K, C extends Context> {
         var nextProcessor = currentTask.getQueue().remove();
         C context = currentTask.getFuture().get();
 
+        //we stop the task if the context is null
         if (context == null) {
           continue;
         }

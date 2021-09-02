@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.processors.OutputProcessor;
-import ask.me.again.meshinery.core.processors.SkipProcessor;
+import ask.me.again.meshinery.core.processors.StopProcessor;
 import lombok.Builder;
 import lombok.Value;
 
@@ -52,8 +52,8 @@ public class MeshineryTask<K, C extends Context> {
       return this;
     }
 
-    public MeshineryTaskBuilder<K, C> skipIf(Function<C, Boolean> skipIf) {
-      processorList.add(new SkipProcessor<>(skipIf));
+    public MeshineryTaskBuilder<K, C> stopIf(Function<C, Boolean> stopIf) {
+      processorList.add(new StopProcessor<>(stopIf));
       return this;
     }
 

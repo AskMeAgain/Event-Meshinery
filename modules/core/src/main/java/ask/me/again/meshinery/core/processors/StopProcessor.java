@@ -9,14 +9,14 @@ import java.util.concurrent.Executor;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
-public class SkipProcessor<C extends Context> implements MeshineryProcessor<C> {
+public class StopProcessor<C extends Context> implements MeshineryProcessor<C> {
 
-  private final Function<C, Boolean> skipIf;
+  private final Function<C, Boolean> stopIf;
 
   @Override
   public CompletableFuture<C> processAsync(C context, Executor executor) {
 
-    if (skipIf.apply(context)) {
+    if (stopIf.apply(context)) {
       return null;
     }
 
