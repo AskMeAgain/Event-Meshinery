@@ -59,7 +59,7 @@ public class RoundRobinScheduler<K, C extends Context> {
         continue;
       }
 
-      if (currentTask.getFuture().isDone()) {
+      while (currentTask.getFuture().isDone()) {
 
         //we stop if we reached the end of the queue
         if (currentTask.getQueue().isEmpty()) {
