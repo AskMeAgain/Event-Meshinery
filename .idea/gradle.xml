@@ -20,6 +20,7 @@
             <option value="$PROJECT_DIR$/modules/draw-config" />
             <option value="$PROJECT_DIR$/modules/kafka-connector" />
             <option value="$PROJECT_DIR$/modules/mysql-connector" />
+            <option value="$PROJECT_DIR$/modules/mysql-connector-config" />
             <option value="$PROJECT_DIR$/modules/spring-config" />
           </set>
         </option>
