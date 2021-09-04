@@ -3,11 +3,11 @@ package ask.me.again.springconfig;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.schedulers.RoundRobinScheduler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Configuration
 @RequiredArgsConstructor
@@ -15,11 +15,12 @@ public class SpringConfiguration {
 
   private final List<MeshineryTask<?, ?>> tasks;
 
-  private final AtomicBoolean atomicBoolean;
+  @Value("${meshinery.batch-job:false}")
+  private boolean isBatchJob;
 
   @PostConstruct
   public void setup() {
-    new RoundRobinScheduler(tasks).start(atomicBoolean);
+    new RoundRobinScheduler(tasks, isBatchJob).start();
   }
 
 }

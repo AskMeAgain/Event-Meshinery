@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainApplication {
 
@@ -19,8 +18,6 @@ public class MainApplication {
     var processor = new ProcessorA();
     var singleThread = Executors.newSingleThreadExecutor();
     var fixedThread = Executors.newFixedThreadPool(4);
-
-    var atomicBoolean = new AtomicBoolean(false);
 
     var inputSource = new ExampleInputSource();
     var outputSource = new ExampleOutputSource();
@@ -51,7 +48,7 @@ public class MainApplication {
         .write("topic-w-FINISHED")
         .build());
 
-    new RoundRobinScheduler<>(tasks, true).start(atomicBoolean);
+    new RoundRobinScheduler<>(tasks, true).start();
 
     CompletableFuture.runAsync(() -> {
       try {
@@ -59,14 +56,13 @@ public class MainApplication {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      shutdownWorkers(singleThread, fixedThread, atomicBoolean);
+      shutdownWorkers(singleThread, fixedThread);
     });
 
   }
 
-  private static void shutdownWorkers(ExecutorService singleThread, ExecutorService fixedThread, AtomicBoolean atomicBoolean) {
+  private static void shutdownWorkers(ExecutorService singleThread, ExecutorService fixedThread) {
     System.out.println("turning off");
-    atomicBoolean.set(false);
     fixedThread.shutdown();
     singleThread.shutdown();
   }
