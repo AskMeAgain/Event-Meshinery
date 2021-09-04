@@ -1,6 +1,7 @@
 package ask.me.again.meshinery.connectors.mysql;
 
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.junit.jupiter.api.BeforeAll;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
@@ -26,6 +27,9 @@ public class AbstractMysqlTest {
   public Jdbi jdbi() {
     var casted = (MySQLContainer) mySQLContainer;
 
-    return Jdbi.create(casted.getJdbcUrl() + "?useSSL=false", casted.getUsername(), casted.getPassword());
+    var jdbi = Jdbi.create(casted.getJdbcUrl() + "?useSSL=false", casted.getUsername(), casted.getPassword());
+    jdbi.installPlugin(new Jackson2Plugin());
+
+    return jdbi;
   }
 }

@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.connectors.mysql;
 
 import ask.me.again.meshinery.core.common.Context;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -16,11 +16,10 @@ class SourcesTest extends AbstractMysqlTest {
   void testInputOutput() {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
-    var objectMapper = new ObjectMapper();
-    var input = new MysqlInputSource<>(jdbi, TestContext.class, objectMapper);
-    var output = new MysqlOutputSource<>(jdbi, TestContext.class, objectMapper);
-    var value = new TestContext();
-    value.setId("1");
+
+    var input = new MysqlInputSource<>(jdbi, TestContext.class);
+    var output = new MysqlOutputSource<>(jdbi, TestContext.class);
+    var value = new TestContext("1");
 
     //Act ------------------------------------------------------------------------------------
     output.writeOutput(STATE, value);
@@ -30,11 +29,11 @@ class SourcesTest extends AbstractMysqlTest {
     assertThat(result)
       .hasSize(1)
       .contains(value);
-
   }
 
   @Data
   @NoArgsConstructor
+  @AllArgsConstructor
   public static class TestContext implements Context {
     String id;
   }

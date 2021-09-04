@@ -17,6 +17,9 @@ dependencies {
 
     implementation 'mysql:mysql-connector-java:8.0.12'
     implementation 'org.jdbi:jdbi3-core:3.21.0'
+
+    implementation 'org.jdbi:jdbi3-jackson2:3.21.0'
+
     implementation 'org.jdbi:jdbi3-sqlobject:3.21.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
 
