@@ -34,4 +34,11 @@ public class MeshineryDrawerConfiguration {
     return new ApplyEdge() {
     };
   }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ApplyGraph applyGraph() {
+    return new ApplyGraph() {
+    };
+  }
 }

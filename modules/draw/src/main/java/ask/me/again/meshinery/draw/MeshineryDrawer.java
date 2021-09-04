@@ -20,6 +20,7 @@ public class MeshineryDrawer {
 
   private final ApplyNode nodeAssignment;
   private final ApplyEdge edgeAssignment;
+  private final ApplyGraph graphAssignment;
 
   public byte[] draw() throws IOException {
     var graph = new DefaultGraph("id");
@@ -45,6 +46,8 @@ public class MeshineryDrawer {
 
     nodeSet.forEach(nodeName -> nodeAssignment.onEachNode(graph, nodeName));
     edges.forEach(container -> edgeAssignment.onEachEdge(graph, container));
+
+    graphAssignment.onGraph(graph);
 
     var tempFile = Files.createTempFile("meshinary", ".jpg");
 
