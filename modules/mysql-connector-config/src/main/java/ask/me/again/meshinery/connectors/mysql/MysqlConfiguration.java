@@ -9,9 +9,7 @@ public class MysqlConfiguration {
 
   @Bean
   public Jdbi jdbi() {
-    var jdbi = Jdbi.create("jdbc:mysql://localhost:3306/db", "user", "password");
-
-    return jdbi;
+    return Jdbi.create("jdbc:mysql://localhost:3306/db", "user", "password");
   }
 
 }
