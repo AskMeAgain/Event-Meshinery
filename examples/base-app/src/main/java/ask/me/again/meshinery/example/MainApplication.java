@@ -20,7 +20,7 @@ public class MainApplication {
     var singleThread = Executors.newSingleThreadExecutor();
     var fixedThread = Executors.newFixedThreadPool(4);
 
-    var atomicBoolean = new AtomicBoolean(true);
+    var atomicBoolean = new AtomicBoolean(false);
 
     var inputSource = new ExampleInputSource();
     var outputSource = new ExampleOutputSource();
@@ -51,7 +51,7 @@ public class MainApplication {
         .write("topic-w-FINISHED")
         .build());
 
-    new RoundRobinScheduler<>(tasks).start(atomicBoolean);
+    new RoundRobinScheduler<>(tasks, true).start(atomicBoolean);
 
     CompletableFuture.runAsync(() -> {
       try {
