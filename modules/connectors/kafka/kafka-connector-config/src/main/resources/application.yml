@@ -1,0 +1,4 @@
+meshinery:
+  connectors:
+    kafka:
+      bootstrap-server: "localhost:9092"

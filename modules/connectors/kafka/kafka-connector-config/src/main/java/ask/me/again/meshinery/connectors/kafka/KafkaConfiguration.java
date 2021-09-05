@@ -1,5 +1,8 @@
 package ask.me.again.meshinery.connectors.kafka;
 
+import ask.me.again.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
+import ask.me.again.meshinery.connectors.kafka.factories.KafkaProducerFactory;
+import ask.me.again.meshinery.connectors.kafka.properties.KafkaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

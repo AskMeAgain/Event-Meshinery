@@ -1,33 +1,26 @@
 package ask.me.again.meshinery.example.config;
 
-import ask.me.again.meshinery.connectors.kafka.KafkaConsumerFactory;
-import ask.me.again.meshinery.connectors.kafka.KafkaInputSource;
-import ask.me.again.meshinery.connectors.kafka.KafkaOutputSource;
-import ask.me.again.meshinery.connectors.kafka.KafkaProducerFactory;
+import ask.me.again.meshinery.connectors.kafka.KafkaConfiguration;
+import ask.me.again.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
+import ask.me.again.meshinery.connectors.kafka.factories.KafkaProducerFactory;
+import ask.me.again.meshinery.connectors.kafka.sources.KafkaInputSource;
+import ask.me.again.meshinery.connectors.kafka.sources.KafkaOutputSource;
 import ask.me.again.meshinery.example.TestContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Configuration
+@Import(KafkaConfiguration.class)
 public class ApplicationConfiguration {
 
   @Bean
   public ObjectMapper objectMapper() {
     return new ObjectMapper();
-  }
-
-  @Bean
-  public KafkaProducerFactory kafkaProducerFactory() {
-    return new KafkaProducerFactory();
-  }
-
-  @Bean
-  public KafkaConsumerFactory kafkaConsumerFactory() {
-    return new KafkaConsumerFactory();
   }
 
   @Bean
@@ -44,4 +37,5 @@ public class ApplicationConfiguration {
   public KafkaOutputSource<TestContext> kafkaOutputSource(ObjectMapper objectMapper, KafkaProducerFactory kafkaProducerFactory) {
     return new KafkaOutputSource<>(kafkaProducerFactory, objectMapper);
   }
+
 }

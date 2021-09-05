@@ -1,5 +1,6 @@
-package ask.me.again.meshinery.connectors.kafka;
+package ask.me.again.meshinery.connectors.kafka.sources;
 
+import ask.me.again.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.InputSource;
 import com.fasterxml.jackson.databind.ObjectMapper;

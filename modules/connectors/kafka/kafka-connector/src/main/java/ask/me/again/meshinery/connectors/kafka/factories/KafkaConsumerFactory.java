@@ -1,5 +1,6 @@
-package ask.me.again.meshinery.connectors.kafka;
+package ask.me.again.meshinery.connectors.kafka.factories;
 
+import ask.me.again.meshinery.connectors.kafka.properties.KafkaProperties;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 import java.util.HashMap;
@@ -14,8 +15,8 @@ public class KafkaConsumerFactory {
 
   public KafkaConsumerFactory(KafkaProperties kafkaProperties) {
     properties = new Properties();
-    properties.setProperty("bootstrap.servers", "localhost:9092");
-    properties.setProperty("group.id", "try2");
+    properties.setProperty("bootstrap.servers", kafkaProperties.getBootstrapServer());
+    properties.setProperty("group.id", kafkaProperties.getGroupId());
     properties.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
     properties.setProperty("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
     properties.setProperty("auto.offset.reset", "earliest");

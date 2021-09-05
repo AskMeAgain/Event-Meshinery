@@ -1,5 +1,6 @@
-package ask.me.again.meshinery.connectors.kafka;
+package ask.me.again.meshinery.connectors.kafka.factories;
 
+import ask.me.again.meshinery.connectors.kafka.properties.KafkaProperties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 
 import java.util.HashMap;
@@ -11,9 +12,9 @@ public class KafkaProducerFactory {
   private final Map<String, KafkaProducer<String, byte[]>> producer = new HashMap<>();
   private final Properties properties;
 
-  public KafkaProducerFactory() {
+  public KafkaProducerFactory(KafkaProperties kafkaProperties) {
     properties = new Properties();
-    properties.setProperty("bootstrap.servers", "localhost:9092");
+    properties.setProperty("bootstrap.servers", kafkaProperties.getBootstrapServer());
     properties.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     properties.setProperty("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
   }
