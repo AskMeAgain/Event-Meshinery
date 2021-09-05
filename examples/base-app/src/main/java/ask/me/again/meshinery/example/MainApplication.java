@@ -8,7 +8,6 @@ import ask.me.again.meshinery.example.entities.ProcessorA;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MainApplication {
@@ -16,7 +15,6 @@ public class MainApplication {
   public static void main(String[] input) {
 
     var processor = new ProcessorA();
-    var singleThread = Executors.newSingleThreadExecutor();
     var fixedThread = Executors.newFixedThreadPool(4);
 
     var inputSource = new ExampleInputSource();
@@ -48,22 +46,19 @@ public class MainApplication {
         .write("topic-w-FINISHED")
         .build());
 
-    new RoundRobinScheduler<>(tasks, true).start();
+    var stringTestContextRoundRobinScheduler = new RoundRobinScheduler<>(tasks, true);
+    stringTestContextRoundRobinScheduler.start();
 
     CompletableFuture.runAsync(() -> {
       try {
-        Thread.sleep(15000);
+        Thread.sleep(5000);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      shutdownWorkers(singleThread, fixedThread);
+      System.out.println("turning off");
+      stringTestContextRoundRobinScheduler.shutdown();
     });
 
   }
 
-  private static void shutdownWorkers(ExecutorService singleThread, ExecutorService fixedThread) {
-    System.out.println("turning off");
-    fixedThread.shutdown();
-    singleThread.shutdown();
-  }
 }

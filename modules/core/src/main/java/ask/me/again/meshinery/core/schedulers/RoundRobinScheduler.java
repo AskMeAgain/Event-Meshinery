@@ -5,7 +5,6 @@ import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.common.TaskRun;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -15,7 +14,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Slf4j
 @RequiredArgsConstructor
 public class RoundRobinScheduler<K, C extends Context> {
 
@@ -42,6 +40,8 @@ public class RoundRobinScheduler<K, C extends Context> {
 
   }
 
+  private boolean internalShutdown;
+
   private void createScheduler(ExecutorService executor) {
     executor.execute(() -> {
       while (!executor.isShutdown()) {
@@ -62,15 +62,21 @@ public class RoundRobinScheduler<K, C extends Context> {
 
         //we did not add any work in a single iteration. We are done
         if (counter == 0 && isBatchJob) {
+          System.out.println("Shutdown through batch job flag");
+          shutdown();
+          break;
+        }
+        //shutdown already triggered, we just stop
+        if (internalShutdown) {
           break;
         }
       }
-
-      shutdown();
     });
   }
 
   public void shutdown() {
+    System.out.println("Shutting down through shutdown flag");
+    internalShutdown = true;
     for (var executorService : executorServices) {
       if (!executorService.isShutdown()) {
         executorService.shutdown();
@@ -84,8 +90,8 @@ public class RoundRobinScheduler<K, C extends Context> {
     System.out.println("Thread started");
 
     //we use this label to break out of the task in case we dont want to work on it
-    currentTask:
-    while (!todoQueue.isEmpty() || !isBatchJob) {
+    newTask:
+    while (!internalShutdown) {
       var currentTask = todoQueue.poll();
 
       if (currentTask == null) {
@@ -97,7 +103,7 @@ public class RoundRobinScheduler<K, C extends Context> {
 
         //we stop if we reached the end of the queue or shutting down executors
         if (currentTask.getQueue().isEmpty() || currentTask.getExecutorService().isShutdown()) {
-          continue currentTask;
+          continue newTask;
         }
 
         var nextProcessor = currentTask.getQueue().remove();
@@ -105,7 +111,7 @@ public class RoundRobinScheduler<K, C extends Context> {
 
         //we stop the task if the context is null
         if (context == null) {
-          continue currentTask;
+          continue newTask;
         }
 
         currentTask.setFuture(nextProcessor.processAsync(context, currentTask.getExecutorService()));
