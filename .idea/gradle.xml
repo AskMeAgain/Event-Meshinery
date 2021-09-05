@@ -14,12 +14,16 @@
             <option value="$PROJECT_DIR$/examples/spring-app" />
             <option value="$PROJECT_DIR$/examples/spring-kafka-app" />
             <option value="$PROJECT_DIR$/modules" />
+            <option value="$PROJECT_DIR$/modules/connectors" />
+            <option value="$PROJECT_DIR$/modules/connectors/kafka" />
+            <option value="$PROJECT_DIR$/modules/connectors/kafka/kafka-connector" />
+            <option value="$PROJECT_DIR$/modules/connectors/kafka/kafka-connector-config" />
+            <option value="$PROJECT_DIR$/modules/connectors/mysql" />
+            <option value="$PROJECT_DIR$/modules/connectors/mysql/mysql-connector" />
+            <option value="$PROJECT_DIR$/modules/connectors/mysql/mysql-connector-config" />
             <option value="$PROJECT_DIR$/modules/core" />
             <option value="$PROJECT_DIR$/modules/draw" />
             <option value="$PROJECT_DIR$/modules/draw-config" />
-            <option value="$PROJECT_DIR$/modules/kafka-connector" />
-            <option value="$PROJECT_DIR$/modules/mysql-connector" />
-            <option value="$PROJECT_DIR$/modules/mysql-connector-config" />
             <option value="$PROJECT_DIR$/modules/spring-config" />
           </set>
         </option>

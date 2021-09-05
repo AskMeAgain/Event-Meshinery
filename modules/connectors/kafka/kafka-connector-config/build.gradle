@@ -1,5 +1,5 @@
 plugins {
-    id 'java-library'
+    id 'java'
 }
 
 repositories {
@@ -13,12 +13,10 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.20'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 
+    implementation project(':modules:core')
+    implementation project(':modules:connectors:kafka:kafka-connector')
     implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
 
-    api project(':modules:core');
-    api project(':modules:draw');
-    api project(':modules:spring-config');
-    api project(':modules:connectors:kafka:kafka-connector');
 }
 java {
     toolchain {

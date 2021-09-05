@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.20'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    implementation project(':modules:core')
+    implementation project(':modules:connectors:mysql:mysql-connector')
+
+    implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test:2.5.4')
+
+    implementation 'mysql:mysql-connector-java:5.1.6'
+    implementation 'org.jdbi:jdbi3-core:3.21.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testImplementation 'org.assertj:assertj-core:3.20.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+
+    implementation 'org.slf4j:slf4j-simple:1.7.21'
+
+    testImplementation 'org.testcontainers:mysql:1.16.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(gradle.JAVA_VERSION_NUMBER)
+    }
+}
