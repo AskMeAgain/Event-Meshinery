@@ -22,3 +22,8 @@ dependencies {
     implementation 'org.jdbi:jdbi3-core:3.21.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
 }
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(16)
+    }
+}

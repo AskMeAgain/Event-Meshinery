@@ -18,3 +18,8 @@ dependencies {
 
     implementation project(':modules:core')
 }
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(16)
+    }
+}

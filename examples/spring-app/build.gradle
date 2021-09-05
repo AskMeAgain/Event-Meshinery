@@ -18,3 +18,8 @@ dependencies {
     api project(':modules:core');
     api project(':modules:spring-config');
 }
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(16)
+    }
+}

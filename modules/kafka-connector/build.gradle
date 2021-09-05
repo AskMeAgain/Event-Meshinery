@@ -19,3 +19,8 @@ dependencies {
     api 'org.apache.kafka:kafka-clients:2.8.0'
     api 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
 }
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(16)
+    }
+}

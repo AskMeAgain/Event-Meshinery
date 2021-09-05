@@ -20,3 +20,8 @@ dependencies {
     api project(':modules:spring-config');
     api project(':modules:kafka-connector');
 }
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(16)
+    }
+}
