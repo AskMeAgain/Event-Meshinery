@@ -17,7 +17,7 @@ public class MysqlInputSource<C extends Context> implements InputSource<String, 
   private final Jdbi jdbi;
   private final Class<C> clazz;
 
-  private final int limit = 1;
+  private final MysqlProperties mysqlProperties;
 
   @Override
   public List<C> getInputs(String key) {
@@ -29,7 +29,7 @@ public class MysqlInputSource<C extends Context> implements InputSource<String, 
       var firstResult = handle.createQuery(SELECT_QUERY)
         .bind("state", key)
         .define("TABLE", clazz.getSimpleName())
-        .bind("limit", limit)
+        .bind("limit", mysqlProperties.getLimit())
         .mapTo(qualifiedType)
         .list();
 

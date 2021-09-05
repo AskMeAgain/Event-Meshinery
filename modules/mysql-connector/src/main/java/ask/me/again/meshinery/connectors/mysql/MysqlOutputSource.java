@@ -22,11 +22,10 @@ public class MysqlOutputSource<C extends Context> implements OutputSource<String
 
     var qualifiedType = QualifiedType.of(clazz).with(Json.class);
 
-    jdbi.useHandle(handle -> handle.createUpdate("INSERT INTO <TABLE> (context,state,processed) VALUES (:CONTEXT, :STATE, :PROCESSED)")
+    jdbi.useHandle(handle -> handle.createUpdate("INSERT INTO <TABLE> (context,state,processed) VALUES (:CONTEXT, :STATE, 0)")
       .define("TABLE", clazz.getSimpleName())
       .bindByType("CONTEXT", output, qualifiedType)
       .bind("STATE", key)
-      .bind("PROCESSED", 0)
       .execute()
     );
   }

@@ -22,6 +22,6 @@ dependencies {
 }
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(16)
+        languageVersion = JavaLanguageVersion.of(gradle.JAVA_VERSION_NUMBER)
     }
 }

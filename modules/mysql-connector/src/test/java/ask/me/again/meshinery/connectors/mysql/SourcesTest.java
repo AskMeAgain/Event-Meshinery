@@ -17,18 +17,27 @@ class SourcesTest extends AbstractMysqlTest {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
 
-    var input = new MysqlInputSource<>(jdbi, TestContext.class);
+    var mysqlProperties = new MysqlProperties();
+    mysqlProperties.setLimit(1);
+    var input = new MysqlInputSource<>(jdbi, TestContext.class, mysqlProperties);
     var output = new MysqlOutputSource<>(jdbi, TestContext.class);
-    var value = new TestContext("1");
+    var value1 = new TestContext("1");
+    var value2 = new TestContext("2");
 
     //Act ------------------------------------------------------------------------------------
-    output.writeOutput(STATE, value);
-    var result = input.getInputs(STATE);
+    output.writeOutput(STATE, value1);
+    output.writeOutput(STATE, value2);
+
+    var result1 = input.getInputs(STATE);
+    var result2 = input.getInputs(STATE);
 
     //Assert ---------------------------------------------------------------------------------
-    assertThat(result)
+    assertThat(result1)
       .hasSize(1)
-      .contains(value);
+      .contains(value1);
+    assertThat(result2)
+      .hasSize(1)
+      .contains(value2);
   }
 
   @Data
