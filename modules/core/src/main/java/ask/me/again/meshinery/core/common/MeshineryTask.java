@@ -43,7 +43,6 @@ public class MeshineryTask<K, C extends Context> {
     }
 
     public MeshineryTaskBuilder<K, C> read(K inputKey, ExecutorService executor) {
-
       this.processorList = new ArrayList<>();
       this.outputKeys = new ArrayList<>();
       this.inputKey = inputKey;
