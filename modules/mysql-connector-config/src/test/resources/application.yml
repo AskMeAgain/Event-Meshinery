@@ -1,0 +1,6 @@
+meshinery:
+  mysql:
+    connection-string: jdbc:mysql://localhost:3306/db
+    user: user
+    password: password
+    limit: 1
