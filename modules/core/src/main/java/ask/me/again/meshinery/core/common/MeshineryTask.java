@@ -1,5 +1,6 @@
 package ask.me.again.meshinery.core.common;
 
+import ask.me.again.meshinery.core.processors.DynamicOutputProcessor;
 import ask.me.again.meshinery.core.processors.OutputProcessor;
 import ask.me.again.meshinery.core.processors.StopProcessor;
 import lombok.Builder;
@@ -63,6 +64,11 @@ public class MeshineryTask<K, C extends Context> {
     public MeshineryTaskBuilder<K, C> write(K input, Function<C, Boolean> writeIf) {
       outputKeys.add(input);
       processorList.add(new OutputProcessor<>(writeIf, input, outputSource));
+      return this;
+    }
+
+    public MeshineryTaskBuilder<K, C> write(Function<C, K> inputMethod, Function<C, Boolean> writeIf) {
+      processorList.add(new DynamicOutputProcessor<>(writeIf, inputMethod, outputSource));
       return this;
     }
 
