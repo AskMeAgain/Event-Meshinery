@@ -17,6 +17,7 @@ import java.util.function.Function;
 public class MeshineryTask<K, C extends Context> {
 
   List<MeshineryProcessor<C>> processorList;
+
   List<K> outputKeys;
 
   ExecutorService executorService;

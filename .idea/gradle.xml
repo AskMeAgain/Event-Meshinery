@@ -18,6 +18,8 @@
             <option value="$PROJECT_DIR$/modules/connectors/kafka" />
             <option value="$PROJECT_DIR$/modules/connectors/kafka/kafka-connector" />
             <option value="$PROJECT_DIR$/modules/connectors/kafka/kafka-connector-config" />
+            <option value="$PROJECT_DIR$/modules/connectors/memory" />
+            <option value="$PROJECT_DIR$/modules/connectors/memory/memory-connector" />
             <option value="$PROJECT_DIR$/modules/connectors/mysql" />
             <option value="$PROJECT_DIR$/modules/connectors/mysql/mysql-connector" />
             <option value="$PROJECT_DIR$/modules/connectors/mysql/mysql-connector-config" />

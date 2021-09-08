@@ -5,6 +5,7 @@ gradle.ext.JAVA_VERSION_NUMBER = 15;
 include('modules:core')
 include('modules:draw')
 include('modules:draw-config')
+include('modules:connectors:memory:memory-connector')
 include('modules:connectors:kafka:kafka-connector')
 include('modules:connectors:kafka:kafka-connector-config')
 include('modules:connectors:mysql:mysql-connector')
