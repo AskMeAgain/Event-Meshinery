@@ -17,10 +17,12 @@ import java.util.concurrent.Executors;
 @RequiredArgsConstructor
 public class RoundRobinScheduler<K, C extends Context> {
 
-  private final ConcurrentLinkedQueue<TaskRun<C>> todoQueue = new ConcurrentLinkedQueue<>();
-  private final List<MeshineryTask<K, C>> tasks;
   private final boolean isBatchJob;
+  private final List<MeshineryTask<K, C>> tasks;
   private final List<ExecutorService> executorServices = new ArrayList<>();
+  private final ConcurrentLinkedQueue<TaskRun<C>> todoQueue = new ConcurrentLinkedQueue<>();
+
+  private boolean internalShutdown;
 
   @SneakyThrows
   public void start() {
@@ -31,47 +33,13 @@ public class RoundRobinScheduler<K, C extends Context> {
     //the producer
     var inputExecutor = Executors.newSingleThreadExecutor();
     executorServices.add(inputExecutor);
-    createScheduler(inputExecutor);
+    createInputScheduler(inputExecutor);
 
     //the worker
     var taskExecutor = Executors.newSingleThreadExecutor();
     executorServices.add(taskExecutor);
     taskExecutor.execute(this::run);
 
-  }
-
-  private boolean internalShutdown;
-
-  private void createScheduler(ExecutorService executor) {
-    executor.execute(() -> {
-      while (!executor.isShutdown()) {
-
-        var counter = 0;
-        for (var reactiveTask : tasks) {
-          var inputList = reactiveTask.getInputSource().getInputs(reactiveTask.getInputKey());
-
-          var executorService = reactiveTask.getExecutorService();
-
-          for (var input : inputList) {
-            counter++;
-            var processorQueue = new LinkedList<>(reactiveTask.getProcessorList());
-            var taskRun = new TaskRun<>(CompletableFuture.completedFuture(input), processorQueue, executorService);
-            todoQueue.add(taskRun);
-          }
-        }
-
-        //we did not add any work in a single iteration. We are done
-        if (counter == 0 && isBatchJob) {
-          System.out.println("Shutdown through batch job flag");
-          shutdown();
-          break;
-        }
-        //shutdown already triggered, we just stop
-        if (internalShutdown) {
-          break;
-        }
-      }
-    });
   }
 
   public void shutdown() {
@@ -121,4 +89,35 @@ public class RoundRobinScheduler<K, C extends Context> {
     }
   }
 
+  private void createInputScheduler(ExecutorService executor) {
+    executor.execute(() -> {
+      while (!executor.isShutdown()) {
+
+        var counter = 0;
+        for (var reactiveTask : tasks) {
+          var inputList = reactiveTask.getInputSource().getInputs(reactiveTask.getInputKey());
+
+          var executorService = reactiveTask.getExecutorService();
+
+          for (var input : inputList) {
+            counter++;
+            var processorQueue = new LinkedList<>(reactiveTask.getProcessorList());
+            var taskRun = new TaskRun<>(CompletableFuture.completedFuture(input), processorQueue, executorService);
+            todoQueue.add(taskRun);
+          }
+        }
+
+        //we did not add any work in a single iteration. We are done
+        if (counter == 0 && isBatchJob) {
+          System.out.println("Shutdown through batch job flag");
+          shutdown();
+          break;
+        }
+        //shutdown already triggered, we just stop
+        if (internalShutdown) {
+          break;
+        }
+      }
+    });
+  }
 }

@@ -9,6 +9,7 @@ This framework was originally written to replace KafkaStreams in a specific usec
 without kafka. Currently supported are the following state stores:
 
 * Apache Kafka
+* Memory
 * MySql
 
 ## Meshinery vs KafkaStreams
@@ -33,10 +34,12 @@ processing again.
 
 * This framework lets you structure your code in a really transparent way by providing a state store independent api
 * You can separate the business from the underlying implementation layer
-* This framework is lightweight. Checking the inner workings is easy! Providing your own custom classes is super easy
+* This framework is lightweight. Checking the inner workings is easy! 
+* Providing your own custom classes is also super easy
 * You can resume a process in case of error and you will start exactly where you left off
 * Fine granular configs for your thread management
-* Processing is done stateless. No need to worry about race conditions
+* Fast TTM: switching between state stores is super easy: Start with memory, if you need more guarantees switch to mysql or kafka!
+* Processing is done stateless. No need to worry about race conditions (for you)
 * Easily integrated (using Spring or by constructing everything by hand)
 
 ## Draw the Graph
