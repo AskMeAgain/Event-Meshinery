@@ -3,24 +3,10 @@ plugins {
     id 'java-library'
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 
     implementation project(':modules:core')
 
     api 'org.apache.kafka:kafka-clients:2.8.0'
     api 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
-}
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(gradle.JAVA_VERSION_NUMBER)
-    }
 }

@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'java-library'
 }
 
 repositories {
@@ -7,20 +8,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    api project(':modules:core')
+    api project(':modules:draw')
 
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
-
-    implementation project(':modules:core')
-    implementation project(':modules:draw')
-
-    implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
-}
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(gradle.JAVA_VERSION_NUMBER)
-    }
+    api('org.springframework.boot:spring-boot-starter-web:2.5.4')
 }
 

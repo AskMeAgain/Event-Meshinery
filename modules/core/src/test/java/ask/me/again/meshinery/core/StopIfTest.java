@@ -22,9 +22,14 @@ class StopIfTest {
   void testStopIf() throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
     InputSource<String, Context> mockInputSource = Mockito.mock(InputSource.class);
-    MeshineryProcessor<Context> processor = (context, executor) -> null;
+    MeshineryProcessor<Context> processor = new MeshineryProcessor<Context>() {
+      @Override
+      public CompletableFuture<Context> processAsync(Context context, Executor executor) {
+        return null;
+      }
+    };
 
-    Mockito.when(mockInputSource.getInputs(any()))
+    Mockito.when(mockInputSource.getInputs(any(String.class)))
       .thenReturn(List.of(() -> "1"), Collections.emptyList());
 
     var processorSpy = Mockito.spy(processor);
@@ -33,12 +38,12 @@ class StopIfTest {
     var task = MeshineryTask.<String, Context>builder()
       .inputSource(mockInputSource)
       .read(INPUT_KEY, executor)
-      .stopIf(x -> x.getId().equals(1))
+      .stopIf(x -> x.getId().equals("1"))
       .process(processorSpy)
       .build();
 
     //Act ------------------------------------------------------------------------------------
-    new RoundRobinScheduler(List.of(task), true).start();
+    new RoundRobinScheduler<>(List.of(task), true).start();
 
     //Assert ---------------------------------------------------------------------------------
     executor.awaitTermination(3, TimeUnit.SECONDS);
