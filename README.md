@@ -96,8 +96,24 @@ implementation is the same as the one provided in MeshineryTask.
 
 ### Execution
 
-The execution of all Tasks is done by providing the list of tasks to a MeshineryScheduler (currently only
-RoundRobinScheduler is supported), and calling start via an atomic boolean, which is used to shutdown the
-MeshineryWorker. Also make sure to close the existing ExecutorService or else the application wont shut down.
+The execution of all Tasks is done by providing a list of tasks to a MeshineryScheduler (currently only
+RoundRobinScheduler) and calling start.
 
-    new MeshineryWorker<>(List.of(meshineryTask), inputSource).start(atomicBoolean);
+    var isBatchJob = false;
+    new MeshineryWorker<>(List.of(meshineryTask), isBatchJob).start(atomicBoolean);
+
+#### Execution Mode: BatchJob
+
+There are 2 execution modes: BatchJob and Continuous. The BatchJob will run all tasks. If a single iteration of all
+tasks doesnt yield **any** result, the application will shutdown itself by calling shutdown() internally.
+
+#### Execution Mode: Continuous (isBatchJob = false)
+
+This mode just means that the application will run until it is stopped.
+
+#### Stopping the application
+
+The application will only stop if:
+
+1. its a batchjob execution and there is no work, 
+2. the shutdown() method of the scheduler is called. 

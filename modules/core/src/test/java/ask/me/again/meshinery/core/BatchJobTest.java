@@ -30,7 +30,7 @@ class BatchJobTest {
       .build();
 
     //Act ------------------------------------------------------------------------------------
-    new RoundRobinScheduler(List.of(task), true).start();
+    new RoundRobinScheduler<>(List.of(task), true).start();
 
     //Assert ---------------------------------------------------------------------------------
     executor.awaitTermination(3, TimeUnit.SECONDS);
@@ -43,7 +43,6 @@ class BatchJobTest {
 
     @Override
     public List<Context> getInputs(String key) {
-      System.out.println("iteration: " + counter);
       counter--;
 
       if (counter == 0) {
@@ -52,15 +51,5 @@ class BatchJobTest {
 
       return List.of(() -> counter + "");
     }
-  }
-
-  private static ExecutorService currentThreadExecutorService() {
-    ThreadPoolExecutor.CallerRunsPolicy callerRunsPolicy = new ThreadPoolExecutor.CallerRunsPolicy();
-    return new ThreadPoolExecutor(0, 1, 0L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), callerRunsPolicy) {
-      @Override
-      public void execute(Runnable command) {
-        callerRunsPolicy.rejectedExecution(command, this);
-      }
-    };
   }
 }

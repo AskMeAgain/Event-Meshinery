@@ -12,7 +12,7 @@ public class AbstractMysqlTest {
 
   public static String DB_NAME = "db";
 
-  public static GenericContainer mySQLContainer = new MySQLContainer("mysql")
+  public static GenericContainer mySQLContainer = new MySQLContainer<>("mysql")
     .withDatabaseName(DB_NAME)
     .withPassword("password")
     .withUsername("user")
