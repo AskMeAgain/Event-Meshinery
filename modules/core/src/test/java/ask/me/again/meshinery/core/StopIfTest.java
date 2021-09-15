@@ -43,7 +43,7 @@ class StopIfTest {
       .build();
 
     //Act ------------------------------------------------------------------------------------
-    new RoundRobinScheduler<>(List.of(task), true).start();
+    new RoundRobinScheduler<>(true, List.of(task)).start();
 
     //Assert ---------------------------------------------------------------------------------
     executor.awaitTermination(3, TimeUnit.SECONDS);

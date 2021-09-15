@@ -25,12 +25,12 @@ class BatchJobTest {
 
     ExecutorService executor = Executors.newSingleThreadExecutor();
     var task = MeshineryTask.<String, Context>builder()
-      .inputSource(mockInputSource)
-      .read(INPUT_KEY, executor)
-      .build();
+        .inputSource(mockInputSource)
+        .read(INPUT_KEY, executor)
+        .build();
 
     //Act ------------------------------------------------------------------------------------
-    new RoundRobinScheduler<>(List.of(task), true).start();
+    new RoundRobinScheduler<>(true, List.of(task)).start();
 
     //Assert ---------------------------------------------------------------------------------
     executor.awaitTermination(3, TimeUnit.SECONDS);
