@@ -46,7 +46,7 @@ public class MainApplication {
         .write("topic-w-FINISHED")
         .build());
 
-    var stringTestContextRoundRobinScheduler = new RoundRobinScheduler<>(tasks, true);
+    var stringTestContextRoundRobinScheduler = new RoundRobinScheduler<>(true, tasks);
     stringTestContextRoundRobinScheduler.start();
 
     CompletableFuture.runAsync(() -> {

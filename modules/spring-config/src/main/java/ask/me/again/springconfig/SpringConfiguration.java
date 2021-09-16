@@ -20,7 +20,7 @@ public class SpringConfiguration {
 
   @PostConstruct
   public void setup() {
-    new RoundRobinScheduler(tasks, isBatchJob).start();
+    new RoundRobinScheduler(isBatchJob, tasks).start();
   }
 
 }

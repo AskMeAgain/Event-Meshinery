@@ -1,7 +1,5 @@
 rootProject.name = 'EventMeshinery'
 
-gradle.ext.JAVA_VERSION_NUMBER = 15;
-
 include('modules:core')
 include('modules:draw')
 include('modules:draw-config')

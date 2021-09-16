@@ -7,10 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class KafkaConsumerFactory {
 
-  private final Map<String, KafkaConsumer<String, byte[]>> consumers = new HashMap<>();
+  private final Map<String, KafkaConsumer<String, byte[]>> consumers = new ConcurrentHashMap<>();
   private final Properties properties;
 
   public KafkaConsumerFactory(KafkaProperties kafkaProperties) {

@@ -2,24 +2,10 @@ plugins {
     id 'java'
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
 
     implementation project(':modules:core')
     implementation project(':modules:connectors:kafka:kafka-connector')
     implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
 
-}
-
-test {
-    useJUnitPlatform()
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(gradle.JAVA_VERSION_NUMBER)
-    }
 }
