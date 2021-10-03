@@ -3,8 +3,7 @@ package ask.me.again.meshinery.core.common;
 import ask.me.again.meshinery.core.processors.DynamicOutputProcessor;
 import ask.me.again.meshinery.core.processors.OutputProcessor;
 import ask.me.again.meshinery.core.processors.StopProcessor;
-import lombok.Builder;
-import lombok.Value;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,70 +11,127 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
 
-@Value
-@Builder
-public class MeshineryTask<K, C extends Context> {
+public class MeshineryTask<K, I extends Context, O extends Context> {
 
-  List<MeshineryProcessor<C>> processorList;
+  @Getter
+  List<MeshineryProcessor<Context, Context>> processorList = new ArrayList<>();
 
-  List<K> outputKeys;
+  @Getter
+  List<K> outputKeys = new ArrayList<>();
 
+  @Getter
   ExecutorService executorService;
 
+  @Getter
   K inputKey;
 
-  OutputSource<K, C> outputSource;
+  @Getter
+  OutputSource<K, O> outputSource;
 
-  InputSource<K, C> inputSource;
+  @Getter
+  InputSource<K, I> inputSource;
 
+  @Getter
   String taskName;
 
-  public static class MeshineryTaskBuilder<K, C extends Context> {
+  public MeshineryTask() {
+  }
 
-    private MeshineryTaskBuilder<K, C> executorService(ExecutorService executorService) {
-      return this;
-    }
+  private MeshineryTask(MeshineryProcessor<I, O> newProcessor,
+                        List<MeshineryProcessor<Context, Context>> oldProcessorList,
+                        String name,
+                        InputSource inputSource,
+                        OutputSource outputSource,
+                        ExecutorService executorService,
+                        List<K> outputKeys,
+                        K inputKey
+  ) {
+    taskName = name;
+    oldProcessorList.add((MeshineryProcessor<Context, Context>) newProcessor);
+    this.processorList = oldProcessorList;
+    this.inputSource = inputSource;
+    this.outputSource = outputSource;
+    this.outputKeys = outputKeys;
+    this.executorService = executorService;
+    this.inputKey = inputKey;
+  }
 
-    private MeshineryTaskBuilder<K, C> inputKey(K inputKey) {
-      return this;
-    }
+  public MeshineryTask<K, I, O> outputSource(OutputSource<K, O> outputSource) {
+    this.outputSource = outputSource;
+    return this;
+  }
 
-    private MeshineryTaskBuilder<K, C> processorList(List<MeshineryProcessor<C>> processorList) {
-      return this;
-    }
+  public MeshineryTask<K, I, O> inputSource(InputSource<K, I> inputSource) {
+    this.inputSource = inputSource;
+    return this;
+  }
 
-    public MeshineryTaskBuilder<K, C> read(K inputKey, ExecutorService executor) {
-      this.processorList = new ArrayList<>();
-      this.outputKeys = new ArrayList<>();
-      this.inputKey = inputKey;
-      this.executorService = executor;
+  public MeshineryTask<K, I, O> read(K inputKey, ExecutorService executorService) {
+    this.executorService = executorService;
+    this.inputKey = inputKey;
+    return this;
+  }
 
-      return this;
-    }
+  public MeshineryTask<K, I, O> taskName(String name) {
+    taskName = name;
+    return this;
+  }
 
-    public MeshineryTaskBuilder<K, C> stopIf(Function<C, Boolean> stopIf) {
-      processorList.add(new StopProcessor<>(stopIf));
-      return this;
-    }
+  public MeshineryTask<K, O, O> stopIf(Function<O, Boolean> stopIf) {
+    return new MeshineryTask<>(new StopProcessor<>(stopIf),
+        processorList,
+        taskName,
+        inputSource,
+        outputSource,
+        executorService,
+        outputKeys,
+        inputKey
+    );
+  }
 
-    public MeshineryTaskBuilder<K, C> write(K input) {
-      return write(input, x -> true);
-    }
+  public <N extends Context> MeshineryTask<K, O, N> process(MeshineryProcessor<O, N> processor) {
+    return new MeshineryTask<>(
+        processor,
+        processorList,
+        taskName,
+        inputSource,
+        outputSource,
+        executorService,
+        outputKeys,
+        inputKey
+    );
+  }
 
-    public MeshineryTaskBuilder<K, C> write(K input, Function<C, Boolean> writeIf) {
-      outputKeys.add(input);
-      processorList.add(new OutputProcessor<>(writeIf, input, outputSource));
-      return this;
-    }
+  public MeshineryTask<K, O, O> write(K input) {
+    return write(input, x -> true);
+  }
 
-    public MeshineryTaskBuilder<K, C> write(Function<C, K> inputMethod, Function<C, Boolean> writeIf) {
-      processorList.add(new DynamicOutputProcessor<>(writeIf, inputMethod, outputSource));
-      return this;
-    }
+  public MeshineryTask<K, O, O> write(K input, Function<O, Boolean> writeIf) {
+    outputKeys.add(input);
+    var processor = new OutputProcessor<>(writeIf, input, outputSource);
+    return new MeshineryTask<>(
+        processor,
+        processorList,
+        taskName,
+        inputSource,
+        outputSource,
+        executorService,
+        outputKeys,
+        inputKey
+    );
+  }
 
-    public MeshineryTaskBuilder<K, C> process(MeshineryProcessor<C> processor) {
-      processorList.add(processor);
-      return this;
-    }
+  public MeshineryTask<K, O, O> write(Function<O, K> inputMethod, Function<O, Boolean> writeIf) {
+    var processor = new DynamicOutputProcessor<>(writeIf, inputMethod, outputSource);
+    return new MeshineryTask<>(
+        processor,
+        processorList,
+        taskName,
+        inputSource,
+        outputSource,
+        executorService,
+        outputKeys,
+        inputKey
+    );
   }
 }

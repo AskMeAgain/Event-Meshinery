@@ -24,7 +24,7 @@ class MemoryInputOutputSourceTest {
 
         //Assert ----------------------------------------------------------------------------------
         assertThat(result).first().isEqualTo(input);
-        assertThat(resultEmpty).first().isNull();
+        assertThat(resultEmpty).isNull();
     }
 
     @Value

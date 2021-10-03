@@ -24,10 +24,9 @@ class BatchJobTest {
     var mockInputSource = Mockito.spy(new TestInputSource());
 
     ExecutorService executor = Executors.newSingleThreadExecutor();
-    var task = MeshineryTask.<String, Context>builder()
+    var task = new MeshineryTask<String, Context, Context>()
         .inputSource(mockInputSource)
-        .read(INPUT_KEY, executor)
-        .build();
+        .read(INPUT_KEY, executor);
 
     //Act ------------------------------------------------------------------------------------
     new RoundRobinScheduler<>(true, List.of(task)).start();

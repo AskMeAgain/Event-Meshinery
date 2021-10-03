@@ -9,7 +9,7 @@ import java.util.concurrent.Executor;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
-public class StopProcessor<C extends Context> implements MeshineryProcessor<C> {
+public class StopProcessor<C extends Context> implements MeshineryProcessor<C, C> {
 
   private final Function<C, Boolean> stopIf;
 

@@ -10,7 +10,7 @@ import java.util.concurrent.Executor;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
-public class OutputProcessor<K, C extends Context> implements MeshineryProcessor<C> {
+public class OutputProcessor<K, C extends Context> implements MeshineryProcessor<C, C> {
 
   private final Function<C, Boolean> writeIf;
   private final K key;

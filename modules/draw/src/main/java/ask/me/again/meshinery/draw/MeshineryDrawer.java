@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class MeshineryDrawer {
 
-  private final List<MeshineryTask<?, ?>> tasks;
+  private final List<MeshineryTask<?, ?, ?>> tasks;
 
   @Builder.Default
   private final FileSinkImages.OutputType outputType = FileSinkImages.OutputType.PNG;
@@ -35,11 +35,11 @@ public class MeshineryDrawer {
       nodeSet.add(task.getInputKey().toString());
       for (var outputKeys : task.getOutputKeys()) {
         edges.add(Container.builder()
-          .name(task.getTaskName())
-          .id(task.getInputKey() + "" + outputKeys.toString())
-          .to(task.getInputKey().toString())
-          .from(outputKeys.toString())
-          .build());
+            .name(task.getTaskName())
+            .id(task.getInputKey() + "" + outputKeys.toString())
+            .to(task.getInputKey().toString())
+            .from(outputKeys.toString())
+            .build());
         nodeSet.add(outputKeys.toString());
       }
     }

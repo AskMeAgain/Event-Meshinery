@@ -28,98 +28,90 @@ public class ExampleTaskConfiguration {
   }
 
   @Bean
-  public MeshineryTask<String, TestContext> task1() {
-    return MeshineryTask.<String, TestContext>builder()
-      .outputSource(outputSource)
-      .inputSource(inputSource)
-      .taskName("Cool task 1")
-      .read(prefix + "-a", executorService)
-      .process(processorA)
-      .write(prefix + "-b")
-      .build();
+  public MeshineryTask<String, TestContext, TestContext> task1() {
+    return new MeshineryTask<String, TestContext, TestContext>()
+        .outputSource(outputSource)
+        .inputSource(inputSource)
+        .taskName("Cool task 1")
+        .read(prefix + "-a", executorService)
+        .process(processorA)
+        .write(prefix + "-b");
   }
 
   @Bean
-  public MeshineryTask<String, TestContext> task2() {
-    return MeshineryTask.<String, TestContext>builder()
-      .outputSource(outputSource)
-      .inputSource(inputSource)
-      .taskName("Cool task 2")
-      .read(prefix + "-b", executorService)
-      .process(processorA)
-      .write(prefix + "-c")
-      .build();
+  public MeshineryTask<String, TestContext, TestContext> task2() {
+    return new MeshineryTask<String, TestContext, TestContext>()
+        .outputSource(outputSource)
+        .inputSource(inputSource)
+        .taskName("Cool task 2")
+        .read(prefix + "-b", executorService)
+        .process(processorA)
+        .write(prefix + "-c");
   }
 
   @Bean
-  public MeshineryTask<String, TestContext> task3() {
-    return MeshineryTask.<String, TestContext>builder()
-      .outputSource(outputSource)
-      .inputSource(inputSource)
-      .taskName("Cool task 3")
-      .read(prefix + "-c", executorService)
-      .process(processorA)
-      .write(prefix + "-d")
-      .build();
+  public MeshineryTask<String, TestContext, TestContext> task3() {
+    return new MeshineryTask<String, TestContext, TestContext>()
+        .outputSource(outputSource)
+        .inputSource(inputSource)
+        .taskName("Cool task 3")
+        .read(prefix + "-c", executorService)
+        .process(processorA)
+        .write(prefix + "-d");
   }
 
   @Bean
-  public MeshineryTask<String, TestContext> task4() {
-    return MeshineryTask.<String, TestContext>builder()
-      .outputSource(outputSource)
-      .inputSource(inputSource)
-      .taskName("Cool task 4")
-      .read(prefix + "-d", executorService)
-      .process(processorA)
-      .write(prefix + "-e")
-      .build();
+  public MeshineryTask<String, TestContext, TestContext> task4() {
+    return new MeshineryTask<String, TestContext, TestContext>()
+        .outputSource(outputSource)
+        .inputSource(inputSource)
+        .taskName("Cool task 4")
+        .read(prefix + "-d", executorService)
+        .process(processorA)
+        .write(prefix + "-e");
   }
 
   @Bean
-  public MeshineryTask<String, TestContext> task5() {
-    return MeshineryTask.<String, TestContext>builder()
-      .outputSource(outputSource)
-      .inputSource(inputSource)
-      .taskName("Cool task 5")
-      .read(prefix + "-e", executorService)
-      .process(processorA)
-      .write(prefix + "-i")
-      .build();
+  public MeshineryTask<String, TestContext, TestContext> task5() {
+    return new MeshineryTask<String, TestContext, TestContext>()
+        .outputSource(outputSource)
+        .inputSource(inputSource)
+        .taskName("Cool task 5")
+        .read(prefix + "-e", executorService)
+        .process(processorA)
+        .write(prefix + "-i");
   }
 
   @Bean
-  public MeshineryTask<String, TestContext> task6() {
-    return MeshineryTask.<String, TestContext>builder()
-      .outputSource(outputSource)
-      .inputSource(inputSource)
-      .taskName("Cool task 6")
-      .read(prefix + "-b", executorService)
-      .process(processorA)
-      .write(prefix + "-g")
-      .build();
+  public MeshineryTask<String, TestContext, TestContext> task6() {
+    return new MeshineryTask<String, TestContext, TestContext>()
+        .outputSource(outputSource)
+        .inputSource(inputSource)
+        .taskName("Cool task 6")
+        .read(prefix + "-b", executorService)
+        .process(processorA)
+        .write(prefix + "-g");
   }
 
   @Bean
-  public MeshineryTask<String, TestContext> task7() {
-    return MeshineryTask.<String, TestContext>builder()
-      .outputSource(outputSource)
-      .inputSource(inputSource)
-      .taskName("Cool task 7")
-      .read(prefix + "-g", executorService)
-      .process(processorA)
-      .write(prefix + "-h")
-      .build();
+  public MeshineryTask<String, TestContext, TestContext> task7() {
+    return new MeshineryTask<String, TestContext, TestContext>()
+        .outputSource(outputSource)
+        .inputSource(inputSource)
+        .taskName("Cool task 7")
+        .read(prefix + "-g", executorService)
+        .process(processorA)
+        .write(prefix + "-h");
   }
 
   @Bean
-  public MeshineryTask<String, TestContext> task8() {
-    return MeshineryTask.<String, TestContext>builder()
-      .outputSource(outputSource)
-      .inputSource(inputSource)
-      .taskName("Cool task 8")
-      .read(prefix + "-d", executorService)
-      .process(processorA)
-      .write(prefix + "-i")
-      .build();
+  public MeshineryTask<String, TestContext, TestContext> task8() {
+    return new MeshineryTask<String, TestContext, TestContext>()
+        .outputSource(outputSource)
+        .inputSource(inputSource)
+        .taskName("Cool task 8")
+        .read(prefix + "-d", executorService)
+        .process(processorA)
+        .write(prefix + "-i");
   }
 }

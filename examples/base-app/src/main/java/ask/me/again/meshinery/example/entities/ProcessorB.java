@@ -7,10 +7,10 @@ import ask.me.again.meshinery.example.TestContext2;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class ProcessorA implements MeshineryProcessor<TestContext, TestContext2> {
+public class ProcessorB implements MeshineryProcessor<TestContext2, TestContext> {
 
   @Override
-  public CompletableFuture<TestContext2> processAsync(TestContext context, Executor executor) {
+  public CompletableFuture<TestContext> processAsync(TestContext2 context, Executor executor) {
     return CompletableFuture.supplyAsync(() -> {
 
       System.out.println("Rest call");
@@ -21,7 +21,7 @@ public class ProcessorA implements MeshineryProcessor<TestContext, TestContext2>
       }
       System.out.println("Received: " + context.getTestValue1());
 
-      return TestContext2.builder()
+      return TestContext.builder()
         .testValue1(context.getTestValue1() + 1)
         .build();
 

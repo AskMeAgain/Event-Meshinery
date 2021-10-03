@@ -34,7 +34,7 @@ public class ExampleController {
   private final KafkaProducerFactory kafkaProducerFactory;
   private final ObjectMapper objectMapper;
 
-  private final List<MeshineryTask<?, ?>> tasks;
+  private final List<MeshineryTask<?, ?, ?>> tasks;
 
   private int counter = 0;
 
@@ -49,18 +49,18 @@ public class ExampleController {
   @GetMapping("picture")
   public ResponseEntity picture() throws IOException {
     var result = MeshineryDrawer.builder()
-      .tasks(tasks)
-      .build()
-      .draw();
+        .tasks(tasks)
+        .build()
+        .draw();
 
     var headers = new HttpHeaders();
     headers.setCacheControl(CacheControl.noCache().getHeaderValue());
 
     return ResponseEntity.ok()
-      .contentType(MediaType.IMAGE_PNG)
-      .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"test.png\"")
-      .contentLength(result.length)
-      .body(new ByteArrayResource(result));
+        .contentType(MediaType.IMAGE_PNG)
+        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"test.png\"")
+        .contentLength(result.length)
+        .body(new ByteArrayResource(result));
   }
 
   @GetMapping("produce/{topic}")
@@ -70,9 +70,9 @@ public class ExampleController {
     counter++;
 
     var output = TestContext.builder()
-      .id(counter + "")
-      .testValue1(counter)
-      .build();
+        .id(counter + "")
+        .testValue1(counter)
+        .build();
     var key = output.getId();
     var value = objectMapper.writeValueAsBytes(output);
 

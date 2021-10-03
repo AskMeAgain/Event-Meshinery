@@ -21,11 +21,11 @@ class MeshineryDrawerTest {
     var applyGraph = Mockito.mock(ApplyGraph.class);
 
     var drawer = MeshineryDrawer.builder()
-      .tasks(getTasks())
-      .graphAssignment(applyGraph)
-      .nodeAssignment(applyNode)
-      .edgeAssignment(applyEdge)
-      .build();
+        .tasks(getTasks())
+        .graphAssignment(applyGraph)
+        .nodeAssignment(applyNode)
+        .edgeAssignment(applyEdge)
+        .build();
 
     //Act ------------------------------------------------------------------------------------
     drawer.draw();
@@ -37,21 +37,19 @@ class MeshineryDrawerTest {
 
   }
 
-  private List<MeshineryTask<?, ?>> getTasks() {
-    return List.of(MeshineryTask.builder()
-        .read("A", null)
-        .taskName("A")
-        .write("B")
-        .build(),
-      MeshineryTask.builder()
-        .read("B", null)
-        .taskName("B")
-        .write("C")
-        .build(),
-      MeshineryTask.builder()
-        .read("C", null)
-        .taskName("C")
-        .build()
+  private List<MeshineryTask<?, ?, ?>> getTasks() {
+    return List.of(
+        new MeshineryTask()
+            .read("A", null)
+            .taskName("A")
+            .write("B"),
+        new MeshineryTask()
+            .read("B", null)
+            .taskName("B")
+            .write("C"),
+        new MeshineryTask()
+            .read("C", null)
+            .taskName("C")
     );
   }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 public class MeshineryDrawerConfiguration {
 
   @Bean
-  MeshineryDrawer setupMeshineryDrawer(ApplyNode applyNode, ApplyEdge applyEdge, List<MeshineryTask<?, ?>> tasks) {
+  MeshineryDrawer setupMeshineryDrawer(ApplyNode applyNode, ApplyEdge applyEdge, List<MeshineryTask<?,?, ?>> tasks) {
     return MeshineryDrawer.builder()
       .tasks(tasks)
       .edgeAssignment(applyEdge)

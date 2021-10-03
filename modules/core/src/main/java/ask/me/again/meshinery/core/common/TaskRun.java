@@ -7,20 +7,20 @@ import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
-public class TaskRun<C extends Context> {
+public class TaskRun {
 
   @Setter
   @Getter
-  CompletableFuture<C> future;
+  CompletableFuture<Context> future;
 
   @Getter
   @Setter
   ExecutorService executorService;
 
   @Getter
-  Queue<MeshineryProcessor<C>> queue;
+  Queue<MeshineryProcessor<Context, Context>> queue;
 
-  public TaskRun(CompletableFuture<C> future, Queue<MeshineryProcessor<C>> queue, ExecutorService executorService) {
+  public TaskRun(CompletableFuture<Context> future, Queue<MeshineryProcessor<Context, Context>> queue, ExecutorService executorService) {
     this.future = future;
     this.queue = queue;
     this.executorService = executorService;

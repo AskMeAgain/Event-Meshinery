@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 @Component
-public class ProcessorA implements MeshineryProcessor<TestContext> {
+public class ProcessorA implements MeshineryProcessor<TestContext, TestContext> {
 
   @Override
   public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
@@ -23,8 +23,8 @@ public class ProcessorA implements MeshineryProcessor<TestContext> {
       System.out.println("Received: " + context.getTestValue1());
 
       return context.toBuilder()
-        .testValue1(context.getTestValue1() + 1)
-        .build();
+          .testValue1(context.getTestValue1() + 1)
+          .build();
 
     }, executor);
   }

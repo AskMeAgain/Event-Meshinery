@@ -1,5 +1,6 @@
 package ask.me.again.springconfig;
 
+import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.schedulers.RoundRobinScheduler;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SpringConfiguration {
 
-  private final List<MeshineryTask<?, ?>> tasks;
+  private final List<MeshineryTask<?, ?, ?>> tasks;
 
   @Value("${meshinery.batch-job:false}")
   private boolean isBatchJob;

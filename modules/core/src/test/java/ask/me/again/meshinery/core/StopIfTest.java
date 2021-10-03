@@ -22,7 +22,7 @@ class StopIfTest {
   void testStopIf() throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
     InputSource<String, Context> mockInputSource = Mockito.mock(InputSource.class);
-    MeshineryProcessor<Context> processor = new MeshineryProcessor<Context>() {
+    var processor = new MeshineryProcessor<>() {
       @Override
       public CompletableFuture<Context> processAsync(Context context, Executor executor) {
         return null;
@@ -30,17 +30,16 @@ class StopIfTest {
     };
 
     Mockito.when(mockInputSource.getInputs(any(String.class)))
-      .thenReturn(List.of(() -> "1"), Collections.emptyList());
+        .thenReturn(List.of(() -> "1"), Collections.emptyList());
 
     var processorSpy = Mockito.spy(processor);
 
     ExecutorService executor = Executors.newSingleThreadExecutor();
-    var task = MeshineryTask.<String, Context>builder()
-      .inputSource(mockInputSource)
-      .read(INPUT_KEY, executor)
-      .stopIf(x -> x.getId().equals("1"))
-      .process(processorSpy)
-      .build();
+    var task = new MeshineryTask<String, Context, Context>()
+        .inputSource(mockInputSource)
+        .read(INPUT_KEY, executor)
+        .stopIf(x -> x.getId().equals("1"))
+        .process(processorSpy);
 
     //Act ------------------------------------------------------------------------------------
     new RoundRobinScheduler<>(true, List.of(task)).start();

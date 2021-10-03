@@ -15,12 +15,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @RequiredArgsConstructor
-public class RoundRobinScheduler<K, C extends Context> {
+public class RoundRobinScheduler<K, I extends Context, O extends Context> {
 
   private final boolean isBatchJob;
-  private final List<MeshineryTask<K, C>> tasks;
+  private final List<MeshineryTask<K, I, O>> tasks;
   private final List<ExecutorService> executorServices = new ArrayList<>();
-  private final ConcurrentLinkedQueue<TaskRun<C>> todoQueue = new ConcurrentLinkedQueue<>();
+  private final ConcurrentLinkedQueue<TaskRun> todoQueue = new ConcurrentLinkedQueue<>();
 
   private boolean internalShutdown;
 
@@ -75,14 +75,14 @@ public class RoundRobinScheduler<K, C extends Context> {
         }
 
         var nextProcessor = currentTask.getQueue().remove();
-        C context = currentTask.getFuture().get();
+        var context = currentTask.getFuture().get();
 
         //we stop the task if the context is null
         if (context == null) {
           continue newTask;
         }
 
-        currentTask.setFuture(nextProcessor.processAsync(context, currentTask.getExecutorService()));
+        currentTask.setFuture(nextProcessor.processAsync((Context) context, currentTask.getExecutorService()));
       }
 
       todoQueue.add(currentTask);
@@ -102,7 +102,7 @@ public class RoundRobinScheduler<K, C extends Context> {
           for (var input : inputList) {
             counter++;
             var processorQueue = new LinkedList<>(reactiveTask.getProcessorList());
-            var taskRun = new TaskRun<>(CompletableFuture.completedFuture(input), processorQueue, executorService);
+            var taskRun = new TaskRun(CompletableFuture.completedFuture(input), processorQueue, executorService);
             todoQueue.add(taskRun);
           }
         }
