@@ -3,8 +3,8 @@ package ask.me.again.meshinery.core.common;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public interface MeshineryProcessor<IC extends Context, OC extends Context> {
+public interface MeshineryProcessor<I, O> {
 
-  CompletableFuture<OC> processAsync(IC context, Executor executor);
+  CompletableFuture<O> processAsync(I context, Executor executor);
 
 }

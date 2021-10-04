@@ -1,6 +1,5 @@
 package ask.me.again.meshinery.core.processors;
 
-import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.OutputSource;
 import lombok.RequiredArgsConstructor;
@@ -10,16 +9,14 @@ import java.util.concurrent.Executor;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
-public class OutputProcessor<K, C extends Context> implements MeshineryProcessor<C, C> {
+public class OutputProcessor<K, I> implements MeshineryProcessor<I, I> {
 
-  private final Function<C, Boolean> writeIf;
   private final K key;
-  private final OutputSource<K, C> outputSource;
+  private final Function<I, Boolean> writeIf;
+  private final OutputSource<K, I> outputSource;
 
   @Override
-  public CompletableFuture<C> processAsync(C context, Executor executor) {
-    System.out.println("Writing into Kafka Topic: " + key);
-
+  public CompletableFuture<I> processAsync(I context, Executor executor) {
     if (writeIf.apply(context)) {
       outputSource.writeOutput(key, context);
     }

@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.common;
 
-public interface OutputSource<K, C extends Context> {
+public interface OutputSource<K, C> {
 
   void writeOutput(K key, C output);
 

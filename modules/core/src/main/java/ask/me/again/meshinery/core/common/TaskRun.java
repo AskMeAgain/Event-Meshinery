@@ -11,16 +11,16 @@ public class TaskRun {
 
   @Setter
   @Getter
-  CompletableFuture<Context> future;
+  CompletableFuture<Object> future;
 
   @Getter
   @Setter
   ExecutorService executorService;
 
   @Getter
-  Queue<MeshineryProcessor<Context, Context>> queue;
+  Queue<MeshineryProcessor<Object, Object>> queue;
 
-  public TaskRun(CompletableFuture<Context> future, Queue<MeshineryProcessor<Context, Context>> queue, ExecutorService executorService) {
+  public TaskRun(CompletableFuture<Object> future, Queue<MeshineryProcessor<Object, Object>> queue, ExecutorService executorService) {
     this.future = future;
     this.queue = queue;
     this.executorService = executorService;

@@ -4,6 +4,8 @@ import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.schedulers.RoundRobinScheduler;
+import lombok.Builder;
+import lombok.Value;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -32,7 +34,7 @@ class BatchJobTest {
     new RoundRobinScheduler<>(true, List.of(task)).start();
 
     //Assert ---------------------------------------------------------------------------------
-    executor.awaitTermination(3, TimeUnit.SECONDS);
+    executor.awaitTermination(3000, TimeUnit.SECONDS);
     Mockito.verify(mockInputSource, Mockito.times(ITERATIONS)).getInputs(eq(INPUT_KEY));
   }
 

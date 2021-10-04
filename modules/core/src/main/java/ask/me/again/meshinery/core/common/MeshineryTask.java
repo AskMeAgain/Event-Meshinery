@@ -11,10 +11,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
 
-public class MeshineryTask<K, I extends Context, O extends Context> {
+public class MeshineryTask<K, I, O> {
 
   @Getter
-  List<MeshineryProcessor<Context, Context>> processorList = new ArrayList<>();
+  List<MeshineryProcessor<Object, Object>> processorList = new ArrayList<>();
 
   @Getter
   List<K> outputKeys = new ArrayList<>();
@@ -38,7 +38,7 @@ public class MeshineryTask<K, I extends Context, O extends Context> {
   }
 
   private MeshineryTask(MeshineryProcessor<I, O> newProcessor,
-                        List<MeshineryProcessor<Context, Context>> oldProcessorList,
+                        List<MeshineryProcessor<Object, Object>> oldProcessorList,
                         String name,
                         InputSource inputSource,
                         OutputSource outputSource,
@@ -47,7 +47,7 @@ public class MeshineryTask<K, I extends Context, O extends Context> {
                         K inputKey
   ) {
     taskName = name;
-    oldProcessorList.add((MeshineryProcessor<Context, Context>) newProcessor);
+    oldProcessorList.add((MeshineryProcessor<Object, Object>) newProcessor);
     this.processorList = oldProcessorList;
     this.inputSource = inputSource;
     this.outputSource = outputSource;
@@ -89,7 +89,7 @@ public class MeshineryTask<K, I extends Context, O extends Context> {
     );
   }
 
-  public <N extends Context> MeshineryTask<K, O, N> process(MeshineryProcessor<O, N> processor) {
+  public <N> MeshineryTask<K, O, N> process(MeshineryProcessor<O, N> processor) {
     return new MeshineryTask<>(
         processor,
         processorList,
@@ -108,7 +108,7 @@ public class MeshineryTask<K, I extends Context, O extends Context> {
 
   public MeshineryTask<K, O, O> write(K input, Function<O, Boolean> writeIf) {
     outputKeys.add(input);
-    var processor = new OutputProcessor<>(writeIf, input, outputSource);
+    var processor = new OutputProcessor<>(input, writeIf, outputSource);
     return new MeshineryTask<>(
         processor,
         processorList,

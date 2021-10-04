@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @RequiredArgsConstructor
-public class RoundRobinScheduler<K, I extends Context, O extends Context> {
+public class RoundRobinScheduler<K, I, O> {
 
   private final boolean isBatchJob;
   private final List<MeshineryTask<K, I, O>> tasks;
@@ -44,7 +44,6 @@ public class RoundRobinScheduler<K, I extends Context, O extends Context> {
 
   public void shutdown() {
     System.out.println("Shutting down through shutdown flag");
-    internalShutdown = true;
     for (var executorService : executorServices) {
       if (!executorService.isShutdown()) {
         executorService.shutdown();
@@ -59,7 +58,7 @@ public class RoundRobinScheduler<K, I extends Context, O extends Context> {
 
     //we use this label to break out of the task in case we dont want to work on it
     newTask:
-    while (!internalShutdown) {
+    while (!internalShutdown || !todoQueue.isEmpty()) {
       var currentTask = todoQueue.poll();
 
       if (currentTask == null) {
@@ -82,11 +81,13 @@ public class RoundRobinScheduler<K, I extends Context, O extends Context> {
           continue newTask;
         }
 
-        currentTask.setFuture(nextProcessor.processAsync((Context) context, currentTask.getExecutorService()));
+        currentTask.setFuture(nextProcessor.processAsync(context, currentTask.getExecutorService()));
       }
 
       todoQueue.add(currentTask);
     }
+
+    shutdown();
   }
 
   private void createInputScheduler(ExecutorService executor) {
@@ -110,7 +111,7 @@ public class RoundRobinScheduler<K, I extends Context, O extends Context> {
         //we did not add any work in a single iteration. We are done
         if (counter == 0 && isBatchJob) {
           System.out.println("Shutdown through batch job flag");
-          shutdown();
+          internalShutdown = true;
           break;
         }
         //shutdown already triggered, we just stop

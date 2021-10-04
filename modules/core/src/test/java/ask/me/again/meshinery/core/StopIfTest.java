@@ -5,6 +5,8 @@ import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.schedulers.RoundRobinScheduler;
+import lombok.Builder;
+import lombok.Value;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -22,7 +24,7 @@ class StopIfTest {
   void testStopIf() throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
     InputSource<String, Context> mockInputSource = Mockito.mock(InputSource.class);
-    var processor = new MeshineryProcessor<>() {
+    var processor = new MeshineryProcessor<Context,Context>() {
       @Override
       public CompletableFuture<Context> processAsync(Context context, Executor executor) {
         return null;
@@ -30,7 +32,7 @@ class StopIfTest {
     };
 
     Mockito.when(mockInputSource.getInputs(any(String.class)))
-        .thenReturn(List.of(() -> "1"), Collections.emptyList());
+        .thenReturn(List.of(TestContext.builder().id("1").build()), Collections.emptyList());
 
     var processorSpy = Mockito.spy(processor);
 
@@ -47,5 +49,11 @@ class StopIfTest {
     //Assert ---------------------------------------------------------------------------------
     executor.awaitTermination(3, TimeUnit.SECONDS);
     Mockito.verify(processorSpy, Mockito.never()).processAsync(any(), any());
+  }
+
+  @Value
+  @Builder
+  private static class TestContext implements Context {
+    String id;
   }
 }
