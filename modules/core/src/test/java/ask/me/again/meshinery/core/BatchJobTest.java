@@ -34,7 +34,7 @@ class BatchJobTest {
     new RoundRobinScheduler<>(true, List.of(task)).start();
 
     //Assert ---------------------------------------------------------------------------------
-    executor.awaitTermination(3000, TimeUnit.SECONDS);
+    executor.awaitTermination(3, TimeUnit.SECONDS);
     Mockito.verify(mockInputSource, Mockito.times(ITERATIONS)).getInputs(eq(INPUT_KEY));
   }
 

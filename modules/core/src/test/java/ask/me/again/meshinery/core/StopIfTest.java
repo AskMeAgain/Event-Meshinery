@@ -9,30 +9,37 @@ import lombok.Builder;
 import lombok.Value;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 class StopIfTest {
 
   public static final String INPUT_KEY = "Test";
 
   @Test
+  @SuppressWarnings("unchecked")
   void testStopIf() throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
     InputSource<String, Context> mockInputSource = Mockito.mock(InputSource.class);
-    var processor = new MeshineryProcessor<Context,Context>() {
+    var processor = new MeshineryProcessor<Context, Context>() {
       @Override
       public CompletableFuture<Context> processAsync(Context context, Executor executor) {
         return null;
       }
     };
 
-    Mockito.when(mockInputSource.getInputs(any(String.class)))
-        .thenReturn(List.of(TestContext.builder().id("1").build()), Collections.emptyList());
+    Mockito.when(mockInputSource.getInputs(anyString()))
+        .thenReturn(
+            List.of(TestContext.builder().id("1").build()),
+            List.of(TestContext.builder().id("2").build()),
+            Collections.emptyList()
+        );
 
     var processorSpy = Mockito.spy(processor);
 

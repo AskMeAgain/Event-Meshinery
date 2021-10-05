@@ -27,6 +27,7 @@ class ContextSwitchTest {
       .build();
 
   @Test
+  @SuppressWarnings("unchecked")
   void contextSwitchTest() throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
     var mockInputSource = Mockito.spy(new TestInputSource());
@@ -48,7 +49,7 @@ class ContextSwitchTest {
 
     //Act ------------------------------------------------------------------------------------
     new RoundRobinScheduler<>(true, List.of(task)).start();
-    executor.awaitTermination(3000, TimeUnit.SECONDS);
+    executor.awaitTermination(3, TimeUnit.SECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     Mockito.verify(mockInputSource, times(2)).getInputs(eq(INPUT_KEY));

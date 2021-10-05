@@ -42,8 +42,15 @@ public class RoundRobinScheduler<K, I, O> {
 
   }
 
+  public void gracefulShutdown() {
+    System.out.println("Shutting down through shutdown flag");
+    internalShutdown = true;
+  }
+
   public void shutdown() {
     System.out.println("Shutting down through shutdown flag");
+    internalShutdown = true;
+    todoQueue.clear();
     for (var executorService : executorServices) {
       if (!executorService.isShutdown()) {
         executorService.shutdown();
@@ -87,7 +94,11 @@ public class RoundRobinScheduler<K, I, O> {
       todoQueue.add(currentTask);
     }
 
-    shutdown();
+    for (var executorService : executorServices) {
+      if (!executorService.isShutdown()) {
+        executorService.shutdown();
+      }
+    }
   }
 
   private void createInputScheduler(ExecutorService executor) {
@@ -111,7 +122,7 @@ public class RoundRobinScheduler<K, I, O> {
         //we did not add any work in a single iteration. We are done
         if (counter == 0 && isBatchJob) {
           System.out.println("Shutdown through batch job flag");
-          internalShutdown = true;
+          gracefulShutdown();
           break;
         }
         //shutdown already triggered, we just stop
