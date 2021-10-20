@@ -18,7 +18,7 @@ public class ExampleShutdownController {
   private final ApplicationContext context;
   private final AtomicBoolean atomicBoolean;
   private final ExecutorService executorService;
-  private final MemoryInputOutputSource<String,Context> memoryInputOutputSource;
+  private final MemoryInputOutputSource<String, Context> memoryInputOutputSource;
 
   @GetMapping("shutdown")
   public void shutdown() {

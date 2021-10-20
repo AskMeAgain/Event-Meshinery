@@ -2,14 +2,12 @@ package ask.me.again.meshinery.connectors.kafka;
 
 import ask.me.again.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
 import ask.me.again.meshinery.connectors.kafka.factories.KafkaProducerFactory;
-import ask.me.again.meshinery.connectors.kafka.properties.KafkaProperties;
 import ask.me.again.meshinery.connectors.kafka.sources.KafkaInputSource;
 import ask.me.again.meshinery.connectors.kafka.sources.KafkaOutputSource;
 import ask.me.again.meshinery.core.common.Context;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.junit.jupiter.api.Test;
@@ -17,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class KafkaSourceTest extends AbstractKafkaTest {
+
+  public static final String TOPIC = "Test";
 
   @Test
   void testInputOutput() {
@@ -31,8 +31,8 @@ class KafkaSourceTest extends AbstractKafkaTest {
         .build();
 
     //Act -------------------------------------------------------------------------------------
-    outputSource.writeOutput("Test", input);
-    var result = inputSource.getInputs("Test");
+    outputSource.writeOutput(TOPIC, input);
+    var result = inputSource.getInputs(TOPIC);
 
     //Assert ----------------------------------------------------------------------------------
     assertThat(result).contains(input);

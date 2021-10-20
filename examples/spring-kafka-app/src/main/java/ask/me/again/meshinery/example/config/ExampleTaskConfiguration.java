@@ -30,7 +30,7 @@ public class ExampleTaskConfiguration {
   @Bean
   public MeshineryTask<String, TestContext, TestContext> task1() {
     return new MeshineryTask<String, TestContext, TestContext>()
-        .outputSource(outputSource)
+        .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 1")
         .read(prefix + "-a", executorService)
@@ -41,7 +41,7 @@ public class ExampleTaskConfiguration {
   @Bean
   public MeshineryTask<String, TestContext, TestContext> task2() {
     return new MeshineryTask<String, TestContext, TestContext>()
-        .outputSource(outputSource)
+        .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 2")
         .read(prefix + "-b", executorService)
@@ -52,7 +52,7 @@ public class ExampleTaskConfiguration {
   @Bean
   public MeshineryTask<String, TestContext, TestContext> task3() {
     return new MeshineryTask<String, TestContext, TestContext>()
-        .outputSource(outputSource)
+        .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 3")
         .read(prefix + "-c", executorService)
@@ -63,7 +63,7 @@ public class ExampleTaskConfiguration {
   @Bean
   public MeshineryTask<String, TestContext, TestContext> task4() {
     return new MeshineryTask<String, TestContext, TestContext>()
-        .outputSource(outputSource)
+        .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 4")
         .read(prefix + "-d", executorService)
@@ -74,7 +74,7 @@ public class ExampleTaskConfiguration {
   @Bean
   public MeshineryTask<String, TestContext, TestContext> task5() {
     return new MeshineryTask<String, TestContext, TestContext>()
-        .outputSource(outputSource)
+        .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 5")
         .read(prefix + "-e", executorService)
@@ -85,7 +85,7 @@ public class ExampleTaskConfiguration {
   @Bean
   public MeshineryTask<String, TestContext, TestContext> task6() {
     return new MeshineryTask<String, TestContext, TestContext>()
-        .outputSource(outputSource)
+        .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 6")
         .read(prefix + "-b", executorService)
@@ -96,7 +96,7 @@ public class ExampleTaskConfiguration {
   @Bean
   public MeshineryTask<String, TestContext, TestContext> task7() {
     return new MeshineryTask<String, TestContext, TestContext>()
-        .outputSource(outputSource)
+        .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 7")
         .read(prefix + "-g", executorService)
@@ -107,7 +107,7 @@ public class ExampleTaskConfiguration {
   @Bean
   public MeshineryTask<String, TestContext, TestContext> task8() {
     return new MeshineryTask<String, TestContext, TestContext>()
-        .outputSource(outputSource)
+        .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 8")
         .read(prefix + "-d", executorService)

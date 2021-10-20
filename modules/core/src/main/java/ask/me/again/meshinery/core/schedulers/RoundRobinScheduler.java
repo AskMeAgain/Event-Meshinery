@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @RequiredArgsConstructor
-public class RoundRobinScheduler<K, I, O> {
+public class RoundRobinScheduler<K, I extends Context, O extends Context> {
 
   private final boolean isBatchJob;
   private final List<MeshineryTask<K, I, O>> tasks;
@@ -43,19 +43,8 @@ public class RoundRobinScheduler<K, I, O> {
   }
 
   public void gracefulShutdown() {
-    System.out.println("Shutting down through shutdown flag");
+    System.out.println("Graceful shutdown");
     internalShutdown = true;
-  }
-
-  public void shutdown() {
-    System.out.println("Shutting down through shutdown flag");
-    internalShutdown = true;
-    todoQueue.clear();
-    for (var executorService : executorServices) {
-      if (!executorService.isShutdown()) {
-        executorService.shutdown();
-      }
-    }
   }
 
   @SneakyThrows
@@ -75,15 +64,15 @@ public class RoundRobinScheduler<K, I, O> {
 
       while (currentTask.getFuture().isDone()) {
 
-        //we stop if we reached the end of the queue or shutting down executors
-        if (currentTask.getQueue().isEmpty() || currentTask.getExecutorService().isShutdown()) {
+        //we stop if we reached the end of the queue
+        if (currentTask.getQueue().isEmpty()) {
           continue newTask;
         }
 
         var nextProcessor = currentTask.getQueue().remove();
         var context = currentTask.getFuture().get();
 
-        //we stop the task if the context is null
+        //we stop if the context is null
         if (context == null) {
           continue newTask;
         }
@@ -93,6 +82,8 @@ public class RoundRobinScheduler<K, I, O> {
 
       todoQueue.add(currentTask);
     }
+
+    System.out.println("Reached end of Queue");
 
     for (var executorService : executorServices) {
       if (!executorService.isShutdown()) {

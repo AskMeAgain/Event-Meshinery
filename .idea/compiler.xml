@@ -36,6 +36,6 @@
         <module name="EventMeshinery.modules.connectors.mysql.mysql-connector-config.test" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="15" />
+    <bytecodeTargetLevel target="17" />
   </component>
 </project>

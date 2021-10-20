@@ -23,9 +23,9 @@ public class MainApplication {
     var outputSource = new ExampleOutputSource();
 
     var tasks = List.of(
-        new MeshineryTask<String, TestContext, TestContext>()
+        MeshineryTask.<String, TestContext>builder()
             .taskName("cool name")
-            .outputSource(outputSource)
+            .defaultOutputSource(outputSource)
             .inputSource(inputSource)
             .read("topic-a", fixedThread)
             .process(processorA)
@@ -34,9 +34,9 @@ public class MainApplication {
             .write("topic-c")
             .process(processorA)
             .write("topic-d-FINISHED"),
-        new MeshineryTask<String, TestContext, TestContext>()
+        MeshineryTask.<String, TestContext>builder()
             .taskName("Cool task 2")
-            .outputSource(outputSource)
+            .defaultOutputSource(outputSource)
             .inputSource(inputSource)
             .read("topic-x", fixedThread)
             .process(processorA)

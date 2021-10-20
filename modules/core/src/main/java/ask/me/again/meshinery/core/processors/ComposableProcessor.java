@@ -1,5 +1,6 @@
 package ask.me.again.meshinery.core.processors;
 
+import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Value
 @Builder
-public class ComposableProcessor<I, O, N> implements MeshineryProcessor<I, N> {
+public class ComposableProcessor<I extends Context, O extends Context, N extends Context> implements MeshineryProcessor<I, N> {
 
   @Singular
   List<MeshineryProcessor<I, O>> adds;

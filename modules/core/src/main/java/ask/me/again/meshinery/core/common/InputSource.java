@@ -2,7 +2,8 @@ package ask.me.again.meshinery.core.common;
 
 import java.util.List;
 
-public interface InputSource<K, I> {
+@FunctionalInterface
+public interface InputSource<K, I extends Context> {
 
   List<I> getInputs(K key);
 

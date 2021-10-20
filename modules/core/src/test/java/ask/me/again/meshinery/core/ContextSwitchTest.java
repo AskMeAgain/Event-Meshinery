@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Value;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.test.context.TestContext;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,8 +23,8 @@ class ContextSwitchTest {
 
   private static final String INPUT_KEY = "Test";
 
-  private static final TestContext EXPECTED = TestContext.builder()
-      .id("string: 1")
+  private static final TestContext1 EXPECTED = TestContext1.builder()
+      .id("end: 1")
       .build();
 
   @Test
@@ -37,11 +38,11 @@ class ContextSwitchTest {
 
     var executor = Executors.newSingleThreadExecutor();
 
-    OutputSource<String, Context> outputSource = Mockito.mock(OutputSource.class);
+    OutputSource<String, TestContext1> outputSource = Mockito.mock(OutputSource.class);
 
-    var task = new MeshineryTask<String, Context, Context>()
+    var task = MeshineryTask.<String, TestContext1>builder()
         .inputSource(mockInputSource)
-        .outputSource(outputSource)
+        .defaultOutputSource(outputSource)
         .read(INPUT_KEY, executor)
         .process(processorA)
         .process(processorB)
@@ -55,15 +56,15 @@ class ContextSwitchTest {
     Mockito.verify(mockInputSource, times(2)).getInputs(eq(INPUT_KEY));
     Mockito.verify(processorA).processAsync(any(), any());
     Mockito.verify(processorB).processAsync(any(), any());
-    Mockito.verify(outputSource).writeOutput("", EXPECTED);
+    Mockito.verify(outputSource).writeOutput(eq(""), eq(EXPECTED));
   }
 
-  private static class TestInputSource implements InputSource<String, Context> {
+  private static class TestInputSource implements InputSource<String, TestContext1> {
 
     private int counter = 2;
 
     @Override
-    public List<Context> getInputs(String key) {
+    public List<TestContext1> getInputs(String key) {
 
       counter--;
 
@@ -71,31 +72,40 @@ class ContextSwitchTest {
         return Collections.emptyList();
       }
 
-      return List.of(TestContext.builder()
+      return List.of(TestContext1.builder()
           .id(counter + "")
           .build());
     }
   }
 
-  private static class TestProcessorA implements MeshineryProcessor<Context, String> {
+  private static class TestProcessorA implements MeshineryProcessor<TestContext1, TestContext2> {
     @Override
-    public CompletableFuture<String> processAsync(Context context, Executor executor) {
-      return CompletableFuture.completedFuture(context.getId());
-    }
+    public CompletableFuture<TestContext2> processAsync(TestContext1 context, Executor executor) {
+      return CompletableFuture.completedFuture(TestContext2.builder()
+          .id(context.getId())
+          .build());    }
   }
 
-  private static class TestProcessorB implements MeshineryProcessor<String, Context> {
+  private static class TestProcessorB implements MeshineryProcessor<TestContext2, TestContext1> {
     @Override
-    public CompletableFuture<Context> processAsync(String context, Executor executor) {
-      return CompletableFuture.completedFuture(TestContext.builder()
-          .id("string: " + context)
+    public CompletableFuture<TestContext1> processAsync(TestContext2 context, Executor executor) {
+      return CompletableFuture.completedFuture(TestContext1.builder()
+          .id("end: " + context.getId())
           .build());
     }
   }
 
   @Value
   @Builder
-  private static class TestContext implements Context {
+  private static class TestContext1 implements Context {
     String id;
+    Integer a;
+  }
+
+  @Value
+  @Builder
+  private static class TestContext2 implements Context {
+    String id;
+    Integer b;
   }
 }

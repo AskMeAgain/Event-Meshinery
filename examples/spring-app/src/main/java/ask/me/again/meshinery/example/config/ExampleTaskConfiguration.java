@@ -30,7 +30,7 @@ public class ExampleTaskConfiguration {
   public MeshineryTask<String, TestContext, TestContext> task1() {
     return new MeshineryTask<String, TestContext, TestContext>()
         .inputSource(inputSource)
-        .outputSource(outputSource)
+        .defaultOutputSource(outputSource)
         .taskName("Cool task 1")
         .read("topic-x", executorService)
         .process(processorA)
@@ -45,7 +45,7 @@ public class ExampleTaskConfiguration {
   public MeshineryTask<String, TestContext, TestContext> task2() {
     return new MeshineryTask<String, TestContext, TestContext>()
         .inputSource(inputSource)
-        .outputSource(outputSource)
+        .defaultOutputSource(outputSource)
         .taskName("Cool task 2")
         .read("topic-a", executorService)
         .process(processorA)
@@ -60,7 +60,7 @@ public class ExampleTaskConfiguration {
   public MeshineryTask<String, TestContext, TestContext> task3() {
     return new MeshineryTask<String, TestContext, TestContext>()
         .inputSource(inputSource)
-        .outputSource(outputSource)
+        .defaultOutputSource(outputSource)
         .taskName("Endpoint 1")
         .read("topic-a", executorService)
         .process(processorA)
