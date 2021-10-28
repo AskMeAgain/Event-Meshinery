@@ -15,10 +15,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @RequiredArgsConstructor
-public class RoundRobinScheduler<K, I extends Context, O extends Context> {
+public class RoundRobinScheduler<K, O extends Context> {
 
   private final boolean isBatchJob;
-  private final List<MeshineryTask<K, I, O>> tasks;
+  private final List<MeshineryTask<K, O>> tasks;
   private final List<ExecutorService> executorServices = new ArrayList<>();
   private final ConcurrentLinkedQueue<TaskRun> todoQueue = new ConcurrentLinkedQueue<>();
 

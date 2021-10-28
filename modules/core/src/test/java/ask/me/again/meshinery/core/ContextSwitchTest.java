@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,11 +41,12 @@ class ContextSwitchTest {
 
     OutputSource<String, TestContext1> outputSource = Mockito.mock(OutputSource.class);
 
-    var task = MeshineryTask.<String, TestContext1>builder()
+    var task = new MeshineryTask<String, TestContext1>()
         .inputSource(mockInputSource)
         .defaultOutputSource(outputSource)
         .read(INPUT_KEY, executor)
         .process(processorA)
+        .contextSwitch(getMap())
         .process(processorB)
         .write("");
 
@@ -57,6 +59,10 @@ class ContextSwitchTest {
     Mockito.verify(processorA).processAsync(any(), any());
     Mockito.verify(processorB).processAsync(any(), any());
     Mockito.verify(outputSource).writeOutput(eq(""), eq(EXPECTED));
+  }
+
+  private Function<TestContext1, TestContext2> getMap() {
+    return null;
   }
 
   private static class TestInputSource implements InputSource<String, TestContext1> {
@@ -78,18 +84,19 @@ class ContextSwitchTest {
     }
   }
 
-  private static class TestProcessorA implements MeshineryProcessor<TestContext1, TestContext2> {
+  private static class TestProcessorA implements MeshineryProcessor<TestContext1, TestContext1> {
     @Override
-    public CompletableFuture<TestContext2> processAsync(TestContext1 context, Executor executor) {
-      return CompletableFuture.completedFuture(TestContext2.builder()
+    public CompletableFuture<TestContext1> processAsync(TestContext1 context, Executor executor) {
+      return CompletableFuture.completedFuture(TestContext1.builder()
           .id(context.getId())
-          .build());    }
+          .build());
+    }
   }
 
-  private static class TestProcessorB implements MeshineryProcessor<TestContext2, TestContext1> {
+  private static class TestProcessorB implements MeshineryProcessor<TestContext2, TestContext2> {
     @Override
-    public CompletableFuture<TestContext1> processAsync(TestContext2 context, Executor executor) {
-      return CompletableFuture.completedFuture(TestContext1.builder()
+    public CompletableFuture<TestContext2> processAsync(TestContext2 context, Executor executor) {
+      return CompletableFuture.completedFuture(TestContext2.builder()
           .id("end: " + context.getId())
           .build());
     }

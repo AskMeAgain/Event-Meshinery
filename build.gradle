@@ -2,10 +2,10 @@ allprojects {
     plugins.withType(JavaPlugin).whenPluginAdded {
         dependencies {
             //Lombok
-            compileOnly 'org.projectlombok:lombok:1.18.20'
-            annotationProcessor 'org.projectlombok:lombok:1.18.20'
-            testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
-            testCompileOnly 'org.projectlombok:lombok:1.18.20'
+            compileOnly 'org.projectlombok:lombok:1.18.22'
+            annotationProcessor 'org.projectlombok:lombok:1.18.22'
+            testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+            testCompileOnly 'org.projectlombok:lombok:1.18.22'
 
             //Mockito
             testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
