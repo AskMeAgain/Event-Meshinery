@@ -17,7 +17,7 @@ without kafka. Currently supported are the following state stores:
 Doing long running (blocking) calls via Kafka Streams represents a challenge as this blocks a single thread from
 processing other messages. To solve this problem, this framework removes a guarantee:
 **Messages are not processed in order, but processed as they arrive.**
-This is useful if your events need to be processed in a specific (long running) way, but events are completely
+This  is useful if your events need to be processed in a specific (long running) way, but events are completely
 independent of each other (not important if you process msg A with offset 10 before msg B with offset 2).
 
 You can easily scale this an application written with Event Meshinery by running them in parallel and using kafka
