@@ -1,6 +1,7 @@
 package ask.me.again.meshinery.draw;
 
 
+import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,9 +17,9 @@ class MeshineryDrawerTest {
   void testDrawerHooks() throws IOException {
 
     //Arrange --------------------------------------------------------------------------------
-    var applyEdge = Mockito.mock(ApplyEdge.class);
-    var applyNode = Mockito.mock(ApplyNode.class);
-    var applyGraph = Mockito.mock(ApplyGraph.class);
+    var applyEdge = Mockito.mock(EdgeCustomizer.class);
+    var applyNode = Mockito.mock(NodeCustomizer.class);
+    var applyGraph = Mockito.mock(GraphCustomizer.class);
 
     var drawer = MeshineryDrawer.builder()
         .tasks(getTasks())
@@ -37,17 +38,17 @@ class MeshineryDrawerTest {
 
   }
 
-  private List<MeshineryTask<?, ?, ?>> getTasks() {
+  private List<MeshineryTask<?, ?>> getTasks() {
     return List.of(
-        new MeshineryTask()
+         MeshineryTask.<String, Context>builder()
             .read("A", null)
             .taskName("A")
             .write("B"),
-        new MeshineryTask()
+         MeshineryTask.<String, Context>builder()
             .read("B", null)
             .taskName("B")
             .write("C"),
-        new MeshineryTask()
+         MeshineryTask.<String, Context>builder()
             .read("C", null)
             .taskName("C")
     );

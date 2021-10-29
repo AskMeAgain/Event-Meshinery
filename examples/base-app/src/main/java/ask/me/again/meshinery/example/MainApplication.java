@@ -2,10 +2,7 @@ package ask.me.again.meshinery.example;
 
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.schedulers.RoundRobinScheduler;
-import ask.me.again.meshinery.example.entities.ExampleInputSource;
-import ask.me.again.meshinery.example.entities.ExampleOutputSource;
-import ask.me.again.meshinery.example.entities.ProcessorA;
-import ask.me.again.meshinery.example.entities.ProcessorB;
+import ask.me.again.meshinery.example.entities.*;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,6 +18,7 @@ public class MainApplication {
 
     var inputSource = new ExampleInputSource();
     var outputSource = new ExampleOutputSource();
+    var outputSource2 = new ExampleOutputSource2();
 
     var tasks = List.of(
         MeshineryTask.<String, TestContext>builder()
@@ -30,8 +28,10 @@ public class MainApplication {
             .read("topic-a", fixedThread)
             .process(processorA)
             .write("topic-b")
+            .contextSwitch(outputSource2, MainApplication::create)
             .process(processorB)
             .write("topic-c")
+            .contextSwitch(outputSource, MainApplication::create2)
             .process(processorA)
             .write("topic-d-FINISHED"),
         MeshineryTask.<String, TestContext>builder()
@@ -41,8 +41,10 @@ public class MainApplication {
             .read("topic-x", fixedThread)
             .process(processorA)
             .write("topic-y")
+            .contextSwitch(outputSource2, MainApplication::create)
             .process(processorB)
             .write("topic-z")
+            .contextSwitch(outputSource, MainApplication::create2)
             .process(processorA)
             .write("topic-w-FINISHED")
     );
@@ -62,4 +64,17 @@ public class MainApplication {
 
   }
 
+  private static TestContext create2(TestContext2 context) {
+    return TestContext.builder()
+        .id(context.getId())
+        .testValue1(context.getTestValue1())
+        .build();
+  }
+
+  private static TestContext2 create(TestContext context) {
+    return TestContext2.builder()
+        .id(context.getId())
+        .testValue1(context.getTestValue1())
+        .build();
+  }
 }

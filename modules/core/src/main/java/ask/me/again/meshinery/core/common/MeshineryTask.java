@@ -83,13 +83,13 @@ public class MeshineryTask<Key, Output extends Context> {
     return this;
   }
 
-  public <N extends Context> MeshineryTask<Key, N> contextSwitch(Function<Output, N> map) {
-    return new MeshineryTask<Key, N>(
-        new LambdaProcessor<Output, N>(map),
+  public <N extends Context> MeshineryTask<Key, N> contextSwitch(OutputSource<Key, N> newOutputSource, Function<Output, N> map) {
+    return new MeshineryTask<>(
+        new LambdaProcessor<>(map),
         processorList,
         taskName,
         inputSource,
-        defaultOutputSource,
+        newOutputSource,
         executorService,
         outputKeys,
         inputKey
@@ -122,19 +122,24 @@ public class MeshineryTask<Key, Output extends Context> {
     );
   }
 
-  public MeshineryTask<Key, Output> write(Key output, OutputSource<Key, Output> outputSource) {
-    return write(output, x -> true, outputSource);
+  public final MeshineryTask<Key, Output> write(Key key, OutputSource<Key, Output> outputSource) {
+    return write(key, x -> true, outputSource);
   }
 
-  public MeshineryTask<Key, Output> write(Key input) {
-    return write(input, x -> true, defaultOutputSource);
+  @SafeVarargs
+  public final MeshineryTask<Key, Output> write(Key... keys) {
+    var temp = this;
+    for (Key key : keys) {
+      temp = temp.write(key, x -> true, defaultOutputSource);
+    }
+    return temp;
   }
 
-  public MeshineryTask<Key, Output> write(Key input, Function<Output, Boolean> writeIf, OutputSource<Key, Output> oSource) {
-    outputKeys.add(input);
+  public final MeshineryTask<Key, Output> write(Key key, Function<Output, Boolean> writeIf, OutputSource<Key, Output> oSource) {
+    outputKeys.add(key);
 
     return new MeshineryTask<>(
-        new OutputProcessor<>(input, writeIf, oSource),
+        new OutputProcessor<>(key, writeIf, oSource),
         processorList,
         taskName,
         inputSource,
@@ -145,9 +150,9 @@ public class MeshineryTask<Key, Output extends Context> {
     );
   }
 
-  public MeshineryTask<Key, Output> write(Function<Output, Key> inputMethod, Function<Output, Boolean> writeIf) {
+  public final MeshineryTask<Key, Output> write(Function<Output, Key> keyFunction, Function<Output, Boolean> writeIf) {
     return new MeshineryTask<>(
-        new DynamicOutputProcessor<>(writeIf, inputMethod, defaultOutputSource),
+        new DynamicOutputProcessor<>(writeIf, keyFunction, defaultOutputSource),
         processorList,
         taskName,
         inputSource,
@@ -158,9 +163,9 @@ public class MeshineryTask<Key, Output extends Context> {
     );
   }
 
-  public MeshineryTask<Key, Output> write(Function<Output, Key> inputMethod, Function<Output, Boolean> writeIf, OutputSource<Key, Output> oSource) {
+  public final MeshineryTask<Key, Output> write(Function<Output, Key> keyFunction, Function<Output, Boolean> writeIf, OutputSource<Key, Output> oSource) {
     return new MeshineryTask<>(
-        new DynamicOutputProcessor<>(writeIf, inputMethod, oSource),
+        new DynamicOutputProcessor<>(writeIf, keyFunction, oSource),
         processorList,
         taskName,
         inputSource,

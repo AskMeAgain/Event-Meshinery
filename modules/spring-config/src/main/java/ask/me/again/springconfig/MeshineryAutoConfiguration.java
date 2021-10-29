@@ -15,7 +15,7 @@ import java.util.List;
 @ConditionalOnMissingBean
 public class MeshineryAutoConfiguration {
 
-  private final List<MeshineryTask<?, ?, ?>> tasks;
+  private final List<MeshineryTask<?, ?>> tasks;
 
   @Value("${meshinery.batch-job:false}")
   private boolean isBatchJob;

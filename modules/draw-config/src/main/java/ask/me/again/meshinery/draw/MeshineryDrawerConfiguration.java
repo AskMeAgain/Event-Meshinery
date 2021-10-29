@@ -13,32 +13,32 @@ import java.util.List;
 public class MeshineryDrawerConfiguration {
 
   @Bean
-  MeshineryDrawer setupMeshineryDrawer(ApplyNode applyNode, ApplyEdge applyEdge, List<MeshineryTask<?,?, ?>> tasks) {
+  MeshineryDrawer setupMeshineryDrawer(NodeCustomizer nodeCustomizer, EdgeCustomizer edgeCustomizer, List<MeshineryTask<?, ?>> tasks) {
     return MeshineryDrawer.builder()
-      .tasks(tasks)
-      .edgeAssignment(applyEdge)
-      .nodeAssignment(applyNode)
-      .build();
+        .tasks(tasks)
+        .edgeAssignment(edgeCustomizer)
+        .nodeAssignment(nodeCustomizer)
+        .build();
   }
 
   @Bean
   @ConditionalOnMissingBean
-  public ApplyNode applyNode() {
-    return new ApplyNode() {
+  public NodeCustomizer applyNode() {
+    return new NodeCustomizer() {
     };
   }
 
   @Bean
   @ConditionalOnMissingBean
-  public ApplyEdge applyEdge() {
-    return new ApplyEdge() {
+  public EdgeCustomizer applyEdge() {
+    return new EdgeCustomizer() {
     };
   }
 
   @Bean
   @ConditionalOnMissingBean
-  public ApplyGraph applyGraph() {
-    return new ApplyGraph() {
+  public GraphCustomizer applyGraph() {
+    return new GraphCustomizer() {
     };
   }
 }

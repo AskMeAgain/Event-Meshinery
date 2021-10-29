@@ -17,7 +17,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 
 public class ComposableProcessorTest {
@@ -28,7 +27,7 @@ public class ComposableProcessorTest {
     var executor = Executors.newFixedThreadPool(3);
 
     var mock = Mockito.spy(new TestContext(0));
-    var task = new MeshineryTask<String, TestContext, TestContext>()
+    var task = MeshineryTask.<String, TestContext>builder()
         .read("Test", executor)
         .inputSource(new TestInputSource())
         .process(ComposableProcessor.<TestContext, TestContext, TestContext>builder()

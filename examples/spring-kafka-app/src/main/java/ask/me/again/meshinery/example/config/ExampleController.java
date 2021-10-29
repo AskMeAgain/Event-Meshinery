@@ -34,7 +34,7 @@ public class ExampleController {
   private final KafkaProducerFactory kafkaProducerFactory;
   private final ObjectMapper objectMapper;
 
-  private final List<MeshineryTask<?, ?, ?>> tasks;
+  private final List<MeshineryTask<?, ?>> tasks;
 
   private int counter = 0;
 

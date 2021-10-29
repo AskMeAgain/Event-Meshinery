@@ -2,7 +2,7 @@ package ask.me.again.meshinery.draw;
 
 import org.graphstream.graph.implementations.DefaultGraph;
 
-public interface ApplyGraph {
+public interface GraphCustomizer {
 
   default void onGraph(DefaultGraph graph) {
   }

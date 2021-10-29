@@ -27,8 +27,8 @@ public class ExampleTaskConfiguration {
   }
 
   @Bean
-  public MeshineryTask<String, TestContext, TestContext> task1() {
-    return new MeshineryTask<String, TestContext, TestContext>()
+  public MeshineryTask<String, TestContext> task1() {
+    return MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)
         .defaultOutputSource(outputSource)
         .taskName("Cool task 1")
@@ -42,8 +42,8 @@ public class ExampleTaskConfiguration {
   }
 
   @Bean
-  public MeshineryTask<String, TestContext, TestContext> task2() {
-    return new MeshineryTask<String, TestContext, TestContext>()
+  public MeshineryTask<String, TestContext> task2() {
+    return MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)
         .defaultOutputSource(outputSource)
         .taskName("Cool task 2")
@@ -57,8 +57,8 @@ public class ExampleTaskConfiguration {
   }
 
   @Bean
-  public MeshineryTask<String, TestContext, TestContext> task3() {
-    return new MeshineryTask<String, TestContext, TestContext>()
+  public MeshineryTask<String, TestContext> task3() {
+    return MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)
         .defaultOutputSource(outputSource)
         .taskName("Endpoint 1")

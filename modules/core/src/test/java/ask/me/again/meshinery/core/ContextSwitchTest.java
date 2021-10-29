@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Value;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.test.context.TestContext;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,13 +39,15 @@ class ContextSwitchTest {
 
     OutputSource<String, TestContext1> outputSource = Mockito.mock(OutputSource.class);
 
-    var task = new MeshineryTask<String, TestContext1>()
+    var task = MeshineryTask.<String, TestContext1>builder()
         .inputSource(mockInputSource)
         .defaultOutputSource(outputSource)
         .read(INPUT_KEY, executor)
         .process(processorA)
-        .contextSwitch(getMap())
+        .contextSwitch(null, this::map)
         .process(processorB)
+        .contextSwitch(null, this::map)
+        .process(processorA)
         .write("");
 
     //Act ------------------------------------------------------------------------------------
@@ -56,13 +56,23 @@ class ContextSwitchTest {
 
     //Assert ---------------------------------------------------------------------------------
     Mockito.verify(mockInputSource, times(2)).getInputs(eq(INPUT_KEY));
-    Mockito.verify(processorA).processAsync(any(), any());
+    Mockito.verify(processorA, times(2)).processAsync(any(), any());
     Mockito.verify(processorB).processAsync(any(), any());
     Mockito.verify(outputSource).writeOutput(eq(""), eq(EXPECTED));
   }
 
-  private Function<TestContext1, TestContext2> getMap() {
-    return null;
+  private TestContext2 map(TestContext1 context) {
+    return TestContext2.builder()
+        .id(context.getId())
+        .b(context.getA())
+        .build();
+  }
+
+  private TestContext1 map(TestContext2 context) {
+    return TestContext1.builder()
+        .id(context.getId())
+        .a(context.getB())
+        .build();
   }
 
   private static class TestInputSource implements InputSource<String, TestContext1> {

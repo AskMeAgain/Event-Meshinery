@@ -2,7 +2,7 @@ package ask.me.again.meshinery.draw;
 
 import org.graphstream.graph.implementations.DefaultGraph;
 
-public interface ApplyEdge {
+public interface EdgeCustomizer {
 
   default void onEachEdge(DefaultGraph graph, Container container) {
     var edge = graph.addEdge(container.getId(), container.getFrom(), container.getTo());

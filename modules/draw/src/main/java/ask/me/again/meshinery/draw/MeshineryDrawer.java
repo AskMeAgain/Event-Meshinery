@@ -13,14 +13,14 @@ import java.util.List;
 @Builder
 public class MeshineryDrawer {
 
-  private final List<MeshineryTask<?, ?, ?>> tasks;
+  private final List<MeshineryTask<?, ?>> tasks;
 
   @Builder.Default
   private final FileSinkImages.OutputType outputType = FileSinkImages.OutputType.PNG;
 
-  private final ApplyNode nodeAssignment;
-  private final ApplyEdge edgeAssignment;
-  private final ApplyGraph graphAssignment;
+  private final NodeCustomizer nodeAssignment;
+  private final EdgeCustomizer edgeAssignment;
+  private final GraphCustomizer graphAssignment;
 
   public byte[] draw() throws IOException {
     var graph = new DefaultGraph("id");
