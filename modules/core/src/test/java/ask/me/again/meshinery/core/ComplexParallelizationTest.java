@@ -133,6 +133,9 @@ public class ComplexParallelizationTest {
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
+
+        assertThat(context.getIndex()).isEqualTo(1);
+
         return new TestContext(index + context.getIndex());
       }, executor);
     }

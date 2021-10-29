@@ -15,22 +15,16 @@ public class ParallelProcessor<Output extends Context> implements MeshineryProce
   List<MeshineryProcessor<Output, Output>> processorList;
   Function<List<Output>, Output> combine;
 
-  public static <Output extends Context> ParallelProcessor<Output> builder(){
-    return new ParallelProcessor<>();
+  private ParallelProcessor(
+      List<MeshineryProcessor<Output, Output>> processorList,
+      Function<List<Output>, Output> function
+  ) {
+    this.processorList = processorList;
+    this.combine = function;
   }
 
-  private ParallelProcessor(){
-    processorList = new ArrayList<>();
-  }
-
-  public ParallelProcessor<Output> parallel(MeshineryProcessor<Output, Output> processor){
-    processorList.add(processor);
-    return this;
-  }
-
-  public ParallelProcessor<Output> combine(Function<List<Output>, Output> function){
-    combine = function;
-    return this;
+  public static <Output extends Context> ParallelProcessor.Builder<Output> builder() {
+    return new ParallelProcessor.Builder<>();
   }
 
   @Override
@@ -51,5 +45,23 @@ public class ParallelProcessor<Output extends Context> implements MeshineryProce
         map(CompletableFuture::join).
         collect(Collectors.<T>toList())
     );
+  }
+
+  public static class Builder<Output extends Context> {
+
+    List<MeshineryProcessor<Output, Output>> processorList;
+
+    public Builder() {
+      processorList = new ArrayList<>();
+    }
+
+    public ParallelProcessor.Builder<Output> parallel(MeshineryProcessor<Output, Output> processor) {
+      processorList.add(processor);
+      return this;
+    }
+
+    public ParallelProcessor<Output> combine(Function<List<Output>, Output> function) {
+      return new ParallelProcessor<>(processorList, function);
+    }
   }
 }
