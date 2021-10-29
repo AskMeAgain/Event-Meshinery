@@ -4,7 +4,7 @@ import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.MeshineryTask;
-import ask.me.again.meshinery.core.processors.ComposableProcessor;
+import ask.me.again.meshinery.core.processors.ParallelProcessor;
 import ask.me.again.meshinery.core.schedulers.RoundRobinScheduler;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,10 +19,10 @@ import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.eq;
 
-public class ComposableProcessorTest {
+public class SimpleParallelizationTest {
 
   @Test
-  void test() throws InterruptedException {
+  void testSimpleParallelization() throws InterruptedException {
     //Arrange ---------------------------------------------------------------------------------
     var executor = Executors.newFixedThreadPool(3);
 
@@ -30,11 +30,10 @@ public class ComposableProcessorTest {
     var task = MeshineryTask.<String, TestContext>builder()
         .read("Test", executor)
         .inputSource(new TestInputSource())
-        .process(ComposableProcessor.<TestContext, TestContext, TestContext>builder()
-            .add(new TestProcessor(3))
-            .add(new TestProcessor(3))
-            .combine(getCombine(mock))
-            .build());
+        .process(ParallelProcessor.<TestContext>builder()
+            .parallel(new TestProcessor(3))
+            .parallel(new TestProcessor(3))
+            .combine(getCombine(mock)));
 
     //Act -------------------------------------------------------------------------------------
     new RoundRobinScheduler<>(true, List.of(task)).start();

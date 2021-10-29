@@ -98,6 +98,7 @@ public class RoundRobinScheduler<K, O extends Context> {
 
         var counter = 0;
         for (var reactiveTask : tasks) {
+          //getting the input values
           var inputList = reactiveTask.getInputSource().getInputs(reactiveTask.getInputKey());
 
           var executorService = reactiveTask.getExecutorService();
