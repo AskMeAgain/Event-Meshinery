@@ -36,7 +36,7 @@ public class MeshineryDrawer {
       for (var outputKeys : task.getOutputKeys()) {
         edges.add(Container.builder()
             .name(task.getTaskName())
-            .id(task.getInputKey() + "" + outputKeys.toString())
+            .id("%s_%s".formatted(task.getInputKey(), outputKeys.toString()))
             .to(task.getInputKey().toString())
             .from(outputKeys.toString())
             .build());

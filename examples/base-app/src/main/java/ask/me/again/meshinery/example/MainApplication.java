@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.example;
 
 import ask.me.again.meshinery.core.common.MeshineryTask;
-import ask.me.again.meshinery.core.schedulers.RoundRobinScheduler;
+import ask.me.again.meshinery.core.common.RoundRobinScheduler;
 import ask.me.again.meshinery.example.entities.*;
 
 import java.util.List;
@@ -20,8 +20,7 @@ public class MainApplication {
     var outputSource = new ExampleOutputSource();
     var outputSource2 = new ExampleOutputSource2();
 
-    var tasks = List.of(
-        MeshineryTask.<String, TestContext>builder()
+    var task1 = MeshineryTask.<String, TestContext>builder()
             .taskName("cool name")
             .defaultOutputSource(outputSource)
             .inputSource(inputSource)
@@ -33,8 +32,8 @@ public class MainApplication {
             .write("topic-c")
             .contextSwitch(outputSource, MainApplication::create2)
             .process(processorA)
-            .write("topic-d-FINISHED"),
-        MeshineryTask.<String, TestContext>builder()
+            .write("topic-d-FINISHED");
+      var task2 =  MeshineryTask.<String, TestContext>builder()
             .taskName("Cool task 2")
             .defaultOutputSource(outputSource)
             .inputSource(inputSource)
@@ -46,11 +45,12 @@ public class MainApplication {
             .write("topic-z")
             .contextSwitch(outputSource, MainApplication::create2)
             .process(processorA)
-            .write("topic-w-FINISHED")
-    );
+            .write("topic-w-FINISHED");
 
-    var scheduler = new RoundRobinScheduler<>(true, tasks);
-    scheduler.start();
+    var scheduler = RoundRobinScheduler.builder()
+        .isBatchJob(true)
+        .tasks(List.of(task1, task2))
+        .build();
 
     CompletableFuture.runAsync(() -> {
       try {

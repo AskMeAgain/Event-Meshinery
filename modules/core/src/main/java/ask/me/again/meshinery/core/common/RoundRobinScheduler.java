@@ -1,8 +1,5 @@
-package ask.me.again.meshinery.core.schedulers;
+package ask.me.again.meshinery.core.common;
 
-import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.common.MeshineryTask;
-import ask.me.again.meshinery.core.common.TaskRun;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -15,18 +12,19 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@RequiredArgsConstructor(access = AccessLevel.PUBLIC)
-public class RoundRobinScheduler<K, Output extends Context> {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public class RoundRobinScheduler {
 
-  private final List<MeshineryTask<K, Output>> tasks;
+  private final List<MeshineryTask<?, ? extends Context>> tasks;
   private final List<ExecutorService> executorServices;
   private final ConcurrentLinkedQueue<TaskRun> todoQueue;
+  private final int backpressureLimit;
   private final boolean isBatchJob;
 
   private boolean internalShutdown = false;
 
-  public static <K, Output extends Context> RoundRobinScheduler.Builder<K, Output> builder() {
-    return new RoundRobinScheduler.Builder<>();
+  public static RoundRobinScheduler.Builder builder() {
+    return new RoundRobinScheduler.Builder();
   }
 
   public void gracefulShutdown() {
@@ -83,11 +81,14 @@ public class RoundRobinScheduler<K, Output extends Context> {
     executor.execute(() -> {
       while (!executor.isShutdown()) {
 
+        if (todoQueue.size() > backpressureLimit) {
+          continue;
+        }
+
         var counter = 0;
         for (var reactiveTask : tasks) {
           //getting the input values
-          var inputList = reactiveTask.getInputSource().getInputs(reactiveTask.getInputKey());
-
+          var inputList = reactiveTask.getInputValues();
           var executorService = reactiveTask.getExecutorService();
 
           for (var input : inputList) {
@@ -113,7 +114,7 @@ public class RoundRobinScheduler<K, Output extends Context> {
   }
 
   @SneakyThrows
-  RoundRobinScheduler<K, Output> start() {
+  RoundRobinScheduler start() {
 
     //task gathering
     tasks.forEach(task -> executorServices.add(task.getExecutorService()));
@@ -131,31 +132,37 @@ public class RoundRobinScheduler<K, Output extends Context> {
     return this;
   }
 
-  public static class Builder<K, Output extends Context> {
+  public static class Builder {
 
+    int backpressureLimit = 200;
     boolean isBatchJob;
-    List<MeshineryTask<K, Output>> tasks = new ArrayList<>();
+    List<MeshineryTask<? extends Object, ? extends Context>> tasks = new ArrayList<>();
     List<ExecutorService> executorServices = new ArrayList<>();
     ConcurrentLinkedQueue<TaskRun> todoQueue = new ConcurrentLinkedQueue<>();
 
-    public Builder<K, Output> task(MeshineryTask<K, Output> task) {
+    public Builder task(MeshineryTask<?, ? extends Context> task) {
       tasks.add(task);
       return this;
     }
 
-    public Builder<K, Output> tasks(List<MeshineryTask<K, Output>> tasks) {
+    public Builder backpressureLimit(int backpressureLimit) {
+      this.backpressureLimit = backpressureLimit;
+      return this;
+    }
+
+    public Builder tasks(List<MeshineryTask<?, ? extends Context>> tasks) {
       tasks.addAll(tasks);
       return this;
     }
 
-    public Builder<K, Output> isBatchJob(boolean flag) {
+    public Builder isBatchJob(boolean flag) {
       isBatchJob = flag;
       return this;
     }
 
     @SneakyThrows
-    public RoundRobinScheduler<K, Output> build() {
-      return new RoundRobinScheduler<>(tasks, executorServices, todoQueue, isBatchJob).start();
+    public RoundRobinScheduler build() {
+      return new RoundRobinScheduler(tasks, executorServices, todoQueue, backpressureLimit, isBatchJob).start();
     }
   }
 }

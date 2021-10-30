@@ -23,17 +23,21 @@ public class MeshineryTask<Key, Output extends Context> {
   @Getter
   ExecutorService executorService;
 
+
   @Getter
   Key inputKey;
 
   @Getter
   OutputSource<Key, Output> defaultOutputSource;
 
-  @Getter
   InputSource<Key, Output> inputSource;
 
   @Getter
   String taskName;
+
+  List<Output> getInputValues(){
+    return inputSource.getInputs(inputKey);
+  }
 
 
   public static <Key, Output extends Context> MeshineryTask<Key, Output> builder() {
