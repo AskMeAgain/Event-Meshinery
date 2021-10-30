@@ -8,7 +8,6 @@ import ask.me.again.meshinery.core.schedulers.RoundRobinScheduler;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -40,10 +39,13 @@ public class WriteTest {
         .write(KEY, KEY);
 
     //Act ------------------------------------------------------------------------------------
-    new RoundRobinScheduler<>(true, List.of(task)).start();
+    RoundRobinScheduler.<String, TestContext>builder()
+        .isBatchJob(true)
+        .task(task)
+        .build();
+    executor.awaitTermination(3, TimeUnit.SECONDS);
 
     //Assert ---------------------------------------------------------------------------------
-    executor.awaitTermination(3, TimeUnit.SECONDS);
     Mockito.verify(mockInputSource, Mockito.times(ITERATIONS)).getInputs(eq(KEY));
     Mockito.verify(mockOutputSource).writeOutput(any(), any());
     Mockito.verify(defaultOutputSource, Mockito.times(2)).writeOutput(any(), any());

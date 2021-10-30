@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -49,7 +48,10 @@ public class ComplexParallelizationTest extends AbstractTestBase {
         .write("");
 
     //Act -------------------------------------------------------------------------------------
-    new RoundRobinScheduler<>(true, List.of(task)).start();
+    RoundRobinScheduler.<String, TestContext>builder()
+        .isBatchJob(true)
+        .task(task)
+        .build();
     executor.awaitTermination(7, TimeUnit.SECONDS);
 
     //Assert ----------------------------------------------------------------------------------

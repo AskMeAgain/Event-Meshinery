@@ -3,6 +3,7 @@ package ask.me.again.meshinery.core.schedulers;
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.common.TaskRun;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -14,32 +15,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@RequiredArgsConstructor
-public class RoundRobinScheduler<K, O extends Context> {
+@RequiredArgsConstructor(access = AccessLevel.PUBLIC)
+public class RoundRobinScheduler<K, Output extends Context> {
 
+  private final List<MeshineryTask<K, Output>> tasks;
+  private final List<ExecutorService> executorServices;
+  private final ConcurrentLinkedQueue<TaskRun> todoQueue;
   private final boolean isBatchJob;
-  private final List<MeshineryTask<K, O>> tasks;
-  private final List<ExecutorService> executorServices = new ArrayList<>();
-  private final ConcurrentLinkedQueue<TaskRun> todoQueue = new ConcurrentLinkedQueue<>();
 
-  private boolean internalShutdown;
+  private boolean internalShutdown = false;
 
-  @SneakyThrows
-  public void start() {
-
-    //task gathering
-    tasks.forEach(task -> executorServices.add(task.getExecutorService()));
-
-    //the producer
-    var inputExecutor = Executors.newSingleThreadExecutor();
-    executorServices.add(inputExecutor);
-    createInputScheduler(inputExecutor);
-
-    //the worker
-    var taskExecutor = Executors.newSingleThreadExecutor();
-    executorServices.add(taskExecutor);
-    taskExecutor.execute(this::run);
-
+  public static <K, Output extends Context> RoundRobinScheduler.Builder<K, Output> builder() {
+    return new RoundRobinScheduler.Builder<>();
   }
 
   public void gracefulShutdown() {
@@ -48,7 +35,7 @@ public class RoundRobinScheduler<K, O extends Context> {
   }
 
   @SneakyThrows
-  public void run() {
+  private void run() {
 
     System.out.println("Thread started");
 
@@ -123,5 +110,52 @@ public class RoundRobinScheduler<K, O extends Context> {
         }
       }
     });
+  }
+
+  @SneakyThrows
+  RoundRobinScheduler<K, Output> start() {
+
+    //task gathering
+    tasks.forEach(task -> executorServices.add(task.getExecutorService()));
+
+    //the producer
+    var inputExecutor = Executors.newSingleThreadExecutor();
+    executorServices.add(inputExecutor);
+    createInputScheduler(inputExecutor);
+
+    //the worker
+    var taskExecutor = Executors.newSingleThreadExecutor();
+    executorServices.add(taskExecutor);
+    taskExecutor.execute(this::run);
+
+    return this;
+  }
+
+  public static class Builder<K, Output extends Context> {
+
+    boolean isBatchJob;
+    List<MeshineryTask<K, Output>> tasks = new ArrayList<>();
+    List<ExecutorService> executorServices = new ArrayList<>();
+    ConcurrentLinkedQueue<TaskRun> todoQueue = new ConcurrentLinkedQueue<>();
+
+    public Builder<K, Output> task(MeshineryTask<K, Output> task) {
+      tasks.add(task);
+      return this;
+    }
+
+    public Builder<K, Output> tasks(List<MeshineryTask<K, Output>> tasks) {
+      tasks.addAll(tasks);
+      return this;
+    }
+
+    public Builder<K, Output> isBatchJob(boolean flag) {
+      isBatchJob = flag;
+      return this;
+    }
+
+    @SneakyThrows
+    public RoundRobinScheduler<K, Output> build() {
+      return new RoundRobinScheduler<>(tasks, executorServices, todoQueue, isBatchJob).start();
+    }
   }
 }

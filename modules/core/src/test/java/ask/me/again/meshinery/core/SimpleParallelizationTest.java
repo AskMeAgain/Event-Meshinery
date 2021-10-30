@@ -11,7 +11,6 @@ import ask.me.again.meshinery.core.schedulers.RoundRobinScheduler;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +43,10 @@ public class SimpleParallelizationTest extends AbstractTestBase {
         .write(KEY);
 
     //Act -------------------------------------------------------------------------------------
-    new RoundRobinScheduler<>(true, List.of(task)).start();
+    RoundRobinScheduler.<String, TestContext>builder()
+        .isBatchJob(true)
+        .task(task)
+        .build();
     executor.awaitTermination(4, TimeUnit.SECONDS);
 
     //Assert ----------------------------------------------------------------------------------
