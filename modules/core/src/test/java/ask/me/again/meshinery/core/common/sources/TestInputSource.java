@@ -14,14 +14,16 @@ public class TestInputSource<T extends Context> implements InputSource<String, T
   @Singular
   List<T> todos;
 
-  boolean flag;
+  @Builder.Default
+  int iterations = 1;
 
   @Override
   public List<T> getInputs(String key) {
-    if (flag) {
+    if (iterations == 0) {
       return Collections.emptyList();
     }
-    flag = true;
+
+    iterations--;
 
     return todos;
   }

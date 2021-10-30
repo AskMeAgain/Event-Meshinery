@@ -1,16 +1,18 @@
 package ask.me.again.meshinery.core;
 
-import ask.me.again.meshinery.core.common.*;
+import ask.me.again.meshinery.core.common.AbstractTestBase;
+import ask.me.again.meshinery.core.common.MeshineryTask;
+import ask.me.again.meshinery.core.common.OutputSource;
+import ask.me.again.meshinery.core.common.context.TestContext;
+import ask.me.again.meshinery.core.common.context.TestContext2;
+import ask.me.again.meshinery.core.common.processor.TestContext2Processor;
+import ask.me.again.meshinery.core.common.processor.TestContextProcessor;
+import ask.me.again.meshinery.core.common.sources.TestInputSource;
 import ask.me.again.meshinery.core.schedulers.RoundRobinScheduler;
-import lombok.Builder;
-import lombok.Value;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -18,111 +20,53 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 
-class ContextSwitchTest {
+class ContextSwitchTest extends AbstractTestBase {
 
   private static final String INPUT_KEY = "Test";
 
-  private static final TestContext1 EXPECTED = TestContext1.builder()
-      .id("end: 1")
-      .build();
+  private static final TestContext EXPECTED = new TestContext(2);
 
   @Test
   @SuppressWarnings("unchecked")
   void contextSwitchTest() throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
-    var mockInputSource = Mockito.spy(new TestInputSource());
+    var inputSource = TestInputSource.<TestContext>builder()
+        .todo(new TestContext(0))
+        .build();
+    var mockInputSource = Mockito.spy(inputSource);
 
-    var processorA = Mockito.spy(new TestProcessorA());
-    var processorB = Mockito.spy(new TestProcessorB());
+    var processorA = Mockito.spy(new TestContextProcessor(0));
+    var processorB = Mockito.spy(new TestContext2Processor(0));
 
     var executor = Executors.newSingleThreadExecutor();
 
-    OutputSource<String, TestContext1> outputSource = Mockito.mock(OutputSource.class);
+    OutputSource<String, TestContext> defaultOutput = Mockito.mock(OutputSource.class);
+    OutputSource<String, TestContext2> contextOutput = Mockito.mock(OutputSource.class);
+    OutputSource<String, TestContext> context2Output = Mockito.mock(OutputSource.class);
 
-    var task = MeshineryTask.<String, TestContext1>builder()
+    var task = MeshineryTask.<String, TestContext>builder()
         .inputSource(mockInputSource)
-        .defaultOutputSource(outputSource)
+        .defaultOutputSource(defaultOutput)
         .read(INPUT_KEY, executor)
         .process(processorA)
-        .contextSwitch(null, this::map)
+        .write(INPUT_KEY)
+        .contextSwitch(contextOutput, this::map)
         .process(processorB)
-        .contextSwitch(null, this::map)
+        .write(INPUT_KEY)
+        .contextSwitch(context2Output, this::map)
         .process(processorA)
-        .write("");
+        .write(INPUT_KEY);
 
     //Act ------------------------------------------------------------------------------------
     new RoundRobinScheduler<>(true, List.of(task)).start();
-    executor.awaitTermination(3, TimeUnit.SECONDS);
+    executor.awaitTermination(10, TimeUnit.SECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     Mockito.verify(mockInputSource, times(2)).getInputs(eq(INPUT_KEY));
     Mockito.verify(processorA, times(2)).processAsync(any(), any());
     Mockito.verify(processorB).processAsync(any(), any());
-    Mockito.verify(outputSource).writeOutput(eq(""), eq(EXPECTED));
-  }
-
-  private TestContext2 map(TestContext1 context) {
-    return TestContext2.builder()
-        .id(context.getId())
-        .b(context.getA())
-        .build();
-  }
-
-  private TestContext1 map(TestContext2 context) {
-    return TestContext1.builder()
-        .id(context.getId())
-        .a(context.getB())
-        .build();
-  }
-
-  private static class TestInputSource implements InputSource<String, TestContext1> {
-
-    private int counter = 2;
-
-    @Override
-    public List<TestContext1> getInputs(String key) {
-
-      counter--;
-
-      if (counter == 0) {
-        return Collections.emptyList();
-      }
-
-      return List.of(TestContext1.builder()
-          .id(counter + "")
-          .build());
-    }
-  }
-
-  private static class TestProcessorA implements MeshineryProcessor<TestContext1, TestContext1> {
-    @Override
-    public CompletableFuture<TestContext1> processAsync(TestContext1 context, Executor executor) {
-      return CompletableFuture.completedFuture(TestContext1.builder()
-          .id(context.getId())
-          .build());
-    }
-  }
-
-  private static class TestProcessorB implements MeshineryProcessor<TestContext2, TestContext2> {
-    @Override
-    public CompletableFuture<TestContext2> processAsync(TestContext2 context, Executor executor) {
-      return CompletableFuture.completedFuture(TestContext2.builder()
-          .id("end: " + context.getId())
-          .build());
-    }
-  }
-
-  @Value
-  @Builder
-  private static class TestContext1 implements Context {
-    String id;
-    Integer a;
-  }
-
-  @Value
-  @Builder
-  private static class TestContext2 implements Context {
-    String id;
-    Integer b;
+    Mockito.verify(defaultOutput).writeOutput(eq(INPUT_KEY), any());
+    Mockito.verify(contextOutput).writeOutput(eq(INPUT_KEY), any());
+    Mockito.verify(context2Output).writeOutput(eq(INPUT_KEY), eq(EXPECTED));
   }
 }

@@ -1,5 +1,6 @@
 package ask.me.again.meshinery.core;
 
+import ask.me.again.meshinery.core.common.AbstractTestBase;
 import ask.me.again.meshinery.core.common.ListProcessor;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.common.OutputSource;
@@ -21,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 
-public class ComplexParallelizationTest {
+public class ComplexParallelizationTest extends AbstractTestBase {
 
   @Test
   void testComplexParallelization() throws InterruptedException {
@@ -44,12 +45,12 @@ public class ComplexParallelizationTest {
             .parallel(new TestContextProcessor(30))
             .parallel(new TestContextProcessor(30))
             .parallel(new TestContextProcessor(30))
-            .combine(ComplexParallelizationTest::getCombine))
+            .combine(this::getCombine))
         .write("");
 
     //Act -------------------------------------------------------------------------------------
     new RoundRobinScheduler<>(true, List.of(task)).start();
-    executor.awaitTermination(10, TimeUnit.SECONDS);
+    executor.awaitTermination(7, TimeUnit.SECONDS);
 
     //Assert ----------------------------------------------------------------------------------
     var argumentCapture = ArgumentCaptor.forClass(TestContext.class);
@@ -57,10 +58,5 @@ public class ComplexParallelizationTest {
     assertThat(argumentCapture.getValue())
         .extracting(TestContext::getIndex)
         .isEqualTo(93);
-  }
-
-  private static TestContext getCombine(List<TestContext> list) {
-    var sum = list.stream().mapToInt(TestContext::getIndex).sum();
-    return new TestContext(sum);
   }
 }

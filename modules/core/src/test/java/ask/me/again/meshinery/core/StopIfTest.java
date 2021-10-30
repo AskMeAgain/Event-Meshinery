@@ -1,65 +1,48 @@
 package ask.me.again.meshinery.core;
 
-import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.common.InputSource;
-import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.MeshineryTask;
+import ask.me.again.meshinery.core.common.OutputSource;
+import ask.me.again.meshinery.core.common.context.TestContext;
+import ask.me.again.meshinery.core.common.sources.TestInputSource;
 import ask.me.again.meshinery.core.schedulers.RoundRobinScheduler;
-import lombok.Builder;
-import lombok.Value;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.eq;
 
 class StopIfTest {
 
-  public static final String INPUT_KEY = "Test";
-  public static final TestContext EXPECTED = TestContext.builder().id("2").build();
+  public static final String KEY = "Test";
+  public static final TestContext EXPECTED = new TestContext(1);
 
   @Test
   @SuppressWarnings("unchecked")
   void testStopIf() throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
-    InputSource<String, Context> mockInputSource = Mockito.mock(InputSource.class);
-    var processor = new MeshineryProcessor<Context, Context>() {
-      @Override
-      public CompletableFuture<Context> processAsync(Context context, Executor executor) {
-        return CompletableFuture.completedFuture(null);
-      }
-    };
+    OutputSource<String, TestContext> outputSource = Mockito.mock(OutputSource.class);
 
-    Mockito.when(mockInputSource.getInputs(anyString()))
-        .thenReturn(
-            List.of(TestContext.builder().id("1").build()),
-            List.of(EXPECTED),
-            Collections.emptyList()
-        );
-
-    var processorSpy = Mockito.spy(processor);
+    var inputSource = TestInputSource.<TestContext>builder()
+        .todo(new TestContext(0))
+        .todo(new TestContext(1))
+        .build();
 
     var executor = Executors.newSingleThreadExecutor();
-    var task = MeshineryTask.<String, Context>builder()
-        .inputSource(mockInputSource)
-        .read(INPUT_KEY, executor)
-        .stopIf(x -> x.getId().equals("1"))
-        .process(processorSpy);
+    var task = MeshineryTask.<String, TestContext>builder()
+        .inputSource(inputSource)
+        .defaultOutputSource(outputSource)
+        .read(KEY, executor)
+        .stopIf(x -> x.getIndex() == 0)
+        .write(KEY);
 
     //Act ------------------------------------------------------------------------------------
     new RoundRobinScheduler<>(true, List.of(task)).start();
 
     //Assert ---------------------------------------------------------------------------------
-    executor.awaitTermination(3, TimeUnit.SECONDS);
-    Mockito.verify(processorSpy).processAsync(eq(EXPECTED), any());
-  }
-
-  @Value
-  @Builder
-  private static class TestContext implements Context {
-    String id;
+    executor.awaitTermination(1, TimeUnit.SECONDS);
+    Mockito.verify(outputSource).writeOutput(eq(KEY), eq(EXPECTED));
   }
 }
