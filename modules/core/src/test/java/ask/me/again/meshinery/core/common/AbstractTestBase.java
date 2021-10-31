@@ -2,7 +2,6 @@ package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.common.context.TestContext;
 import ask.me.again.meshinery.core.common.context.TestContext2;
-
 import java.util.List;
 
 public abstract class AbstractTestBase {

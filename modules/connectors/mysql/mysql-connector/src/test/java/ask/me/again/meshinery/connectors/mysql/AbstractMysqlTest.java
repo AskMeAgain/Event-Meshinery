@@ -13,11 +13,11 @@ public class AbstractMysqlTest {
   public static String DB_NAME = "db";
 
   public static GenericContainer mySQLContainer = new MySQLContainer<>("mysql")
-    .withDatabaseName(DB_NAME)
-    .withPassword("password")
-    .withUsername("user")
-    .withInitScript("mysql.ddl")
-    .waitingFor(Wait.forLogMessage(".*ready for connections.*", 1));
+      .withDatabaseName(DB_NAME)
+      .withPassword("password")
+      .withUsername("user")
+      .withInitScript("mysql.ddl")
+      .waitingFor(Wait.forLogMessage(".*ready for connections.*", 1));
 
   @BeforeAll
   public static void setup() {

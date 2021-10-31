@@ -8,8 +8,8 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig(
-  classes = MysqlConfiguration.class,
-  initializers = ConfigDataApplicationContextInitializer.class
+    classes = MysqlConfiguration.class,
+    initializers = ConfigDataApplicationContextInitializer.class
 )
 class MysqlConfigurationTest {
 
@@ -22,18 +22,18 @@ class MysqlConfigurationTest {
     //Act ------------------------------------------------------------------------------------
     //Assert ---------------------------------------------------------------------------------
     assertThat(mysqlProperties)
-      .extracting(
-        MysqlProperties::getConnectionString,
-        MysqlProperties::getLimit,
-        MysqlProperties::getPassword,
-        MysqlProperties::getUser
-      )
-      .containsExactly(
-        "jdbc:mysql://localhost:3306/db",
-        1,
-        "password",
-        "user"
-      );
+        .extracting(
+            MysqlProperties::getConnectionString,
+            MysqlProperties::getLimit,
+            MysqlProperties::getPassword,
+            MysqlProperties::getUser
+        )
+        .containsExactly(
+            "jdbc:mysql://localhost:3306/db",
+            1,
+            "password",
+            "user"
+        );
 
   }
 }

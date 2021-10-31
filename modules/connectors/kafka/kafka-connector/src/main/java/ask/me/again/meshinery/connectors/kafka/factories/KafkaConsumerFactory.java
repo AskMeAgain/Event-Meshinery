@@ -1,13 +1,11 @@
 package ask.me.again.meshinery.connectors.kafka.factories;
 
 import ask.me.again.meshinery.connectors.kafka.properties.KafkaProperties;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 public class KafkaConsumerFactory {
 

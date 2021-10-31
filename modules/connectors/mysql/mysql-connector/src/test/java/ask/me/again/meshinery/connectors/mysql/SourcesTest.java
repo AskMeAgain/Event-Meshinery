@@ -33,11 +33,11 @@ class SourcesTest extends AbstractMysqlTest {
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(result1)
-      .hasSize(1)
-      .contains(value1);
+        .hasSize(1)
+        .contains(value1);
     assertThat(result2)
-      .hasSize(1)
-      .contains(value2);
+        .hasSize(1)
+        .contains(value2);
   }
 
   @Data

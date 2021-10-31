@@ -3,7 +3,6 @@ package ask.me.again.meshinery.connectors.memory;
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.OutputSource;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;

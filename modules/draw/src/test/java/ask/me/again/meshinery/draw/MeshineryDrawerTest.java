@@ -3,11 +3,10 @@ package ask.me.again.meshinery.draw;
 
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.MeshineryTask;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
 import java.io.IOException;
 import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -40,15 +39,15 @@ class MeshineryDrawerTest {
 
   private List<MeshineryTask<?, ?>> getTasks() {
     return List.of(
-         MeshineryTask.<String, Context>builder()
+        MeshineryTask.<String, Context>builder()
             .read("A", null)
             .taskName("A")
             .write("B"),
-         MeshineryTask.<String, Context>builder()
+        MeshineryTask.<String, Context>builder()
             .read("B", null)
             .taskName("B")
             .write("C"),
-         MeshineryTask.<String, Context>builder()
+        MeshineryTask.<String, Context>builder()
             .read("C", null)
             .taskName("C")
     );

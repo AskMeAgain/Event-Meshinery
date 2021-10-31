@@ -1,11 +1,10 @@
 package ask.me.again.meshinery.connectors.kafka.factories;
 
 import ask.me.again.meshinery.connectors.kafka.properties.KafkaProperties;
-import org.apache.kafka.clients.producer.KafkaProducer;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import org.apache.kafka.clients.producer.KafkaProducer;
 
 public class KafkaProducerFactory {
 

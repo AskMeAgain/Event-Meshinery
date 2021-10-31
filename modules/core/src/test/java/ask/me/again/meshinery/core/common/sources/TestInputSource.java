@@ -2,11 +2,10 @@ package ask.me.again.meshinery.core.common.sources;
 
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.context.TestContext;
-import lombok.Builder;
-import lombok.Singular;
-
 import java.util.Collections;
 import java.util.List;
+import lombok.Builder;
+import lombok.Singular;
 
 @Builder
 public class TestInputSource implements InputSource<String, TestContext> {
@@ -27,7 +26,7 @@ public class TestInputSource implements InputSource<String, TestContext> {
     iterations--;
 
     return todos.stream()
-        .map(testContext -> testContext.withId((++internalCounter) + ""))
-        .toList();
+                .map(testContext -> testContext.withId((++internalCounter) + ""))
+                .toList();
   }
 }

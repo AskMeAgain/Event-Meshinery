@@ -9,8 +9,8 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig(
-  classes = KafkaConfiguration.class,
-  initializers = ConfigDataApplicationContextInitializer.class
+    classes = KafkaConfiguration.class,
+    initializers = ConfigDataApplicationContextInitializer.class
 )
 class KafkaConfigurationTest {
 
@@ -23,14 +23,14 @@ class KafkaConfigurationTest {
     //Act ------------------------------------------------------------------------------------
     //Assert ---------------------------------------------------------------------------------
     assertThat(kafkaProperties)
-      .extracting(
-        KafkaProperties::getBootstrapServer,
-        KafkaProperties::getGroupId
-      )
-      .containsExactly(
-        "abc",
-        "groupid"
-      );
+        .extracting(
+            KafkaProperties::getBootstrapServer,
+            KafkaProperties::getGroupId
+        )
+        .containsExactly(
+            "abc",
+            "groupid"
+        );
   }
 
 
