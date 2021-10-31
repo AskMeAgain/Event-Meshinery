@@ -7,7 +7,7 @@ import ask.me.again.meshinery.core.common.processor.ToTestContext2Processor;
 import ask.me.again.meshinery.core.common.processor.ToTestContextProcessor;
 import ask.me.again.meshinery.core.common.sources.TestInputSource;
 import ask.me.again.meshinery.core.processors.ParallelProcessor;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.RepeatedTest;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -19,7 +19,8 @@ import static org.mockito.ArgumentMatchers.eq;
 
 public class ComplexParallelizationTest extends AbstractTestBase {
 
-  @Test
+  @RepeatedTest(10)
+  @SuppressWarnings("unchecked")
   void testComplexParallelization() throws InterruptedException {
     //Arrange ---------------------------------------------------------------------------------
     var executor = Executors.newFixedThreadPool(3);
@@ -48,11 +49,12 @@ public class ComplexParallelizationTest extends AbstractTestBase {
         .isBatchJob(true)
         .task(task)
         .build();
-    executor.awaitTermination(7, TimeUnit.SECONDS);
+    var batchJobFinished = executor.awaitTermination(3, TimeUnit.SECONDS);
 
     //Assert ----------------------------------------------------------------------------------
     var argumentCapture = ArgumentCaptor.forClass(TestContext.class);
     Mockito.verify(outputMock).writeOutput(eq(""), argumentCapture.capture());
+    assertThat(batchJobFinished).isTrue();
     assertThat(argumentCapture.getValue())
         .extracting(TestContext::getIndex)
         .isEqualTo(93);

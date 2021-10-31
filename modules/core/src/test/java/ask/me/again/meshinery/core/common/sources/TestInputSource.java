@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.common.sources;
 
-import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.InputSource;
+import ask.me.again.meshinery.core.common.context.TestContext;
 import lombok.Builder;
 import lombok.Singular;
 
@@ -9,22 +9,25 @@ import java.util.Collections;
 import java.util.List;
 
 @Builder
-public class TestInputSource<T extends Context> implements InputSource<String, T> {
+public class TestInputSource implements InputSource<String, TestContext> {
 
   @Singular
-  List<T> todos;
+  List<TestContext> todos;
 
   @Builder.Default
   int iterations = 1;
+  int internalCounter;
 
   @Override
-  public List<T> getInputs(String key) {
+  public List<TestContext> getInputs(String key) {
     if (iterations == 0) {
       return Collections.emptyList();
     }
 
     iterations--;
 
-    return todos;
+    return todos.stream()
+        .map(testContext -> testContext.withId((++internalCounter) + ""))
+        .toList();
   }
 }

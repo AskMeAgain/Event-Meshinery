@@ -21,7 +21,7 @@ public class ToTestContextProcessor implements MeshineryProcessor<TestContext2, 
 
   @SneakyThrows
   private TestContext wait(TestContext2 context) {
-    Thread.sleep(3000);
+    Thread.sleep(1000);
     return new TestContext(index + context.getIndex());
   }
 }

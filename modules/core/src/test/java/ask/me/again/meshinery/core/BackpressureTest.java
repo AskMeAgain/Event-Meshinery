@@ -3,6 +3,7 @@ package ask.me.again.meshinery.core;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.common.RoundRobinScheduler;
 import ask.me.again.meshinery.core.common.context.TestContext;
+import ask.me.again.meshinery.core.common.processor.TestContextProcessor;
 import ask.me.again.meshinery.core.common.sources.TestInputSource;
 import org.junit.jupiter.api.RepeatedTest;
 import org.mockito.Mockito;
@@ -11,36 +12,37 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atMost;
 
-class BatchJobTest {
-
-  private static final String KEY = "Test";
-  private static final int ITERATIONS = 4;
+public class BackpressureTest {
 
   @RepeatedTest(10)
-  void testBatchJobFlag() throws InterruptedException {
+  void testBackpressure() throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
+    var executor = Executors.newFixedThreadPool(11);
+    var processor = Mockito.spy(new TestContextProcessor(0));
     var inputSource = TestInputSource.<TestContext>builder()
         .todo(new TestContext(0))
-        .iterations(ITERATIONS)
+        .iterations(100)
         .build();
-    var mockInputSource = Mockito.spy(inputSource);
-    var executor = Executors.newSingleThreadExecutor();
 
     var task = MeshineryTask.<String, TestContext>builder()
-        .inputSource(mockInputSource)
-        .read(KEY, executor);
+        .inputSource(inputSource)
+        .read("", executor)
+        .process(processor);
 
     //Act ------------------------------------------------------------------------------------
-    RoundRobinScheduler.builder()
+    RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
+        .backpressureLimit(10)
         .task(task)
         .build();
     var batchJobFinished = executor.awaitTermination(500, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
-    assertThat(batchJobFinished).isTrue();
-    Mockito.verify(mockInputSource, Mockito.times(ITERATIONS + 1)).getInputs(eq(KEY));
+    assertThat(batchJobFinished).isFalse(); //here we needed to stop prematurely
+    //the backpressure will be matched +-1 as the scheduler pushes/pops to the queue continuously
+    Mockito.verify(processor, atMost(11)).processAsync(any(), any());
   }
 }

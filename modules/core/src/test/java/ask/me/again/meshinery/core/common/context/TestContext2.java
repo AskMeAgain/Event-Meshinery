@@ -1,17 +1,22 @@
 package ask.me.again.meshinery.core.common.context;
 
 import ask.me.again.meshinery.core.common.Context;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Value;
+import lombok.With;
 
 @Value
-@RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
 public class TestContext2 implements Context {
 
+  @With
+  String id;
   int index;
 
-  @Override
-  public String getId() {
-    return null;
+  public TestContext2(int index) {
+    this.id = String.valueOf(index);
+    this.index = index;
   }
 }

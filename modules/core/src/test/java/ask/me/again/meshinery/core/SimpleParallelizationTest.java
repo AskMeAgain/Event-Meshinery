@@ -8,12 +8,13 @@ import ask.me.again.meshinery.core.common.context.TestContext;
 import ask.me.again.meshinery.core.common.processor.TestContextProcessor;
 import ask.me.again.meshinery.core.common.sources.TestInputSource;
 import ask.me.again.meshinery.core.processors.ParallelProcessor;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.RepeatedTest;
 import org.mockito.Mockito;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -21,7 +22,8 @@ public class SimpleParallelizationTest extends AbstractTestBase {
 
   public static final String KEY = "Test";
 
-  @Test
+  @RepeatedTest(10)
+  @SuppressWarnings("unchecked")
   void testSimpleParallelization() throws InterruptedException {
     //Arrange ---------------------------------------------------------------------------------
     var executor = Executors.newFixedThreadPool(3);
@@ -47,9 +49,10 @@ public class SimpleParallelizationTest extends AbstractTestBase {
         .isBatchJob(true)
         .task(task)
         .build();
-    executor.awaitTermination(4, TimeUnit.SECONDS);
+    var batchJobFinished = executor.awaitTermination(1500, TimeUnit.MILLISECONDS);
 
     //Assert ----------------------------------------------------------------------------------
+    assertThat(batchJobFinished).isTrue();
     Mockito.verify(outputSource).writeOutput(eq(KEY), any());
 
   }

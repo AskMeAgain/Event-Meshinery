@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,20 +28,41 @@ public class RoundRobinScheduler {
     return new RoundRobinScheduler.Builder();
   }
 
+  @SneakyThrows
+  RoundRobinScheduler start() {
+
+    //task gathering
+    tasks.forEach(task -> executorServices.add(task.getExecutorService()));
+
+    //the producer
+    var inputExecutor = Executors.newSingleThreadExecutor();
+    executorServices.add(inputExecutor);
+    createInputScheduler(inputExecutor);
+
+    Thread.sleep(100);
+
+    //the worker
+    var taskExecutor = Executors.newSingleThreadExecutor();
+    executorServices.add(taskExecutor);
+    taskExecutor.execute(this::runWorker);
+
+    return this;
+  }
+
   public void gracefulShutdown() {
     System.out.println("Graceful shutdown");
     internalShutdown = true;
   }
 
   @SneakyThrows
-  private void run() {
+  private void runWorker() {
 
-    System.out.println("Thread started");
+    System.out.println("Workerthread started at: " + Instant.now());
 
     //we use this label to break out of the task in case we dont want to work on it
     newTask:
     while (!internalShutdown || !todoQueue.isEmpty()) {
-      var currentTask = todoQueue.poll();
+      var currentTask = todoQueue.remove();
 
       if (currentTask == null) {
         Thread.sleep(500);
@@ -48,7 +70,6 @@ public class RoundRobinScheduler {
       }
 
       while (currentTask.getFuture().isDone()) {
-
         //we stop if we reached the end of the queue
         if (currentTask.getQueue().isEmpty()) {
           continue newTask;
@@ -79,28 +100,35 @@ public class RoundRobinScheduler {
 
   private void createInputScheduler(ExecutorService executor) {
     executor.execute(() -> {
+      newInputIteration:
       while (!executor.isShutdown()) {
 
-        if (todoQueue.size() > backpressureLimit) {
-          continue;
-        }
+        var itemsInThisIteration = 0;
+        if (todoQueue.size() < backpressureLimit) {
 
-        var counter = 0;
-        for (var reactiveTask : tasks) {
-          //getting the input values
-          var inputList = reactiveTask.getInputValues();
-          var executorService = reactiveTask.getExecutorService();
+          for (var reactiveTask : tasks) {
+            //getting the input values
+            var inputList = reactiveTask.getInputValues();
+            var executorService = reactiveTask.getExecutorService();
 
-          for (var input : inputList) {
-            counter++;
-            var processorQueue = new LinkedList<>(reactiveTask.getProcessorList());
-            var taskRun = new TaskRun(CompletableFuture.completedFuture(input), processorQueue, executorService);
-            todoQueue.add(taskRun);
+            for (var input : inputList) {
+              itemsInThisIteration++;
+              var processorQueue = new LinkedList<>(reactiveTask.getProcessorList());
+              var taskRun = new TaskRun(CompletableFuture.completedFuture(input), processorQueue, executorService);
+              todoQueue.add(taskRun);
+
+              //checking backpressure
+              if (todoQueue.size() >= backpressureLimit) {
+                continue newInputIteration;
+              }
+            }
           }
+        } else {
+          itemsInThisIteration = -1; //so we dont finish the batch job because of backpressure
         }
 
         //we did not add any work in a single iteration. We are done
-        if (counter == 0 && isBatchJob) {
+        if (itemsInThisIteration == 0 && isBatchJob) {
           System.out.println("Shutdown through batch job flag");
           gracefulShutdown();
           break;
@@ -111,25 +139,6 @@ public class RoundRobinScheduler {
         }
       }
     });
-  }
-
-  @SneakyThrows
-  RoundRobinScheduler start() {
-
-    //task gathering
-    tasks.forEach(task -> executorServices.add(task.getExecutorService()));
-
-    //the producer
-    var inputExecutor = Executors.newSingleThreadExecutor();
-    executorServices.add(inputExecutor);
-    createInputScheduler(inputExecutor);
-
-    //the worker
-    var taskExecutor = Executors.newSingleThreadExecutor();
-    executorServices.add(taskExecutor);
-    taskExecutor.execute(this::run);
-
-    return this;
   }
 
   public static class Builder {
