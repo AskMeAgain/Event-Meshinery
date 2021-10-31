@@ -19,6 +19,7 @@ public class BackpressureTest {
 
   @RepeatedTest(10)
   void testBackpressure() throws InterruptedException {
+
     //Arrange --------------------------------------------------------------------------------
     var executor = Executors.newFixedThreadPool(11);
     var processor = Mockito.spy(new TestContextProcessor(0));

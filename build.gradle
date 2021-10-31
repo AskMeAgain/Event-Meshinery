@@ -1,10 +1,14 @@
 apply plugin: 'java'
 
+
 allprojects {
 
     apply plugin: "checkstyle"
 
     checkstyle {
+        ignoreFailures = false
+        maxWarnings = 0
+        maxErrors = 0
         toolVersion '9.1'
         configFile = rootProject.file('checkstyle.xml')
     }
