@@ -9,6 +9,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class MemoryInputOutputSource<K, C extends Context> implements InputSource<K, C>, OutputSource<K, C> {
 
   private final ConcurrentHashMap<K, Queue<C>> map = new ConcurrentHashMap<>();

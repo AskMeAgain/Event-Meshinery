@@ -10,6 +10,7 @@ import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.stream.file.FileSinkImages;
 
 @Builder
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryDrawer {
 
   private final List<MeshineryTask<?, ?>> tasks;
@@ -21,6 +22,7 @@ public class MeshineryDrawer {
   private final EdgeCustomizer edgeAssignment;
   private final GraphCustomizer graphAssignment;
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public byte[] draw() throws IOException {
     var graph = new DefaultGraph("id");
     var fileSinkImages = new FileSinkImages(outputType, FileSinkImages.Resolutions.VGA);

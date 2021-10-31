@@ -5,6 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class Container {
   String name;
   String id;

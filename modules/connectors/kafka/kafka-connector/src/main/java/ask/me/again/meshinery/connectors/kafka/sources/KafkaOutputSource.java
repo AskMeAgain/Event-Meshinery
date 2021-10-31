@@ -9,6 +9,7 @@ import lombok.SneakyThrows;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 @RequiredArgsConstructor
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class KafkaOutputSource<C extends Context> implements OutputSource<String, C> {
 
   private final KafkaProducerFactory kafkaProducerFactory;

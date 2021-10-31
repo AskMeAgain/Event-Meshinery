@@ -9,6 +9,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j
 @RequiredArgsConstructor
 public class MysqlOutputSource<C extends Context> implements OutputSource<String, C> {

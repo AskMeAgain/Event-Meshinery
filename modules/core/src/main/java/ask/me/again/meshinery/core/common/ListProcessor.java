@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class ListProcessor<Input extends Context, Output extends Context> implements MeshineryProcessor<Input, Output> {
 
   List<MeshineryProcessor<Context, Context>> processorList;

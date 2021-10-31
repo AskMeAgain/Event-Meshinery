@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 @ConditionalOnMissingBean
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryAutoConfiguration {
 
   private final List<MeshineryTask<?, ?>> tasks;
@@ -20,6 +21,7 @@ public class MeshineryAutoConfiguration {
   private boolean isBatchJob;
 
   @PostConstruct
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public void setup() {
     RoundRobinScheduler.builder()
         .isBatchJob(isBatchJob)

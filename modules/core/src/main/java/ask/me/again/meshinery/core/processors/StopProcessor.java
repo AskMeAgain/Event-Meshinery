@@ -8,6 +8,7 @@ import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class StopProcessor<I extends Context> implements MeshineryProcessor<I, I> {
 
   private final Function<I, Boolean> stopIf;

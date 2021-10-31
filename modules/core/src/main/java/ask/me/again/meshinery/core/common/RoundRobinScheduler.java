@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinScheduler {
 
   private final List<MeshineryTask<?, ? extends Context>> tasks;

@@ -6,11 +6,13 @@ import java.util.Map;
 import java.util.Properties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class KafkaProducerFactory {
 
   private final Map<String, KafkaProducer<String, byte[]>> producer = new HashMap<>();
   private final Properties properties;
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public KafkaProducerFactory(KafkaProperties kafkaProperties) {
     properties = new Properties();
     properties.setProperty("bootstrap.servers", kafkaProperties.getBootstrapServer());

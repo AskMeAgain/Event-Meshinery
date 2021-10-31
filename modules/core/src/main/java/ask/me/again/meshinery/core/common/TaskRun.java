@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @RequiredArgsConstructor
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class TaskRun {
 
   @Setter
@@ -21,6 +22,7 @@ public class TaskRun {
   @Getter
   Queue<MeshineryProcessor<Context, Context>> queue;
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public TaskRun(
       CompletableFuture<Context> future, Queue<MeshineryProcessor<Context, Context>> queue,
       ExecutorService executorService

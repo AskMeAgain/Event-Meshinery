@@ -13,6 +13,7 @@ import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
 public class KafkaInputSource<C extends Context> implements InputSource<String, C> {
 

@@ -7,11 +7,13 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class KafkaConsumerFactory {
 
   private final Map<String, KafkaConsumer<String, byte[]>> consumers = new ConcurrentHashMap<>();
   private final Properties properties;
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public KafkaConsumerFactory(KafkaProperties kafkaProperties) {
     properties = new Properties();
     properties.setProperty("bootstrap.servers", kafkaProperties.getBootstrapServer());

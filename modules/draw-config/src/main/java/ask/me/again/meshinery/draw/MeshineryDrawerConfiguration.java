@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @RequiredArgsConstructor
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryDrawerConfiguration {
 
   @Bean

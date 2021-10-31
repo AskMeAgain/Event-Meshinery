@@ -9,11 +9,18 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
 public class MysqlInputSource<C extends Context> implements InputSource<String, C> {
 
-  public static final String SELECT_QUERY = "SELECT context FROM <TABLE> WHERE processed = 0 AND state = :state ORDER" +
-      " BY eid LIMIT :limit";
+  public static final String SELECT_QUERY = """
+      SELECT context 
+      FROM <TABLE> 
+      WHERE processed = 0 AND state = :state 
+      ORDER BY eid 
+      LIMIT :limit
+      """;
+
   private final Jdbi jdbi;
   private final Class<C> clazz;
 

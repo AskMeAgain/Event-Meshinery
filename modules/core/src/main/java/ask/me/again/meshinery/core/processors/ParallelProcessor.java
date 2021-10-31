@@ -9,6 +9,7 @@ import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class ParallelProcessor<Output extends Context> implements MeshineryProcessor<Output, Output> {
 
   List<MeshineryProcessor<Output, Output>> processorList;
@@ -40,12 +41,12 @@ public class ParallelProcessor<Output extends Context> implements MeshineryProce
     var array = futuresList.toArray(new CompletableFuture[futuresList.size()]);
     var allFuturesResult = CompletableFuture.allOf(array);
 
-    return allFuturesResult.thenApply(v -> futuresList.stream().
-                                                      map(CompletableFuture::join).
-                                                      collect(Collectors.<T>toList())
+    return allFuturesResult.thenApply(
+        v -> futuresList.stream().map(CompletableFuture::join).collect(Collectors.<T>toList())
     );
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocType")
   public static class Builder<Output extends Context> {
 
     List<MeshineryProcessor<Output, Output>> processorList;

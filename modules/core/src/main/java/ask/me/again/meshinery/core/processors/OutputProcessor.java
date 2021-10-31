@@ -6,14 +6,10 @@ import ask.me.again.meshinery.core.common.OutputSource;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-public class OutputProcessor<K, I extends Context> implements MeshineryProcessor<I, I> {
-
-  private final K key;
-  private final Function<I, Boolean> writeIf;
-  private final OutputSource<K, I> outputSource;
+@SuppressWarnings("checkstyle:MissingJavadocType")
+public record OutputProcessor<K, I extends Context>(K key, Function<I, Boolean> writeIf,
+    OutputSource<K, I> outputSource) implements MeshineryProcessor<I, I> {
 
   @Override
   public CompletableFuture<I> processAsync(I context, Executor executor) {
