@@ -1,4 +1,14 @@
+apply plugin: 'java'
+
 allprojects {
+
+    apply plugin: "checkstyle"
+
+    checkstyle {
+        toolVersion '9.1'
+        configFile = rootProject.file('checkstyle.xml')
+    }
+
     plugins.withType(JavaPlugin).whenPluginAdded {
         dependencies {
             //Lombok
