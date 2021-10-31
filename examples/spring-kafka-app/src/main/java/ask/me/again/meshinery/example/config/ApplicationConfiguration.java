@@ -7,15 +7,15 @@ import ask.me.again.meshinery.connectors.kafka.sources.KafkaInputSource;
 import ask.me.again.meshinery.connectors.kafka.sources.KafkaOutputSource;
 import ask.me.again.meshinery.example.TestContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 @Configuration
 @Import(KafkaConfiguration.class)
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class ApplicationConfiguration {
 
   @Bean
@@ -29,12 +29,18 @@ public class ApplicationConfiguration {
   }
 
   @Bean
-  public KafkaInputSource<TestContext> kafkaInputSource(ObjectMapper objectMapper, KafkaConsumerFactory kafkaConsumerFactory) {
+  public KafkaInputSource<TestContext> kafkaInputSource(
+      ObjectMapper objectMapper,
+      KafkaConsumerFactory kafkaConsumerFactory
+  ) {
     return new KafkaInputSource<>(TestContext.class, objectMapper, kafkaConsumerFactory);
   }
 
   @Bean
-  public KafkaOutputSource<TestContext> kafkaOutputSource(ObjectMapper objectMapper, KafkaProducerFactory kafkaProducerFactory) {
+  public KafkaOutputSource<TestContext> kafkaOutputSource(
+      ObjectMapper objectMapper,
+      KafkaProducerFactory kafkaProducerFactory
+  ) {
     return new KafkaOutputSource<>(kafkaProducerFactory, objectMapper);
   }
 

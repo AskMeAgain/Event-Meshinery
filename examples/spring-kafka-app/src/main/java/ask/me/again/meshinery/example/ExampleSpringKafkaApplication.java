@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Import;
   ExampleTaskConfiguration.class,
   ApplicationConfiguration.class
 })
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class ExampleSpringKafkaApplication {
 
   public static void main(String[] args) {

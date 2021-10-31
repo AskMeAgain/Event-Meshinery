@@ -1,17 +1,7 @@
 apply plugin: 'java'
 
-
-allprojects {
-
+subprojects {
     apply plugin: "checkstyle"
-
-    checkstyle {
-        ignoreFailures = false
-        maxWarnings = 0
-        maxErrors = 0
-        toolVersion '9.1'
-        configFile = rootProject.file('checkstyle.xml')
-    }
 
     plugins.withType(JavaPlugin).whenPluginAdded {
         dependencies {
@@ -51,6 +41,14 @@ allprojects {
 
         test {
             useJUnitPlatform()
+        }
+
+        checkstyle {
+            ignoreFailures = false
+            maxWarnings = 0
+            maxErrors = 0
+            toolVersion '9.1'
+            configFile = rootProject.file('checkstyle.xml')
         }
     }
 }

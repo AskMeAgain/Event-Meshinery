@@ -5,6 +5,7 @@ import ask.me.again.meshinery.example.TestContext;
 import org.springframework.stereotype.Component;
 
 @Component
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class ExampleOutputSource implements OutputSource<String, TestContext> {
 
   @Override

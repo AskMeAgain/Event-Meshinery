@@ -2,10 +2,10 @@ package ask.me.again.meshinery.example.entities;
 
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.example.TestContext2;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class ProcessorB implements MeshineryProcessor<TestContext2, TestContext2> {
 
   @Override

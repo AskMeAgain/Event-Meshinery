@@ -13,12 +13,12 @@ public class ListProcessor<Input extends Context, Output extends Context> implem
     processorList = new ArrayList<>();
   }
 
-  public static <Input extends Context> ListProcessor<Input, Input>builder(){
-    return new ListProcessor<>();
-  }
-
   private ListProcessor(List<MeshineryProcessor<Context, Context>> newProcessorList) {
     this.processorList = newProcessorList;
+  }
+
+  public static <Input extends Context> ListProcessor<Input, Input> builder() {
+    return new ListProcessor<>();
   }
 
   public <N extends Context> ListProcessor<Input, N> process(MeshineryProcessor<Output, N> newProcessor) {

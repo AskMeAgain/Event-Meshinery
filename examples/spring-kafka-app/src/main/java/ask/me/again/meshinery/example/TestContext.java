@@ -7,8 +7,9 @@ import lombok.extern.jackson.Jacksonized;
 
 
 @Value
-@Builder(toBuilder = true)
 @Jacksonized
+@Builder(toBuilder = true)
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class TestContext implements Context {
 
   int testValue1;

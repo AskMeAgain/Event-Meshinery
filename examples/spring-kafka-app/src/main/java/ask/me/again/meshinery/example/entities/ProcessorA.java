@@ -2,12 +2,12 @@ package ask.me.again.meshinery.example.entities;
 
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.example.TestContext;
-import org.springframework.stereotype.Component;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import org.springframework.stereotype.Component;
 
 @Component
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class ProcessorA implements MeshineryProcessor<TestContext, TestContext> {
 
   @Override
@@ -23,8 +23,8 @@ public class ProcessorA implements MeshineryProcessor<TestContext, TestContext> 
       System.out.println("Received: " + context.getTestValue1());
 
       return context.toBuilder()
-          .testValue1(context.getTestValue1() + 1)
-          .build();
+                    .testValue1(context.getTestValue1() + 1)
+                    .build();
 
     }, executor);
   }

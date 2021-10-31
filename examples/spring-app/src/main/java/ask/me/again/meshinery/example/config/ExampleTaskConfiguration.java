@@ -5,15 +5,15 @@ import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.example.TestContext;
 import ask.me.again.meshinery.example.entities.ProcessorA;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 @Configuration
 @RequiredArgsConstructor
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class ExampleTaskConfiguration {
 
   private final OutputSource<String, TestContext> outputSource;
@@ -22,11 +22,13 @@ public class ExampleTaskConfiguration {
   private final ProcessorA processorA;
 
   @Bean
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public AtomicBoolean atomicBoolean() {
     return new AtomicBoolean(true);
   }
 
   @Bean
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, TestContext> task1() {
     return MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)
@@ -42,6 +44,7 @@ public class ExampleTaskConfiguration {
   }
 
   @Bean
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, TestContext> task2() {
     return MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)
@@ -57,6 +60,7 @@ public class ExampleTaskConfiguration {
   }
 
   @Bean
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, TestContext> task3() {
     return MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)

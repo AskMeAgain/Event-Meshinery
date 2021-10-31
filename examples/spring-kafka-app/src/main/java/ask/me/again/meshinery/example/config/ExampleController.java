@@ -6,6 +6,10 @@ import ask.me.again.meshinery.draw.MeshineryDrawer;
 import ask.me.again.meshinery.example.TestContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.context.ApplicationContext;
@@ -19,13 +23,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 @RestController
 @RequiredArgsConstructor
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class ExampleController {
 
   private final ApplicationContext context;
@@ -39,6 +39,7 @@ public class ExampleController {
   private int counter = 0;
 
   @GetMapping("shutdown")
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public void shutdown() {
     System.out.println("Gracefully Shutdown");
     atomicBoolean.set(false);
@@ -47,6 +48,7 @@ public class ExampleController {
   }
 
   @GetMapping("picture")
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public ResponseEntity picture() throws IOException {
     var result = MeshineryDrawer.builder()
         .tasks(tasks)
@@ -57,13 +59,14 @@ public class ExampleController {
     headers.setCacheControl(CacheControl.noCache().getHeaderValue());
 
     return ResponseEntity.ok()
-        .contentType(MediaType.IMAGE_PNG)
-        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"test.png\"")
-        .contentLength(result.length)
-        .body(new ByteArrayResource(result));
+                         .contentType(MediaType.IMAGE_PNG)
+                         .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"test.png\"")
+                         .contentLength(result.length)
+                         .body(new ByteArrayResource(result));
   }
 
   @GetMapping("produce/{topic}")
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public void insertData(@PathVariable("topic") String topic) throws JsonProcessingException {
     System.out.println("Inserted Data");
 
@@ -79,7 +82,5 @@ public class ExampleController {
     var record = new ProducerRecord<>(topic, key, value);
 
     kafkaProducerFactory.get(topic).send(record);
-
   }
-
 }

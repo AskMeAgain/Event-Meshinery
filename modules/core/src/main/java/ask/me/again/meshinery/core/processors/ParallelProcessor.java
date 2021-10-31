@@ -2,7 +2,6 @@ package ask.me.again.meshinery.core.processors;
 
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -31,8 +30,8 @@ public class ParallelProcessor<Output extends Context> implements MeshineryProce
   public CompletableFuture<Output> processAsync(Output context, Executor executor) {
 
     var futures = processorList.stream()
-        .map(x -> x.processAsync(context, executor))
-        .collect(Collectors.toList());
+                               .map(x -> x.processAsync(context, executor))
+                               .collect(Collectors.toList());
 
     return allOf(futures).thenApply(combine);
   }
@@ -42,8 +41,8 @@ public class ParallelProcessor<Output extends Context> implements MeshineryProce
     var allFuturesResult = CompletableFuture.allOf(array);
 
     return allFuturesResult.thenApply(v -> futuresList.stream().
-        map(CompletableFuture::join).
-        collect(Collectors.<T>toList())
+                                                      map(CompletableFuture::join).
+                                                      collect(Collectors.<T>toList())
     );
   }
 

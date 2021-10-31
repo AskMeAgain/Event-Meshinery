@@ -2,12 +2,12 @@ package ask.me.again.meshinery.example.entities;
 
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.example.TestContext;
+import java.util.List;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class ExampleInputSource implements InputSource<String, TestContext> {
 
   private int counter = 0;
@@ -20,8 +20,8 @@ public class ExampleInputSource implements InputSource<String, TestContext> {
     counter++;
 
     return List.of(TestContext.builder()
-      .id(counter + "")
-      .testValue1(counter)
-      .build());
+        .id(counter + "")
+        .testValue1(counter)
+        .build());
   }
 }

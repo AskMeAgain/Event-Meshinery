@@ -3,6 +3,7 @@ package ask.me.again.meshinery.example.entities;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.example.TestContext;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class ExampleOutputSource implements OutputSource<String, TestContext> {
 
   @Override

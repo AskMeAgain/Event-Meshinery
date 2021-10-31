@@ -6,6 +6,7 @@ import lombok.Value;
 
 @Value
 @Builder(toBuilder = true)
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class TestContext2 implements Context {
 
   int testValue1;

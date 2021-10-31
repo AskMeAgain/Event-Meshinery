@@ -4,12 +4,11 @@ import ask.me.again.meshinery.core.processors.DynamicOutputProcessor;
 import ask.me.again.meshinery.core.processors.LambdaProcessor;
 import ask.me.again.meshinery.core.processors.OutputProcessor;
 import ask.me.again.meshinery.core.processors.StopProcessor;
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
+import lombok.Getter;
 
 
 public class MeshineryTask<Key, Output extends Context> {
@@ -35,26 +34,19 @@ public class MeshineryTask<Key, Output extends Context> {
   @Getter
   String taskName;
 
-  List<Output> getInputValues(){
-    return inputSource.getInputs(inputKey);
-  }
-
-
-  public static <Key, Output extends Context> MeshineryTask<Key, Output> builder() {
-    return new MeshineryTask<>();
-  }
-
   private MeshineryTask() {
   }
 
-  private <Input extends Context> MeshineryTask(MeshineryProcessor<Input, Output> newProcessor,
-                                                List<MeshineryProcessor<Context, Context>> oldProcessorList,
-                                                String name,
-                                                InputSource inputSource,
-                                                OutputSource defaultOutputSource,
-                                                ExecutorService executorService,
-                                                List<Key> outputKeys,
-                                                Key inputKey
+
+  private <Input extends Context> MeshineryTask(
+      MeshineryProcessor<Input, Output> newProcessor,
+      List<MeshineryProcessor<Context, Context>> oldProcessorList,
+      String name,
+      InputSource inputSource,
+      OutputSource defaultOutputSource,
+      ExecutorService executorService,
+      List<Key> outputKeys,
+      Key inputKey
   ) {
     taskName = name;
     oldProcessorList.add((MeshineryProcessor<Context, Context>) newProcessor);
@@ -64,6 +56,14 @@ public class MeshineryTask<Key, Output extends Context> {
     this.outputKeys = outputKeys;
     this.executorService = executorService;
     this.inputKey = inputKey;
+  }
+
+  public static <Key, Output extends Context> MeshineryTask<Key, Output> builder() {
+    return new MeshineryTask<>();
+  }
+
+  List<Output> getInputValues() {
+    return inputSource.getInputs(inputKey);
   }
 
   public MeshineryTask<Key, Output> defaultOutputSource(OutputSource<Key, Output> outputSource) {
@@ -87,7 +87,9 @@ public class MeshineryTask<Key, Output extends Context> {
     return this;
   }
 
-  public <N extends Context> MeshineryTask<Key, N> contextSwitch(OutputSource<Key, N> newOutputSource, Function<Output, N> map) {
+  public <N extends Context> MeshineryTask<Key, N> contextSwitch(
+      OutputSource<Key, N> newOutputSource, Function<Output, N> map
+  ) {
     return new MeshineryTask<>(
         new LambdaProcessor<>(map),
         processorList,
@@ -139,7 +141,9 @@ public class MeshineryTask<Key, Output extends Context> {
     return temp;
   }
 
-  public final MeshineryTask<Key, Output> write(Key key, Function<Output, Boolean> writeIf, OutputSource<Key, Output> oSource) {
+  public final MeshineryTask<Key, Output> write(
+      Key key, Function<Output, Boolean> writeIf, OutputSource<Key, Output> oSource
+  ) {
     outputKeys.add(key);
 
     return new MeshineryTask<>(
@@ -167,7 +171,9 @@ public class MeshineryTask<Key, Output extends Context> {
     );
   }
 
-  public final MeshineryTask<Key, Output> write(Function<Output, Key> keyFunction, Function<Output, Boolean> writeIf, OutputSource<Key, Output> oSource) {
+  public final MeshineryTask<Key, Output> write(
+      Function<Output, Key> keyFunction, Function<Output, Boolean> writeIf, OutputSource<Key, Output> oSource
+  ) {
     return new MeshineryTask<>(
         new DynamicOutputProcessor<>(writeIf, keyFunction, oSource),
         processorList,
