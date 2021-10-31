@@ -17,7 +17,7 @@ import static org.mockito.ArgumentMatchers.eq;
 class StopIfTest {
 
   public static final String KEY = "Test";
-  public static final TestContext EXPECTED = new TestContext("2",1);
+  public static final TestContext EXPECTED = new TestContext("2", 1);
 
   @RepeatedTest(10)
   @SuppressWarnings("unchecked")
