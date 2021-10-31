@@ -8,28 +8,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import lombok.Getter;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class MeshineryTask<Key, Output extends Context> {
+public class MeshineryTask<K, C extends Context> {
 
   @Getter
   List<MeshineryProcessor<Context, Context>> processorList = new ArrayList<>();
 
   @Getter
-  List<Key> outputKeys = new ArrayList<>();
+  List<K> outputKeys = new ArrayList<>();
 
   @Getter
   ExecutorService executorService;
 
 
   @Getter
-  Key inputKey;
+  K inputKey;
 
   @Getter
-  OutputSource<Key, Output> defaultOutputSource;
+  OutputSource<K, C> defaultOutputSource;
 
-  InputSource<Key, Output> inputSource;
+  InputSource<K, C> inputSource;
 
   @Getter
   String taskName;
@@ -39,14 +40,14 @@ public class MeshineryTask<Key, Output extends Context> {
 
 
   private <Input extends Context> MeshineryTask(
-      MeshineryProcessor<Input, Output> newProcessor,
+      MeshineryProcessor<Input, C> newProcessor,
       List<MeshineryProcessor<Context, Context>> oldProcessorList,
       String name,
       InputSource inputSource,
       OutputSource defaultOutputSource,
       ExecutorService executorService,
-      List<Key> outputKeys,
-      Key inputKey
+      List<K> outputKeys,
+      K inputKey
   ) {
     taskName = name;
     oldProcessorList.add((MeshineryProcessor<Context, Context>) newProcessor);
@@ -62,38 +63,38 @@ public class MeshineryTask<Key, Output extends Context> {
     return new MeshineryTask<>();
   }
 
-  List<Output> getInputValues() {
+  List<C> getInputValues() {
     return inputSource.getInputs(inputKey);
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTask<Key, Output> defaultOutputSource(OutputSource<Key, Output> outputSource) {
+  public MeshineryTask<K, C> defaultOutputSource(OutputSource<K, C> outputSource) {
     this.defaultOutputSource = outputSource;
     return this;
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTask<Key, Output> inputSource(InputSource<Key, Output> inputSource) {
+  public MeshineryTask<K, C> inputSource(InputSource<K, C> inputSource) {
     this.inputSource = inputSource;
     return this;
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTask<Key, Output> read(Key inputKey, ExecutorService executorService) {
+  public MeshineryTask<K, C> read(K inputKey, ExecutorService executorService) {
     this.executorService = executorService;
     this.inputKey = inputKey;
     return this;
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTask<Key, Output> taskName(String name) {
+  public MeshineryTask<K, C> taskName(String name) {
     taskName = name;
     return this;
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public <N extends Context> MeshineryTask<Key, N> contextSwitch(
-      OutputSource<Key, N> newOutputSource, Function<Output, N> map
+  public <N extends Context> MeshineryTask<K, N> contextSwitch(
+      OutputSource<K, N> newOutputSource, Function<C, N> map
   ) {
     return new MeshineryTask<>(
         new LambdaProcessor<>(map),
@@ -108,7 +109,7 @@ public class MeshineryTask<Key, Output extends Context> {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTask<Key, Output> stopIf(Function<Output, Boolean> stopIf) {
+  public MeshineryTask<K, C> stopIf(Predicate<C> stopIf) {
     return new MeshineryTask<>(
         new StopProcessor<>(stopIf),
         processorList,
@@ -122,7 +123,7 @@ public class MeshineryTask<Key, Output extends Context> {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTask<Key, Output> process(MeshineryProcessor<Output, Output> processor) {
+  public MeshineryTask<K, C> process(MeshineryProcessor<C, C> processor) {
     return new MeshineryTask<>(
         processor,
         processorList,
@@ -136,23 +137,23 @@ public class MeshineryTask<Key, Output extends Context> {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public final MeshineryTask<Key, Output> write(Key key, OutputSource<Key, Output> outputSource) {
+  public final MeshineryTask<K, C> write(K key, OutputSource<K, C> outputSource) {
     return write(key, x -> true, outputSource);
   }
 
   @SafeVarargs
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public final MeshineryTask<Key, Output> write(Key... keys) {
+  public final MeshineryTask<K, C> write(K... keys) {
     var temp = this;
-    for (Key key : keys) {
+    for (K key : keys) {
       temp = temp.write(key, x -> true, defaultOutputSource);
     }
     return temp;
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public final MeshineryTask<Key, Output> write(
-      Key key, Function<Output, Boolean> writeIf, OutputSource<Key, Output> outputSource
+  public final MeshineryTask<K, C> write(
+      K key, Function<C, Boolean> writeIf, OutputSource<K, C> outputSource
   ) {
     outputKeys.add(key);
 
@@ -169,7 +170,7 @@ public class MeshineryTask<Key, Output extends Context> {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public final MeshineryTask<Key, Output> write(Function<Output, Key> keyFunction, Function<Output, Boolean> writeIf) {
+  public final MeshineryTask<K, C> write(Function<C, K> keyFunction, Function<C, Boolean> writeIf) {
     return new MeshineryTask<>(
         new DynamicOutputProcessor<>(writeIf, keyFunction, defaultOutputSource),
         processorList,
@@ -183,8 +184,8 @@ public class MeshineryTask<Key, Output extends Context> {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public final MeshineryTask<Key, Output> write(
-      Function<Output, Key> keyFunction, Function<Output, Boolean> writeIf, OutputSource<Key, Output> newOutputSource
+  public final MeshineryTask<K, C> write(
+      Function<C, K> keyFunction, Function<C, Boolean> writeIf, OutputSource<K, C> newOutputSource
   ) {
     return new MeshineryTask<>(
         new DynamicOutputProcessor<>(writeIf, keyFunction, newOutputSource),

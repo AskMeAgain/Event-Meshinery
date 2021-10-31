@@ -9,44 +9,51 @@ import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
-public class ParallelProcessor<Output extends Context> implements MeshineryProcessor<Output, Output> {
+/**
+ * Processor which will process the provided MeshineryProcessors and runs them in parallel. The executor of this
+ * processor will run all the child processors.
+ *
+ * @param <C> ContextType
+ */
+public class ParallelProcessor<C extends Context> implements MeshineryProcessor<C, C> {
 
-  List<MeshineryProcessor<Output, Output>> processorList;
-  Function<List<Output>, Output> combine;
+  List<MeshineryProcessor<C, C>> processorList;
+  Function<List<C>, C> combine;
 
   private ParallelProcessor(
-      List<MeshineryProcessor<Output, Output>> processorList,
-      Function<List<Output>, Output> function
+      List<MeshineryProcessor<C, C>> processorList,
+      Function<List<C>, C> function
   ) {
     this.processorList = processorList;
     this.combine = function;
   }
 
-  public static <Output extends Context> ParallelProcessor.Builder<Output> builder() {
+  public static <C extends Context> ParallelProcessor.Builder<C> builder() {
     return new ParallelProcessor.Builder<>();
   }
 
   @Override
-  public CompletableFuture<Output> processAsync(Output context, Executor executor) {
+  public CompletableFuture<C> processAsync(C context, Executor executor) {
 
     var futures = processorList.stream()
-                               .map(x -> x.processAsync(context, executor))
-                               .collect(Collectors.toList());
+        .map(x -> x.processAsync(context, executor))
+        .collect(Collectors.toList());
 
     return allOf(futures).thenApply(combine);
   }
 
-  private <T> CompletableFuture<List<T>> allOf(List<CompletableFuture<T>> futuresList) {
+  private <T extends Context> CompletableFuture<List<T>> allOf(List<CompletableFuture<T>> futuresList) {
     var array = futuresList.toArray(new CompletableFuture[futuresList.size()]);
     var allFuturesResult = CompletableFuture.allOf(array);
 
-    return allFuturesResult.thenApply(
-        v -> futuresList.stream().map(CompletableFuture::join).collect(Collectors.<T>toList())
-    );
+    return allFuturesResult.thenApply(result -> futuresList.stream().map(CompletableFuture::join).toList());
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocType")
+  /**
+   * Builder class of @see ParallelProcessor
+   *
+   * @param <Output> ContextType
+   */
   public static class Builder<Output extends Context> {
 
     List<MeshineryProcessor<Output, Output>> processorList;

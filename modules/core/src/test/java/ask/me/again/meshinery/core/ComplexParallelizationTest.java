@@ -1,7 +1,6 @@
 package ask.me.again.meshinery.core;
 
 import ask.me.again.meshinery.core.common.AbstractTestBase;
-import ask.me.again.meshinery.core.common.ListProcessor;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.core.common.RoundRobinScheduler;
@@ -10,6 +9,7 @@ import ask.me.again.meshinery.core.common.processor.TestContextProcessor;
 import ask.me.again.meshinery.core.common.processor.ToTestContext2Processor;
 import ask.me.again.meshinery.core.common.processor.ToTestContextProcessor;
 import ask.me.again.meshinery.core.common.sources.TestInputSource;
+import ask.me.again.meshinery.core.processors.ComposableProcessor;
 import ask.me.again.meshinery.core.processors.ParallelProcessor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +38,7 @@ public class ComplexParallelizationTest extends AbstractTestBase {
         .inputSource(inputSource)
         .defaultOutputSource(outputMock)
         .process(ParallelProcessor.<TestContext>builder()
-            .parallel(ListProcessor.<TestContext>builder()
+            .parallel(ComposableProcessor.<TestContext>builder()
                 .process(new ToTestContext2Processor(1))
                 .process(new ToTestContextProcessor(2)))
             .parallel(new TestContextProcessor(30))

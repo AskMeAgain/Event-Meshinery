@@ -4,19 +4,19 @@ import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Function;
-import lombok.RequiredArgsConstructor;
+import java.util.function.Predicate;
 
-@RequiredArgsConstructor
-@SuppressWarnings("checkstyle:MissingJavadocType")
-public class StopProcessor<I extends Context> implements MeshineryProcessor<I, I> {
-
-  private final Function<I, Boolean> stopIf;
+/**
+ * Processor which takes a predicate. It will return null if the predicate is true, which means the scheduler will
+ * stop processing this entry further. Is equivalent to .filter() in Java streams
+ * @param <C> Context type
+ */
+public record StopProcessor<C extends Context>(Predicate<C> stopIf) implements MeshineryProcessor<C, C> {
 
   @Override
-  public CompletableFuture<I> processAsync(I context, Executor executor) {
+  public CompletableFuture<C> processAsync(C context, Executor executor) {
 
-    if (stopIf.apply(context)) {
+    if (stopIf.test(context)) {
       return CompletableFuture.completedFuture(null);
     }
 
