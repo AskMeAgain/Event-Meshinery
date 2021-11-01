@@ -200,7 +200,14 @@ public class MeshineryTask<K, C extends Context> {
     return temp;
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  /**
+   * Writes an event if a predicate returns true. Takes an Outputsource which overrides the defaultOutputSource
+   *
+   * @param key          Key to be used
+   * @param writeIf      predicate to be used
+   * @param outputSource The outputsource to be used.
+   * @return returns itself for builder pattern
+   */
   public final MeshineryTask<K, C> write(K key, Predicate<C> writeIf, OutputSource<K, C> outputSource) {
     outputKeys.add(key);
 
@@ -216,7 +223,13 @@ public class MeshineryTask<K, C extends Context> {
     );
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  /**
+   * Writes an event if a predicate returns true and uses a dynamic KeyFunction. Uses the defaultOutputSource.
+   *
+   * @param keyFunction Keyfunction to be used
+   * @param writeIf     predicate to be used
+   * @return returns itself for builder pattern
+   */
   public final MeshineryTask<K, C> write(Function<C, K> keyFunction, Predicate<C> writeIf) {
     return new MeshineryTask<>(
         new DynamicOutputProcessor<>(writeIf, keyFunction, defaultOutputSource),
@@ -230,7 +243,14 @@ public class MeshineryTask<K, C extends Context> {
     );
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  /**
+   * Writes an event if a predicate returns true and uses a dynamic KeyFunction. Used the provided OutputSource
+   *
+   * @param keyFunction     Keyfunction to be used
+   * @param writeIf         predicate to be used
+   * @param newOutputSource Outputsource to be used
+   * @return returns itself for builder pattern
+   */
   public final MeshineryTask<K, C> write(
       Function<C, K> keyFunction,
       Predicate<C> writeIf,
