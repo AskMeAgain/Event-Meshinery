@@ -5,15 +5,15 @@ import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.OutputSource;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public record OutputProcessor<Key, Input extends Context>(Key key, Function<Input, Boolean> writeIf,
-    OutputSource<Key, Input> outputSource) implements MeshineryProcessor<Input, Input> {
+public record OutputProcessor<K, I extends Context>(K key, Predicate<I> writeIf, OutputSource<K, I> outputSource)
+    implements MeshineryProcessor<I, I> {
 
   @Override
-  public CompletableFuture<Input> processAsync(Input context, Executor executor) {
-    if (writeIf.apply(context)) {
+  public CompletableFuture<I> processAsync(I context, Executor executor) {
+    if (writeIf.test(context)) {
       outputSource.writeOutput(key, context);
     }
 

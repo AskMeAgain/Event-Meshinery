@@ -67,35 +67,62 @@ public class MeshineryTask<K, C extends Context> {
     return inputSource.getInputs(inputKey);
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  /**
+   * Specifies the default output source of a task. This can be overridden by switching the context
+   * or by providing another Outputsource to a write() call
+   *
+   * @param outputSource The source
+   * @return returns itself for builder pattern
+   */
   public MeshineryTask<K, C> defaultOutputSource(OutputSource<K, C> outputSource) {
     this.defaultOutputSource = outputSource;
     return this;
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  /**
+   * The Inputsource of this MeshineryTask.
+   *
+   * @param inputSource The source
+   * @return returns itself for builder pattern
+   */
   public MeshineryTask<K, C> inputSource(InputSource<K, C> inputSource) {
     this.inputSource = inputSource;
     return this;
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  /**
+   * Reads from the inputsource with the provided key. Uses the executorService to query the inputData.
+   *
+   * @param inputKey        The Key to be used in the Inputsource
+   * @param executorService The executorService to be used in the Inputsource
+   * @return returns itself for builder pattern
+   */
   public MeshineryTask<K, C> read(K inputKey, ExecutorService executorService) {
     this.executorService = executorService;
     this.inputKey = inputKey;
     return this;
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  /**
+   * Method used to set a name for a MeshineryTask. This name will be used for the drawer methods and general logging
+   *
+   * @param name the name
+   * @return returns itself for builder pattern
+   */
   public MeshineryTask<K, C> taskName(String name) {
     taskName = name;
     return this;
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public <N extends Context> MeshineryTask<K, N> contextSwitch(
-      OutputSource<K, N> newOutputSource, Function<C, N> map
-  ) {
+  /**
+   * Context switch in a task. Needs a mapping method and a new defaultOutputsource to write to.
+   *
+   * @param newOutputSource new Outputsource to be used further down in the processor list
+   * @param map             mapping function from one Context to another
+   * @param <N>             Type of the new Context
+   * @return returns itself for builder pattern
+   */
+  public <N extends Context> MeshineryTask<K, N> contextSwitch(OutputSource<K, N> newOutputSource, Function<C, N> map) {
     return new MeshineryTask<>(
         new LambdaProcessor<>(map),
         processorList,
@@ -108,7 +135,13 @@ public class MeshineryTask<K, C extends Context> {
     );
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  /**
+   * Adds a processor to a MeshineryTask which stops the processing of a single event when the provided Predicate
+   * returns true. Equivalent to Java Streams .filter() method
+   *
+   * @param stopIf Predicate to use
+   * @return returns itself for builder pattern
+   */
   public MeshineryTask<K, C> stopIf(Predicate<C> stopIf) {
     return new MeshineryTask<>(
         new StopProcessor<>(stopIf),
@@ -122,7 +155,12 @@ public class MeshineryTask<K, C extends Context> {
     );
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  /**
+   * Adds a new processor the the list. Will be run in order
+   *
+   * @param processor will be added
+   * @return returns itself for builder pattern
+   */
   public MeshineryTask<K, C> process(MeshineryProcessor<C, C> processor) {
     return new MeshineryTask<>(
         processor,
@@ -136,13 +174,24 @@ public class MeshineryTask<K, C extends Context> {
     );
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  /**
+   * Writes an event to an OutputSource.
+   *
+   * @param key          the key to be used in the OutputSource
+   * @param outputSource the OutputSource which will be used
+   * @return returns itself for builder pattern
+   */
   public final MeshineryTask<K, C> write(K key, OutputSource<K, C> outputSource) {
     return write(key, x -> true, outputSource);
   }
 
+  /**
+   * Writes an event for each provided key to an OutputSource
+   *
+   * @param keys keys to be used
+   * @return returns itself for builder pattern
+   */
   @SafeVarargs
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public final MeshineryTask<K, C> write(K... keys) {
     var temp = this;
     for (K key : keys) {
@@ -152,9 +201,7 @@ public class MeshineryTask<K, C extends Context> {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public final MeshineryTask<K, C> write(
-      K key, Function<C, Boolean> writeIf, OutputSource<K, C> outputSource
-  ) {
+  public final MeshineryTask<K, C> write(K key, Predicate<C> writeIf, OutputSource<K, C> outputSource) {
     outputKeys.add(key);
 
     return new MeshineryTask<>(
@@ -170,7 +217,7 @@ public class MeshineryTask<K, C extends Context> {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public final MeshineryTask<K, C> write(Function<C, K> keyFunction, Function<C, Boolean> writeIf) {
+  public final MeshineryTask<K, C> write(Function<C, K> keyFunction, Predicate<C> writeIf) {
     return new MeshineryTask<>(
         new DynamicOutputProcessor<>(writeIf, keyFunction, defaultOutputSource),
         processorList,
@@ -185,7 +232,9 @@ public class MeshineryTask<K, C extends Context> {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public final MeshineryTask<K, C> write(
-      Function<C, K> keyFunction, Function<C, Boolean> writeIf, OutputSource<K, C> newOutputSource
+      Function<C, K> keyFunction,
+      Predicate<C> writeIf,
+      OutputSource<K, C> newOutputSource
   ) {
     return new MeshineryTask<>(
         new DynamicOutputProcessor<>(writeIf, keyFunction, newOutputSource),
