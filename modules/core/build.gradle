@@ -1,3 +1,9 @@
 plugins {
     id 'java'
 }
+
+dependencies {
+
+    implementation 'com.cronutils:cron-utils:9.1.5'
+
+}
