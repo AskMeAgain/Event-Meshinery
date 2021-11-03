@@ -13,7 +13,7 @@ class CronInputSourceTest {
   @SneakyThrows
   @RepeatedTest(100)
   void testCronInputSecond() {
-    //Arrange ----------------------------------------------------------------------------------------------------------
+    //Arrange ----------------------------------------------------------------------------------------------------------1
     long currentSecond = getCurrentSecond();
 
     var cron = currentSecond + "/2 * * * * *";
