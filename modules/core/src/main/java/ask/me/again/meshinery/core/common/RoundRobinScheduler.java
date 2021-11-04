@@ -62,7 +62,7 @@ public class RoundRobinScheduler {
     //we use this label to break out of the task in case we dont want to work on it
     newTask:
     while (!internalShutdown || !todoQueue.isEmpty()) {
-      var currentTask = todoQueue.remove();
+      var currentTask = todoQueue.poll();
 
       if (currentTask == null) {
         Thread.sleep(500);
@@ -170,8 +170,15 @@ public class RoundRobinScheduler {
     }
 
     @SneakyThrows
+    @SuppressWarnings("checkstyle:MissingJavadocMethod")
     public RoundRobinScheduler build() {
-      return new RoundRobinScheduler(tasks, executorServices, todoQueue, backpressureLimit, isBatchJob).start();
+      return new RoundRobinScheduler(
+          tasks,
+          executorServices,
+          todoQueue,
+          backpressureLimit,
+          isBatchJob
+      ).start();
     }
   }
 }

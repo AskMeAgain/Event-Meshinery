@@ -18,11 +18,9 @@
         <module name="EventMeshinery.modules.connectors.kafka.kafka-connector.main" />
         <module name="EventMeshinery.examples.spring-kafka-app.test" />
         <module name="EventMeshinery.modules.connectors.kafka.kafka-connector.test" />
-        <module name="EventMeshinery.modules.connectors.memory.memory-connector.main" />
         <module name="EventMeshinery.modules.connectors.kafka.kafka-connector-config.main" />
         <module name="EventMeshinery.examples.base-app.test" />
         <module name="EventMeshinery.modules.draw-config.test" />
-        <module name="EventMeshinery.modules.connectors.memory.memory-connector.test" />
         <module name="EventMeshinery.examples.base-app.main" />
         <module name="EventMeshinery.modules.connectors.kafka.kafka-connector-config.test" />
         <module name="EventMeshinery.modules.draw.main" />

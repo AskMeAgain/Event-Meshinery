@@ -1,17 +1,17 @@
 package ask.me.again.meshinery.example.entities;
 
+import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
-import ask.me.again.meshinery.example.TestContext;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import org.springframework.stereotype.Component;
 
 @Component
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class ProcessorA implements MeshineryProcessor<TestContext, TestContext> {
+public class ProcessorA implements MeshineryProcessor<Context, Context> {
 
   @Override
-  public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
+  public CompletableFuture<Context> processAsync(Context context, Executor executor) {
     return CompletableFuture.supplyAsync(() -> {
 
       System.out.println("Rest call");
@@ -20,11 +20,9 @@ public class ProcessorA implements MeshineryProcessor<TestContext, TestContext> 
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      System.out.println("Received: " + context.getTestValue1());
+      System.out.println("Received: " + context.getId());
 
-      return context.toBuilder()
-                    .testValue1(context.getTestValue1() + 1)
-                    .build();
+      return context;
 
     }, executor);
   }

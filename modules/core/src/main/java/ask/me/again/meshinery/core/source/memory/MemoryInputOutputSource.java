@@ -1,4 +1,4 @@
-package ask.me.again.meshinery.connectors.memory;
+package ask.me.again.meshinery.core.source.memory;
 
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.InputSource;

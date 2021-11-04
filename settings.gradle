@@ -3,7 +3,6 @@ rootProject.name = 'EventMeshinery'
 include('modules:core')
 include('modules:draw')
 include('modules:draw-config')
-include('modules:connectors:memory:memory-connector')
 include('modules:connectors:kafka:kafka-connector')
 include('modules:connectors:kafka:kafka-connector-config')
 include('modules:connectors:mysql:mysql-connector')

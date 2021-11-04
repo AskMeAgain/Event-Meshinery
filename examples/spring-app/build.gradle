@@ -7,5 +7,5 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
 
     implementation project(':modules:spring-config');
-    implementation project(':modules:connectors:memory:memory-connector');
+    implementation project(':modules:draw-config');
 }

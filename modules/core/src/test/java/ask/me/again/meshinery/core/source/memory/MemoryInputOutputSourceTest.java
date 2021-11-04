@@ -1,11 +1,10 @@
-package ask.me.again.meshinery.connectors.memory;
+package ask.me.again.meshinery.core.source.memory;
 
 import ask.me.again.meshinery.core.common.Context;
 import lombok.Builder;
 import lombok.Value;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class MemoryInputOutputSourceTest {
 
@@ -24,9 +23,9 @@ class MemoryInputOutputSourceTest {
     var resultEmpty2 = inputOutput.getInputs("TestKey");
 
     //Assert ----------------------------------------------------------------------------------
-    assertThat(result).first().isEqualTo(input);
-    assertThat(resultEmpty).isNull();
-    assertThat(resultEmpty2).isNull();
+    Assertions.assertThat(result).first().isEqualTo(input);
+    Assertions.assertThat(resultEmpty).isNull();
+    Assertions.assertThat(resultEmpty2).isNull();
   }
 
   @Value
