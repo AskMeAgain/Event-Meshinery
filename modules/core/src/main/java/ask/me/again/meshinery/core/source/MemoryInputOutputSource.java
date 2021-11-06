@@ -1,9 +1,10 @@
-package ask.me.again.meshinery.core.source.memory;
+package ask.me.again.meshinery.core.source;
 
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.OutputSource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +30,7 @@ public class MemoryInputOutputSource<K, C extends Context> implements InputSourc
       }
     }
 
-    return list.size() == 0 ? null : list;
+    return list.size() == 0 ? Collections.emptyList() : list;
   }
 
   @Override

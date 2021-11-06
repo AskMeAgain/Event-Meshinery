@@ -10,21 +10,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class ProcessorA implements MeshineryProcessor<Context, Context> {
+public class ProcessorFinished implements MeshineryProcessor<Context, Context> {
 
   @Override
   public CompletableFuture<Context> processAsync(Context context, Executor executor) {
     return CompletableFuture.supplyAsync(() -> {
 
-      log.info("Rest call '{}'", context.getId());
-
-      try {
-        Thread.sleep(3000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-
-      log.info("Received: '{}'", context.getId());
+      log.info("Finished Request '{}'", context.getId());
 
       return context;
 

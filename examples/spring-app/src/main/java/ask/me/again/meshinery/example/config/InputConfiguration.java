@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.example.config;
 
 import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.source.memory.MemoryInputOutputSource;
+import ask.me.again.meshinery.core.source.MemoryInputOutputSource;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.springframework.context.annotation.Bean;

@@ -30,7 +30,7 @@ public class RoundRobinScheduler {
 
   @SneakyThrows
   RoundRobinScheduler start() {
-
+    System.out.println("Starting Scheduler with %s tasks".formatted(tasks.size()));
     //task gathering
     tasks.forEach(task -> executorServices.add(task.getExecutorService()));
 
@@ -111,6 +111,10 @@ public class RoundRobinScheduler {
             var inputList = reactiveTask.getInputValues();
             var executorService = reactiveTask.getExecutorService();
 
+            if(inputList == null){
+              System.out.println("input list is null in task: " + reactiveTask.taskName);
+            }
+
             for (var input : inputList) {
               itemsInThisIteration++;
               var processorQueue = new LinkedList<>(reactiveTask.getProcessorList());
@@ -159,8 +163,8 @@ public class RoundRobinScheduler {
       return this;
     }
 
-    public Builder tasks(List<MeshineryTask<?, ? extends Context>> tasks) {
-      tasks.addAll(tasks);
+    public Builder tasks(List<MeshineryTask<?, ? extends Context>> task) {
+      tasks.addAll(task);
       return this;
     }
 

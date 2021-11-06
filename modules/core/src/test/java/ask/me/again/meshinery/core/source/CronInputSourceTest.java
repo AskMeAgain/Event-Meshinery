@@ -1,4 +1,4 @@
-package ask.me.again.meshinery.core.source.cron;
+package ask.me.again.meshinery.core.source;
 
 import ask.me.again.meshinery.core.common.context.TestContext;
 import com.cronutils.model.CronType;

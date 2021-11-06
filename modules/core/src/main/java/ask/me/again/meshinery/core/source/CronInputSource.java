@@ -1,4 +1,4 @@
-package ask.me.again.meshinery.core.source.cron;
+package ask.me.again.meshinery.core.source;
 
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.InputSource;

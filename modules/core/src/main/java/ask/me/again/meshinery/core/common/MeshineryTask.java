@@ -4,9 +4,11 @@ import ask.me.again.meshinery.core.processors.DynamicOutputProcessor;
 import ask.me.again.meshinery.core.processors.LambdaProcessor;
 import ask.me.again.meshinery.core.processors.OutputProcessor;
 import ask.me.again.meshinery.core.processors.StopProcessor;
+import ask.me.again.meshinery.core.source.JoinedInputSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import lombok.Getter;
@@ -103,6 +105,11 @@ public class MeshineryTask<K, C extends Context> {
     return this;
   }
 
+  public MeshineryTask<K, C> joinOn(InputSource<K, C> rightInputSource, K rightKey, BiFunction<C, C, C> combine) {
+    this.inputSource = new JoinedInputSource<K, C>(inputSource, rightInputSource, rightKey, combine);
+    return this;
+  }
+
   /**
    * Method used to set a name for a MeshineryTask. This name will be used for the drawer methods and general logging
    *
@@ -136,7 +143,7 @@ public class MeshineryTask<K, C extends Context> {
   }
 
   /**
-   * Adds a processor to a MeshineryTask which stops the processing of a single event when the provided Predicate
+   * Adds a processor to a MeshineryTask, which stops the processing of a single event when the provided Predicate
    * returns true. Equivalent to Java Streams .filter() method
    *
    * @param stopIf Predicate to use

@@ -5,6 +5,7 @@ import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.example.entities.ProcessorA;
+import ask.me.again.meshinery.example.entities.ProcessorFinished;
 import java.util.concurrent.ExecutorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,7 @@ public class ExampleTaskConfiguration {
   private final ExecutorService executorService;
 
   private final ProcessorA processorA;
+  private final ProcessorFinished processorFinished;
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
@@ -61,6 +63,17 @@ public class ExampleTaskConfiguration {
         .read("right", executorService)
         .process(processorA)
         .write("after-right");
+  }
+
+  @Bean
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  public MeshineryTask<String, Context> join() {
+    return basicTask()
+        .taskName("Right")
+        .read("after-right", executorService)
+        .joinOn(inputSource, "after-left", (l, r) -> l)
+        .process(processorFinished)
+        .write("finished");
   }
 
   private MeshineryTask<String, Context> basicTask() {
