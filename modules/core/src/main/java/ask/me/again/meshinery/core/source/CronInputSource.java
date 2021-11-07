@@ -13,7 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class CronInputSource<C extends Context> implements InputSource<String, C> {
@@ -40,7 +42,10 @@ public class CronInputSource<C extends Context> implements InputSource<String, C
 
         addNewCronEntry(cron, now);
 
+        log.error("Running scheduled Task");
         return List.of(supplier.get());
+      } else {
+        return Collections.emptyList();
       }
     }
 

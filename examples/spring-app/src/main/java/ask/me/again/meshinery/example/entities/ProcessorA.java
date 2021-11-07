@@ -16,15 +16,15 @@ public class ProcessorA implements MeshineryProcessor<Context, Context> {
   public CompletableFuture<Context> processAsync(Context context, Executor executor) {
     return CompletableFuture.supplyAsync(() -> {
 
-      log.info("Rest call '{}'", context.getId());
+      //log.info("Rest call '{}'", context.getId());
 
       try {
-        Thread.sleep(3000);
+        Thread.sleep(1000);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
 
-      log.info("Received: '{}'", context.getId());
+      //log.info("Received: '{}'", context.getId());
 
       return context;
 

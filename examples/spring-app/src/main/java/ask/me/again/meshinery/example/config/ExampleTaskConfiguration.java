@@ -41,7 +41,7 @@ public class ExampleTaskConfiguration {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, Context> task2() {
     return basicTask()
-        .taskName("Pre Split Task")
+        .taskName("Pre Split")
         .read("pre-split", executorService)
         .process(processorA)
         .write("left")
@@ -72,9 +72,9 @@ public class ExampleTaskConfiguration {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, Context> join() {
     return basicTask()
-        .taskName("Right")
-        .read("after-right", executorService)
-        .joinOn(inputSource, "after-left", (l, r) -> l)
+        .taskName("Join")
+        .read("after-left", executorService)
+        .joinOn(inputSource, "after-right", (l, r) -> l)
         .process(processorFinished)
         .write("finished");
   }
@@ -89,7 +89,7 @@ public class ExampleTaskConfiguration {
         .inputSource(contextCronInputSource)
         .defaultOutputSource(outputSource)
         .taskName("Cron Heartbeat")
-        .read("0/5 * * * * *", executorService)
+        .read("0/1 * * * * *", executorService)
         .write("start");
   }
 
