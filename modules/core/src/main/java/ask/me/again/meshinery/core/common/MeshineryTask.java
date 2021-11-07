@@ -193,7 +193,7 @@ public class MeshineryTask<K, C extends Context> {
   }
 
   /**
-   * Writes an event for each provided key to an OutputSource
+   * Writes an event for each provided key to an OutputSource.
    *
    * @param keys keys to be used
    * @return returns itself for builder pattern

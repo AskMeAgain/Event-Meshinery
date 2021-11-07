@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * Processor which writes to an OutputSource with a dynamic key, calculated for each Context
+ * Processor which writes to an OutputSource with a dynamic key, calculated for each Context.
  *
  * @param <K> KeyType
  * @param <C> ContextType

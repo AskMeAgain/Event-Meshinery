@@ -11,6 +11,7 @@ import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class JoinedInputSource<K, C extends Context> implements InputSource<K, C> {
 
   private final InputSource<K, C> leftInputSource;

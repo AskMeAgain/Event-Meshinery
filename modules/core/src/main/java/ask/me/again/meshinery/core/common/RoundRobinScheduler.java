@@ -1,6 +1,5 @@
 package ask.me.again.meshinery.core.common;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +10,9 @@ import java.util.concurrent.Executors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinScheduler {
@@ -30,7 +31,7 @@ public class RoundRobinScheduler {
 
   @SneakyThrows
   RoundRobinScheduler start() {
-    System.out.println("Starting Scheduler with %s tasks".formatted(tasks.size()));
+    log.info("Starting Scheduler with the following Tasks: {}", tasks.stream().map(MeshineryTask::getTaskName).toList());
     //task gathering
     tasks.forEach(task -> executorServices.add(task.getExecutorService()));
 
@@ -50,14 +51,14 @@ public class RoundRobinScheduler {
   }
 
   public void gracefulShutdown() {
-    System.out.println("Graceful shutdown");
+    log.info("Graceful shutdown");
     internalShutdown = true;
   }
 
   @SneakyThrows
   private void runWorker() {
 
-    System.out.println("Workerthread started at: " + Instant.now());
+    log.info("Starting processing worker thread");
 
     //we use this label to break out of the task in case we dont want to work on it
     newTask:
@@ -89,7 +90,7 @@ public class RoundRobinScheduler {
       todoQueue.add(currentTask);
     }
 
-    System.out.println("Reached end of Queue");
+    log.info("Reached end of Queue. Shutting down now");
 
     for (var executorService : executorServices) {
       if (!executorService.isShutdown()) {
@@ -100,6 +101,7 @@ public class RoundRobinScheduler {
 
   private void createInputScheduler(ExecutorService executor) {
     executor.execute(() -> {
+      log.info("Starting input worker thread");
       newInputIteration:
       while (!executor.isShutdown()) {
 
@@ -110,10 +112,6 @@ public class RoundRobinScheduler {
             //getting the input values
             var inputList = reactiveTask.getInputValues();
             var executorService = reactiveTask.getExecutorService();
-
-            if(inputList == null){
-              System.out.println("input list is null in task: " + reactiveTask.taskName);
-            }
 
             for (var input : inputList) {
               itemsInThisIteration++;
@@ -133,7 +131,7 @@ public class RoundRobinScheduler {
 
         //we did not add any work in a single iteration. We are done
         if (itemsInThisIteration == 0 && isBatchJob) {
-          System.out.println("Shutdown through batch job flag");
+          log.info("Shutdown through batch job flag");
           gracefulShutdown();
           break;
         }

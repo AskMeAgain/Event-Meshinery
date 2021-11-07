@@ -1,9 +1,9 @@
 plugins {
-    id 'java'
+    id 'java-library'
 }
 
 dependencies {
 
-    implementation 'com.cronutils:cron-utils:9.1.5'
+    api 'com.cronutils:cron-utils:9.1.5'
 
 }

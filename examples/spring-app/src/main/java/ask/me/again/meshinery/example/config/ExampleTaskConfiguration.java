@@ -4,9 +4,12 @@ import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.common.OutputSource;
+import ask.me.again.meshinery.core.source.CronInputSource;
 import ask.me.again.meshinery.example.entities.ProcessorA;
 import ask.me.again.meshinery.example.entities.ProcessorFinished;
+import com.cronutils.model.CronType;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -74,6 +77,24 @@ public class ExampleTaskConfiguration {
         .joinOn(inputSource, "after-left", (l, r) -> l)
         .process(processorFinished)
         .write("finished");
+  }
+
+  @Bean
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  public MeshineryTask<String, Context> heartbeat() {
+    var atomicInt = new AtomicInteger();
+    var contextCronInputSource = new CronInputSource<>(CronType.SPRING, () -> createNewContext(atomicInt.incrementAndGet()));
+
+    return MeshineryTask.<String, Context>builder()
+        .inputSource(contextCronInputSource)
+        .defaultOutputSource(outputSource)
+        .taskName("Cron Heartbeat")
+        .read("0/5 * * * * *", executorService)
+        .write("start");
+  }
+
+  private Context createNewContext(int index) {
+    return () -> index + "";
   }
 
   private MeshineryTask<String, Context> basicTask() {

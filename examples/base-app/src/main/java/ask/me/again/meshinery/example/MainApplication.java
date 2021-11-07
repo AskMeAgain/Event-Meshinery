@@ -10,7 +10,9 @@ import ask.me.again.meshinery.example.entities.ProcessorB;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MainApplication {
 
@@ -63,7 +65,7 @@ public class MainApplication {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      System.out.println("turning off");
+      log.info("turning off");
       scheduler.gracefulShutdown();
     });
 

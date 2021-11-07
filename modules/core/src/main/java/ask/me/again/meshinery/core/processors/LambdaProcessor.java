@@ -7,7 +7,7 @@ import java.util.concurrent.Executor;
 import java.util.function.Function;
 
 /**
- * Processor which takes a lambda and maps from one context to another
+ * Processor which takes a lambda and maps from one context to another.
  *
  * @param <I> InputType
  * @param <O> OutputType

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
@@ -41,7 +43,7 @@ public class ExampleController {
   @GetMapping("shutdown")
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public void shutdown() {
-    System.out.println("Gracefully Shutdown");
+    log.info("Gracefully Shutdown");
     atomicBoolean.set(false);
     executorService.shutdown();
     ((ConfigurableApplicationContext) context).close();
@@ -68,7 +70,7 @@ public class ExampleController {
   @GetMapping("produce/{topic}")
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public void insertData(@PathVariable("topic") String topic) throws JsonProcessingException {
-    System.out.println("Inserted Data");
+    log.info("Inserted Data");
 
     counter++;
 

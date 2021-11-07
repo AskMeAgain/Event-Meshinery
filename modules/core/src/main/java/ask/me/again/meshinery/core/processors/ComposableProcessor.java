@@ -28,7 +28,8 @@ public class ComposableProcessor<I extends Context, O extends Context> implement
   }
 
   /**
-   * Initiates a builder for the ComposableProcessor
+   * Initiates a builder for the ComposableProcessor.
+   *
    * @param <I> Input Type
    * @return returns itself for builder pattern
    */
@@ -37,7 +38,7 @@ public class ComposableProcessor<I extends Context, O extends Context> implement
   }
 
   /**
-   * Adds a new MeshineryProcessor to the ComposableProcessor
+   * Adds a new MeshineryProcessor to the ComposableProcessor.
    *
    * @param newProcessor Processor
    * @param <N>          New return type

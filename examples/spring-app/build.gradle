@@ -8,4 +8,6 @@ dependencies {
 
     implementation project(':modules:spring-config');
     implementation project(':modules:draw-config');
+
+    implementation 'ch.qos.logback:logback-classic:1.2.6'
 }

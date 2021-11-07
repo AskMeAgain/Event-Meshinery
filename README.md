@@ -108,10 +108,10 @@ implementation is the same as the one provided in MeshineryTask.
         public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
               return CompletableFuture.supplyAsync(() -> {
         
-              System.out.println("Rest call");
+              log.info("Rest call");
               Thread.sleep(3000);
             
-              System.out.println("Received: " + context.getTestValue1());
+              log.info("Received: " + context.getTestValue1());
         
               return context.toBuilder()
                 .testValue1(context.getTestValue1() + 1)

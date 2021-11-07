@@ -36,7 +36,7 @@ class CronInputSourceTest {
   private long getCurrentSecond() throws InterruptedException {
     Instant now = Instant.now();
     long epochSecond = now.getEpochSecond();
-    System.out.println(now);
+
     var currentSecond = epochSecond % 60;
     if (currentSecond > 57) {
       //this is a bit hacky, but the tests fail around 58 so we just wait 4 seconds and try again

@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 /**
  * Processor which takes a predicate. It will return null if the predicate is true, which means the scheduler will
  * stop processing this entry further. Is equivalent to .filter() in Java streams
+ *
  * @param <C> Context type
  */
 public record StopProcessor<C extends Context>(Predicate<C> stopIf) implements MeshineryProcessor<C, C> {

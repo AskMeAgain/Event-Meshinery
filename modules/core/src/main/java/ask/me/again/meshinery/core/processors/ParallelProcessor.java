@@ -50,24 +50,24 @@ public class ParallelProcessor<C extends Context> implements MeshineryProcessor<
   }
 
   /**
-   * Builder class of @see ParallelProcessor
+   * Builder class of @see ParallelProcessor.
    *
-   * @param <Output> ContextType
+   * @param <O> ContextType
    */
-  public static class Builder<Output extends Context> {
+  public static class Builder<O extends Context> {
 
-    List<MeshineryProcessor<Output, Output>> processorList;
+    List<MeshineryProcessor<O, O>> processorList;
 
     public Builder() {
       processorList = new ArrayList<>();
     }
 
-    public ParallelProcessor.Builder<Output> parallel(MeshineryProcessor<Output, Output> processor) {
+    public ParallelProcessor.Builder<O> parallel(MeshineryProcessor<O, O> processor) {
       processorList.add(processor);
       return this;
     }
 
-    public ParallelProcessor<Output> combine(Function<List<Output>, Output> function) {
+    public ParallelProcessor<O> combine(Function<List<O>, O> function) {
       return new ParallelProcessor<>(processorList, function);
     }
   }

@@ -24,7 +24,8 @@ subprojects {
             //Testcontainers
             testImplementation 'org.testcontainers:mysql:1.16.0'
 
-            //Logging
+            //logging
+            implementation 'org.slf4j:slf4j-api:1.7.28'
         }
 
         java {
