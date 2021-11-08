@@ -12,7 +12,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryTask<K, C extends Context> {
 
@@ -26,7 +28,10 @@ public class MeshineryTask<K, C extends Context> {
   ExecutorService executorService;
 
   @Getter
-  List<K> inputKeys;
+  K inputKey;
+
+  @Getter
+  GraphData<K> graphData = new GraphData<>();
 
   @Getter
   OutputSource<K, C> defaultOutputSource;
@@ -36,10 +41,6 @@ public class MeshineryTask<K, C extends Context> {
   @Getter
   String taskName;
 
-  private MeshineryTask() {
-  }
-
-
   private <Input extends Context> MeshineryTask(
       MeshineryProcessor<Input, C> newProcessor,
       List<MeshineryProcessor<Context, Context>> oldProcessorList,
@@ -48,7 +49,8 @@ public class MeshineryTask<K, C extends Context> {
       OutputSource defaultOutputSource,
       ExecutorService executorService,
       List<K> outputKeys,
-      List<K> inputKey
+      K inputKey,
+      GraphData<K> graphData
   ) {
     taskName = name;
     oldProcessorList.add((MeshineryProcessor<Context, Context>) newProcessor);
@@ -57,15 +59,16 @@ public class MeshineryTask<K, C extends Context> {
     this.defaultOutputSource = defaultOutputSource;
     this.outputKeys = outputKeys;
     this.executorService = executorService;
-    this.inputKeys = inputKey;
+    this.inputKey = inputKey;
+    this.graphData = graphData;
   }
 
-  public static <Key, Output extends Context> MeshineryTask<Key, Output> builder() {
+  public static <K, C extends Context> MeshineryTask<K, C> builder() {
     return new MeshineryTask<>();
   }
 
   List<C> getInputValues() {
-    return inputSource.getInputs(inputKeys.get(0));
+    return inputSource.getInputs(inputKey);
   }
 
   /**
@@ -100,12 +103,21 @@ public class MeshineryTask<K, C extends Context> {
    */
   public MeshineryTask<K, C> read(K inputKey, ExecutorService executorService) {
     this.executorService = executorService;
-    this.inputKeys = new ArrayList<>(List.of(inputKey));
+    this.inputKey = inputKey;
+    this.graphData.inputKeys.add(inputKey);
     return this;
   }
 
+  /**
+   * Adds another inputsource which gets joined on. As join key the context Id will be used.
+   *
+   * @param rightInputSource the right side of the join sources
+   * @param rightKey         the key of the right source
+   * @param combine          the combine method used to be applied to the join results
+   * @return returns itself for builder pattern
+   */
   public MeshineryTask<K, C> joinOn(InputSource<K, C> rightInputSource, K rightKey, BiFunction<C, C, C> combine) {
-    this.inputKeys.add(rightKey);
+    this.graphData.inputKeys.add(rightKey);
     this.inputSource = new JoinedInputSource<>(inputSource, rightInputSource, rightKey, combine);
     return this;
   }
@@ -130,16 +142,7 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public <N extends Context> MeshineryTask<K, N> contextSwitch(OutputSource<K, N> newOutputSource, Function<C, N> map) {
-    return new MeshineryTask<>(
-        new LambdaProcessor<>(map),
-        processorList,
-        taskName,
-        inputSource,
-        newOutputSource,
-        executorService,
-        outputKeys,
-        inputKeys
-    );
+    return addNewProcessor(new LambdaProcessor<>(map));
   }
 
   /**
@@ -150,16 +153,7 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTask<K, C> stopIf(Predicate<C> stopIf) {
-    return new MeshineryTask<>(
-        new StopProcessor<>(stopIf),
-        processorList,
-        taskName,
-        inputSource,
-        defaultOutputSource,
-        executorService,
-        outputKeys,
-        inputKeys
-    );
+    return addNewProcessor(new StopProcessor<>(stopIf));
   }
 
   /**
@@ -169,16 +163,7 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTask<K, C> process(MeshineryProcessor<C, C> processor) {
-    return new MeshineryTask<>(
-        processor,
-        processorList,
-        taskName,
-        inputSource,
-        defaultOutputSource,
-        executorService,
-        outputKeys,
-        inputKeys
-    );
+    return addNewProcessor(processor);
   }
 
   /**
@@ -218,16 +203,7 @@ public class MeshineryTask<K, C extends Context> {
   public final MeshineryTask<K, C> write(K key, Predicate<C> writeIf, OutputSource<K, C> outputSource) {
     outputKeys.add(key);
 
-    return new MeshineryTask<>(
-        new OutputProcessor<>(key, writeIf, outputSource),
-        processorList,
-        taskName,
-        inputSource,
-        defaultOutputSource,
-        executorService,
-        outputKeys,
-        inputKeys
-    );
+    return addNewProcessor(new OutputProcessor<>(key, writeIf, outputSource));
   }
 
   /**
@@ -238,16 +214,7 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public final MeshineryTask<K, C> write(Function<C, K> keyFunction, Predicate<C> writeIf) {
-    return new MeshineryTask<>(
-        new DynamicOutputProcessor<>(writeIf, keyFunction, defaultOutputSource),
-        processorList,
-        taskName,
-        inputSource,
-        defaultOutputSource,
-        executorService,
-        outputKeys,
-        inputKeys
-    );
+    return addNewProcessor(new DynamicOutputProcessor<>(writeIf, keyFunction, defaultOutputSource));
   }
 
   /**
@@ -263,15 +230,20 @@ public class MeshineryTask<K, C extends Context> {
       Predicate<C> writeIf,
       OutputSource<K, C> newOutputSource
   ) {
+    return addNewProcessor(new DynamicOutputProcessor<>(writeIf, keyFunction, newOutputSource));
+  }
+
+  private <N extends Context> MeshineryTask<K, N> addNewProcessor(MeshineryProcessor<C, N> newProcessor) {
     return new MeshineryTask<>(
-        new DynamicOutputProcessor<>(writeIf, keyFunction, newOutputSource),
+        newProcessor,
         processorList,
         taskName,
         inputSource,
         defaultOutputSource,
         executorService,
         outputKeys,
-        inputKeys
+        inputKey,
+        graphData
     );
   }
 }

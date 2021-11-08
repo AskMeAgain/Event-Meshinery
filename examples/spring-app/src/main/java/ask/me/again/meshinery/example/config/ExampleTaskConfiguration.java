@@ -75,7 +75,6 @@ public class ExampleTaskConfiguration {
         .taskName("Join")
         .read("after-left", executorService)
         .joinOn(inputSource, "after-right", (l, r) -> l)
-        .process(processorFinished)
         .write("after-join");
   }
 
@@ -99,7 +98,7 @@ public class ExampleTaskConfiguration {
         .inputSource(contextCronInputSource)
         .defaultOutputSource(outputSource)
         .taskName("Cron Heartbeat")
-        .read("0/30 * * * * *", executorService)
+        .read("0/3 * * * * *", executorService)
         .write("start");
   }
 

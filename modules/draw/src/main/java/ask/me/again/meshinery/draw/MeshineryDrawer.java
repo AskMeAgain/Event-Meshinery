@@ -33,7 +33,7 @@ public class MeshineryDrawer {
     var edges = new HashSet<Container>();
 
     for (var task : tasks) {
-      for (var inputKey : task.getInputKeys()) {
+      for (var inputKey : task.getGraphData().getInputKeys()) {
         nodeSet.add(inputKey.toString());
         for (var outputKeys : task.getOutputKeys()) {
           edges.add(Container.builder()

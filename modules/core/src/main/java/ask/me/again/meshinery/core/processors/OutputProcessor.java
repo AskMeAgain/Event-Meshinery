@@ -8,11 +8,11 @@ import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public record OutputProcessor<K, I extends Context>(K key, Predicate<I> writeIf, OutputSource<K, I> outputSource)
-    implements MeshineryProcessor<I, I> {
+public record OutputProcessor<K, C extends Context>(K key, Predicate<C> writeIf, OutputSource<K, C> outputSource)
+    implements MeshineryProcessor<C, C> {
 
   @Override
-  public CompletableFuture<I> processAsync(I context, Executor executor) {
+  public CompletableFuture<C> processAsync(C context, Executor executor) {
     if (writeIf.test(context)) {
       outputSource.writeOutput(key, context);
     }
