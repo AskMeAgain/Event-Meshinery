@@ -7,7 +7,7 @@ import ask.me.again.meshinery.core.common.context.TestContext;
 import ask.me.again.meshinery.core.common.sources.TestInputSource;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,7 +18,7 @@ class StopIfTest {
   public static final String KEY = "Test";
   public static final TestContext EXPECTED = new TestContext("2", 1);
 
-  @RepeatedTest(10)
+  @Test
   @SuppressWarnings("unchecked")
   void testStopIf() throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------

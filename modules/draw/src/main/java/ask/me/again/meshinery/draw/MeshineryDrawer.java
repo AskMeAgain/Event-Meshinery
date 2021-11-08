@@ -35,7 +35,7 @@ public class MeshineryDrawer {
     for (var task : tasks) {
       for (var inputKey : task.getGraphData().getInputKeys()) {
         nodeSet.add(inputKey.toString());
-        for (var outputKeys : task.getOutputKeys()) {
+        for (var outputKeys : task.getGraphData().getOutputKeys()) {
           edges.add(Container.builder()
               .name(task.getTaskName())
               .id("%s_%s".formatted(inputKey, outputKeys.toString()))

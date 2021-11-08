@@ -7,7 +7,7 @@ import ask.me.again.meshinery.core.common.processor.TestContextProcessor;
 import ask.me.again.meshinery.core.common.sources.TestInputSource;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +20,7 @@ public class BackpressureTest {
 
   }
 
-  @RepeatedTest(10)
+  @Test
   void testBackpressure() throws InterruptedException {
 
     //Arrange ----------------------------------------------------------------------------------------------------------

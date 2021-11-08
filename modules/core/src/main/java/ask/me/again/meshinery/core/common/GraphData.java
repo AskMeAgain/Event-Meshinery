@@ -9,5 +9,7 @@ import lombok.Getter;
 public class GraphData<K> {
   @Getter
   List<K> inputKeys = new ArrayList<>();
+  @Getter
+  List<K> outputKeys = new ArrayList<>();
 
 }

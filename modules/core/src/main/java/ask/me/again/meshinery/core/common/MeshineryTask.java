@@ -25,9 +25,6 @@ public class MeshineryTask<K, C extends Context> {
   List<MeshineryProcessor<Context, Context>> processorList = new ArrayList<>();
 
   @Getter
-  List<K> outputKeys = new ArrayList<>();
-
-  @Getter
   ExecutorService executorService;
 
   @Getter
@@ -48,14 +45,13 @@ public class MeshineryTask<K, C extends Context> {
   @Getter
   Function<Throwable, Context> handleError = exception -> null;
 
-  private <Input extends Context> MeshineryTask(
-      MeshineryProcessor<Input, C> newProcessor,
+  private <I extends Context> MeshineryTask(
+      MeshineryProcessor<I, C> newProcessor,
       List<MeshineryProcessor<Context, Context>> oldProcessorList,
       String name,
       InputSource inputSource,
       OutputSource defaultOutputSource,
       ExecutorService executorService,
-      List<K> outputKeys,
       K inputKey,
       GraphData<K> graphData,
       Function<Throwable, Context> handleError
@@ -65,7 +61,6 @@ public class MeshineryTask<K, C extends Context> {
     this.processorList = oldProcessorList;
     this.inputSource = inputSource;
     this.defaultOutputSource = defaultOutputSource;
-    this.outputKeys = outputKeys;
     this.executorService = executorService;
     this.inputKey = inputKey;
     this.graphData = graphData;
@@ -113,7 +108,7 @@ public class MeshineryTask<K, C extends Context> {
   public MeshineryTask<K, C> read(K inputKey, ExecutorService executorService) {
     this.executorService = executorService;
     this.inputKey = inputKey;
-    this.graphData.inputKeys.add(inputKey);
+    this.graphData.getInputKeys().add(inputKey);
     return this;
   }
 
@@ -210,8 +205,7 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public final MeshineryTask<K, C> write(K key, Predicate<C> writeIf, OutputSource<K, C> outputSource) {
-    outputKeys.add(key);
-
+    this.graphData.outputKeys.add(key);
     return addNewProcessor(new OutputProcessor<>(key, writeIf, outputSource));
   }
 
@@ -255,7 +249,6 @@ public class MeshineryTask<K, C extends Context> {
         inputSource,
         defaultOutputSource,
         executorService,
-        outputKeys,
         inputKey,
         graphData,
         handleError
