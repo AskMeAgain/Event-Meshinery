@@ -33,21 +33,22 @@ public class MeshineryDrawer {
     var edges = new HashSet<Container>();
 
     for (var task : tasks) {
-      nodeSet.add(task.getInputKey().toString());
-      for (var outputKeys : task.getOutputKeys()) {
-        edges.add(Container.builder()
-            .name(task.getTaskName())
-            .id("%s_%s".formatted(task.getInputKey(), outputKeys.toString()))
-            .to(task.getInputKey().toString())
-            .from(outputKeys.toString())
-            .build());
-        nodeSet.add(outputKeys.toString());
+      for (var inputKey : task.getInputKeys()) {
+        nodeSet.add(inputKey.toString());
+        for (var outputKeys : task.getOutputKeys()) {
+          edges.add(Container.builder()
+              .name(task.getTaskName())
+              .id("%s_%s".formatted(inputKey, outputKeys.toString()))
+              .to(inputKey.toString())
+              .from(outputKeys.toString())
+              .build());
+          nodeSet.add(outputKeys.toString());
+        }
       }
     }
 
     nodeSet.forEach(nodeName -> nodeAssignment.onEachNode(graph, nodeName));
     edges.forEach(container -> edgeAssignment.onEachEdge(graph, container));
-
     graphAssignment.onGraph(graph);
 
     var tempFile = Files.createTempFile("meshinary", ".jpg");

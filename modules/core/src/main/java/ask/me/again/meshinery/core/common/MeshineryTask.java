@@ -25,9 +25,8 @@ public class MeshineryTask<K, C extends Context> {
   @Getter
   ExecutorService executorService;
 
-
   @Getter
-  K inputKey;
+  List<K> inputKeys;
 
   @Getter
   OutputSource<K, C> defaultOutputSource;
@@ -49,7 +48,7 @@ public class MeshineryTask<K, C extends Context> {
       OutputSource defaultOutputSource,
       ExecutorService executorService,
       List<K> outputKeys,
-      K inputKey
+      List<K> inputKey
   ) {
     taskName = name;
     oldProcessorList.add((MeshineryProcessor<Context, Context>) newProcessor);
@@ -58,7 +57,7 @@ public class MeshineryTask<K, C extends Context> {
     this.defaultOutputSource = defaultOutputSource;
     this.outputKeys = outputKeys;
     this.executorService = executorService;
-    this.inputKey = inputKey;
+    this.inputKeys = inputKey;
   }
 
   public static <Key, Output extends Context> MeshineryTask<Key, Output> builder() {
@@ -66,7 +65,7 @@ public class MeshineryTask<K, C extends Context> {
   }
 
   List<C> getInputValues() {
-    return inputSource.getInputs(inputKey);
+    return inputSource.getInputs(inputKeys.get(0));
   }
 
   /**
@@ -101,12 +100,13 @@ public class MeshineryTask<K, C extends Context> {
    */
   public MeshineryTask<K, C> read(K inputKey, ExecutorService executorService) {
     this.executorService = executorService;
-    this.inputKey = inputKey;
+    this.inputKeys = new ArrayList<>(List.of(inputKey));
     return this;
   }
 
   public MeshineryTask<K, C> joinOn(InputSource<K, C> rightInputSource, K rightKey, BiFunction<C, C, C> combine) {
-    this.inputSource = new JoinedInputSource<K, C>(inputSource, rightInputSource, rightKey, combine);
+    this.inputKeys.add(rightKey);
+    this.inputSource = new JoinedInputSource<>(inputSource, rightInputSource, rightKey, combine);
     return this;
   }
 
@@ -138,7 +138,7 @@ public class MeshineryTask<K, C extends Context> {
         newOutputSource,
         executorService,
         outputKeys,
-        inputKey
+        inputKeys
     );
   }
 
@@ -158,7 +158,7 @@ public class MeshineryTask<K, C extends Context> {
         defaultOutputSource,
         executorService,
         outputKeys,
-        inputKey
+        inputKeys
     );
   }
 
@@ -177,7 +177,7 @@ public class MeshineryTask<K, C extends Context> {
         defaultOutputSource,
         executorService,
         outputKeys,
-        inputKey
+        inputKeys
     );
   }
 
@@ -226,7 +226,7 @@ public class MeshineryTask<K, C extends Context> {
         defaultOutputSource,
         executorService,
         outputKeys,
-        inputKey
+        inputKeys
     );
   }
 
@@ -246,7 +246,7 @@ public class MeshineryTask<K, C extends Context> {
         defaultOutputSource,
         executorService,
         outputKeys,
-        inputKey
+        inputKeys
     );
   }
 
@@ -271,7 +271,7 @@ public class MeshineryTask<K, C extends Context> {
         defaultOutputSource,
         executorService,
         outputKeys,
-        inputKey
+        inputKeys
     );
   }
 }

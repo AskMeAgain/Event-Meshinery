@@ -6,7 +6,9 @@ import org.graphstream.graph.implementations.DefaultGraph;
 public interface NodeCustomizer {
 
   default void onEachNode(DefaultGraph graph, String nodeName) {
-    graph.addNode(nodeName);
+    var node = graph.addNode(nodeName);
+    node.addAttribute("ui.label", nodeName);
+    node.addAttribute("ui.style", "size: 2px; text-alignment: center;");
   }
 
 }

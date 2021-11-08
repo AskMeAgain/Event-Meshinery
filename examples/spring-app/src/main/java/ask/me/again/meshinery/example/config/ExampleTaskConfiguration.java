@@ -76,6 +76,16 @@ public class ExampleTaskConfiguration {
         .read("after-left", executorService)
         .joinOn(inputSource, "after-right", (l, r) -> l)
         .process(processorFinished)
+        .write("after-join");
+  }
+
+  @Bean
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  public MeshineryTask<String, Context> afterJoinTask() {
+    return basicTask()
+        .taskName("After Join")
+        .read("after-join", executorService)
+        .process(processorFinished)
         .write("finished");
   }
 
@@ -89,7 +99,7 @@ public class ExampleTaskConfiguration {
         .inputSource(contextCronInputSource)
         .defaultOutputSource(outputSource)
         .taskName("Cron Heartbeat")
-        .read("0/1 * * * * *", executorService)
+        .read("0/30 * * * * *", executorService)
         .write("start");
   }
 

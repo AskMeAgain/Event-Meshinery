@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +23,6 @@ public class JoinedInputSource<K, C extends Context> implements InputSource<K, C
 
   private final Map<K, Map<String, C>> leftJoinResultsMap = new HashMap<>();
   private final Map<K, Map<String, C>> rightJoinResultsMap = new HashMap<>();
-
-  private final AtomicInteger counter = new AtomicInteger(1);
 
   @Override
   public List<C> getInputs(K key) {
