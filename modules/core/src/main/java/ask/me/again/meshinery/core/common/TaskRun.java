@@ -2,7 +2,6 @@ package ask.me.again.meshinery.core.common;
 
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +14,13 @@ import lombok.With;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class TaskRun {
 
+  String id;
+  String taskName;
+
   @With
   CompletableFuture<Context> future;
 
-  ExecutorService executorService;
+  MdcInjectingExecutorService executorService;
 
   Queue<MeshineryProcessor<Context, Context>> queue;
 

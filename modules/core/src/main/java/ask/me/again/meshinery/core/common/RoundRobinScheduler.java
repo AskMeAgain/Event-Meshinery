@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -66,6 +67,7 @@ public class RoundRobinScheduler {
 
           for (var reactiveTask : tasks) {
             //getting the input values
+            MDC.put("taskid", reactiveTask.getTaskName());
             var inputList = reactiveTask.getInputValues();
             var executorService = reactiveTask.getExecutorService();
 
@@ -73,6 +75,8 @@ public class RoundRobinScheduler {
               itemsInThisIteration++;
               var processorQueue = new LinkedList<>(reactiveTask.getProcessorList());
               var taskRun = TaskRun.builder()
+                  .taskName(reactiveTask.getTaskName())
+                  .id(input.getId())
                   .future(CompletableFuture.completedFuture(input))
                   .executorService(executorService)
                   .queue(processorQueue)
@@ -102,6 +106,7 @@ public class RoundRobinScheduler {
           break;
         }
       }
+      MDC.clear();
     });
   }
 
@@ -119,6 +124,9 @@ public class RoundRobinScheduler {
         Thread.sleep(500);
         continue;
       }
+
+      MDC.put("taskid", currentTask.getTaskName());
+      MDC.put("uid", currentTask.getId());
 
       while (currentTask.getFuture().isDone()) {
         var queue = currentTask.getQueue();
@@ -145,8 +153,12 @@ public class RoundRobinScheduler {
           continue newTask;
         }
 
-        currentTask = currentTask.withFuture(nextProcessor.processAsync(context, currentTask.getExecutorService()));
+        var executorService = currentTask.getExecutorService();
+
+        currentTask = currentTask.withFuture(nextProcessor.processAsync(context, executorService));
       }
+
+      MDC.clear();
 
       todoQueue.add(currentTask);
     }

@@ -25,7 +25,7 @@ public class MeshineryTask<K, C extends Context> {
   List<MeshineryProcessor<Context, Context>> processorList = new ArrayList<>();
 
   @Getter
-  ExecutorService executorService;
+  MdcInjectingExecutorService executorService;
 
   @Getter
   K inputKey;
@@ -51,7 +51,7 @@ public class MeshineryTask<K, C extends Context> {
       String name,
       InputSource inputSource,
       OutputSource defaultOutputSource,
-      ExecutorService executorService,
+      MdcInjectingExecutorService executorService,
       K inputKey,
       GraphData<K> graphData,
       Function<Throwable, Context> handleException
@@ -106,7 +106,7 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTask<K, C> read(K inputKey, ExecutorService executorService) {
-    this.executorService = executorService;
+    this.executorService = new MdcInjectingExecutorService(executorService);
     this.inputKey = inputKey;
     this.graphData.getInputKeys().add(inputKey);
     return this;

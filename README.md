@@ -297,3 +297,43 @@ round robin scheduler. You can throw here hard, turn off the scheduler. Do some 
         return new TestContext(); //we return a new default value
       })
       .write(KEY);
+
+## Logging
+
+This Framework already does the hard work with logging: Setting up the MDC for each thread
+correctly. Each log request in EACH processor will have a correct mdc value of: 
+
+* "taskid" -> taskName 
+* "uid" -> ContextId
+
+### Examples
+
+#### Processor:
+
+    @Slf4j
+    public class ProcessorFinished implements MeshineryProcessor<Context, Context> {
+      
+      @Override
+      public CompletableFuture<Context> processAsync(Context context, Executor executor) {
+        return CompletableFuture.supplyAsync(() -> {
+          log.info("Finished Request");
+    
+          return context;
+        }, executor);
+      }
+    }
+
+#### Log messages
+
+    21:59:19.519 INFO [After Join] 12 [pool-1-thread-20] a.m.a.m.e.e.ProcessorFinished - Finished Request
+    21:59:19.519 INFO [Pre Split] 13 [pool-1-thread-2] a.m.a.m.e.e.ProcessorA - Rest call
+
+#### Logback example config
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{HH:mm:ss.SSS} %level [%X{taskid}] %X{uid} [%t] %logger{20} - %msg%n
+            </Pattern>
+        </layout>
+    </appender>

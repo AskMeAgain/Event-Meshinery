@@ -15,8 +15,7 @@ public class ProcessorA implements MeshineryProcessor<Context, Context> {
   @Override
   public CompletableFuture<Context> processAsync(Context context, Executor executor) {
     return CompletableFuture.supplyAsync(() -> {
-
-      //log.info("Rest call '{}'", context.getId());
+      log.info("Rest call");
 
       try {
         Thread.sleep(1000);
@@ -24,7 +23,7 @@ public class ProcessorA implements MeshineryProcessor<Context, Context> {
         e.printStackTrace();
       }
 
-      //log.info("Received: '{}'", context.getId());
+      log.info("Received");
 
       return context;
 
