@@ -28,16 +28,6 @@ This is not possible in Kafka Streams and means that you can only scale in Kafka
 allows
 (Partition count).
 
-## On Failure
-
-This framework works with the at-most-once guarantee, which means that a state transition is only looked at once, since
-it assumes that in case of a failure a use case specific error correction procedure needs to be called. If a processing
-request results in an error and you want to resume this process, you just need to replay the message, which triggers the
-processing again.
-
-Each Inputsource gives you an easy way of replaying a single event, which feeds the event back into the scheduler to
-work on
-
 ## Advantages
 
 * This framework lets you structure your code in a really transparent way by providing a state store independent api
@@ -59,12 +49,13 @@ via  [GraphStream](https://graphstream-project.org/) and you can even style them
 
 ## Architectur
 
-This project contains lots of example apps, which show how to setup Meshinery. Each consists of 4 basic classes:
+This project contains lots of example apps, which show how to setup Meshinery. 
+The building blocks of this framework consists of 4 basic classes:
 
 * MeshineryTask
 * MeshineryProcessor
 * RoundRobinScheduler
-* Source
+* Input/OutputSources
 
 ### MeshineryTasks
 
@@ -80,7 +71,6 @@ data is fed to the processors and multiple output sources, which spawn more even
         .write("event-b") //Event "event-b" is triggered/written
         .process(processorB) //Another Processing step
         .write("event-c") //Event "event-c" is triggered/written
-        .build()
 
 ### Context
 
@@ -111,7 +101,7 @@ implementation is the same as the one provided in MeshineryTask.
               log.info("Rest call");
               Thread.sleep(3000);
             
-              log.info("Received: " + context.getTestValue1());
+              log.info("Received: {}", context.getTestValue1());
         
               return context.toBuilder()
                 .testValue1(context.getTestValue1() + 1)
@@ -123,7 +113,7 @@ implementation is the same as the one provided in MeshineryTask.
 
 #### ParallelProcessor
 
-This Framework allows you to run processors in parallel, by defining multiple Tasks or **by using the
+This Framework allows you to run processors in parallel, by defining multiple MeshineryTasks or **by using the
 ParallelProcessor:**
 
     var task = MeshineryTask.<String, TestContext>builder()
@@ -134,32 +124,31 @@ ParallelProcessor:**
             .parallel(new TestContextProcessor(3)) #will run in parallel
             .parallel(new TestContextProcessor(3)) #will run in parallel
             .combine(this::getCombine)) #this method will combine the results
-        .write(KEY); //write the result to the outputSource
+        .write(KEY); //write the combined result to the outputSource
 
 ### FluidProcessor
 
 A FluidProcessor is a combination of multiple processors with **different input and output types/context definition**.
-The only condition is that the input of the first processor and the output of the last processor
-are the same, so this processor can be used instead of another one:
+The only condition is that the input of the first processor and the output of the last processor are the same, so this
+processor can be used instead of another one:
 
     var task = MeshineryTask.<String, TestContext>builder()
         [..]
-        .process(ListProcessor.<TestContext>builder() //this processor has input TestContext and output TestContext, but the intermediate steps are different
+        .process(FluidProcessor.<TestContext>builder() //this processor has input TestContext and output TestContext, but the intermediate steps are different
             .process(new ToTestContext2Processor(1)) //input is TestContext, output is TestContext2
             .process(new ToTestContextProcessor(2))) //input is TextContext2, output is TestContext
-        .write("");
-
+        .write("Output");
 
 ### A complex example of a MeshineryTask
 
-    //this will run on a Kafka Statestore
+    //this will run on a Kafka instance
     var executor = Executors.newFixedThreadPool(3); //the processors will run on 3 Threads
     var inputSource = new KafkaInputSource();
 
     var task = MeshineryTask.<String, TestContext>builder() 
-        .read("Test", executor) //read from KafkaTopic "Test"
         .inputSource(inputSource) //our Kafka Input source
         .defaultOutputSource(outputSource) //our defaultOutputSource
+        .read("Test", executor) //read from KafkaTopic "Test"
         .process(ParallelProcessor.<TestContext>builder() //run all these in parallel
             .parallel(ListProcessor.<TestContext>builder() //this one needs to do some more work
                 .process(new ToTestContext2Processor(1))
@@ -192,24 +181,20 @@ inputsource doesnt yield **any** new result, the application will shutdown itsel
 
 This mode just means that the application will run until it is stopped gracefully via .shutdownGracefully()
 
-
 ### Source
 
-There are Input and OutputSources. InputSources provide the data
-which gets passed to processors. OutputSources write the data to a state
-store and trigger a new event.
+There are Input and OutputSources. InputSources provide the data which gets passed to processors. OutputSources write
+the data to a state store and trigger a new event.
 
-There can only be a single InputSource for a MeshineryTask, but there
-can be multiple OutputSources.
+There can only be a single InputSource (but you can combine multiple input sources to a single source for joins for
+example) for a MeshineryTask, but there can be multiple OutputSources.
 
-A Source describes a connection to a statestore. Most of the time,
-you only need to define a single source per Statestore, as the Source
-knows where to look/write to by the provided key.
+A Source describes a connection to a statestore. Most of the time, you only need to define a single source per
+Statestore, as the Source knows where to look/write to by the provided key.
 
 #### Mysql Source
 
-A Key provided to a mysql source correspondes to a different value
-in a column. A mysqlsource handles a single Table.
+A Key provided to a mysql source correspondes to a different value in a column. A mysqlsource handles a single Table.
 
 **Example:**
 
@@ -223,9 +208,80 @@ a MeshineryTasks writes with key "OutputKey". This results in a sql query:
 
 #### Kafka Source
 
-A Key provided to a kafka source correspondes to a different kafka topic
-A source is connected to a broker.
+A Key provided to a kafka source correspondes to a different kafka topic A source is connected to a broker.
 
 #### Memory Source
 
 A key describes a specific list in a dictionary.
+
+#### Cron Source
+
+This source emits a value in a schedule. This schedule is specified by a provided cron. 
+The underlying cron library is [cron-utils](https://github.com/jmrozanec/cron-utils) 
+by [jmrozanec](https://github.com/jmrozanec).
+You can reuse the cron input source and provide different crons via the read method
+
+    var atomicInt = new AtomicInteger(); //we do this so we have incrementing values in our context
+    //create input source
+    var contextCronInputSource = new CronInputSource<>(CronType.SPRING, () -> createNewContext(atomicInt.incrementAndGet()));
+
+    return MeshineryTask.<String, Context>builder()
+        .inputSource(contextCronInputSource) //we provide the cron input source
+        .defaultOutputSource(outputSource)
+        .taskName("Cron Heartbeat")
+        .read("0/3 * * * * *", executorService) //this cron will be executed.
+        .write("start");
+
+#### Joins
+
+You can join data, by providing two input sources (can be from different state stores!) to a
+JoinInputSource object. You also need to provide a mapping function which receives left and right side
+of the join and returns a new object. Currently only **Inner Joins** are supported.
+
+And the key on which the join happens is the Id field of the Context object.
+
+    var joinedSource = new JoinedInputSource<>(leftSource, rightSource, KEY, this::combine);
+    var task = MeshineryTask<String, TestContext>()
+      .taskName("Join")
+      .inputSource(joinedSource)
+      .read("after-left", executorService)
+      .write("after-join");
+
+Or you can use the provided builder method .joinOn(), which lets you specify the new source,
+join key of the right side of the join and the combine method. This will also set the correct data
+so the Drawer can correctly draw joined methods in the graph
+
+    var task = MeshineryTask<String, TestContext>()
+      .taskName("Join")
+      .inputSource(memorySource) //left side of the join
+      .joinOn(memorySource, "key2", (l, r) -> l) //right side of the join, will use 'key2' as input key of the right source
+      .read("after-left", executorService)
+      .write("after-join");
+
+## On Failure
+
+This framework works with the at-most-once guarantee, which means that a state transition is only looked at once, since
+it assumes that in case of a failure a use case specific error correction procedure needs to be called. If a processing
+request results in an error and you want to resume this process, you just need to replay the message, which triggers the
+processing again.
+
+Each Inputsource gives you an easy way of replaying a single event, which feeds the event back into the scheduler to
+work on
+
+### Exception Handling
+
+You can handle exceptions which happen **inside** a completable future, 
+by setting a new error handler. The default behaviour is that null is returned, which
+will then just stop the execution of this single event. You can throw here hard, turn off
+the scheduler. Do some restcalls and other stuff.
+
+    var task = MeshineryTask.<String, TestContext>builder()
+      .inputSource(inputSource)
+      .defaultOutputSource(outputSource)
+      .read(KEY, executor)
+      .process(new Processor())
+      .exceptionHandler(exception -> {
+        log.info("Error Handling"); //we add an additional log message
+        return EXPECTED; //we return a new default value
+      })
+      .write(KEY);

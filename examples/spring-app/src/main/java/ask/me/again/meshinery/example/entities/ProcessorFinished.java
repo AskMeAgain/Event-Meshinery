@@ -16,10 +16,10 @@ public class ProcessorFinished implements MeshineryProcessor<Context, Context> {
   public CompletableFuture<Context> processAsync(Context context, Executor executor) {
     return CompletableFuture.supplyAsync(() -> {
 
-      throw new RuntimeException("error!");
-      //log.info("Finished Request '{}'", context.getId());
+      //throw new RuntimeException("error!");
+      log.info("Finished Request '{}'", context.getId());
 
-      //return context;
+      return context;
 
     }, executor);
   }

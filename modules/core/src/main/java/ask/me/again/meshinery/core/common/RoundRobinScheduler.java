@@ -76,7 +76,7 @@ public class RoundRobinScheduler {
                   .future(CompletableFuture.completedFuture(input))
                   .executorService(executorService)
                   .queue(processorQueue)
-                  .handleError(reactiveTask.getHandleError())
+                  .handleError(reactiveTask.getHandleException())
                   .build();
 
               todoQueue.add(taskRun);

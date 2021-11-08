@@ -80,10 +80,10 @@ class ExceptionHandlingTest {
         .defaultOutputSource(mockOutputSource)
         .read(KEY, executor)
         .process(new ErrorProcessor())
-        .onError((exception -> {
+        .exceptionHandler(exception -> {
           log.info("Error Handling");
           return EXPECTED;
-        }))
+        })
         .write(KEY);
 
     //Act ------------------------------------------------------------------------------------

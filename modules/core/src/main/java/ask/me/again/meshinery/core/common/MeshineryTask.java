@@ -43,7 +43,7 @@ public class MeshineryTask<K, C extends Context> {
   String taskName = "Default Task";
 
   @Getter
-  Function<Throwable, Context> handleError = exception -> null;
+  Function<Throwable, Context> handleException = exception -> null;
 
   private <I extends Context> MeshineryTask(
       MeshineryProcessor<I, C> newProcessor,
@@ -54,7 +54,7 @@ public class MeshineryTask<K, C extends Context> {
       ExecutorService executorService,
       K inputKey,
       GraphData<K> graphData,
-      Function<Throwable, Context> handleError
+      Function<Throwable, Context> handleException
   ) {
     taskName = name;
     oldProcessorList.add((MeshineryProcessor<Context, Context>) newProcessor);
@@ -64,7 +64,7 @@ public class MeshineryTask<K, C extends Context> {
     this.executorService = executorService;
     this.inputKey = inputKey;
     this.graphData = graphData;
-    this.handleError = handleError;
+    this.handleException = handleException;
   }
 
   public static <K, C extends Context> MeshineryTask<K, C> builder() {
@@ -236,8 +236,16 @@ public class MeshineryTask<K, C extends Context> {
     return addNewProcessor(new DynamicOutputProcessor<>(writeIf, keyFunction, newOutputSource));
   }
 
-  public final MeshineryTask<K, C> onError(Function<Throwable, Context> handleError) {
-    this.handleError = handleError;
+  /**
+   * Registers a method handler, which is getting executed when an exception happens INSIDE the completable future.
+   * Allows to return a different value instead. Passes the handleError function to the .handle() method of
+   * completable future
+   *
+   * @param handleError The method which will be passed to the .handle() method of completable future
+   * @return returns itself for builder pattern
+   */
+  public final MeshineryTask<K, C> exceptionHandler(Function<Throwable, Context> handleError) {
+    this.handleException = handleError;
     return this;
   }
 
@@ -251,7 +259,7 @@ public class MeshineryTask<K, C extends Context> {
         executorService,
         inputKey,
         graphData,
-        handleError
+        handleException
     );
   }
 }

@@ -15,15 +15,15 @@ import java.util.concurrent.Executor;
  * @param <I> InputType
  * @param <O> OutputType
  */
-public class ComposableProcessor<I extends Context, O extends Context> implements MeshineryProcessor<I, O> {
+public class FluidProcessor<I extends Context, O extends Context> implements MeshineryProcessor<I, O> {
 
   List<MeshineryProcessor<Context, Context>> processorList;
 
-  private ComposableProcessor() {
+  private FluidProcessor() {
     processorList = new ArrayList<>();
   }
 
-  private ComposableProcessor(List<MeshineryProcessor<Context, Context>> newProcessorList) {
+  private FluidProcessor(List<MeshineryProcessor<Context, Context>> newProcessorList) {
     processorList = newProcessorList;
   }
 
@@ -33,8 +33,8 @@ public class ComposableProcessor<I extends Context, O extends Context> implement
    * @param <I> Input Type
    * @return returns itself for builder pattern
    */
-  public static <I extends Context> ComposableProcessor<I, I> builder() {
-    return new ComposableProcessor<>();
+  public static <I extends Context> FluidProcessor<I, I> builder() {
+    return new FluidProcessor<>();
   }
 
   /**
@@ -44,9 +44,9 @@ public class ComposableProcessor<I extends Context, O extends Context> implement
    * @param <N>          New return type
    * @return returns itself for builder pattern.
    */
-  public <N extends Context> ComposableProcessor<I, N> process(MeshineryProcessor<O, N> newProcessor) {
+  public <N extends Context> FluidProcessor<I, N> process(MeshineryProcessor<O, N> newProcessor) {
     processorList.add((MeshineryProcessor<Context, Context>) newProcessor);
-    return new ComposableProcessor<>(processorList);
+    return new FluidProcessor<>(processorList);
   }
 
   @Override

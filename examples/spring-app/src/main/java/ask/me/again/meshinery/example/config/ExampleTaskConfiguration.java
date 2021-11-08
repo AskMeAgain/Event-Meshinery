@@ -73,8 +73,8 @@ public class ExampleTaskConfiguration {
   public MeshineryTask<String, Context> join() {
     return basicTask()
         .taskName("Join")
-        .read("after-left", executorService)
         .joinOn(inputSource, "after-right", (l, r) -> l)
+        .read("after-left", executorService)
         .write("after-join");
   }
 
