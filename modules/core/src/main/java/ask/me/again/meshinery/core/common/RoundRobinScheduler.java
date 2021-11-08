@@ -31,7 +31,7 @@ public class RoundRobinScheduler {
 
   @SneakyThrows
   RoundRobinScheduler start() {
-    log.info("Starting Scheduler with the following Tasks: {}", tasks.stream().map(MeshineryTask::getTaskName).toList());
+    log.info("Starting Scheduler with following Tasks: {}", tasks.stream().map(MeshineryTask::getTaskName).toList());
     //task gathering
     tasks.forEach(task -> executorServices.add(task.getExecutorService()));
 
@@ -55,50 +55,6 @@ public class RoundRobinScheduler {
     internalShutdown = true;
   }
 
-  @SneakyThrows
-  private void runWorker() {
-
-    log.info("Starting processing worker thread");
-
-    //we use this label to break out of the task in case we dont want to work on it
-    newTask:
-    while (!internalShutdown || !todoQueue.isEmpty()) {
-      var currentTask = todoQueue.poll();
-
-      if (currentTask == null) {
-        Thread.sleep(500);
-        continue;
-      }
-
-      while (currentTask.getFuture().isDone()) {
-        //we stop if we reached the end of the queue
-        if (currentTask.getQueue().isEmpty()) {
-          continue newTask;
-        }
-
-        var nextProcessor = currentTask.getQueue().remove();
-        var context = currentTask.getFuture().get();
-
-        //we stop if the context is null
-        if (context == null) {
-          continue newTask;
-        }
-
-        currentTask.setFuture(nextProcessor.processAsync(context, currentTask.getExecutorService()));
-      }
-
-      todoQueue.add(currentTask);
-    }
-
-    log.info("Reached end of Queue. Shutting down now");
-
-    for (var executorService : executorServices) {
-      if (!executorService.isShutdown()) {
-        executorService.shutdown();
-      }
-    }
-  }
-
   private void createInputScheduler(ExecutorService executor) {
     executor.execute(() -> {
       log.info("Starting input worker thread");
@@ -116,7 +72,13 @@ public class RoundRobinScheduler {
             for (var input : inputList) {
               itemsInThisIteration++;
               var processorQueue = new LinkedList<>(reactiveTask.getProcessorList());
-              var taskRun = new TaskRun(CompletableFuture.completedFuture(input), processorQueue, executorService);
+              var taskRun = TaskRun.builder()
+                  .future(CompletableFuture.completedFuture(input))
+                  .executorService(executorService)
+                  .queue(processorQueue)
+                  .handleError(reactiveTask.getHandleError())
+                  .build();
+
               todoQueue.add(taskRun);
 
               //checking backpressure
@@ -141,6 +103,61 @@ public class RoundRobinScheduler {
         }
       }
     });
+  }
+
+  @SneakyThrows
+  private void runWorker() {
+
+    log.info("Starting processing worker thread");
+
+    //we use this label to break out of the task in case we dont want to work on it
+    newTask:
+    while (!internalShutdown || !todoQueue.isEmpty()) {
+      var currentTask = todoQueue.poll();
+
+      if (currentTask == null) {
+        Thread.sleep(500);
+        continue;
+      }
+
+      while (currentTask.getFuture().isDone()) {
+        var queue = currentTask.getQueue();
+
+        //we stop if we reached the end of the queue
+        if (queue.isEmpty()) {
+          continue newTask;
+        }
+
+        if (currentTask.getFuture().isCompletedExceptionally()) {
+          currentTask.getFuture().whenComplete((context, ex) -> log.error("Processor completed with error", ex));
+          var handleError = currentTask.getHandleError();
+          var handledFuture = currentTask.getFuture()
+              .handle((context, throwable) -> handleError.apply(throwable));
+
+          currentTask = currentTask.withFuture(handledFuture);
+        }
+
+        var nextProcessor = queue.remove();
+        var context = currentTask.getFuture().get();
+
+        //we stop if the context is null
+        if (context == null) {
+          continue newTask;
+        }
+
+        currentTask = currentTask.withFuture(nextProcessor.processAsync(context, currentTask.getExecutorService()));
+      }
+
+      todoQueue.add(currentTask);
+    }
+
+    log.info("Reached end of Queue. Shutting down now");
+
+    for (var executorService : executorServices) {
+      if (!executorService.isShutdown()) {
+        executorService.shutdown();
+      }
+    }
   }
 
   public static class Builder {

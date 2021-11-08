@@ -43,7 +43,10 @@ public class MeshineryTask<K, C extends Context> {
   InputSource<K, C> inputSource;
 
   @Getter
-  String taskName;
+  String taskName = "Default Task";
+
+  @Getter
+  Function<Throwable, Context> handleError = exception -> null;
 
   private <Input extends Context> MeshineryTask(
       MeshineryProcessor<Input, C> newProcessor,
@@ -54,7 +57,8 @@ public class MeshineryTask<K, C extends Context> {
       ExecutorService executorService,
       List<K> outputKeys,
       K inputKey,
-      GraphData<K> graphData
+      GraphData<K> graphData,
+      Function<Throwable, Context> handleError
   ) {
     taskName = name;
     oldProcessorList.add((MeshineryProcessor<Context, Context>) newProcessor);
@@ -65,6 +69,7 @@ public class MeshineryTask<K, C extends Context> {
     this.executorService = executorService;
     this.inputKey = inputKey;
     this.graphData = graphData;
+    this.handleError = handleError;
   }
 
   public static <K, C extends Context> MeshineryTask<K, C> builder() {
@@ -237,6 +242,11 @@ public class MeshineryTask<K, C extends Context> {
     return addNewProcessor(new DynamicOutputProcessor<>(writeIf, keyFunction, newOutputSource));
   }
 
+  public final MeshineryTask<K, C> onError(Function<Throwable, Context> handleError) {
+    this.handleError = handleError;
+    return this;
+  }
+
   private <N extends Context> MeshineryTask<K, N> addNewProcessor(MeshineryProcessor<C, N> newProcessor) {
     return new MeshineryTask<>(
         newProcessor,
@@ -247,7 +257,8 @@ public class MeshineryTask<K, C extends Context> {
         executorService,
         outputKeys,
         inputKey,
-        graphData
+        graphData,
+        handleError
     );
   }
 }

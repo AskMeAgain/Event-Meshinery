@@ -42,7 +42,7 @@ public class CronInputSource<C extends Context> implements InputSource<String, C
 
         addNewCronEntry(cron, now);
 
-        log.error("Running scheduled Task");
+        log.info("Running scheduled Task with cron: [{}]", cron);
         return List.of(supplier.get());
       } else {
         return Collections.emptyList();
