@@ -1,10 +1,15 @@
 # Event Meshinery
 
 This framework is a state store independent event framework and designed to easily structure long running, multi step,
-processing tasks in a transparent way. The underlying state stores can be exchanged and combined to suit your needs.
+processing tasks in a transparent way and safe way. The underlying state stores can be exchanged and combined to suit
+your needs:
+
+* Read from a mysql db, and write to kafka.
+* Join Kafka messages from a Kafka topic with mysql db tables.
+* Define a multistep processing pipeline and be able to (re)start the processing from any 'checkpoint'.
 
 This framework was originally written to replace KafkaStreams in a specific usecase, but you can use this framework
-without Kafka. Currently supported are the following state stores:
+without Kafka. Currently supported are the following state stores, but you can easily provide your own:
 
 * Apache Kafka
 * MySql
@@ -13,30 +18,31 @@ without Kafka. Currently supported are the following state stores:
 ## Meshinery vs KafkaStreams
 
 Doing long running (blocking) calls (like rest) via Kafka Streams represents a challenge as this blocks a single thread
-in the Kafka Streams framework from processing other messages. To solve this problem, this framework removes a
-guarantee:
+in the Kafka Streams framework from processing other messages and a single partition from getting processed:
 
-**Messages are not processed in order, but processed as they arrive.**
+**If you block a partition with a long running call, then you cannot process any other messages from this partition
+until the processing is unblocked.**
+
+This means that you can only scale in Kafka Streams as far as your Kafka Cluster (Partition count) allows:
+If your Kafka Cluster has 32 Partitions per topic, you can only have a max number of 32 running threads and can only run
+32 stream processors/message processing in parallel.
+
+To solve this problem, the Event-Meshinery framework removes a guarantee:
+
+**Messages are not processed in a partition in order, but processed as they arrive.**
 
 This is possible if your events are completely independent of each other and it doesnt matter if you process message B
-before message A, even if it happened before/was written before in the Kafka Partition.
-
-You can easily scale an application written with Event Meshinery by running them in parallel and using kafka consumer
-groups. The big plus is that you can now process multiple messages in parallel **originating from a single partition**.
-
-This is not possible in Kafka Streams and means that you can only scale in Kafka Streams as far as your Kafka Cluster
-allows
-(Partition count).
+before message A, even if it is stored in the same partition.
 
 ## Advantages
 
 * This framework lets you structure your code in a really transparent way by providing a state store independent api
-* You can separate the business layer from the underlying implementation layer
+* You separate the business layer from the underlying implementation layer
 * You can resume a process in case of error and you will start exactly where you left off
 * Fine granular configs for your thread management
 * Fast time-to-market: switching between state stores is super easy: Start with memory for fast iteration cycles, if you
   need more guarantees switch to mysql or kafka without much work
-* Easily integrated (using Spring or by constructing everything by hand, check the examples)
+* Easily integrated (using Spring or by constructing everything by hand)
 * Create a complete event diagram to map your events and how they interact with each other (see "Draw the Graph")
 
 ## Draw the Graph
@@ -47,9 +53,8 @@ via  [GraphStream](https://graphstream-project.org/) and you can even style them
 
 ![example-graph](example-graph.png)
 
-## Architectur
+## Architecture
 
-This project contains lots of example apps, which show how to setup Meshinery. 
 The building blocks of this framework consists of 4 basic classes:
 
 * MeshineryTask
@@ -59,7 +64,8 @@ The building blocks of this framework consists of 4 basic classes:
 
 ### MeshineryTasks
 
-MeshineryTask describes a single unit of work, which consists of an input source, a list of processors and one or
+MeshineryTask describes a single **business** unit of work, which consists of an input source ,
+a list of processors to solve a part of the business logic and one or
 multiple output calls. An input source takes an eventkey/id, which gets fed to the inputsource to produce data. This
 data is fed to the processors and multiple output sources, which spawn more events.
 
@@ -72,11 +78,15 @@ data is fed to the processors and multiple output sources, which spawn more even
         .process(processorB) //Another Processing step
         .write("event-c") //Event "event-c" is triggered/written
 
+A task can have any amount of processors and sub processing (via processors). This allows you to include some logic on
+how the pipeline should react. **The goal is that each tasks describes exactly WHAT processor and WHEN a processor is
+executed.** This allows for super transparent code which allows you to argue about the execution on a higher level.
+
 ### Context
 
-A single tasks defines a single type (Context), which gets worked and passed on. This type is used in processors for
-input and output type. If you want to change this type, you need to call the contextSwitch()
-method which takes a mapping method to the new Context type and a new defaultOutputSource
+A single tasks defines a single data container (Context), which gets worked and passed on. This container is used in
+processors for input and output type. If you want to change this type, you need to call the contextSwitch() method which
+takes a mapping method to the new Context type and a new defaultOutputSource.
 
     var task = MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)
@@ -96,25 +106,27 @@ implementation is the same as the one provided in MeshineryTask.
         @Override
         @SneakyThrows
         public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
-              return CompletableFuture.supplyAsync(() -> {
-        
-              log.info("Rest call");
-              Thread.sleep(3000);
-            
-              log.info("Received: {}", context.getTestValue1());
-        
-              return context.toBuilder()
-                .testValue1(context.getTestValue1() + 1)
-                .build();
-        
-              }, executor);
+            return CompletableFuture.supplyAsync(() -> {
+      
+            //simulating a rest call here
+            log.info("Rest call");
+            Thread.sleep(3000);
+          
+            log.info("Received: {}", context.getTestValue1());
+      
+            //passing the result to the next processor
+            return context.toBuilder()
+              .testValue1(context.getTestValue1() + 1)
+              .build();
+      
+            }, executor);
         }
     }
 
 #### ParallelProcessor
 
-This Framework allows you to run processors in parallel, by defining multiple MeshineryTasks or **by using the
-ParallelProcessor:**
+This framework allows you to run processors in parallel, by defining multiple MeshineryTasks or **by using the
+ParallelProcessor**: 
 
     var task = MeshineryTask.<String, TestContext>builder()
         .read(KEY, executor)
@@ -162,7 +174,8 @@ processor can be used instead of another one:
 ### RoundRobinScheduler
 
 The execution of all Tasks is done by providing a list of tasks to a MeshineryScheduler (currently only
-RoundRobinScheduler).
+RoundRobinScheduler). The scheduler also provides a way to specify backpressure, so the application is not getting
+overwhelmed.
 
     var scheduler = RoundRobinScheduler.builder()
         .isBatchJob(true) //if the inputsource returns nothing, then the scheduler will shutdown itself gracefully
@@ -216,10 +229,10 @@ A key describes a specific list in a dictionary.
 
 #### Cron Source
 
-This source emits a value in a schedule. This schedule is specified by a provided cron. 
-The underlying cron library is [cron-utils](https://github.com/jmrozanec/cron-utils) 
-by [jmrozanec](https://github.com/jmrozanec).
-You can reuse the cron input source and provide different crons via the read method
+This source emits a value in a schedule. This schedule is specified by a provided cron. The underlying cron library
+is [cron-utils](https://github.com/jmrozanec/cron-utils)
+by [jmrozanec](https://github.com/jmrozanec). You can reuse the cron input source and provide different crons via the
+read method
 
     var atomicInt = new AtomicInteger(); //we do this so we have incrementing values in our context
     //create input source
@@ -234,9 +247,9 @@ You can reuse the cron input source and provide different crons via the read met
 
 #### Joins
 
-You can join data, by providing two input sources (can be from different state stores!) to a
-JoinInputSource object. You also need to provide a mapping function which receives left and right side
-of the join and returns a new object. Currently only **Inner Joins** are supported.
+You can join data, by providing two input sources (can be from different state stores!) to a JoinInputSource object. You
+also need to provide a mapping function which receives left and right side of the join and returns a new object.
+Currently only **Inner Joins** are supported.
 
 And the key on which the join happens is the Id field of the Context object.
 
@@ -247,9 +260,9 @@ And the key on which the join happens is the Id field of the Context object.
       .read("after-left", executorService)
       .write("after-join");
 
-Or you can use the provided builder method .joinOn(), which lets you specify the new source,
-join key of the right side of the join and the combine method. This will also set the correct data
-so the Drawer can correctly draw joined methods in the graph
+Or you can use the provided builder method .joinOn(), which lets you specify the new source, join key of the right side
+of the join and the combine method. This will also set the correct data so the Drawer can correctly draw joined methods
+in the graph
 
     var task = MeshineryTask<String, TestContext>()
       .taskName("Join")
@@ -265,15 +278,14 @@ it assumes that in case of a failure a use case specific error correction proced
 request results in an error and you want to resume this process, you just need to replay the message, which triggers the
 processing again.
 
-Each Inputsource gives you an easy way of replaying a single event, which feeds the event back into the scheduler to
-work on
+Each InputSource gives you an easy way of replaying a single event, which feeds the event back into the scheduler to
+work on.
 
 ### Exception Handling
 
-You can handle exceptions which happen **inside** a completable future, 
-by setting a new error handler. The default behaviour is that null is returned, which
-will then just stop the execution of this single event. You can throw here hard, turn off
-the scheduler. Do some restcalls and other stuff.
+You can handle exceptions which happen **inside** a completable future (in a processor), by setting a new error handler.
+The default behaviour is that null is returned, which will then just stop the execution of this single event, by the
+round robin scheduler. You can throw here hard, turn off the scheduler. Do some rest/db calls and other stuff.
 
     var task = MeshineryTask.<String, TestContext>builder()
       .inputSource(inputSource)
@@ -282,6 +294,6 @@ the scheduler. Do some restcalls and other stuff.
       .process(new Processor())
       .exceptionHandler(exception -> {
         log.info("Error Handling"); //we add an additional log message
-        return EXPECTED; //we return a new default value
+        return new TestContext(); //we return a new default value
       })
       .write(KEY);

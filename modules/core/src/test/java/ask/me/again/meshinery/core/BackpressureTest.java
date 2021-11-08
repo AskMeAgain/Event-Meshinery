@@ -14,11 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atMost;
 
-public class BackpressureTest {
-
-  public BackpressureTest(){
-
-  }
+class BackpressureTest {
 
   @Test
   void testBackpressure() throws InterruptedException {
