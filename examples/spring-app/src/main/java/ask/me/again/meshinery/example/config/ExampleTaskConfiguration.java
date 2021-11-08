@@ -92,7 +92,10 @@ public class ExampleTaskConfiguration {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, Context> heartbeat() {
     var atomicInt = new AtomicInteger();
-    var contextCronInputSource = new CronInputSource<>(CronType.SPRING, () -> createNewContext(atomicInt.incrementAndGet()));
+    var contextCronInputSource = new CronInputSource<>(
+        CronType.SPRING,
+        () -> createNewContext(atomicInt.incrementAndGet())
+    );
 
     return MeshineryTask.<String, Context>builder()
         .inputSource(contextCronInputSource)
