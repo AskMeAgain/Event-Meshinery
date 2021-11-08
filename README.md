@@ -306,9 +306,7 @@ correctly. Each log request in EACH processor will have a correct mdc value of:
 * "taskid" -> taskName 
 * "uid" -> ContextId
 
-### Examples
-
-#### Processor:
+Example Processor
 
     @Slf4j
     public class ProcessorFinished implements MeshineryProcessor<Context, Context> {
@@ -323,12 +321,11 @@ correctly. Each log request in EACH processor will have a correct mdc value of:
       }
     }
 
-#### Log messages
+Notice the following log message has Context Id (12) and Taskname (After Join) 
 
     21:59:19.519 INFO [After Join] 12 [pool-1-thread-20] a.m.a.m.e.e.ProcessorFinished - Finished Request
-    21:59:19.519 INFO [Pre Split] 13 [pool-1-thread-2] a.m.a.m.e.e.ProcessorA - Rest call
 
-#### Logback example config
+Logback example config:
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
