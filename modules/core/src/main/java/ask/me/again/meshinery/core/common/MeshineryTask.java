@@ -11,10 +11,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.With;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryTask<K, C extends Context> {
 
@@ -34,6 +37,7 @@ public class MeshineryTask<K, C extends Context> {
   GraphData<K> graphData = new GraphData<>();
 
   @Getter
+  @With
   OutputSource<K, C> defaultOutputSource;
 
   InputSource<K, C> inputSource;
@@ -142,7 +146,7 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public <N extends Context> MeshineryTask<K, N> contextSwitch(OutputSource<K, N> newOutputSource, Function<C, N> map) {
-    return addNewProcessor(new LambdaProcessor<>(map));
+    return addNewProcessor(new LambdaProcessor<>(map)).withDefaultOutputSource(newOutputSource);
   }
 
   /**
