@@ -18,37 +18,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
+/**
+ * A Meshinery task consists of an input source, a list of processors and multiple output sources.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
-@SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryTask<K, C extends Context> {
 
-  @Getter
-  List<MeshineryProcessor<Context, Context>> processorList = new ArrayList<>();
+  @Getter private List<MeshineryProcessor<Context, Context>> processorList = new ArrayList<>();
+  @Getter private Function<Throwable, Context> handleException = exception -> null;
+  @Getter private @With OutputSource<K, C> defaultOutputSource;
+  @Getter private MdcInjectingExecutorService executorService;
+  @Getter private GraphData<K> graphData = new GraphData<>();
+  @Getter private String taskName = "Default Task";
+  @Getter private K inputKey;
 
-  long backoffTime = 0;
-
-  @Getter
-  MdcInjectingExecutorService executorService;
-
-  @Getter
-  K inputKey;
-
-  @Getter
-  GraphData<K> graphData = new GraphData<>();
-
-  @Getter
-  @With
-  OutputSource<K, C> defaultOutputSource;
-
-  InputSource<K, C> inputSource;
-
-  @Getter
-  String taskName = "Default Task";
-
-  @Getter
-  Function<Throwable, Context> handleException = exception -> null;
   private Instant nextExecution = Instant.now();
+  private InputSource<K, C> inputSource;
+  private long backoffTime = 0;
 
   private <I extends Context> MeshineryTask(
       MeshineryProcessor<I, C> newProcessor,
@@ -78,7 +65,13 @@ public class MeshineryTask<K, C extends Context> {
     return new MeshineryTask<>();
   }
 
-  List<C> getInputValues() {
+  /**
+   * Pulls the next batch of data from the input source. Keeps the backoff period in mind, which in this case returns
+   * empty list and doesnt poll the source
+   *
+   * @return returns itself for builder pattern
+   */
+  public List<C> getInputValues() {
     var now = Instant.now();
     if (now.isAfter(nextExecution)) {
       nextExecution = now.plusMillis(backoffTime);

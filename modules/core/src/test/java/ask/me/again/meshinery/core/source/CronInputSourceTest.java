@@ -11,7 +11,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 class CronInputSourceTest {
 
   @SneakyThrows
-  @RepeatedTest(100)
+  @RepeatedTest(20)
   void testCronInputSecond() {
     //Arrange ----------------------------------------------------------------------------------------------------------1
     long currentSecond = getCurrentSecond();

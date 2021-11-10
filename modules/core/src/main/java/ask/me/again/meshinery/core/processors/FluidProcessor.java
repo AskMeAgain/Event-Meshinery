@@ -1,5 +1,6 @@
 package ask.me.again.meshinery.core.processors;
 
+import ask.me.again.meshinery.core.common.ComposableFutureUtils;
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import java.util.ArrayList;
@@ -51,11 +52,6 @@ public class FluidProcessor<I extends Context, O extends Context> implements Mes
 
   @Override
   public CompletableFuture<O> processAsync(I context, Executor executor) {
-    CompletableFuture<Context> temp = CompletableFuture.completedFuture(context);
-
-    for (MeshineryProcessor<Context, Context> newProcessor : processorList) {
-      temp = temp.thenCompose(x -> newProcessor.processAsync(x, executor));
-    }
-    return (CompletableFuture<O>) temp;
+    return ComposableFutureUtils.getoCompletableFuture(processorList, context, executor);
   }
 }
