@@ -1,13 +1,10 @@
-package ask.me.again.meshinery.core;
+package ask.me.again.meshinery.core.common;
 
-import ask.me.again.meshinery.core.common.AbstractTestBase;
-import ask.me.again.meshinery.core.common.MeshineryTask;
-import ask.me.again.meshinery.core.common.OutputSource;
-import ask.me.again.meshinery.core.common.RoundRobinScheduler;
-import ask.me.again.meshinery.core.common.context.TestContext;
-import ask.me.again.meshinery.core.common.processor.TestContextProcessor;
-import ask.me.again.meshinery.core.common.sources.TestInputSource;
 import ask.me.again.meshinery.core.processors.ParallelProcessor;
+import ask.me.again.meshinery.core.utils.AbstractTestBase;
+import ask.me.again.meshinery.core.utils.context.TestContext;
+import ask.me.again.meshinery.core.utils.processor.TestContextProcessor;
+import ask.me.again.meshinery.core.utils.sources.TestInputSource;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.RepeatedTest;

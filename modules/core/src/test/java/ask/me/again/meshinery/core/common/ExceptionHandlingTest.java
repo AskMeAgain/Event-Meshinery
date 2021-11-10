@@ -1,11 +1,8 @@
-package ask.me.again.meshinery.core;
+package ask.me.again.meshinery.core.common;
 
-import ask.me.again.meshinery.core.common.MeshineryTask;
-import ask.me.again.meshinery.core.common.OutputSource;
-import ask.me.again.meshinery.core.common.RoundRobinScheduler;
-import ask.me.again.meshinery.core.common.context.TestContext;
-import ask.me.again.meshinery.core.common.processor.ErrorProcessor;
-import ask.me.again.meshinery.core.common.sources.TestInputSource;
+import ask.me.again.meshinery.core.utils.context.TestContext;
+import ask.me.again.meshinery.core.utils.processor.ErrorProcessor;
+import ask.me.again.meshinery.core.utils.sources.TestInputSource;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;

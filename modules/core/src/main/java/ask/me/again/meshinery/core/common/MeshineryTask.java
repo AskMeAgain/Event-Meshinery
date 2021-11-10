@@ -5,7 +5,9 @@ import ask.me.again.meshinery.core.processors.LambdaProcessor;
 import ask.me.again.meshinery.core.processors.OutputProcessor;
 import ask.me.again.meshinery.core.processors.StopProcessor;
 import ask.me.again.meshinery.core.source.JoinedInputSource;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
@@ -23,6 +25,8 @@ public class MeshineryTask<K, C extends Context> {
 
   @Getter
   List<MeshineryProcessor<Context, Context>> processorList = new ArrayList<>();
+
+  long backoffTime = 0;
 
   @Getter
   MdcInjectingExecutorService executorService;
@@ -44,6 +48,7 @@ public class MeshineryTask<K, C extends Context> {
 
   @Getter
   Function<Throwable, Context> handleException = exception -> null;
+  private Instant nextExecution = Instant.now();
 
   private <I extends Context> MeshineryTask(
       MeshineryProcessor<I, C> newProcessor,
@@ -54,9 +59,11 @@ public class MeshineryTask<K, C extends Context> {
       MdcInjectingExecutorService executorService,
       K inputKey,
       GraphData<K> graphData,
-      Function<Throwable, Context> handleException
+      Function<Throwable, Context> handleException,
+      long backoffTime
   ) {
     taskName = name;
+    this.backoffTime = backoffTime;
     oldProcessorList.add((MeshineryProcessor<Context, Context>) newProcessor);
     this.processorList = oldProcessorList;
     this.inputSource = inputSource;
@@ -72,7 +79,13 @@ public class MeshineryTask<K, C extends Context> {
   }
 
   List<C> getInputValues() {
-    return inputSource.getInputs(inputKey);
+    var now = Instant.now();
+    if (now.isAfter(nextExecution)) {
+      nextExecution = now.plusMillis(backoffTime);
+      return inputSource.getInputs(inputKey);
+    } else {
+      return Collections.emptyList();
+    }
   }
 
   /**
@@ -249,6 +262,17 @@ public class MeshineryTask<K, C extends Context> {
     return this;
   }
 
+  /**
+   * Adds an interval between input source polling
+   *
+   * @param milliSeconds the time in milliseconds
+   * @return returns itself for builder pattern
+   */
+  public final MeshineryTask<K, C> backoffTime(long milliSeconds) {
+    this.backoffTime = milliSeconds;
+    return this;
+  }
+
   private <N extends Context> MeshineryTask<K, N> addNewProcessor(MeshineryProcessor<C, N> newProcessor) {
     return new MeshineryTask<>(
         newProcessor,
@@ -259,7 +283,8 @@ public class MeshineryTask<K, C extends Context> {
         executorService,
         inputKey,
         graphData,
-        handleException
+        handleException,
+        backoffTime
     );
   }
 }

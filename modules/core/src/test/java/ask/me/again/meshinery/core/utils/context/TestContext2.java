@@ -1,4 +1,4 @@
-package ask.me.again.meshinery.core.common.context;
+package ask.me.again.meshinery.core.utils.context;
 
 import ask.me.again.meshinery.core.common.Context;
 import lombok.AllArgsConstructor;
@@ -9,13 +9,13 @@ import lombok.With;
 @Value
 @Builder
 @AllArgsConstructor
-public class TestContext implements Context {
+public class TestContext2 implements Context {
 
   @With
   String id;
   int index;
 
-  public TestContext(int index) {
+  public TestContext2(int index) {
     this.id = String.valueOf(index);
     this.index = index;
   }

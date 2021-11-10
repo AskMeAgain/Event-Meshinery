@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.source;
 
-import ask.me.again.meshinery.core.common.context.TestContext;
+import ask.me.again.meshinery.core.utils.context.TestContext;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

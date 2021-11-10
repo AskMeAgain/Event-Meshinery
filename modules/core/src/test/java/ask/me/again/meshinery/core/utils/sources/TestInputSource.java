@@ -1,7 +1,7 @@
-package ask.me.again.meshinery.core.common.sources;
+package ask.me.again.meshinery.core.utils.sources;
 
 import ask.me.again.meshinery.core.common.InputSource;
-import ask.me.again.meshinery.core.common.context.TestContext;
+import ask.me.again.meshinery.core.utils.context.TestContext;
 import java.util.Collections;
 import java.util.List;
 import lombok.Builder;

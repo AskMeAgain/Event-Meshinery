@@ -1,24 +1,25 @@
-package ask.me.again.meshinery.core.common.processor;
+package ask.me.again.meshinery.core.utils.processor;
 
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
-import ask.me.again.meshinery.core.common.context.TestContext;
+import ask.me.again.meshinery.core.utils.context.TestContext;
+import ask.me.again.meshinery.core.utils.context.TestContext2;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @RequiredArgsConstructor
-public class TestContextProcessor implements MeshineryProcessor<TestContext, TestContext> {
+public class ToTestContextProcessor implements MeshineryProcessor<TestContext2, TestContext> {
 
   private final int index;
 
   @Override
-  public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
+  public CompletableFuture<TestContext> processAsync(TestContext2 context, Executor executor) {
     return CompletableFuture.supplyAsync(() -> wait(context), executor);
   }
 
   @SneakyThrows
-  private TestContext wait(TestContext context) {
+  private TestContext wait(TestContext2 context) {
     Thread.sleep(1000);
     return new TestContext(index + context.getIndex());
   }
