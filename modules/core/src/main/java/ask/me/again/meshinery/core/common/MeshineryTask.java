@@ -26,16 +26,18 @@ import lombok.With;
 public class MeshineryTask<K, C extends Context> {
 
   @Getter private List<MeshineryProcessor<Context, Context>> processorList = new ArrayList<>();
-  @Getter private Function<Throwable, Context> handleException = exception -> null;
-  @Getter private @With OutputSource<K, C> defaultOutputSource;
-  @Getter private MdcInjectingExecutorService executorService;
-  @Getter private GraphData<K> graphData = new GraphData<>();
-  @Getter private String taskName = "Default Task";
-  @Getter private K inputKey;
+  @Getter @With private GraphData<K> graphData = new GraphData<>();
+
+  @Getter @With private Function<Throwable, Context> handleException = exception -> null;
+  @Getter @With private OutputSource<K, C> defaultOutputSource;
+  @Getter @With private MdcInjectingExecutorService executorService;
+  @Getter @With private String taskName = "Default Task";
+  @Getter @With private K inputKey;
+
+  @With private InputSource<K, C> inputSource;
+  @With private long backoffTime = 0;
 
   private Instant nextExecution = Instant.now();
-  private InputSource<K, C> inputSource;
-  private long backoffTime = 0;
 
   private <I extends Context> MeshineryTask(
       MeshineryProcessor<I, C> newProcessor,
@@ -89,8 +91,7 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTask<K, C> defaultOutputSource(OutputSource<K, C> outputSource) {
-    this.defaultOutputSource = outputSource;
-    return this;
+    return this.withDefaultOutputSource(outputSource);
   }
 
   /**
@@ -100,8 +101,7 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTask<K, C> inputSource(InputSource<K, C> inputSource) {
-    this.inputSource = inputSource;
-    return this;
+    return this.withInputSource(inputSource);
   }
 
   /**
@@ -112,10 +112,9 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTask<K, C> read(K inputKey, ExecutorService executorService) {
-    this.executorService = new MdcInjectingExecutorService(executorService);
-    this.inputKey = inputKey;
-    this.graphData.getInputKeys().add(inputKey);
-    return this;
+    return this.withGraphData(this.getGraphData().addInputKey(inputKey))
+        .withExecutorService(new MdcInjectingExecutorService(executorService))
+        .withInputKey(inputKey);
   }
 
   /**
@@ -127,9 +126,8 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTask<K, C> joinOn(InputSource<K, C> rightInputSource, K rightKey, BiFunction<C, C, C> combine) {
-    this.graphData.inputKeys.add(rightKey);
-    this.inputSource = new JoinedInputSource<>(inputSource, rightInputSource, rightKey, combine);
-    return this;
+    return this.withGraphData(this.getGraphData().addInputKey(rightKey))
+        .withInputSource(new JoinedInputSource<>(inputSource, rightInputSource, rightKey, combine));
   }
 
   /**
@@ -139,8 +137,7 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTask<K, C> taskName(String name) {
-    taskName = name;
-    return this;
+    return this.withTaskName(name);
   }
 
   /**
@@ -211,8 +208,8 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public final MeshineryTask<K, C> write(K key, Predicate<C> writeIf, OutputSource<K, C> outputSource) {
-    this.graphData.outputKeys.add(key);
-    return addNewProcessor(new OutputProcessor<>(key, writeIf, outputSource));
+    return this.withGraphData(this.getGraphData().addOutputKey(key))
+        .addNewProcessor(new OutputProcessor<>(key, writeIf, outputSource));
   }
 
   /**
@@ -251,8 +248,7 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public final MeshineryTask<K, C> exceptionHandler(Function<Throwable, Context> handleError) {
-    this.handleException = handleError;
-    return this;
+    return this.withHandleException(handleError);
   }
 
   /**
@@ -262,8 +258,7 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public final MeshineryTask<K, C> backoffTime(long milliSeconds) {
-    this.backoffTime = milliSeconds;
-    return this;
+    return this.withBackoffTime(milliSeconds);
   }
 
   private <N extends Context> MeshineryTask<K, N> addNewProcessor(MeshineryProcessor<C, N> newProcessor) {
