@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class ExampleTaskConfiguration {
+public class ExampleHeartbeatSplitJoinConfiguration {
 
   private final OutputSource<String, Context> outputSource;
   private final InputSource<String, Context> inputSource;
@@ -101,7 +101,7 @@ public class ExampleTaskConfiguration {
         .inputSource(contextCronInputSource)
         .defaultOutputSource(outputSource)
         .taskName("Cron Heartbeat")
-        .read("0/3 * * * * *", executorService)
+        .read("0/3 * 1 * * *", executorService)
         .write("start");
   }
 

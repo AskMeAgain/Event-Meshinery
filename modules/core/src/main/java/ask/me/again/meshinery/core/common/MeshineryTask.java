@@ -213,6 +213,18 @@ public class MeshineryTask<K, C extends Context> {
   }
 
   /**
+   * Writes an event if a predicate returns true.
+   *
+   * @param key          Key to be used
+   * @param writeIf      predicate to be used
+   * @return returns itself for builder pattern
+   */
+  public final MeshineryTask<K, C> write(K key, Predicate<C> writeIf) {
+    return this.withGraphData(this.getGraphData().addOutputKey(key))
+        .addNewProcessor(new OutputProcessor<>(key, writeIf, defaultOutputSource));
+  }
+
+  /**
    * Writes an event if a predicate returns true and uses a dynamic KeyFunction. Uses the defaultOutputSource.
    *
    * @param keyFunction Keyfunction to be used
