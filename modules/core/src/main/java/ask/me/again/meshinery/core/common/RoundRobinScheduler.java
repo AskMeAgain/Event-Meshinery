@@ -2,6 +2,7 @@ package ask.me.again.meshinery.core.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -94,7 +95,9 @@ public class RoundRobinScheduler {
           for (var reactiveTask : tasks) {
             //getting the input values
             MDC.put("taskid", reactiveTask.getTaskName());
-            var inputList = reactiveTask.getInputValues();
+
+            var inputList = requestNewData(reactiveTask);
+
             var executorService = reactiveTask.getExecutorService();
 
             for (var input : inputList) {
@@ -134,6 +137,16 @@ public class RoundRobinScheduler {
       }
       MDC.clear();
     });
+  }
+
+  private List<? extends Context> requestNewData(MeshineryTask<?, ? extends Context> reactiveTask) {
+    try {
+      return reactiveTask.getInputValues();
+    } catch (Exception e) {
+      log.error("Error while requesting new input data. Shutting down scheduler", e);
+      gracefulShutdown();
+      return Collections.emptyList();
+    }
   }
 
   @SneakyThrows
@@ -181,7 +194,8 @@ public class RoundRobinScheduler {
 
         var executorService = currentTask.getExecutorService();
 
-        currentTask = currentTask.withFuture(nextProcessor.processAsync(context, executorService));
+        var resultFuture = getResultFuture(nextProcessor, context, executorService);
+        currentTask = currentTask.withFuture(resultFuture);
       }
 
       MDC.clear();
@@ -195,6 +209,21 @@ public class RoundRobinScheduler {
       if (!executorService.isShutdown()) {
         executorService.shutdown();
       }
+    }
+  }
+
+  private CompletableFuture<Context> getResultFuture(
+      MeshineryProcessor<Context, Context> nextProcessor, Context context, MdcInjectingExecutorService executorService
+  ) {
+    try {
+      return nextProcessor.processAsync(context, executorService);
+    } catch (Exception e) {
+      log.error(
+          "Error while preparing/processing processor '{}'. Shutting down gracefully",
+          nextProcessor.getClass().getSimpleName()
+      );
+      gracefulShutdown();
+      return CompletableFuture.completedFuture(null);
     }
   }
 
