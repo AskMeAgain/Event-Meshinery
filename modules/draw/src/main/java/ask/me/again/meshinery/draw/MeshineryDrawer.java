@@ -25,7 +25,7 @@ public class MeshineryDrawer {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public byte[] draw() throws IOException {
     var graph = new DefaultGraph("id");
-    var fileSinkImages = new FileSinkImages(outputType, FileSinkImages.Resolutions.VGA);
+    var fileSinkImages = new FileSinkImages(outputType, FileSinkImages.Resolutions.HD720);
 
     fileSinkImages.setLayoutPolicy(FileSinkImages.LayoutPolicy.COMPUTED_FULLY_AT_NEW_IMAGE);
 
@@ -33,16 +33,34 @@ public class MeshineryDrawer {
     var edges = new HashSet<Container>();
 
     for (var task : tasks) {
-      for (var inputKey : task.getGraphData().getInputKeys()) {
+      var graphData = task.getGraphData();
+
+      for (var inputKey : graphData.getInputKeys()) {
+
         nodeSet.add(inputKey.toString());
-        for (var outputKeys : task.getGraphData().getOutputKeys()) {
-          edges.add(Container.builder()
-              .name(task.getTaskName())
-              .id("%s_%s".formatted(inputKey, outputKeys.toString()))
-              .to(inputKey.toString())
-              .from(outputKeys.toString())
-              .build());
-          nodeSet.add(outputKeys.toString());
+
+        if (graphData.getInputKeys().size() > 1) {
+          var keys = graphData.getInputKeys();
+          nodeSet.add("%s_%s_joined".formatted(keys.get(0), keys.get(1)));
+        }
+
+        for (var outputKeys : graphData.getOutputKeys()) {
+
+          if (graphData.getInputKeys().size() > 1) {
+            //join
+            var keys = graphData.getInputKeys();
+            var combinedNode = "%s_%s_joined".formatted(keys.get(0), keys.get(1));
+            edges.add(Container.builder()
+                .name(task.getTaskName())
+                .id("%s_%s".formatted(inputKey, combinedNode))
+                .from(inputKey.toString())
+                .to(combinedNode)
+                .build());
+
+            drawNormalEdge(nodeSet, edges, task, combinedNode, outputKeys);
+          } else {
+            drawNormalEdge(nodeSet, edges, task, inputKey, outputKeys);
+          }
         }
       }
     }
@@ -52,9 +70,23 @@ public class MeshineryDrawer {
     graphAssignment.onGraph(graph);
 
     var tempFile = Files.createTempFile("meshinary", ".jpg");
-
+    System.setProperty("gs.ui.renderer",
+        "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+    fileSinkImages.setRenderer(FileSinkImages.RendererType.SCALA);
     fileSinkImages.writeAll(graph, tempFile.toString());
     return Files.readAllBytes(tempFile);
+  }
+
+  private void drawNormalEdge(
+      HashSet<String> nodeSet, HashSet<Container> edges, MeshineryTask<?, ?> task, Object inputKey, Object outputKeys
+  ) {
+    edges.add(Container.builder()
+        .name(task.getTaskName())
+        .id("%s_%s".formatted(inputKey, outputKeys.toString()))
+        .from(inputKey.toString())
+        .to(outputKeys.toString())
+        .build());
+    nodeSet.add(outputKeys.toString());
   }
 
 }

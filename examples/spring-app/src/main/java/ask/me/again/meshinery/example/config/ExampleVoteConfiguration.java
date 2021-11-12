@@ -48,15 +48,6 @@ public class ExampleVoteConfiguration {
           log.info("Voted for vote on: {} and approved: {}", context.getId(), context.isApproved());
           return CompletableFuture.completedFuture(context);
         })
-        .write("combine-node");
-  }
-
-
-  @Bean
-  public MeshineryTask<String, VoteContext> tempNodeForGraph() {
-    return basicTask()
-        .taskName("Combine Nodes")
-        .read("combine-node", executorService)
         .write("finished-vote-approved", VoteContext::isApproved)
         .write("finished-vote-rejected", context -> !context.isApproved());
   }

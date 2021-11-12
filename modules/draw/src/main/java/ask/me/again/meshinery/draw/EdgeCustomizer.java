@@ -7,8 +7,13 @@ public interface EdgeCustomizer {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   default void onEachEdge(DefaultGraph graph, Container container) {
-    var edge = graph.addEdge(container.getId(), container.getFrom(), container.getTo());
-    edge.addAttribute("ui.style", "size: 2px; text-alignment: center;");
+    var edge = graph.addEdge(container.getId(), container.getFrom(), container.getTo(), true);
+    edge.addAttribute("layout.weight", 5);
+    edge.addAttribute("ui.style", """
+        shape: line;
+        size: 2px;
+        """
+    );
   }
 
 }
