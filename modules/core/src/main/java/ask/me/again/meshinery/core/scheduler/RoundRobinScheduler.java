@@ -1,6 +1,11 @@
-package ask.me.again.meshinery.core.common;
+package ask.me.again.meshinery.core.scheduler;
 
-import java.util.ArrayList;
+import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.MdcInjectingExecutorService;
+import ask.me.again.meshinery.core.common.MeshineryProcessor;
+import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskVerifier;
+import ask.me.again.meshinery.core.task.TaskRun;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,12 +19,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 
-import static ask.me.again.meshinery.core.common.MeshineryTaskVerifier.getAndVerifyInputSources;
-import static ask.me.again.meshinery.core.common.MeshineryTaskVerifier.getAndVerifyOutputSources;
-import static ask.me.again.meshinery.core.common.MeshineryTaskVerifier.getAndVerifyTaskList;
-
 @Slf4j
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor(access = AccessLevel.MODULE)
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinScheduler {
 
@@ -31,15 +32,14 @@ public class RoundRobinScheduler {
 
   private boolean internalShutdown = false;
 
-  public static RoundRobinScheduler.Builder builder() {
-    return new RoundRobinScheduler.Builder();
+  public static SchedulerBuilder builder() {
+    return new SchedulerBuilder();
   }
 
   @SneakyThrows
-  private RoundRobinScheduler start() {
-    log.info("Starting Scheduler with following Tasks: {}", getAndVerifyTaskList(tasks));
-    log.info("Starting Scheduler with following Input Source: {}", getAndVerifyInputSources(tasks));
-    log.info("Starting Scheduler with following Output Source: {}", getAndVerifyOutputSources(tasks));
+  RoundRobinScheduler start() {
+    MeshineryTaskVerifier.verifyTasks(tasks);
+
     //task gathering
     tasks.forEach(task -> executorServices.add(task.getExecutorService()));
 
@@ -209,47 +209,6 @@ public class RoundRobinScheduler {
       );
       gracefulShutdown();
       return CompletableFuture.completedFuture(null);
-    }
-  }
-
-  public static class Builder {
-
-    int backpressureLimit = 200;
-    boolean isBatchJob;
-    List<MeshineryTask<? extends Object, ? extends Context>> tasks = new ArrayList<>();
-    List<ExecutorService> executorServices = new ArrayList<>();
-    ConcurrentLinkedQueue<TaskRun> todoQueue = new ConcurrentLinkedQueue<>();
-
-    public Builder task(MeshineryTask<?, ? extends Context> task) {
-      tasks.add(task);
-      return this;
-    }
-
-    public Builder backpressureLimit(int backpressureLimit) {
-      this.backpressureLimit = backpressureLimit;
-      return this;
-    }
-
-    public Builder tasks(List<MeshineryTask<?, ? extends Context>> task) {
-      tasks.addAll(task);
-      return this;
-    }
-
-    public Builder isBatchJob(boolean flag) {
-      isBatchJob = flag;
-      return this;
-    }
-
-    @SneakyThrows
-    @SuppressWarnings("checkstyle:MissingJavadocMethod")
-    public RoundRobinScheduler build() {
-      return new RoundRobinScheduler(
-          tasks,
-          executorServices,
-          todoQueue,
-          backpressureLimit,
-          isBatchJob
-      ).start();
     }
   }
 }

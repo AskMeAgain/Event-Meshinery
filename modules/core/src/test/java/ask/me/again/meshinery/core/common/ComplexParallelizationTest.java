@@ -2,6 +2,8 @@ package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.processors.FluidProcessor;
 import ask.me.again.meshinery.core.processors.ParallelProcessor;
+import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
+import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.utils.AbstractTestBase;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.processor.TestContextProcessor;
@@ -48,7 +50,7 @@ class ComplexParallelizationTest extends AbstractTestBase {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
-        .build();
+        .buildAndStart();
     var batchJobFinished = executor.awaitTermination(3, TimeUnit.SECONDS);
 
     //Assert ----------------------------------------------------------------------------------

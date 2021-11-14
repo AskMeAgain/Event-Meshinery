@@ -2,9 +2,9 @@ package ask.me.again.meshinery.example.config;
 
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.InputSource;
-import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.core.source.CronInputSource;
+import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.example.entities.ProcessorA;
 import ask.me.again.meshinery.example.entities.ProcessorFinished;
 import com.cronutils.model.CronType;

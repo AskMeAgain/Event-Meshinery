@@ -1,8 +1,8 @@
 package ask.me.again.meshinery.example.config;
 
 import ask.me.again.meshinery.core.common.InputSource;
-import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.common.OutputSource;
+import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.example.TestContext;
 import ask.me.again.meshinery.example.entities.ProcessorA;
 import java.util.concurrent.ExecutorService;

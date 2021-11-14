@@ -1,5 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
+import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
+import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.utils.AbstractTestBase;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.context.TestContext2;
@@ -57,7 +59,7 @@ class ContextSwitchTest extends AbstractTestBase {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
-        .build();
+        .buildAndStart();
 
     var batchJobFinished = executor.awaitTermination(10, TimeUnit.SECONDS);
 

@@ -1,5 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
+import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
+import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.processor.TestContextProcessor;
 import ask.me.again.meshinery.core.utils.sources.TestInputSource;
@@ -35,7 +37,7 @@ class BackpressureTest {
         .isBatchJob(true)
         .backpressureLimit(10)
         .task(task)
-        .build();
+        .buildAndStart();
     var batchJobFinished = executor.awaitTermination(500, TimeUnit.MILLISECONDS);
 
     //Assert -----------------------------------------------------------------------------------------------------------

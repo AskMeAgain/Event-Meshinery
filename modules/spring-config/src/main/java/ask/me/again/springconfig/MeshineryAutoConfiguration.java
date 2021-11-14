@@ -1,7 +1,7 @@
 package ask.me.again.springconfig;
 
-import ask.me.again.meshinery.core.common.MeshineryTask;
-import ask.me.again.meshinery.core.common.RoundRobinScheduler;
+import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
+import ask.me.again.meshinery.core.task.MeshineryTask;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +24,7 @@ public class MeshineryAutoConfiguration {
     return RoundRobinScheduler.builder()
         .isBatchJob(isBatchJob)
         .tasks(tasks)
-        .build();
+        .buildAndStart();
   }
 
 }

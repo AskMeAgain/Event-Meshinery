@@ -1,7 +1,12 @@
-package ask.me.again.meshinery.core.common;
+package ask.me.again.meshinery.core.task;
 
+import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.GraphData;
+import ask.me.again.meshinery.core.common.InputSource;
+import ask.me.again.meshinery.core.common.MdcInjectingExecutorService;
+import ask.me.again.meshinery.core.common.MeshineryProcessor;
+import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.core.processors.DynamicOutputProcessor;
-import ask.me.again.meshinery.core.processors.LambdaProcessor;
 import ask.me.again.meshinery.core.processors.OutputProcessor;
 import ask.me.again.meshinery.core.processors.StopProcessor;
 import ask.me.again.meshinery.core.source.JoinedInputSource;
@@ -9,6 +14,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -151,7 +157,9 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public <N extends Context> MeshineryTask<K, N> contextSwitch(OutputSource<K, N> newOutputSource, Function<C, N> map) {
-    return addNewProcessor(new LambdaProcessor<>(map)).withDefaultOutputSource(newOutputSource);
+    MeshineryProcessor<C, N> newProcessor = (context, ex) -> CompletableFuture.completedFuture(map.apply(context));
+    return addNewProcessor(newProcessor)
+        .withDefaultOutputSource(newOutputSource);
   }
 
   /**

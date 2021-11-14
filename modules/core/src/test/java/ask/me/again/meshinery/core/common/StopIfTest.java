@@ -1,5 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
+import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
+import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.sources.TestInputSource;
 import java.util.concurrent.Executors;
@@ -38,7 +40,7 @@ class StopIfTest {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
-        .build();
+        .buildAndStart();
     var batchJobFinished = executor.awaitTermination(2, TimeUnit.SECONDS);
 
     //Assert ---------------------------------------------------------------------------------

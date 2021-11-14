@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.example.config;
 
 import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.common.RoundRobinScheduler;
+import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
 import ask.me.again.meshinery.core.source.MemoryConnector;
 import ask.me.again.meshinery.draw.MeshineryDrawer;
 import ask.me.again.meshinery.draw.MeshineryDrawerConfiguration;

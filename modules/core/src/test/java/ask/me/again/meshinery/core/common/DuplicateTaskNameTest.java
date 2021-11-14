@@ -1,5 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
+import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
+import ask.me.again.meshinery.core.task.MeshineryTask;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,7 +19,7 @@ class DuplicateTaskNameTest {
     assertThatThrownBy(() -> RoundRobinScheduler.builder()
         .task(duplicateTask)
         .task(duplicateTask)
-        .build()
+        .buildAndStart()
     ).isInstanceOf(RuntimeException.class);
   }
 

@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.example;
 
-import ask.me.again.meshinery.core.common.MeshineryTask;
-import ask.me.again.meshinery.core.common.RoundRobinScheduler;
+import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
+import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.example.entities.ExampleInputSource;
 import ask.me.again.meshinery.example.entities.ExampleOutputSource;
 import ask.me.again.meshinery.example.entities.ExampleOutputSource2;
@@ -57,7 +57,7 @@ public class MainApplication {
     var scheduler = RoundRobinScheduler.builder()
         .isBatchJob(true)
         .tasks(List.of(task1, task2))
-        .build();
+        .buildAndStart();
 
     CompletableFuture.runAsync(() -> {
       try {

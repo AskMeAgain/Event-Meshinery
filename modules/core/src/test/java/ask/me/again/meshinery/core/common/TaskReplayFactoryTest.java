@@ -1,5 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
+import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.TaskReplayFactory;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.processor.TestContextProcessor;
 import java.util.List;
@@ -11,7 +13,7 @@ import org.mockito.Mockito;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
-class TaskInputFactoryTest {
+class TaskReplayFactoryTest {
 
   @Test
   void testInputFactory() throws ExecutionException, InterruptedException {
@@ -32,7 +34,7 @@ class TaskInputFactoryTest {
             .taskName("test2")
     );
     var executor = Executors.newSingleThreadExecutor();
-    var inputFactory = new TaskInputFactory(tasks, executor);
+    var inputFactory = new TaskReplayFactory(tasks, executor);
 
     //Act --------------------------------------------------------------------------------------------------------------
     inputFactory.writeMessage("test", new TestContext(3));

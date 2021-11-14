@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.draw;
 
-import ask.me.again.meshinery.core.common.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTask;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
