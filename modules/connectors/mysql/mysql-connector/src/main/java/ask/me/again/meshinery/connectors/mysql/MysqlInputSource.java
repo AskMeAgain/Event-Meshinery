@@ -16,7 +16,6 @@ import org.jdbi.v3.json.Json;
 @RequiredArgsConstructor
 public class MysqlInputSource<C extends Context> implements InputSource<String, C> {
 
-
   public static final String SELECT_QUERY = """
       SELECT context 
       FROM <TABLE> 
@@ -36,7 +35,6 @@ public class MysqlInputSource<C extends Context> implements InputSource<String, 
   private final String name;
   private final Jdbi jdbi;
   private final Class<C> clazz;
-
   private final MysqlProperties mysqlProperties;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")

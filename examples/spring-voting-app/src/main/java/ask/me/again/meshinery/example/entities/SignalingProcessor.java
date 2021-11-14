@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.example.entities;
 
-import ask.me.again.meshinery.connectors.mysql.MysqlInputSource;
+import ask.me.again.meshinery.connectors.mysql.MysqlConnector;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SignalingProcessor implements MeshineryProcessor<VotingContext, VotingContext> {
 
-  private final MysqlInputSource<VotingContext> mysqlInputSource;
+  private final MysqlConnector<VotingContext> mysqlInputSource;
   private final String key;
 
   @Override

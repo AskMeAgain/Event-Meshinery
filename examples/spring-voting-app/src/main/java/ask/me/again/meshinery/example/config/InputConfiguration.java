@@ -1,7 +1,6 @@
 package ask.me.again.meshinery.example.config;
 
-import ask.me.again.meshinery.connectors.mysql.MysqlInputSource;
-import ask.me.again.meshinery.connectors.mysql.MysqlOutputSource;
+import ask.me.again.meshinery.connectors.mysql.MysqlConnector;
 import ask.me.again.meshinery.connectors.mysql.MysqlProperties;
 import ask.me.again.meshinery.core.source.MemoryConnector;
 import ask.me.again.meshinery.example.entities.VotingContext;
@@ -26,12 +25,7 @@ public class InputConfiguration {
   }
 
   @Bean
-  public MysqlOutputSource<VotingContext> mysqlOutputSource(Jdbi jdbi) {
-    return new MysqlOutputSource<>("Main", jdbi, VotingContext.class);
-  }
-
-  @Bean
-  public MysqlInputSource<VotingContext> mysqlInputSource(Jdbi jdbi, MysqlProperties mysqlProperties) {
-    return new MysqlInputSource<>("Main", jdbi, VotingContext.class, mysqlProperties);
+  public MysqlConnector<VotingContext> mysqlConnector(Jdbi jdbi, MysqlProperties mysqlProperties) {
+    return new MysqlConnector<>("Main", VotingContext.class, jdbi, mysqlProperties);
   }
 }

@@ -1,7 +1,6 @@
 package ask.me.again.meshinery.example.config;
 
-import ask.me.again.meshinery.connectors.mysql.MysqlInputSource;
-import ask.me.again.meshinery.connectors.mysql.MysqlOutputSource;
+import ask.me.again.meshinery.connectors.mysql.MysqlConnector;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.source.CronInputSource;
 import ask.me.again.meshinery.core.source.MemoryConnector;
@@ -18,8 +17,7 @@ import org.springframework.context.annotation.Bean;
 @Slf4j
 @RequiredArgsConstructor
 public class ExampleVoteConfiguration {
-  private final MysqlInputSource<VotingContext> mysqlInputSource;
-  private final MysqlOutputSource<VotingContext> mysqlOutputSource;
+  private final MysqlConnector<VotingContext> mysqlConnector;
   private final MemoryConnector<String, VotingContext> memoryConnector;
 
   private final ExecutorService executorService;
@@ -31,14 +29,14 @@ public class ExampleVoteConfiguration {
     var contextCronInputSource = new CronInputSource<>(
         "Cron votes",
         CronType.SPRING,
-        () -> createNewContext(atomicInt.incrementAndGet())
+        () -> new VotingContext(atomicInt.incrementAndGet() + "", false)
     );
 
     return MeshineryTask.<String, VotingContext>builder()
         .inputSource(contextCronInputSource)
-        .defaultOutputSource(mysqlOutputSource)
+        .defaultOutputSource(mysqlConnector)
         .taskName("Heartbeat Vote")
-        .read("0/30 * * * * *", executorService)
+        .read("0/10 * * * * *", executorService)
         .write("prepare-vote-1");
   }
 
@@ -48,7 +46,7 @@ public class ExampleVoteConfiguration {
         .inputSource(memoryConnector)
         .taskName("Uservote")
         .read("user-vote", executorService)
-        .process(new SignalingProcessor(mysqlInputSource, "prepare-vote-1"))
+        .process(new SignalingProcessor(mysqlConnector, "prepare-vote-1"))
         .process((context, executor) -> {
           log.info("Voted for vote on: {} and approved: {}", context.getId(), context.isApproved());
           return CompletableFuture.completedFuture(context);
@@ -81,16 +79,10 @@ public class ExampleVoteConfiguration {
         .write("finished-vote");
   }
 
-  private VotingContext createNewContext(int index) {
-    log.info("Creating Request with id {}", index);
-
-    return new VotingContext(index + "", false);
-  }
-
   private MeshineryTask<String, VotingContext> basicTask() {
     return MeshineryTask.<String, VotingContext>builder()
-        .inputSource(mysqlInputSource)
-        .defaultOutputSource(mysqlOutputSource);
+        .inputSource(mysqlConnector)
+        .defaultOutputSource(mysqlConnector);
   }
 
 }
