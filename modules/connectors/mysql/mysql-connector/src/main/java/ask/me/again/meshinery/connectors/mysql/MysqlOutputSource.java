@@ -16,7 +16,7 @@ import org.jdbi.v3.json.Json;
 public class MysqlOutputSource<C extends Context> implements OutputSource<String, C> {
 
   @Getter
-  private final String sourceName;
+  private final String name;
   private final Jdbi jdbi;
   private final Class<C> clazz;
 

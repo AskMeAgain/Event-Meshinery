@@ -24,8 +24,8 @@ class KafkaSourceTest extends AbstractKafkaTest {
     var kafkaProperties = getKafkaProperties();
     var consumerFactory = new KafkaConsumerFactory(kafkaProperties);
     var producerFactory = new KafkaProducerFactory(kafkaProperties);
-    var inputSource = new KafkaInputSource<>(TestContext.class, new ObjectMapper(), consumerFactory);
-    var outputSource = new KafkaOutputSource<>(producerFactory, new ObjectMapper());
+    var inputSource = new KafkaInputSource<>("test-input", TestContext.class, new ObjectMapper(), consumerFactory);
+    var outputSource = new KafkaOutputSource<>("test-output", producerFactory, new ObjectMapper());
     var input = TestContext.builder()
         .id("12")
         .build();

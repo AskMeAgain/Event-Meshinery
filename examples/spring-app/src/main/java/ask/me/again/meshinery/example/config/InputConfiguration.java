@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.example.config;
 
 import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.source.MemoryInputOutputSource;
+import ask.me.again.meshinery.core.source.MemoryConnector;
 import ask.me.again.meshinery.example.entities.VoteContext;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,12 +18,12 @@ public class InputConfiguration {
   }
 
   @Bean
-  public MemoryInputOutputSource<String, Context> memoryInputOutputSource() {
-    return new MemoryInputOutputSource<>();
+  public MemoryConnector<String, Context> memoryInputOutputSource() {
+    return new MemoryConnector<>("rest-input");
   }
 
   @Bean
-  public MemoryInputOutputSource<String, VoteContext> voteMemorySource() {
-    return new MemoryInputOutputSource<>();
+  public MemoryConnector<String, VoteContext> voteMemorySource() {
+    return new MemoryConnector<>("voting-context");
   }
 }

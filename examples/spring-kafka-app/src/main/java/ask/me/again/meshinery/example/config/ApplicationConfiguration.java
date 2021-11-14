@@ -33,7 +33,7 @@ public class ApplicationConfiguration {
       ObjectMapper objectMapper,
       KafkaConsumerFactory kafkaConsumerFactory
   ) {
-    return new KafkaInputSource<>(TestContext.class, objectMapper, kafkaConsumerFactory);
+    return new KafkaInputSource<>("default", TestContext.class, objectMapper, kafkaConsumerFactory);
   }
 
   @Bean
@@ -41,7 +41,7 @@ public class ApplicationConfiguration {
       ObjectMapper objectMapper,
       KafkaProducerFactory kafkaProducerFactory
   ) {
-    return new KafkaOutputSource<>(kafkaProducerFactory, objectMapper);
+    return new KafkaOutputSource<>("default", kafkaProducerFactory, objectMapper);
   }
 
 }

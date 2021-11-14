@@ -35,8 +35,7 @@ public class MeshineryTask<K, C extends Context> {
   @Getter @With private MdcInjectingExecutorService executorService;
   @Getter @With private String taskName = "Default Task";
   @Getter @With private K inputKey;
-
-  @With private InputSource<K, C> inputSource;
+  @Getter @With private InputSource<K, C> inputSource;
   @With private long backoffTime = 0;
 
   private Instant nextExecution = Instant.now();
@@ -128,8 +127,9 @@ public class MeshineryTask<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTask<K, C> joinOn(InputSource<K, C> rightInputSource, K rightKey, BiFunction<C, C, C> combine) {
+    var name = "%s->%s__%s->%s".formatted(inputSource.getName(), inputKey, rightInputSource.getName(), rightKey);
     return this.withGraphData(this.getGraphData().addInputKey(rightKey))
-        .withInputSource(new JoinedInputSource<>(inputSource, rightInputSource, rightKey, combine));
+        .withInputSource(new JoinedInputSource<>(name, inputSource, rightInputSource, rightKey, combine));
   }
 
   /**
@@ -217,8 +217,8 @@ public class MeshineryTask<K, C extends Context> {
   /**
    * Writes an event if a predicate returns true.
    *
-   * @param key          Key to be used
-   * @param writeIf      predicate to be used
+   * @param key     Key to be used
+   * @param writeIf predicate to be used
    * @return returns itself for builder pattern
    */
   public final MeshineryTask<K, C> write(K key, Predicate<C> writeIf) {

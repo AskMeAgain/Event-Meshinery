@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -20,15 +21,18 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class CronInputSource<C extends Context> implements InputSource<String, C> {
 
+  @Getter
+  private final String name;
   private final CronParser parser;
   private final Supplier<C> supplier;
   private final ConcurrentHashMap<String, ZonedDateTime> nextExecutions = new ConcurrentHashMap<>();
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public CronInputSource(CronType cronType, Supplier<C> supplier) {
+  public CronInputSource(String name, CronType cronType, Supplier<C> supplier) {
     var cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(cronType);
     parser = new CronParser(cronDefinition);
     this.supplier = supplier;
+    this.name = name;
   }
 
   @Override
@@ -42,7 +46,7 @@ public class CronInputSource<C extends Context> implements InputSource<String, C
 
         addNewCronEntry(cron, now);
 
-        log.info("Running scheduled Task with cron: [{}]", cron);
+        log.info("Running scheduled Task from cron: [{}]", cron);
         return List.of(supplier.get());
       } else {
         return Collections.emptyList();

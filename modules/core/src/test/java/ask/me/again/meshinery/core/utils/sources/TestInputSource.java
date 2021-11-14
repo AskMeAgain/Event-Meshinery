@@ -5,10 +5,14 @@ import ask.me.again.meshinery.core.utils.context.TestContext;
 import java.util.Collections;
 import java.util.List;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Singular;
 
 @Builder
 public class TestInputSource implements InputSource<String, TestContext> {
+
+  @Getter
+  private final String name = "test-input";
 
   @Singular
   List<TestContext> todos;

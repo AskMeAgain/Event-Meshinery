@@ -4,7 +4,7 @@ import ask.me.again.meshinery.connectors.mysql.MysqlInputSource;
 import ask.me.again.meshinery.connectors.mysql.MysqlOutputSource;
 import ask.me.again.meshinery.core.common.MeshineryTask;
 import ask.me.again.meshinery.core.source.CronInputSource;
-import ask.me.again.meshinery.core.source.MemoryInputOutputSource;
+import ask.me.again.meshinery.core.source.MemoryConnector;
 import ask.me.again.meshinery.example.entities.SignalingProcessor;
 import ask.me.again.meshinery.example.entities.VotingContext;
 import com.cronutils.model.CronType;
@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Bean;
 public class ExampleVoteConfiguration {
   private final MysqlInputSource<VotingContext> mysqlInputSource;
   private final MysqlOutputSource<VotingContext> mysqlOutputSource;
-  private final MemoryInputOutputSource<String, VotingContext> memoryInputOutputSource;
+  private final MemoryConnector<String, VotingContext> memoryConnector;
 
   private final ExecutorService executorService;
 
@@ -29,6 +29,7 @@ public class ExampleVoteConfiguration {
   public MeshineryTask<String, VotingContext> heartBeat() {
     var atomicInt = new AtomicInteger();
     var contextCronInputSource = new CronInputSource<>(
+        "Cron votes",
         CronType.SPRING,
         () -> createNewContext(atomicInt.incrementAndGet())
     );
@@ -44,7 +45,7 @@ public class ExampleVoteConfiguration {
   @Bean
   public MeshineryTask<String, VotingContext> userVote() {
     return basicTask()
-        .inputSource(memoryInputOutputSource)
+        .inputSource(memoryConnector)
         .taskName("Uservote")
         .read("user-vote", executorService)
         .process(new SignalingProcessor(mysqlInputSource, "prepare-vote-1"))

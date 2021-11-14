@@ -26,6 +26,7 @@ public class ExampleVoteConfiguration {
   public MeshineryTask<String, VoteContext> heartBeat() {
     var atomicInt = new AtomicInteger();
     var contextCronInputSource = new CronInputSource<>(
+        "Cron Vote heartbeat",
         CronType.SPRING,
         () -> createNewContext(atomicInt.incrementAndGet())
     );

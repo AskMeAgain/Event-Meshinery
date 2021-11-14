@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class JoinedInputSource<K, C extends Context> implements InputSource<K, C> {
 
+  @Getter
+  private final String name;
   private final InputSource<K, C> leftInputSource;
   private final InputSource<K, C> rightInputSource;
   private final K rightKey;

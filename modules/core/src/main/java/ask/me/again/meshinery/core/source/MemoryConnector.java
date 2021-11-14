@@ -9,10 +9,15 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class MemoryInputOutputSource<K, C extends Context> implements InputSource<K, C>, OutputSource<K, C> {
+@RequiredArgsConstructor
+public class MemoryConnector<K, C extends Context> implements InputSource<K, C>, OutputSource<K, C> {
 
+  @Getter
+  private final String name;
   private final ConcurrentHashMap<K, Queue<C>> map = new ConcurrentHashMap<>();
   private final int batchSize = 100;
 

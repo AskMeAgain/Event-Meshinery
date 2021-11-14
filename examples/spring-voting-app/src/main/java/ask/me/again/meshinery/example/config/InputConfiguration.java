@@ -3,7 +3,7 @@ package ask.me.again.meshinery.example.config;
 import ask.me.again.meshinery.connectors.mysql.MysqlInputSource;
 import ask.me.again.meshinery.connectors.mysql.MysqlOutputSource;
 import ask.me.again.meshinery.connectors.mysql.MysqlProperties;
-import ask.me.again.meshinery.core.source.MemoryInputOutputSource;
+import ask.me.again.meshinery.core.source.MemoryConnector;
 import ask.me.again.meshinery.example.entities.VotingContext;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,8 +21,8 @@ public class InputConfiguration {
   }
 
   @Bean
-  public MemoryInputOutputSource<String, VotingContext> voteMemorySource() {
-    return new MemoryInputOutputSource<>();
+  public MemoryConnector<String, VotingContext> voteMemorySource() {
+    return new MemoryConnector<>("Main");
   }
 
   @Bean

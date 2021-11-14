@@ -78,7 +78,9 @@ public class RoundRobinScheduler {
 
             var inputList = requestNewData(reactiveTask);
 
-            var executorService = reactiveTask.getExecutorService();
+            if (inputList.size() > 0) {
+              log.debug("Received data from input source: {}", reactiveTask.getInputSource().getName());
+            }
 
             for (var input : inputList) {
               itemsInThisIteration++;
@@ -87,7 +89,7 @@ public class RoundRobinScheduler {
                   .taskName(reactiveTask.getTaskName())
                   .id(input.getId())
                   .future(CompletableFuture.completedFuture(input))
-                  .executorService(executorService)
+                  .executorService(reactiveTask.getExecutorService())
                   .queue(processorQueue)
                   .handleError(reactiveTask.getHandleException())
                   .build();
@@ -194,7 +196,9 @@ public class RoundRobinScheduler {
   }
 
   private CompletableFuture<Context> getResultFuture(
-      MeshineryProcessor<Context, Context> nextProcessor, Context context, MdcInjectingExecutorService executorService
+      MeshineryProcessor<Context, Context> nextProcessor,
+      Context context,
+      MdcInjectingExecutorService executorService
   ) {
     try {
       return nextProcessor.processAsync(context, executorService);

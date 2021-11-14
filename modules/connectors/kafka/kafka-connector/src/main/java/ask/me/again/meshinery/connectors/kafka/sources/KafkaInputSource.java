@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
@@ -17,6 +18,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 @RequiredArgsConstructor
 public class KafkaInputSource<C extends Context> implements InputSource<String, C> {
 
+  @Getter
+  private final String name;
   private final Class<C> serdeClazz;
   private final ObjectMapper objectMapper;
   private final KafkaConsumerFactory kafkaConsumerFactory;
@@ -25,20 +28,20 @@ public class KafkaInputSource<C extends Context> implements InputSource<String, 
   public List<C> getInputs(String key) {
 
     var result = kafkaConsumerFactory.get(key)
-                                     .poll(Duration.ofMillis(1000));
+        .poll(Duration.ofMillis(1000));
 
     return StreamSupport.stream(result.spliterator(), false)
-                        .map(ConsumerRecord::value)
-                        .map(x -> {
-                          try {
-                            return objectMapper.readValue(x, serdeClazz);
-                          } catch (IOException e) {
-                            e.printStackTrace();
-                            return null;
-                          }
-                        })
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+        .map(ConsumerRecord::value)
+        .map(x -> {
+          try {
+            return objectMapper.readValue(x, serdeClazz);
+          } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+          }
+        })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 
 }

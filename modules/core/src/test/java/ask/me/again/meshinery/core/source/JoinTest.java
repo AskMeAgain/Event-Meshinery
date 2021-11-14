@@ -12,9 +12,9 @@ class JoinTest {
   @Test
   void joinTest() {
     //Arrange ----------------------------------------------------------------------------------------------------------
-    var leftSource = new MemoryInputOutputSource<String, TestContext>();
-    var rightSource = new MemoryInputOutputSource<String, TestContext>();
-    var joinedSource = new JoinedInputSource<>(leftSource, rightSource, KEY, this::combine);
+    var leftSource = new MemoryConnector<String, TestContext>("default");
+    var rightSource = new MemoryConnector<String, TestContext>("default");
+    var joinedSource = new JoinedInputSource<>("joined", leftSource, rightSource, KEY, this::combine);
 
     //Act --------------------------------------------------------------------------------------------------------------
     leftSource.writeOutput(KEY, new TestContext(1));

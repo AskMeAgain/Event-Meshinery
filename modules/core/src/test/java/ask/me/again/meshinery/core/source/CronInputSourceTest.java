@@ -17,7 +17,7 @@ class CronInputSourceTest {
     long currentSecond = getCurrentSecond();
 
     var cron = currentSecond + "/2 * * * * *";
-    var source = new CronInputSource<>(CronType.SPRING, () -> new TestContext(0));
+    var source = new CronInputSource<>("Default",CronType.SPRING, () -> new TestContext(0));
 
     //Act --------------------------------------------------------------------------------------------------------------
     var resultEmpty = source.getInputs(cron);

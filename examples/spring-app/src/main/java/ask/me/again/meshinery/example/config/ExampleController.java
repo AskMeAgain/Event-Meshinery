@@ -2,7 +2,7 @@ package ask.me.again.meshinery.example.config;
 
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.RoundRobinScheduler;
-import ask.me.again.meshinery.core.source.MemoryInputOutputSource;
+import ask.me.again.meshinery.core.source.MemoryConnector;
 import ask.me.again.meshinery.draw.MeshineryDrawer;
 import ask.me.again.meshinery.draw.MeshineryDrawerConfiguration;
 import ask.me.again.meshinery.example.entities.VoteContext;
@@ -26,8 +26,8 @@ public class ExampleController {
 
   private final ApplicationContext context;
   private final RoundRobinScheduler roundRobinScheduler;
-  private final MemoryInputOutputSource<String, Context> memoryInputOutputSource;
-  private final MemoryInputOutputSource<String, VoteContext> voteOutputSource;
+  private final MemoryConnector<String, Context> memoryConnector;
+  private final MemoryConnector<String, VoteContext> voteOutputSource;
   private final MeshineryDrawer meshineryDrawer;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
@@ -40,7 +40,7 @@ public class ExampleController {
   @GetMapping("start")
   public void testSource(@RequestBody String id) {
     log.info("Received Request with id: '{}'", id);
-    memoryInputOutputSource.writeOutput("start", () -> id);
+    memoryConnector.writeOutput("start", () -> id);
   }
 
   @PostMapping("vote")

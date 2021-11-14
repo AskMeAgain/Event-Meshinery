@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.example.config;
 
-import ask.me.again.meshinery.core.source.MemoryInputOutputSource;
+import ask.me.again.meshinery.core.source.MemoryConnector;
 import ask.me.again.meshinery.draw.MeshineryDrawer;
 import ask.me.again.meshinery.draw.MeshineryDrawerConfiguration;
 import ask.me.again.meshinery.example.entities.VotingContext;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class ExampleController {
 
-  private final MemoryInputOutputSource<String, VotingContext> voteOutputSource;
+  private final MemoryConnector<String, VotingContext> voteOutputSource;
   private final MeshineryDrawer meshineryDrawer;
 
   @PostMapping("vote")

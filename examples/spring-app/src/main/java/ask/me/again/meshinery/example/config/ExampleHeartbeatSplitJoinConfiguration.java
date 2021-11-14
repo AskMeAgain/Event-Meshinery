@@ -93,6 +93,7 @@ public class ExampleHeartbeatSplitJoinConfiguration {
   public MeshineryTask<String, Context> heartbeat() {
     var atomicInt = new AtomicInteger();
     var contextCronInputSource = new CronInputSource<>(
+        "Cron heartbeat",
         CronType.SPRING,
         () -> createNewContext(atomicInt.incrementAndGet())
     );

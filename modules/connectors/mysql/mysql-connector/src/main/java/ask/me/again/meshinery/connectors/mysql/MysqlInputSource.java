@@ -33,7 +33,7 @@ public class MysqlInputSource<C extends Context> implements InputSource<String, 
       """;
 
   @Getter
-  private final String sourceName;
+  private final String name;
   private final Jdbi jdbi;
   private final Class<C> clazz;
 

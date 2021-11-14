@@ -4,12 +4,12 @@ import ask.me.again.meshinery.core.utils.context.TestContext;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class MemoryInputOutputSourceTest {
+class MemoryConnectorTest {
 
   @Test
   void inputOutputTest() {
     //Arrange ---------------------------------------------------------------------------------
-    var inputOutput = new MemoryInputOutputSource<String, TestContext>();
+    var inputOutput = new MemoryConnector<String, TestContext>("default");
     var input = TestContext.builder()
         .id("2")
         .build();
