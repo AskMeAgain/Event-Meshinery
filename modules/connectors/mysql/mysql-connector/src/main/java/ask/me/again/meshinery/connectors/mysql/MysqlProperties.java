@@ -2,8 +2,8 @@ package ask.me.again.meshinery.connectors.mysql;
 
 import lombok.Data;
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
 @Data
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class MysqlProperties {
   int limit;
   String user;

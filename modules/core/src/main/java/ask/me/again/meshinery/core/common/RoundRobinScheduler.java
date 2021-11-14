@@ -87,7 +87,7 @@ public class RoundRobinScheduler {
     executor.execute(() -> {
       log.info("Starting input worker thread");
       newInputIteration:
-      while (!executor.isShutdown()) {
+      while (!executor.isShutdown() && !internalShutdown) {
 
         var itemsInThisIteration = 0;
         if (todoQueue.size() < backpressureLimit) {
@@ -136,6 +136,7 @@ public class RoundRobinScheduler {
         }
       }
       MDC.clear();
+      log.info("Input scheduler gracefully shutdown");
     });
   }
 

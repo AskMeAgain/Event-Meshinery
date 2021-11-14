@@ -1,0 +1,7 @@
+meshinery:
+  connectors:
+    mysql:
+      limit: 10
+      password: 'password'
+      user: 'user'
+      connection-string: 'jdbc:mysql://localhost:3306/db?useSSL=false&allowPublicKeyRetrieval=true'

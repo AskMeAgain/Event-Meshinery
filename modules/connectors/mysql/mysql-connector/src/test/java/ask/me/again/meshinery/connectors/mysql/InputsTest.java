@@ -4,11 +4,12 @@ import ask.me.again.meshinery.core.common.Context;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SourcesTest extends AbstractMysqlTest {
+class InputsTest extends AbstractMysqlTest {
 
   public static final String STATE = "Test";
 
@@ -41,6 +42,7 @@ class SourcesTest extends AbstractMysqlTest {
   }
 
   @Data
+  @Jacksonized
   @NoArgsConstructor
   @AllArgsConstructor
   public static class TestContext implements Context {

@@ -1,4 +1,4 @@
-CREATE TABLE `TestContext`
+CREATE TABLE `VotingContext`
 (
     `context`   json         NOT NULL,
     `id`        varchar(100) NOT NULL,

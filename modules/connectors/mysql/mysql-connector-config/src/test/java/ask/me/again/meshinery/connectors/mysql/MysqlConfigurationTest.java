@@ -8,7 +8,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig(
-    classes = MysqlConfiguration.class,
+    classes = MeshineryMysqlConfiguration.class,
     initializers = ConfigDataApplicationContextInitializer.class
 )
 class MysqlConfigurationTest {

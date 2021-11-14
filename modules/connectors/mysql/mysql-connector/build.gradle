@@ -6,6 +6,7 @@ plugins {
 dependencies {
 
     api project(':modules:core')
+    testImplementation project(':modules:core')
 
     api 'mysql:mysql-connector-java:8.0.12'
     api 'org.jdbi:jdbi3-core:3.21.0'

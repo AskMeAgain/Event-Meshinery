@@ -32,6 +32,8 @@
         <module name="EventMeshinery.examples.spring-app.test" />
         <module name="EventMeshinery.modules.core.main" />
         <module name="EventMeshinery.modules.connectors.mysql.mysql-connector-config.test" />
+        <module name="EventMeshinery.examples.spring-voting-app.test" />
+        <module name="EventMeshinery.examples.spring-voting-app.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17" />

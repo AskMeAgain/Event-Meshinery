@@ -25,9 +25,9 @@ public class AbstractMysqlTest {
   }
 
   public Jdbi jdbi() {
-    var casted = (MySQLContainer) mySQLContainer;
+    var container = (MySQLContainer) mySQLContainer;
 
-    var jdbi = Jdbi.create(casted.getJdbcUrl() + "?useSSL=false", casted.getUsername(), casted.getPassword());
+    var jdbi = Jdbi.create(container.getJdbcUrl() + "?useSSL=false", container.getUsername(), container.getPassword());
     jdbi.installPlugin(new Jackson2Plugin());
 
     return jdbi;
