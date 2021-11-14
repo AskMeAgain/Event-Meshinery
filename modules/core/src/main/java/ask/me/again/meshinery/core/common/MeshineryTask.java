@@ -17,10 +17,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.With;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * A Meshinery task consists of an input source, a list of processors and multiple output sources.
  */
+@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
 public class MeshineryTask<K, C extends Context> {

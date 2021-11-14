@@ -2,6 +2,7 @@ package ask.me.again.meshinery.connectors.mysql;
 
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.OutputSource;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,8 @@ import org.jdbi.v3.json.Json;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MysqlOutputSource<C extends Context> implements OutputSource<String, C> {
 
+  @Getter
+  private final String sourceName;
   private final Jdbi jdbi;
   private final Class<C> clazz;
 

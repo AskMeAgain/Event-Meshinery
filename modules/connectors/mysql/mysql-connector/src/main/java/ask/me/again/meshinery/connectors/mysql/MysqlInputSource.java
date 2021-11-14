@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
@@ -14,6 +15,7 @@ import org.jdbi.v3.json.Json;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
 public class MysqlInputSource<C extends Context> implements InputSource<String, C> {
+
 
   public static final String SELECT_QUERY = """
       SELECT context 
@@ -30,11 +32,14 @@ public class MysqlInputSource<C extends Context> implements InputSource<String, 
       LIMIT 1
       """;
 
+  @Getter
+  private final String sourceName;
   private final Jdbi jdbi;
   private final Class<C> clazz;
 
   private final MysqlProperties mysqlProperties;
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public Optional<C> getContext(String key, String id) {
 
     return jdbi.inTransaction(handle -> {
@@ -68,8 +73,6 @@ public class MysqlInputSource<C extends Context> implements InputSource<String, 
     return jdbi.inTransaction(handle -> {
 
       var qualifiedType = QualifiedType.of(clazz).with(Json.class);
-
-      //handle.registerRowMapper(ConstructorMapper.factory(clazz));
 
       var firstResult = handle.createQuery(SELECT_QUERY)
           .bind("state", key)

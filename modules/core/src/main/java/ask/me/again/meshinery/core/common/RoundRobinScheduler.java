@@ -1,22 +1,22 @@
 package ask.me.again.meshinery.core.common;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+
+import static ask.me.again.meshinery.core.common.MeshineryTaskVerifier.getAndVerifyInputSources;
+import static ask.me.again.meshinery.core.common.MeshineryTaskVerifier.getAndVerifyOutputSources;
+import static ask.me.again.meshinery.core.common.MeshineryTaskVerifier.getAndVerifyTaskList;
 
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -37,7 +37,9 @@ public class RoundRobinScheduler {
 
   @SneakyThrows
   private RoundRobinScheduler start() {
-    log.info("Starting Scheduler with following Tasks: {}", getAndVerifyTaskList());
+    log.info("Starting Scheduler with following Tasks: {}", getAndVerifyTaskList(tasks));
+    log.info("Starting Scheduler with following Input Source: {}", getAndVerifyInputSources(tasks));
+    log.info("Starting Scheduler with following Output Source: {}", getAndVerifyOutputSources(tasks));
     //task gathering
     tasks.forEach(task -> executorServices.add(task.getExecutorService()));
 
@@ -54,28 +56,6 @@ public class RoundRobinScheduler {
     taskExecutor.execute(this::runWorker);
 
     return this;
-  }
-
-  private List<String> getAndVerifyTaskList() {
-    var result = tasks.stream()
-        .map(MeshineryTask::getTaskName)
-        .toList();
-
-    var duplicates = findDuplicates(result);
-
-    if (duplicates.size() > 0) {
-      throw new RuntimeException("Found duplicate job names: [" + String.join(", ", duplicates) + "]");
-    }
-
-    return result;
-  }
-
-  //https://stackoverflow.com/a/31641116/5563263
-  private <T> Set<T> findDuplicates(Collection<T> collection) {
-    Set<T> uniques = new HashSet<>();
-    return collection.stream()
-        .filter(e -> !uniques.add(e))
-        .collect(Collectors.toSet());
   }
 
   public void gracefulShutdown() {

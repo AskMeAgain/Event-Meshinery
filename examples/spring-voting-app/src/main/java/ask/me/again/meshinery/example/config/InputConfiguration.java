@@ -27,11 +27,11 @@ public class InputConfiguration {
 
   @Bean
   public MysqlOutputSource<VotingContext> mysqlOutputSource(Jdbi jdbi) {
-    return new MysqlOutputSource<>(jdbi, VotingContext.class);
+    return new MysqlOutputSource<>("Main", jdbi, VotingContext.class);
   }
 
   @Bean
   public MysqlInputSource<VotingContext> mysqlInputSource(Jdbi jdbi, MysqlProperties mysqlProperties) {
-    return new MysqlInputSource<>(jdbi, VotingContext.class, mysqlProperties);
+    return new MysqlInputSource<>("Main", jdbi, VotingContext.class, mysqlProperties);
   }
 }

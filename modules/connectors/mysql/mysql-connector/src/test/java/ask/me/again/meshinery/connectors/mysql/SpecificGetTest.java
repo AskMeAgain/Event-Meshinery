@@ -4,17 +4,16 @@ import ask.me.again.meshinery.core.common.Context;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class InputsTest extends AbstractMysqlTest {
+class SpecificGetTest extends AbstractMysqlTest {
 
   public static final String STATE = "Test";
 
   @Test
-  void testInputOutput() {
+  void testSpecificInput() {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
 
@@ -22,6 +21,7 @@ class InputsTest extends AbstractMysqlTest {
     mysqlProperties.setLimit(1);
     var input = new MysqlInputSource<>("default", jdbi, TestContext.class, mysqlProperties);
     var output = new MysqlOutputSource<>("default", jdbi, TestContext.class);
+
     var value1 = new TestContext("1");
     var value2 = new TestContext("2");
 
@@ -29,20 +29,17 @@ class InputsTest extends AbstractMysqlTest {
     output.writeOutput(STATE, value1);
     output.writeOutput(STATE, value2);
 
-    var result1 = input.getInputs(STATE);
-    var result2 = input.getInputs(STATE);
+    var specificResult = input.getContext(STATE, "1");
+    var specificResultEmpty = input.getContext(STATE, "1");
+    var specificResultEmpty2 = input.getContext(STATE, "3");
 
     //Assert ---------------------------------------------------------------------------------
-    assertThat(result1)
-        .hasSize(1)
-        .contains(value1);
-    assertThat(result2)
-        .hasSize(1)
-        .contains(value2);
+    assertThat(specificResult).contains(value1);
+    assertThat(specificResultEmpty).isEmpty();
+    assertThat(specificResultEmpty2).isEmpty();
   }
 
   @Data
-  @Jacksonized
   @NoArgsConstructor
   @AllArgsConstructor
   public static class TestContext implements Context {
