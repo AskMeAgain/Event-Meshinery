@@ -33,13 +33,13 @@ class BackoffTimeTest {
         .process(processor);
 
     //Act --------------------------------------------------------------------------------------------------------------
-    var result1 = task.getInputValues();
-    var result2 = task.getInputValues();
+    var result1 = task.getNewTaskRuns();
+    var result2 = task.getNewTaskRuns();
 
     Thread.sleep(200);
 
-    var result3 = task.getInputValues();
-    var result4 = task.getInputValues();
+    var result3 = task.getNewTaskRuns();
+    var result4 = task.getNewTaskRuns();
 
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(result1).hasSize(1);

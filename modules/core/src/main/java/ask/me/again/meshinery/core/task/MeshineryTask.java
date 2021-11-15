@@ -13,6 +13,7 @@ import ask.me.again.meshinery.core.source.JoinedInputSource;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -78,16 +79,29 @@ public class MeshineryTask<K, C extends Context> {
    * Pulls the next batch of data from the input source. Keeps the backoff period in mind, which in this case returns
    * empty list and doesnt poll the source
    *
-   * @return returns itself for builder pattern
+   * @return returns Taskruns
    */
-  public List<C> getInputValues() {
+  public List<TaskRun> getNewTaskRuns() {
     var now = Instant.now();
-    if (now.isAfter(nextExecution)) {
-      nextExecution = now.plusMillis(backoffTime);
-      return inputSource.getInputs(inputKey);
-    } else {
+
+    if (!now.isAfter(nextExecution)) {
       return Collections.emptyList();
     }
+
+    log.debug("Creating new TaskRuns");
+
+    nextExecution = now.plusMillis(backoffTime);
+    return inputSource.getInputs(inputKey)
+        .stream()
+        .map(input -> TaskRun.builder()
+            .taskName(getTaskName())
+            .id(input.getId())
+            .future(CompletableFuture.completedFuture(input))
+            .executorService(getExecutorService())
+            .queue(new LinkedList<>(getProcessorList()))
+            .handleError(getHandleException())
+            .build())
+        .toList();
   }
 
   /**

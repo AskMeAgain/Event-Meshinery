@@ -7,7 +7,6 @@ import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.MeshineryTaskVerifier;
 import ask.me.again.meshinery.core.task.TaskRun;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -76,23 +75,14 @@ public class RoundRobinScheduler {
             //getting the input values
             MDC.put("taskid", reactiveTask.getTaskName());
 
-            var inputList = requestNewData(reactiveTask);
+            var taskRuns = queryTaskRuns(reactiveTask);
 
-            if (inputList.size() > 0) {
+            if (taskRuns.size() > 0) {
               log.debug("Received data from input source: {}", reactiveTask.getInputSource().getName());
             }
 
-            for (var input : inputList) {
+            for (var taskRun : taskRuns) {
               itemsInThisIteration++;
-              var processorQueue = new LinkedList<>(reactiveTask.getProcessorList());
-              var taskRun = TaskRun.builder()
-                  .taskName(reactiveTask.getTaskName())
-                  .id(input.getId())
-                  .future(CompletableFuture.completedFuture(input))
-                  .executorService(reactiveTask.getExecutorService())
-                  .queue(processorQueue)
-                  .handleError(reactiveTask.getHandleException())
-                  .build();
 
               todoQueue.add(taskRun);
 
@@ -122,9 +112,9 @@ public class RoundRobinScheduler {
     });
   }
 
-  private List<? extends Context> requestNewData(MeshineryTask<?, ? extends Context> reactiveTask) {
+  private List<TaskRun> queryTaskRuns(MeshineryTask<?, ? extends Context> reactiveTask) {
     try {
-      return reactiveTask.getInputValues();
+      return reactiveTask.getNewTaskRuns();
     } catch (Exception e) {
       log.error("Error while requesting new input data. Shutting down scheduler", e);
       gracefulShutdown();
