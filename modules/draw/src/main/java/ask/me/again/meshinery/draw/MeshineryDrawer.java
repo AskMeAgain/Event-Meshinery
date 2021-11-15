@@ -22,8 +22,17 @@ public class MeshineryDrawer {
   private final EdgeCustomizer edgeAssignment;
   private final GraphCustomizer graphAssignment;
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+
+  public byte[] draw(String subgraph) throws IOException {
+    var filteredTasks = tasks.stream().filter(x -> x.getGraphData())
+    return draw(tasks);
+  }
+
   public byte[] draw() throws IOException {
+    return draw(tasks);
+  }
+
+  private byte[] draw(List<MeshineryTask<?, ?>> tasks) throws IOException {
     var graph = new DefaultGraph("id");
     var fileSinkImages = new FileSinkImages(outputType, FileSinkImages.Resolutions.HD720);
 
@@ -70,8 +79,10 @@ public class MeshineryDrawer {
     graphAssignment.onGraph(graph);
 
     var tempFile = Files.createTempFile("meshinary", ".jpg");
-    System.setProperty("gs.ui.renderer",
-        "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+    System.setProperty(
+        "gs.ui.renderer",
+        "org.graphstream.ui.j2dviewer.J2DGraphRenderer"
+    );
     fileSinkImages.setRenderer(FileSinkImages.RendererType.SCALA);
     fileSinkImages.writeAll(graph, tempFile.toString());
     return Files.readAllBytes(tempFile);
