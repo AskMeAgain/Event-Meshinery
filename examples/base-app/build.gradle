@@ -1,7 +1,7 @@
 plugins {
-    id 'java-library'
+    id 'java'
 }
 
 dependencies {
-    api project(':modules:core');
+    implementation project(':modules:core');
 }

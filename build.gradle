@@ -1,9 +1,16 @@
 apply plugin: 'java'
 
+
 subprojects {
     apply plugin: "checkstyle"
+    apply plugin: "jacoco"
 
     plugins.withType(JavaPlugin).whenPluginAdded {
+
+        jacocoTestReport {
+            enabled false
+        }
+
         dependencies {
             //Lombok
             compileOnly 'org.projectlombok:lombok:1.18.22'
@@ -48,6 +55,21 @@ subprojects {
             maxErrors = 0
             toolVersion '9.1'
             configFile = rootProject.file('checkstyle.xml')
+        }
+    }
+
+    plugins.withType(JavaLibraryPlugin).whenPluginAdded {
+
+        test {
+            finalizedBy jacocoTestReport
+        }
+
+        jacocoTestReport {
+            enabled true
+            dependsOn test
+            reports {
+                html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+            }
         }
     }
 }
