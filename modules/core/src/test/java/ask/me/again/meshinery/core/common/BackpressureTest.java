@@ -5,6 +5,7 @@ import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.processor.TestContextProcessor;
 import ask.me.again.meshinery.core.utils.sources.TestInputSource;
+import ask.me.again.meshinery.core.utils.sources.TestOutputSource;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ class BackpressureTest {
 
     var task = MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)
+        .defaultOutputSource(new TestOutputSource())
         .read("", executor)
         .process(processor);
 

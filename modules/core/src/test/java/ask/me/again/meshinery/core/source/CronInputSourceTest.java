@@ -21,9 +21,9 @@ class CronInputSourceTest {
 
     //Act --------------------------------------------------------------------------------------------------------------
     var resultEmpty = source.getInputs(cron);
-    Thread.sleep(900);
+    Thread.sleep(800);
     var resultEmpty2 = source.getInputs(cron);
-    Thread.sleep(1100);
+    Thread.sleep(1200);
     var result = source.getInputs(cron);
 
     //Assert -----------------------------------------------------------------------------------------------------------
