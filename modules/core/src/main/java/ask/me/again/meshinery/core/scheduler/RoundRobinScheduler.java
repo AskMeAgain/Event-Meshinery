@@ -28,7 +28,7 @@ public class RoundRobinScheduler {
   private final ConcurrentLinkedQueue<TaskRun> todoQueue;
   private final int backpressureLimit;
   private final boolean isBatchJob;
-
+  private final Runnable shutdownHook;
   private boolean internalShutdown = false;
 
   public static SchedulerBuilder builder() {
@@ -183,6 +183,8 @@ public class RoundRobinScheduler {
         executorService.shutdown();
       }
     }
+
+    shutdownHook.run();
   }
 
   private CompletableFuture<Context> getResultFuture(

@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 
 public class SchedulerBuilder {
 
+  Runnable shutdownHook;
   int backpressureLimit = 200;
   boolean isBatchJob;
   List<MeshineryTask<? extends Object, ? extends Context>> tasks = new ArrayList<>();
@@ -32,6 +33,11 @@ public class SchedulerBuilder {
     return this;
   }
 
+  public SchedulerBuilder registerShutdownHook(Runnable shutdownHook) {
+    this.shutdownHook = shutdownHook;
+    return this;
+  }
+
   public SchedulerBuilder isBatchJob(boolean flag) {
     isBatchJob = flag;
     return this;
@@ -50,7 +56,8 @@ public class SchedulerBuilder {
         executorServices,
         todoQueue,
         backpressureLimit,
-        isBatchJob
+        isBatchJob,
+        shutdownHook
     );
   }
 }

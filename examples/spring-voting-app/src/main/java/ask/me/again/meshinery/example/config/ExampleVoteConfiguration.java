@@ -4,6 +4,7 @@ import ask.me.again.meshinery.connectors.mysql.MysqlConnector;
 import ask.me.again.meshinery.core.source.CronInputSource;
 import ask.me.again.meshinery.core.source.MemoryConnector;
 import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.example.entities.ErrorProcessor;
 import ask.me.again.meshinery.example.entities.SignalingProcessor;
 import ask.me.again.meshinery.example.entities.VotingContext;
 import com.cronutils.model.CronType;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 @Slf4j
 @RequiredArgsConstructor
 public class ExampleVoteConfiguration {
+
   private final MysqlConnector<VotingContext> mysqlConnector;
   private final MemoryConnector<String, VotingContext> memoryConnector;
 
@@ -42,7 +44,7 @@ public class ExampleVoteConfiguration {
 
   @Bean
   public MeshineryTask<String, VotingContext> userVote() {
-    return basicTask()
+    var task = basicTask()
         .inputSource(memoryConnector)
         .taskName("Uservote")
         .read("user-vote", executorService)
@@ -53,6 +55,9 @@ public class ExampleVoteConfiguration {
         })
         .write("finished-vote-approved", VotingContext::isApproved)
         .write("finished-vote-rejected", context -> !context.isApproved());
+
+    //fixing the manual wiring
+    return task.withGraphData(task.getGraphData().addInputKey("prepare-vote-1"));
   }
 
   @Bean
@@ -76,6 +81,7 @@ public class ExampleVoteConfiguration {
           log.info("APPROVED: {}", context.getId());
           return CompletableFuture.completedFuture(context);
         })
+        .process(new ErrorProcessor())
         .write("finished-vote");
   }
 

@@ -19,10 +19,21 @@ public class MeshineryAutoConfiguration {
   private boolean isBatchJob;
 
   @Bean
+  @ConditionalOnMissingBean(CustomizeShutdownHook.class)
+  public CustomizeShutdownHook shutdownhook() {
+    return () -> {
+      //empty
+    };
+  }
+
+  @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public RoundRobinScheduler roundRobinScheduler(List<MeshineryTask<?, ?>> tasks) {
+  public RoundRobinScheduler roundRobinScheduler(
+      List<MeshineryTask<?, ?>> tasks, CustomizeShutdownHook shutdownHook
+  ) {
     return RoundRobinScheduler.builder()
         .isBatchJob(isBatchJob)
+        .registerShutdownHook(shutdownHook::run)
         .tasks(tasks)
         .buildAndStart();
   }
