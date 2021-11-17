@@ -48,6 +48,7 @@ public class ExampleVoteConfiguration {
         .taskName("Heartbeat Vote")
         .read(HEART_BEAT_IN, executorService)
         .write(HEART_BEAT_OUT)
+        .putData("graph.subgraph", "PreVote")
         .build();
   }
 
@@ -65,6 +66,7 @@ public class ExampleVoteConfiguration {
         .write(APPROVED_IN, VotingContext::isApproved)
         .write(REJECTED_IN, context -> !context.isApproved())
         .putData("graph.inputKey", HEART_BEAT_OUT)
+        .putData("graph.subgraph", "PreVote")
         .build();
   }
 

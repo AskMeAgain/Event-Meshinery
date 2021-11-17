@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,5 +35,10 @@ public class ExampleController {
   @GetMapping("graph")
   public ResponseEntity<ByteArrayResource> graph() throws IOException {
     return MeshineryDrawerConfiguration.picture(meshineryDrawer);
+  }
+
+  @GetMapping("graph/{subgraph}")
+  public ResponseEntity<ByteArrayResource> graph(@PathVariable("subgraph") String subgraph) throws IOException {
+    return MeshineryDrawerConfiguration.picture(meshineryDrawer, subgraph);
   }
 }

@@ -19,9 +19,9 @@ import org.springframework.http.ResponseEntity;
 public class MeshineryDrawerConfiguration {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static ResponseEntity<ByteArrayResource> picture(MeshineryDrawer drawer)
+  public static ResponseEntity<ByteArrayResource> picture(MeshineryDrawer drawer, String... subgraphs)
       throws IOException {
-    var result = drawer.draw();
+    var result = drawer.draw(subgraphs);
 
     var headers = new HttpHeaders();
     headers.setCacheControl(CacheControl.noCache().getHeaderValue());

@@ -25,7 +25,7 @@ public class MeshineryTask<K, C extends Context> {
   private final long backoffTime;
   @Getter private final K inputKey;
   @Getter private final String taskName;
-  @Getter private final TaskData graphData;
+  @Getter private final TaskData taskData;
   @Getter private final InputSource<K, C> inputSource;
   @Getter private final OutputSource<K, C> defaultOutputSource;
   @Getter private final MdcInjectingExecutorService executorService;

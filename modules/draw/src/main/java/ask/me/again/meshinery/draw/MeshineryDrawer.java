@@ -3,6 +3,7 @@ package ask.me.again.meshinery.draw;
 import ask.me.again.meshinery.core.task.MeshineryTask;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import lombok.Builder;
@@ -22,13 +23,25 @@ public class MeshineryDrawer {
   private final EdgeCustomizer edgeAssignment;
   private final GraphCustomizer graphAssignment;
 
-  public byte[] draw(String subgraph) throws IOException {
-    //var filteredTasks = tasks.stream().filter(x -> x.getGraphData())
-    return draw(tasks);
-  }
+  public byte[] draw(String... subgraph) throws IOException {
 
-  public byte[] draw() throws IOException {
-    return draw(tasks);
+    if (subgraph.length == 0) {
+      return draw(tasks);
+    }
+
+    var filteredTasks = new ArrayList<MeshineryTask<?, ?>>();
+    for (var task : tasks) {
+      var taskSubgraphs = task.getTaskData().get("graph.subgraph");
+      if (taskSubgraphs != null) {
+        for (var providedSubgraph : subgraph) {
+          if (taskSubgraphs.contains(providedSubgraph)) {
+            filteredTasks.add(task);
+          }
+        }
+      }
+    }
+
+    return draw(filteredTasks);
   }
 
   private byte[] draw(List<MeshineryTask<?, ?>> tasks) throws IOException {
@@ -41,7 +54,7 @@ public class MeshineryDrawer {
     var edges = new HashSet<Container>();
 
     for (var task : tasks) {
-      var graphData = task.getGraphData();
+      var graphData = task.getTaskData();
 
       var inputKeys = graphData.get("graph.inputKey");
       for (var inputKey : inputKeys) {
