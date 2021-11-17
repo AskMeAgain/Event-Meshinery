@@ -1,11 +1,11 @@
 package ask.me.again.meshinery.core.task;
 
 import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.common.GraphData;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MdcInjectingExecutorService;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.OutputSource;
+import ask.me.again.meshinery.core.common.TaskData;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -26,7 +26,7 @@ public class MeshineryTask<K, C extends Context> {
   private final long backoffTime;
   @Getter private final K inputKey;
   @Getter private final String taskName;
-  @Getter private final GraphData<K> graphData;
+  @Getter private final TaskData graphData;
   @Getter private final InputSource<K, C> inputSource;
   @Getter private final OutputSource<K, C> defaultOutputSource;
   @Getter private final MdcInjectingExecutorService executorService;

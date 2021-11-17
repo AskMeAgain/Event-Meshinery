@@ -43,25 +43,24 @@ public class MeshineryDrawer {
     for (var task : tasks) {
       var graphData = task.getGraphData();
 
-      for (var inputKey : graphData.getInputKeys()) {
+      var inputKeys = graphData.getList("graph.inputKey");
+      for (var inputKey : inputKeys) {
 
-        nodeSet.add(inputKey.toString());
+        nodeSet.add(inputKey);
 
-        if (graphData.getInputKeys().size() > 1) {
-          var keys = graphData.getInputKeys();
-          nodeSet.add("%s_%s_joined".formatted(keys.get(0), keys.get(1)));
+        if (inputKeys.size() > 1) {
+          nodeSet.add("%s_%s_joined".formatted(inputKeys.get(0), inputKeys.get(1)));
         }
 
-        for (var outputKeys : graphData.getOutputKeys()) {
+        for (var outputKeys : graphData.getList("graph.outputKey")) {
 
-          if (graphData.getInputKeys().size() > 1) {
+          if (inputKeys.size() > 1) {
             //join
-            var keys = graphData.getInputKeys();
-            var combinedNode = "%s_%s_joined".formatted(keys.get(0), keys.get(1));
+            var combinedNode = "%s_%s_joined".formatted(inputKeys.get(0), inputKeys.get(1));
             edges.add(Container.builder()
                 .name(task.getTaskName())
                 .id("%s_%s".formatted(inputKey, combinedNode))
-                .from(inputKey.toString())
+                .from(inputKey)
                 .to(combinedNode)
                 .build());
 

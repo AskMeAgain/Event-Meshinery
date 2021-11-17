@@ -1,11 +1,11 @@
 package ask.me.again.meshinery.core.task;
 
 import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.common.GraphData;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MdcInjectingExecutorService;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.OutputSource;
+import ask.me.again.meshinery.core.common.TaskData;
 import ask.me.again.meshinery.core.processors.DynamicOutputProcessor;
 import ask.me.again.meshinery.core.processors.OutputProcessor;
 import ask.me.again.meshinery.core.processors.StopProcessor;
@@ -19,23 +19,24 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
-import lombok.With;
 
-@With(AccessLevel.PRIVATE)
+@Builder(toBuilder = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MeshineryTaskFactory<K, C extends Context> {
 
   private K inputKey;
   private String taskName;
-  private GraphData<K> graphData;
+  private long backoffTime;
   private InputSource<K, C> inputSource;
   private OutputSource<K, C> defaultOutputSource;
   private MdcInjectingExecutorService executorService;
   private Function<Throwable, Context> handleException;
+
+  private TaskData taskData = new TaskData();
   private List<MeshineryProcessor<Context, Context>> processorList = new ArrayList<>();
-  private long backoffTime;
 
   private <I extends Context> MeshineryTaskFactory(
       MeshineryProcessor<I, C> newProcessor,
@@ -45,7 +46,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
       OutputSource defaultOutputSource,
       MdcInjectingExecutorService executorService,
       K inputKey,
-      GraphData<K> graphData,
+      TaskData taskData,
       Function<Throwable, Context> handleException,
       long backoffTime
   ) {
@@ -57,7 +58,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
     this.defaultOutputSource = defaultOutputSource;
     this.executorService = executorService;
     this.inputKey = inputKey;
-    this.graphData = graphData;
+    this.taskData = taskData;
     this.handleException = handleException;
   }
 
@@ -73,7 +74,10 @@ public class MeshineryTaskFactory<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTaskFactory<K, C> defaultOutputSource(OutputSource<K, C> outputSource) {
-    return this.withDefaultOutputSource(outputSource);
+    return toBuilder()
+        .defaultOutputSource(outputSource)
+        .taskData(taskData.appendToList("graph.outputSource", outputSource.getName()))
+        .build();
   }
 
   /**
@@ -83,7 +87,10 @@ public class MeshineryTaskFactory<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTaskFactory<K, C> inputSource(InputSource<K, C> inputSource) {
-    return this.withInputSource(inputSource);
+    return toBuilder()
+        .inputSource(inputSource)
+        .taskData(this.taskData.appendToList("graph.inputSource", inputSource.getName()))
+        .build();
   }
 
   /**
@@ -94,11 +101,11 @@ public class MeshineryTaskFactory<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTaskFactory<K, C> read(K inputKey, ExecutorService executorService) {
-    var task = this.withExecutorService(new MdcInjectingExecutorService(executorService))
-        .withInputKey(inputKey);
-    //TODO
-    //task.getGraphData().put("")
-    return task;
+    return toBuilder()
+        .inputKey(inputKey)
+        .executorService(new MdcInjectingExecutorService(executorService))
+        .taskData(taskData.appendToList("graph.inputKey", inputKey.toString()))
+        .build();
   }
 
   /**
@@ -113,8 +120,13 @@ public class MeshineryTaskFactory<K, C extends Context> {
       InputSource<K, C> rightInputSource, K rightKey, BiFunction<C, C, C> combine
   ) {
     var name = "%s->%s__%s->%s".formatted(inputSource.getName(), inputKey, rightInputSource.getName(), rightKey);
-    //TODO this.withGraphData(this.getGraphData().addInputKey(rightKey))
-    return this.withInputSource(new JoinedInputSource<>(name, inputSource, rightInputSource, rightKey, combine));
+    var newTaskData = taskData.appendToList("graph.inputSource", rightInputSource.getName())
+        .appendToList("graph.inputKey", rightKey.toString());
+
+    return toBuilder()
+        .inputSource(new JoinedInputSource<>(name, inputSource, rightInputSource, rightKey, combine))
+        .taskData(newTaskData)
+        .build();
   }
 
   /**
@@ -124,7 +136,10 @@ public class MeshineryTaskFactory<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTaskFactory<K, C> taskName(String name) {
-    return this.withTaskName(name);
+    return toBuilder()
+        .taskName(name)
+        .taskData(taskData.put("task.name", name))
+        .build();
   }
 
   /**
@@ -140,7 +155,10 @@ public class MeshineryTaskFactory<K, C extends Context> {
   ) {
     MeshineryProcessor<C, N> newProcessor = (context, ex) -> CompletableFuture.completedFuture(map.apply(context));
     return addNewProcessor(newProcessor)
-        .withDefaultOutputSource(newOutputSource);
+        .toBuilder()
+        .defaultOutputSource(newOutputSource)
+        .taskData(taskData.appendToList("graph.outputSource", newOutputSource.getName()))
+        .build();
   }
 
   /**
@@ -199,8 +217,13 @@ public class MeshineryTaskFactory<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public final MeshineryTaskFactory<K, C> write(K key, Predicate<C> writeIf, OutputSource<K, C> outputSource) {
-    //TODO return this.withGraphData(this.getGraphData().addOutputKey(key))
-    return this.addNewProcessor(new OutputProcessor<>(key, writeIf, outputSource));
+    var newTaskData = taskData.appendToList("graph.outputSource", outputSource.getName())
+        .appendToList("graph.outputKey", key.toString());
+
+    return addNewProcessor(new OutputProcessor<>(key, writeIf, outputSource))
+        .toBuilder()
+        .taskData(newTaskData)
+        .build();
   }
 
   /**
@@ -211,8 +234,12 @@ public class MeshineryTaskFactory<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public final MeshineryTaskFactory<K, C> write(K key, Predicate<C> writeIf) {
-    //TODO return this.withGraphData(this.getGraphData().addOutputKey(key))
-    return this.addNewProcessor(new OutputProcessor<>(key, writeIf, defaultOutputSource));
+    var newTaskData = taskData.appendToList("graph.outputKey", key.toString());
+
+    return addNewProcessor(new OutputProcessor<>(key, writeIf, defaultOutputSource))
+        .toBuilder()
+        .taskData(newTaskData)
+        .build();
   }
 
   /**
@@ -227,7 +254,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
   }
 
   /**
-   * Writes an event if a predicate returns true and uses a dynamic KeyFunction. Used the provided OutputSource
+   * Writes an event if a predicate returns true and uses a dynamic KeyFunction. Uses the provided OutputSource
    *
    * @param keyFunction     Keyfunction to be used
    * @param writeIf         predicate to be used
@@ -239,7 +266,10 @@ public class MeshineryTaskFactory<K, C extends Context> {
       Predicate<C> writeIf,
       OutputSource<K, C> newOutputSource
   ) {
-    return addNewProcessor(new DynamicOutputProcessor<>(writeIf, keyFunction, newOutputSource));
+    return addNewProcessor(new DynamicOutputProcessor<>(writeIf, keyFunction, newOutputSource))
+        .toBuilder()
+        .taskData(taskData.appendToList("graph.outputSource", newOutputSource.getName()))
+        .build();
   }
 
   /**
@@ -251,7 +281,9 @@ public class MeshineryTaskFactory<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public final MeshineryTaskFactory<K, C> exceptionHandler(Function<Throwable, Context> handleError) {
-    return this.withHandleException(handleError);
+    return toBuilder()
+        .handleException(handleError)
+        .build();
   }
 
   /**
@@ -261,7 +293,9 @@ public class MeshineryTaskFactory<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public final MeshineryTaskFactory<K, C> backoffTime(long milliSeconds) {
-    return this.withBackoffTime(milliSeconds);
+    return toBuilder()
+        .backoffTime(milliSeconds)
+        .build();
   }
 
   private <N extends Context> MeshineryTaskFactory<K, N> addNewProcessor(MeshineryProcessor<C, N> newProcessor) {
@@ -273,10 +307,12 @@ public class MeshineryTaskFactory<K, C extends Context> {
         defaultOutputSource,
         executorService,
         inputKey,
-        graphData,
+        taskData,
         handleException,
         backoffTime
-    );
+    ).toBuilder()
+        .taskData(taskData.appendToList("graph.processor", newProcessor.toString()))
+        .build();
   }
 
   public MeshineryTask<K, C> build() {
@@ -284,7 +320,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
         backoffTime,
         inputKey,
         taskName,
-        graphData,
+        taskData,
         inputSource,
         defaultOutputSource,
         executorService,
