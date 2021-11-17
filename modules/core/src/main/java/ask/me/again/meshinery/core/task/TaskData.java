@@ -1,4 +1,4 @@
-package ask.me.again.meshinery.core.common;
+package ask.me.again.meshinery.core.task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,17 +17,10 @@ public class TaskData {
   @With(AccessLevel.PRIVATE)
   private Properties properties = new Properties();
 
-  public TaskData put(String key, Object value) {
+  public TaskData put(String key, String value) {
     var newProperties = new Properties();
     newProperties.putAll(properties);
-    newProperties.put(key, value);
-    return this.withProperties(newProperties);
-  }
-
-  public TaskData appendToList(String key, Object value) {
-    var newProperties = new Properties();
-    newProperties.putAll(properties);
-    var list = (List<Object>) newProperties.get(key);
+    var list = (List<String>) newProperties.get(key);
     if (list == null) {
       list = new ArrayList<>();
     }
@@ -36,11 +29,12 @@ public class TaskData {
     return this.withProperties(newProperties);
   }
 
-  public String get(String key) {
-    return properties.getProperty(key);
+  public List<String> get(String key) {
+    return (List<String>) properties.get(key);
   }
 
-  public List<String> getList(String key) {
-    return (List<String>) properties.get(key);
+  public String getSingle(String key) {
+    var list = (List<String>) properties.get(key);
+    return list.get(0);
   }
 }

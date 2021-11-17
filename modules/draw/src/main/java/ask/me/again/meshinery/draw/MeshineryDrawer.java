@@ -43,7 +43,7 @@ public class MeshineryDrawer {
     for (var task : tasks) {
       var graphData = task.getGraphData();
 
-      var inputKeys = graphData.getList("graph.inputKey");
+      var inputKeys = graphData.get("graph.inputKey");
       for (var inputKey : inputKeys) {
 
         nodeSet.add(inputKey);
@@ -52,7 +52,7 @@ public class MeshineryDrawer {
           nodeSet.add("%s_%s_joined".formatted(inputKeys.get(0), inputKeys.get(1)));
         }
 
-        for (var outputKeys : graphData.getList("graph.outputKey")) {
+        for (var outputKeys : graphData.get("graph.outputKey")) {
 
           if (inputKeys.size() > 1) {
             //join

@@ -5,7 +5,6 @@ import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MdcInjectingExecutorService;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.OutputSource;
-import ask.me.again.meshinery.core.common.TaskData;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.LinkedList;

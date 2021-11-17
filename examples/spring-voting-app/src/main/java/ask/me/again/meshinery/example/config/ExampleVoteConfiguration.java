@@ -20,6 +20,13 @@ import org.springframework.context.annotation.Bean;
 @RequiredArgsConstructor
 public class ExampleVoteConfiguration {
 
+  public static final String HEART_BEAT_OUT = "HEART_BEAT_OUT";
+  public static final String HEART_BEAT_IN = "0/10 * * * * *";
+  public static final String REST_SIGNAL_IN = "REST_SIGNAL_IN";
+  public static final String APPROVED_IN = "APPROVED_IN";
+  public static final String REJECTED_IN = "REJECTED_IN";
+  public static final String FINISHED_IN = "FINISHED_IN";
+
   private final MysqlConnector<VotingContext> mysqlConnector;
   private final MemoryConnector<String, VotingContext> memoryConnector;
 
@@ -39,42 +46,38 @@ public class ExampleVoteConfiguration {
         .inputSource(contextCronInputSource)
         .defaultOutputSource(mysqlConnector)
         .taskName("Heartbeat Vote")
-        .read("0/10 * * * * *", executorService)
-        .write("prepare-vote-1")
+        .read(HEART_BEAT_IN, executorService)
+        .write(HEART_BEAT_OUT)
         .build();
   }
 
   @Bean
   public MeshineryTask<String, VotingContext> userVote() {
-    var task = basicTask()
+    return basicTask()
         .inputSource(memoryConnector)
         .taskName("Uservote")
-        .read("user-vote", executorService)
-        .process(new SignalingProcessor(mysqlConnector, "prepare-vote-1"))
+        .read(REST_SIGNAL_IN, executorService)
+        .process(new SignalingProcessor(mysqlConnector, HEART_BEAT_OUT))
         .process((context, executor) -> {
           log.info("Voted for vote on: {} and approved: {}", context.getId(), context.isApproved());
           return CompletableFuture.completedFuture(context);
         })
-        .write("finished-vote-approved", VotingContext::isApproved)
-        .write("finished-vote-rejected", context -> !context.isApproved())
+        .write(APPROVED_IN, VotingContext::isApproved)
+        .write(REJECTED_IN, context -> !context.isApproved())
+        .putData("graph.inputKey", HEART_BEAT_OUT)
         .build();
-
-    return task;
-    //TODO
-    //fixing the manual wiring
-    //return task.withGraphData(task.getGraphData().addInputKey("prepare-vote-1"));
   }
 
   @Bean
   public MeshineryTask<String, VotingContext> afterVoteRejected() {
     return basicTask()
         .taskName("After Vote Rejected")
-        .read("finished-vote-rejected", executorService)
+        .read(REJECTED_IN, executorService)
         .process((context, executor) -> {
           log.info("REJECTED: {}", context.getId());
           return CompletableFuture.completedFuture(context);
         })
-        .write("finished-vote")
+        .write(FINISHED_IN)
         .build();
   }
 
@@ -82,13 +85,13 @@ public class ExampleVoteConfiguration {
   public MeshineryTask<String, VotingContext> afterVoteApproved() {
     return basicTask()
         .taskName("After Vote Approved")
-        .read("finished-vote-approved", executorService)
+        .read(APPROVED_IN, executorService)
         .process((context, executor) -> {
           log.info("APPROVED: {}", context.getId());
           return CompletableFuture.completedFuture(context);
         })
         .process(new ErrorProcessor())
-        .write("finished-vote")
+        .write(FINISHED_IN)
         .build();
   }
 
@@ -97,5 +100,4 @@ public class ExampleVoteConfiguration {
         .inputSource(mysqlConnector)
         .defaultOutputSource(mysqlConnector);
   }
-
 }
