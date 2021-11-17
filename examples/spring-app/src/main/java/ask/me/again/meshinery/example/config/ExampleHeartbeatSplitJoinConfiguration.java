@@ -5,6 +5,7 @@ import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.core.source.CronInputSource;
 import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.example.entities.ProcessorA;
 import ask.me.again.meshinery.example.entities.ProcessorFinished;
 import com.cronutils.model.CronType;
@@ -34,7 +35,8 @@ public class ExampleHeartbeatSplitJoinConfiguration {
         .taskName("Start")
         .read("start", executorService)
         .process(processorA)
-        .write("pre-split");
+        .write("pre-split")
+        .build();
   }
 
   @Bean
@@ -45,7 +47,8 @@ public class ExampleHeartbeatSplitJoinConfiguration {
         .read("pre-split", executorService)
         .process(processorA)
         .write("left")
-        .write("right");
+        .write("right")
+        .build();
   }
 
   @Bean
@@ -55,7 +58,8 @@ public class ExampleHeartbeatSplitJoinConfiguration {
         .taskName("Left")
         .read("left", executorService)
         .process(processorA)
-        .write("after-left");
+        .write("after-left")
+        .build();
   }
 
   @Bean
@@ -65,7 +69,8 @@ public class ExampleHeartbeatSplitJoinConfiguration {
         .taskName("Right")
         .read("right", executorService)
         .process(processorA)
-        .write("after-right");
+        .write("after-right")
+        .build();
   }
 
   @Bean
@@ -75,7 +80,8 @@ public class ExampleHeartbeatSplitJoinConfiguration {
         .taskName("Join")
         .joinOn(inputSource, "after-right", (l, r) -> l)
         .read("after-left", executorService)
-        .write("after-join");
+        .write("after-join")
+        .build();
   }
 
   @Bean
@@ -85,7 +91,8 @@ public class ExampleHeartbeatSplitJoinConfiguration {
         .taskName("After Join")
         .read("after-join", executorService)
         .process(processorFinished)
-        .write("finished");
+        .write("finished")
+        .build();
   }
 
   @Bean
@@ -95,23 +102,20 @@ public class ExampleHeartbeatSplitJoinConfiguration {
     var contextCronInputSource = new CronInputSource<>(
         "Cron heartbeat",
         CronType.SPRING,
-        () -> createNewContext(atomicInt.incrementAndGet())
+        () -> () -> atomicInt.incrementAndGet() + ""
     );
 
-    return MeshineryTask.<String, Context>builder()
+    return MeshineryTaskFactory.<String, Context>builder()
         .inputSource(contextCronInputSource)
         .defaultOutputSource(outputSource)
         .taskName("Cron Heartbeat")
         .read("0/3 * 1 * * *", executorService)
-        .write("start");
+        .write("start")
+        .build();
   }
 
-  private Context createNewContext(int index) {
-    return () -> index + "";
-  }
-
-  private MeshineryTask<String, Context> basicTask() {
-    return MeshineryTask.<String, Context>builder()
+  private MeshineryTaskFactory<String, Context> basicTask() {
+    return MeshineryTaskFactory.<String, Context>builder()
         .inputSource(inputSource)
         .defaultOutputSource(outputSource);
   }

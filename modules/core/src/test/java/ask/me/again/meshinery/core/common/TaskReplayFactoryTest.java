@@ -1,6 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.core.task.TaskReplayFactory;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.processor.TestContextProcessor;
@@ -24,14 +25,16 @@ class TaskReplayFactoryTest {
     OutputSource<String, TestContext> outputSource = Mockito.mock(OutputSource.class);
 
     List<MeshineryTask<?, ? extends Context>> tasks = List.of(
-        MeshineryTask.<String, TestContext>builder()
+        MeshineryTaskFactory.<String, TestContext>builder()
             .defaultOutputSource(outputSource)
             .taskName("test")
             .process(processorA)
             .process(processorB)
-            .write("OutputKey"),
-        MeshineryTask.<String, TestContext>builder()
+            .write("OutputKey")
+            .build(),
+        MeshineryTaskFactory.<String, TestContext>builder()
             .taskName("test2")
+            .build()
     );
     var executor = Executors.newSingleThreadExecutor();
     var inputFactory = new TaskReplayFactory(tasks, executor);

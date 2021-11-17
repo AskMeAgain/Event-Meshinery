@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.common;
 
-import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.processor.TestContextProcessor;
 import ask.me.again.meshinery.core.utils.sources.TestInputSource;
@@ -26,11 +26,12 @@ class BackoffTimeTest {
 
     var inputSourceSpy = Mockito.spy(inputSource);
 
-    var task = MeshineryTask.<String, TestContext>builder()
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSourceSpy)
         .read("", executor)
         .backoffTime(180)
-        .process(processor);
+        .process(processor)
+        .build();
 
     //Act --------------------------------------------------------------------------------------------------------------
     var result1 = task.getNewTaskRuns();

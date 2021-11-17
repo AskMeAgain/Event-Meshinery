@@ -22,9 +22,8 @@ public class MeshineryDrawer {
   private final EdgeCustomizer edgeAssignment;
   private final GraphCustomizer graphAssignment;
 
-
   public byte[] draw(String subgraph) throws IOException {
-    var filteredTasks = tasks.stream().filter(x -> x.getGraphData())
+    //var filteredTasks = tasks.stream().filter(x -> x.getGraphData())
     return draw(tasks);
   }
 

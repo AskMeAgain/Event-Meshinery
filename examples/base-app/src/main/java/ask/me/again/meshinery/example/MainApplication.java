@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.example;
 
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
-import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.example.entities.ExampleInputSource;
 import ask.me.again.meshinery.example.entities.ExampleOutputSource;
 import ask.me.again.meshinery.example.entities.ExampleOutputSource2;
@@ -27,7 +27,7 @@ public class MainApplication {
     var outputSource = new ExampleOutputSource();
     var outputSource2 = new ExampleOutputSource2();
 
-    var task1 = MeshineryTask.<String, TestContext>builder()
+    var task1 = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("cool name")
         .defaultOutputSource(outputSource)
         .inputSource(inputSource)
@@ -39,8 +39,10 @@ public class MainApplication {
         .write("topic-c")
         .contextSwitch(outputSource, MainApplication::create2)
         .process(processorA)
-        .write("topic-d-FINISHED");
-    var task2 = MeshineryTask.<String, TestContext>builder()
+        .write("topic-d-FINISHED")
+        .build();
+
+    var task2 = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("Cool task 2")
         .defaultOutputSource(outputSource)
         .inputSource(inputSource)
@@ -52,7 +54,8 @@ public class MainApplication {
         .write("topic-z")
         .contextSwitch(outputSource, MainApplication::create2)
         .process(processorA)
-        .write("topic-w-FINISHED");
+        .write("topic-w-FINISHED")
+        .build();
 
     var scheduler = RoundRobinScheduler.builder()
         .isBatchJob(true)

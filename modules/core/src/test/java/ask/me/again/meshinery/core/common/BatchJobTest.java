@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
-import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.sources.TestInputSource;
 import ask.me.again.meshinery.core.utils.sources.TestOutputSource;
@@ -28,10 +28,11 @@ class BatchJobTest {
     var mockInputSource = Mockito.spy(inputSource);
     var executor = Executors.newSingleThreadExecutor();
 
-    var task = MeshineryTask.<String, TestContext>builder()
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
         .defaultOutputSource(new TestOutputSource())
-        .read(KEY, executor);
+        .read(KEY, executor)
+        .build();
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.builder()

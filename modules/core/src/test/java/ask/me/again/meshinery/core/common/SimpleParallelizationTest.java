@@ -2,7 +2,7 @@ package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.processors.ParallelProcessor;
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
-import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.core.utils.AbstractTestBase;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.processor.TestContextProcessor;
@@ -32,7 +32,7 @@ class SimpleParallelizationTest extends AbstractTestBase {
         .todo(new TestContext(0))
         .build();
 
-    var task = MeshineryTask.<String, TestContext>builder()
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
         .read(KEY, executor)
         .inputSource(inputSource)
         .defaultOutputSource(outputSource)
@@ -40,7 +40,8 @@ class SimpleParallelizationTest extends AbstractTestBase {
             .parallel(new TestContextProcessor(3))
             .parallel(new TestContextProcessor(3))
             .combine(this::getCombine))
-        .write(KEY);
+        .write(KEY)
+        .build();
 
     //Act -------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()

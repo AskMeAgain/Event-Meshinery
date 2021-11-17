@@ -3,6 +3,7 @@ package ask.me.again.meshinery.example.config;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.example.TestContext;
 import ask.me.again.meshinery.example.entities.ProcessorA;
 import java.util.concurrent.ExecutorService;
@@ -31,96 +32,104 @@ public class ExampleTaskConfiguration {
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, TestContext> task1() {
-    return MeshineryTask.<String, TestContext>builder()
+    return MeshineryTaskFactory.<String, TestContext>builder()
         .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 1")
         .read(prefix + "-a", executorService)
         .process(processorA)
-        .write(prefix + "-b");
+        .write(prefix + "-b")
+        .build();
   }
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, TestContext> task2() {
-    return MeshineryTask.<String, TestContext>builder()
+    return MeshineryTaskFactory.<String, TestContext>builder()
         .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 2")
         .read(prefix + "-b", executorService)
         .process(processorA)
-        .write(prefix + "-c");
+        .write(prefix + "-c")
+        .build();
   }
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, TestContext> task3() {
-    return MeshineryTask.<String, TestContext>builder()
+    return MeshineryTaskFactory.<String, TestContext>builder()
         .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 3")
         .read(prefix + "-c", executorService)
         .process(processorA)
-        .write(prefix + "-d");
+        .write(prefix + "-d")
+        .build();
   }
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, TestContext> task4() {
-    return MeshineryTask.<String, TestContext>builder()
+    return MeshineryTaskFactory.<String, TestContext>builder()
         .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 4")
         .read(prefix + "-d", executorService)
         .process(processorA)
-        .write(prefix + "-e");
+        .write(prefix + "-e")
+        .build();
   }
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, TestContext> task5() {
-    return MeshineryTask.<String, TestContext>builder()
+    return MeshineryTaskFactory.<String, TestContext>builder()
         .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 5")
         .read(prefix + "-e", executorService)
         .process(processorA)
-        .write(prefix + "-i");
+        .write(prefix + "-i")
+        .build();
   }
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, TestContext> task6() {
-    return MeshineryTask.<String, TestContext>builder()
+    return MeshineryTaskFactory.<String, TestContext>builder()
         .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 6")
         .read(prefix + "-b", executorService)
         .process(processorA)
-        .write(prefix + "-g");
+        .write(prefix + "-g")
+        .build();
   }
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, TestContext> task7() {
-    return MeshineryTask.<String, TestContext>builder()
+    return MeshineryTaskFactory.<String, TestContext>builder()
         .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 7")
         .read(prefix + "-g", executorService)
         .process(processorA)
-        .write(prefix + "-h");
+        .write(prefix + "-h")
+        .build();
   }
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, TestContext> task8() {
-    return MeshineryTask.<String, TestContext>builder()
+    return MeshineryTaskFactory.<String, TestContext>builder()
         .defaultOutputSource(outputSource)
         .inputSource(inputSource)
         .taskName("Cool task 8")
         .read(prefix + "-d", executorService)
         .process(processorA)
-        .write(prefix + "-i");
+        .write(prefix + "-i")
+        .build();
   }
 }

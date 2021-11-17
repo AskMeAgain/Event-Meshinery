@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
-import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.core.utils.AbstractTestBase;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.context.TestContext2;
@@ -42,7 +42,7 @@ class ContextSwitchTest extends AbstractTestBase {
     OutputSource<String, TestContext2> contextOutput = Mockito.mock(OutputSource.class);
     OutputSource<String, TestContext> context2Output = Mockito.mock(OutputSource.class);
 
-    var task = MeshineryTask.<String, TestContext>builder()
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
         .defaultOutputSource(defaultOutput)
         .read(INPUT_KEY, executor)
@@ -53,7 +53,8 @@ class ContextSwitchTest extends AbstractTestBase {
         .write(INPUT_KEY)
         .contextSwitch(context2Output, this::map)
         .process(processorA)
-        .write(INPUT_KEY);
+        .write(INPUT_KEY)
+        .build();
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()

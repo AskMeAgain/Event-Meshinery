@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
-import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.processor.TestContextProcessor;
 import ask.me.again.meshinery.core.utils.sources.TestInputSource;
@@ -28,11 +28,12 @@ class BackpressureTest {
         .iterations(100)
         .build();
 
-    var task = MeshineryTask.<String, TestContext>builder()
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .defaultOutputSource(new TestOutputSource())
         .read("", executor)
-        .process(processor);
+        .process(processor)
+        .build();
 
     //Act --------------------------------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()

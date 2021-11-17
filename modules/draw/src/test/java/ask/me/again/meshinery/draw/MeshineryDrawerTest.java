@@ -3,6 +3,7 @@ package ask.me.again.meshinery.draw;
 
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import java.io.IOException;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -39,17 +40,20 @@ class MeshineryDrawerTest {
 
   private List<MeshineryTask<?, ?>> getTasks() {
     return List.of(
-        MeshineryTask.<String, Context>builder()
+        MeshineryTaskFactory.<String, Context>builder()
             .read("A", null)
             .taskName("A")
-            .write("B"),
-        MeshineryTask.<String, Context>builder()
+            .write("B")
+            .build(),
+        MeshineryTaskFactory.<String, Context>builder()
             .read("B", null)
             .taskName("B")
-            .write("C"),
-        MeshineryTask.<String, Context>builder()
+            .write("C")
+            .build(),
+        MeshineryTaskFactory.<String, Context>builder()
             .read("C", null)
             .taskName("C")
+            .build()
     );
   }
 }

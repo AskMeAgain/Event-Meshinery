@@ -3,7 +3,7 @@ package ask.me.again.meshinery.core.common;
 import ask.me.again.meshinery.core.processors.FluidProcessor;
 import ask.me.again.meshinery.core.processors.ParallelProcessor;
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
-import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.core.utils.AbstractTestBase;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.processor.TestContextProcessor;
@@ -32,7 +32,7 @@ class ComplexParallelizationTest extends AbstractTestBase {
 
     OutputSource<String, TestContext> outputMock = Mockito.mock(OutputSource.class);
 
-    var task = MeshineryTask.<String, TestContext>builder()
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
         .read("Test", executor)
         .inputSource(inputSource)
         .defaultOutputSource(outputMock)
@@ -44,7 +44,8 @@ class ComplexParallelizationTest extends AbstractTestBase {
             .parallel(new TestContextProcessor(30))
             .parallel(new TestContextProcessor(30))
             .combine(this::getCombine))
-        .write("");
+        .write("")
+        .build();
 
     //Act -------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()

@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
-import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,8 +11,9 @@ class DuplicateTaskNameTest {
   @Test
   void happyCase() {
     //Arrange ----------------------------------------------------------------------------------------------------------
-    var duplicateTask = MeshineryTask.builder()
-        .taskName("duplicateTask");
+    var duplicateTask = MeshineryTaskFactory.builder()
+        .taskName("duplicateTask")
+        .build();
 
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------

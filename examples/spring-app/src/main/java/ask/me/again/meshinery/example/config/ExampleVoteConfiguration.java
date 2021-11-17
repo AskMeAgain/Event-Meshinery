@@ -4,6 +4,7 @@ import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.core.source.CronInputSource;
 import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.example.entities.VoteContext;
 import com.cronutils.model.CronType;
 import java.util.concurrent.CompletableFuture;
@@ -31,12 +32,13 @@ public class ExampleVoteConfiguration {
         () -> createNewContext(atomicInt.incrementAndGet())
     );
 
-    return MeshineryTask.<String, VoteContext>builder()
+    return MeshineryTaskFactory.<String, VoteContext>builder()
         .inputSource(contextCronInputSource)
         .defaultOutputSource(outputSource)
         .taskName("Heartbeat Vote")
         .read("0/30 * * * * *", executorService)
-        .write("prepare-vote-1");
+        .write("prepare-vote-1")
+        .build();
   }
 
   @Bean
@@ -50,7 +52,8 @@ public class ExampleVoteConfiguration {
           return CompletableFuture.completedFuture(context);
         })
         .write("finished-vote-approved", VoteContext::isApproved)
-        .write("finished-vote-rejected", context -> !context.isApproved());
+        .write("finished-vote-rejected", context -> !context.isApproved())
+        .build();
   }
 
   @Bean
@@ -62,7 +65,8 @@ public class ExampleVoteConfiguration {
           log.info("Doing some processing for vote since its approved: {}", context.getId());
           return CompletableFuture.completedFuture(context);
         })
-        .write("finished-vote");
+        .write("finished-vote")
+        .build();
   }
 
   @Bean
@@ -74,7 +78,8 @@ public class ExampleVoteConfiguration {
           log.info("REJECTED: {}", context.getId());
           return CompletableFuture.completedFuture(context);
         })
-        .write("finished-vote");
+        .write("finished-vote")
+        .build();
   }
 
   private VoteContext createNewContext(int index) {
@@ -86,8 +91,8 @@ public class ExampleVoteConfiguration {
         .build();
   }
 
-  private MeshineryTask<String, VoteContext> basicTask() {
-    return MeshineryTask.<String, VoteContext>builder()
+  private MeshineryTaskFactory<String, VoteContext> basicTask() {
+    return MeshineryTaskFactory.<String, VoteContext>builder()
         .inputSource(voteInputSource)
         .defaultOutputSource(outputSource);
   }

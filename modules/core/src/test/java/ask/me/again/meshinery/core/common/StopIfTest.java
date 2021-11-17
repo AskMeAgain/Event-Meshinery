@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
-import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.sources.TestInputSource;
 import java.util.concurrent.Executors;
@@ -29,12 +29,13 @@ class StopIfTest {
         .build();
 
     var executor = Executors.newSingleThreadExecutor();
-    var task = MeshineryTask.<String, TestContext>builder()
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .defaultOutputSource(outputSource)
         .read(KEY, executor)
         .stopIf(x -> x.getIndex() == 0)
-        .write(KEY);
+        .write(KEY)
+        .build();
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()

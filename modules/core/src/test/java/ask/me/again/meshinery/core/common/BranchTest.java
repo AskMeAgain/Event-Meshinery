@@ -2,7 +2,7 @@ package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.processors.BranchProcessor;
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
-import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.processor.TestContextProcessor;
 import ask.me.again.meshinery.core.utils.sources.TestInputSource;
@@ -33,14 +33,15 @@ class BranchTest {
     var spyProcessor = Mockito.spy(new TestContextProcessor(2));
     OutputSource<String, TestContext> defaultOutputSource = Mockito.mock(OutputSource.class);
 
-    var task = MeshineryTask.<String, TestContext>builder()
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .defaultOutputSource(defaultOutputSource)
         .read(KEY, executor)
         .process(BranchProcessor.<TestContext>builder()
             .branch(new TestContextProcessor(1), x -> firstCondition)
             .branch(spyProcessor, x -> secondCondition))
-        .write("Test");
+        .write("Test")
+        .build();
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.builder()

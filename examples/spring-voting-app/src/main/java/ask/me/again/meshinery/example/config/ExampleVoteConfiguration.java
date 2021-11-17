@@ -4,6 +4,7 @@ import ask.me.again.meshinery.connectors.mysql.MysqlConnector;
 import ask.me.again.meshinery.core.source.CronInputSource;
 import ask.me.again.meshinery.core.source.MemoryConnector;
 import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.example.entities.ErrorProcessor;
 import ask.me.again.meshinery.example.entities.SignalingProcessor;
 import ask.me.again.meshinery.example.entities.VotingContext;
@@ -34,12 +35,13 @@ public class ExampleVoteConfiguration {
         () -> new VotingContext(atomicInt.incrementAndGet() + "", false)
     );
 
-    return MeshineryTask.<String, VotingContext>builder()
+    return MeshineryTaskFactory.<String, VotingContext>builder()
         .inputSource(contextCronInputSource)
         .defaultOutputSource(mysqlConnector)
         .taskName("Heartbeat Vote")
         .read("0/10 * * * * *", executorService)
-        .write("prepare-vote-1");
+        .write("prepare-vote-1")
+        .build();
   }
 
   @Bean
@@ -54,10 +56,13 @@ public class ExampleVoteConfiguration {
           return CompletableFuture.completedFuture(context);
         })
         .write("finished-vote-approved", VotingContext::isApproved)
-        .write("finished-vote-rejected", context -> !context.isApproved());
+        .write("finished-vote-rejected", context -> !context.isApproved())
+        .build();
 
+    return task;
+    //TODO
     //fixing the manual wiring
-    return task.withGraphData(task.getGraphData().addInputKey("prepare-vote-1"));
+    //return task.withGraphData(task.getGraphData().addInputKey("prepare-vote-1"));
   }
 
   @Bean
@@ -69,7 +74,8 @@ public class ExampleVoteConfiguration {
           log.info("REJECTED: {}", context.getId());
           return CompletableFuture.completedFuture(context);
         })
-        .write("finished-vote");
+        .write("finished-vote")
+        .build();
   }
 
   @Bean
@@ -82,11 +88,12 @@ public class ExampleVoteConfiguration {
           return CompletableFuture.completedFuture(context);
         })
         .process(new ErrorProcessor())
-        .write("finished-vote");
+        .write("finished-vote")
+        .build();
   }
 
-  private MeshineryTask<String, VotingContext> basicTask() {
-    return MeshineryTask.<String, VotingContext>builder()
+  private MeshineryTaskFactory<String, VotingContext> basicTask() {
+    return MeshineryTaskFactory.<String, VotingContext>builder()
         .inputSource(mysqlConnector)
         .defaultOutputSource(mysqlConnector);
   }

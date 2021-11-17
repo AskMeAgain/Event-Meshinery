@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
-import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.sources.TestInputSource;
 import java.util.concurrent.Executors;
@@ -31,12 +31,13 @@ class WriteTest {
     OutputSource<String, TestContext> defaultOutputSource = Mockito.mock(OutputSource.class);
     var executor = Executors.newSingleThreadExecutor();
 
-    var task = MeshineryTask.<String, TestContext>builder()
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
         .defaultOutputSource(defaultOutputSource)
         .read(KEY, executor)
         .write(KEY, mockOutputSource)
-        .write(KEY, KEY);
+        .write(KEY, KEY)
+        .build();
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()

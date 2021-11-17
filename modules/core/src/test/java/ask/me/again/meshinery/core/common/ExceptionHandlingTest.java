@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
-import ask.me.again.meshinery.core.task.MeshineryTask;
+import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.core.utils.context.TestContext;
 import ask.me.again.meshinery.core.utils.processor.ErrorProcessor;
 import ask.me.again.meshinery.core.utils.sources.TestInputSource;
@@ -38,14 +38,15 @@ class ExceptionHandlingTest {
     OutputSource<String, TestContext> mockOutputSource = Mockito.mock(OutputSource.class);
     var executor = Executors.newSingleThreadExecutor();
 
-    var task = MeshineryTask.<String, TestContext>builder()
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
         .defaultOutputSource(mockOutputSource)
         .read(KEY, executor)
         .process((context, e) -> CompletableFuture.supplyAsync(() -> {
           throw new RuntimeException("arg");
         }))
-        .write(KEY);
+        .write(KEY)
+        .build();
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()
@@ -74,7 +75,7 @@ class ExceptionHandlingTest {
     OutputSource<String, TestContext> mockOutputSource = Mockito.mock(OutputSource.class);
     var executor = Executors.newSingleThreadExecutor();
 
-    var task = MeshineryTask.<String, TestContext>builder()
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
         .defaultOutputSource(mockOutputSource)
         .read(KEY, executor)
@@ -83,7 +84,8 @@ class ExceptionHandlingTest {
           log.info("Error Handling");
           return EXPECTED;
         })
-        .write(KEY);
+        .write(KEY)
+        .build();
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()
