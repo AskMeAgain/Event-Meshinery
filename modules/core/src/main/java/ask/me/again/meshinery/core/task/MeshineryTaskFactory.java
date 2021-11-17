@@ -259,6 +259,16 @@ public class MeshineryTaskFactory<K, C extends Context> {
   }
 
   /**
+   * Writes an event if a predicate returns true and uses a dynamic KeyFunction. Uses the defaultOutputSource.
+   *
+   * @param keyFunction Keyfunction to be used
+   * @return returns itself for builder pattern
+   */
+  public final MeshineryTaskFactory<K, C> write(Function<C, K> keyFunction) {
+    return addNewProcessor(new DynamicOutputProcessor<>(x -> true, keyFunction, defaultOutputSource));
+  }
+
+  /**
    * Writes an event if a predicate returns true and uses a dynamic KeyFunction. Uses the provided OutputSource
    *
    * @param keyFunction     Keyfunction to be used
