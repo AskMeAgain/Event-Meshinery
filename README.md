@@ -86,7 +86,7 @@ executed.** This allows for super transparent code which allows you to argue abo
 
 ### Context
 
-A single tasks defines a single data container (Context), which gets worked and passed on. This container is used in
+A single tasks defines a single data edgeData (Context), which gets worked and passed on. This edgeData is used in
 processors for input and output type. If you want to change this type, you need to call the contextSwitch() method which
 takes a mapping method to the new Context type and a new defaultOutputSource.
 

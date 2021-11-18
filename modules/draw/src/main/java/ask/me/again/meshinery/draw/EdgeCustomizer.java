@@ -6,8 +6,8 @@ import org.graphstream.graph.implementations.DefaultGraph;
 public interface EdgeCustomizer {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  default void onEachEdge(DefaultGraph graph, Container container) {
-    var edge = graph.addEdge(container.getId(), container.getFrom(), container.getTo(), true);
+  default void onEachEdge(DefaultGraph graph, EdgeData edgeData) {
+    var edge = graph.addEdge(edgeData.getId(), edgeData.getFrom(), edgeData.getTo(), true);
     edge.addAttribute("layout.weight", 5);
     edge.addAttribute("ui.style", """
         shape: line;

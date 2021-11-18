@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Properties;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
@@ -15,6 +16,7 @@ import lombok.With;
 public class TaskData {
 
   @With(AccessLevel.PRIVATE)
+  @Getter
   private Properties properties = new Properties();
 
   public TaskData put(String key, String value) {

@@ -6,9 +6,9 @@ import org.graphstream.graph.implementations.DefaultGraph;
 public interface NodeCustomizer {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  default void onEachNode(DefaultGraph graph, String nodeName) {
-    var node = graph.addNode(nodeName);
-    node.addAttribute("ui.label", nodeName);
+  default void onEachNode(DefaultGraph graph, NodeData nodeData) {
+    var node = graph.addNode(nodeData.getName());
+    node.addAttribute("ui.label", nodeData.getName());
     node.addAttribute("layout.weight", 500);
     node.addAttribute("ui.style", """
         shape: circle;
@@ -21,5 +21,4 @@ public interface NodeCustomizer {
         """
     );
   }
-
 }

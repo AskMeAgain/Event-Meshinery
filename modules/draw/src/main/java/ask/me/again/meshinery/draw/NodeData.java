@@ -1,14 +1,14 @@
 package ask.me.again.meshinery.draw;
 
-import lombok.Builder;
+import java.util.Properties;
+import lombok.AllArgsConstructor;
 import lombok.Value;
 
+
 @Value
-@Builder
+@AllArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class Container {
+public class NodeData {
   String name;
-  String id;
-  String from;
-  String to;
+  Properties properties;
 }

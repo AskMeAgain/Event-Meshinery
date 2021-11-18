@@ -4,11 +4,16 @@ import ask.me.again.meshinery.core.task.MeshineryTask;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import lombok.Builder;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.stream.file.FileSinkImages;
+
+import static ask.me.again.meshinery.draw.DrawerProperties.GRAPH_INPUTKEY;
+import static ask.me.again.meshinery.draw.DrawerProperties.GRAPH_OUTPUTKEY;
+import static ask.me.again.meshinery.draw.DrawerProperties.GRAPH_SUBGRAPH;
 
 @Builder
 @SuppressWarnings("checkstyle:MissingJavadocType")
@@ -31,7 +36,7 @@ public class MeshineryDrawer {
 
     var filteredTasks = new ArrayList<MeshineryTask<?, ?>>();
     for (var task : tasks) {
-      var taskSubgraphs = task.getTaskData().get("graph.subgraph");
+      var taskSubgraphs = task.getTaskData().get(GRAPH_SUBGRAPH);
       if (taskSubgraphs != null) {
         for (var providedSubgraph : subgraph) {
           if (taskSubgraphs.contains(providedSubgraph)) {
@@ -50,32 +55,29 @@ public class MeshineryDrawer {
 
     fileSinkImages.setLayoutPolicy(FileSinkImages.LayoutPolicy.COMPUTED_FULLY_AT_NEW_IMAGE);
 
-    var nodeSet = new HashSet<String>();
-    var edges = new HashSet<Container>();
+    var nodeSet = new HashMap<String, NodeData>();
+    var edges = new HashSet<EdgeData>();
 
     for (var task : tasks) {
       var graphData = task.getTaskData();
 
-      var inputKeys = graphData.get("graph.inputKey");
+      var inputKeys = graphData.get(GRAPH_INPUTKEY);
       for (var inputKey : inputKeys) {
 
-        nodeSet.add(inputKey);
+        nodeSet.put(inputKey, new NodeData(inputKey, graphData.getProperties()));
 
         if (inputKeys.size() > 1) {
-          nodeSet.add("%s_%s_joined".formatted(inputKeys.get(0), inputKeys.get(1)));
+          var joinedName = "%s_%s_joined".formatted(inputKeys.get(0), inputKeys.get(1));
+          nodeSet.put(joinedName, new NodeData(joinedName, graphData.getProperties()));
         }
 
-        for (var outputKeys : graphData.get("graph.outputKey")) {
+        for (var outputKeys : graphData.get(GRAPH_OUTPUTKEY)) {
 
           if (inputKeys.size() > 1) {
             //join
             var combinedNode = "%s_%s_joined".formatted(inputKeys.get(0), inputKeys.get(1));
-            edges.add(Container.builder()
-                .name(task.getTaskName())
-                .id("%s_%s".formatted(inputKey, combinedNode))
-                .from(inputKey)
-                .to(combinedNode)
-                .build());
+            edges.add(
+                new EdgeData(task.getTaskName(), "%s_%s".formatted(inputKey, combinedNode), inputKey, combinedNode));
 
             drawNormalEdge(nodeSet, edges, task, combinedNode, outputKeys);
           } else {
@@ -85,11 +87,11 @@ public class MeshineryDrawer {
       }
     }
 
-    nodeSet.forEach(nodeName -> nodeAssignment.onEachNode(graph, nodeName));
+    nodeSet.forEach((k, nodeName) -> nodeAssignment.onEachNode(graph, nodeName));
     edges.forEach(container -> edgeAssignment.onEachEdge(graph, container));
     graphAssignment.onGraph(graph);
 
-    var tempFile = Files.createTempFile("meshinary", ".jpg");
+    var tempFile = Files.createTempFile("meshinery", ".png");
     System.setProperty(
         "gs.ui.renderer",
         "org.graphstream.ui.j2dviewer.J2DGraphRenderer"
@@ -100,15 +102,16 @@ public class MeshineryDrawer {
   }
 
   private void drawNormalEdge(
-      HashSet<String> nodeSet, HashSet<Container> edges, MeshineryTask<?, ?> task, Object inputKey, Object outputKeys
+      HashMap<String, NodeData> nodeSet, HashSet<EdgeData> edges, MeshineryTask<?, ?> task, String inputKey,
+      String outputKeys
   ) {
-    edges.add(Container.builder()
-        .name(task.getTaskName())
-        .id("%s_%s".formatted(inputKey, outputKeys.toString()))
-        .from(inputKey.toString())
-        .to(outputKeys.toString())
-        .build());
-    nodeSet.add(outputKeys.toString());
+    edges.add(new EdgeData(
+        task.getTaskName(),
+        "%s_%s".formatted(inputKey, outputKeys.toString()),
+        inputKey.toString(),
+        outputKeys.toString()
+    ));
+    nodeSet.put(outputKeys.toString(), new NodeData(outputKeys.toString(), task.getTaskData().getProperties()));
   }
 
 }

@@ -44,6 +44,7 @@
       <option name="VARIABLE_ANNOTATION_WRAP" value="1" />
       <option name="ENUM_CONSTANTS_WRAP" value="2" />
       <option name="BUILDER_METHODS" value="builder" />
+      <option name="KEEP_BUILDER_METHODS_INDENTS" value="true" />
       <option name="WRAP_ON_TYPING" value="0" />
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
