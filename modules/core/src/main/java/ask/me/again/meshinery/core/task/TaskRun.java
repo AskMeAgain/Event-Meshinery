@@ -28,4 +28,5 @@ public class TaskRun {
   Queue<MeshineryProcessor<Context, Context>> queue;
 
   Function<Throwable, Context> handleError;
+  TaskData taskData;
 }

@@ -7,6 +7,7 @@ import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.draw.DrawerProperties;
 import ask.me.again.meshinery.example.entities.ErrorProcessor;
+import ask.me.again.meshinery.example.entities.ProcessorA;
 import ask.me.again.meshinery.example.entities.SignalingProcessor;
 import ask.me.again.meshinery.example.entities.VotingContext;
 import com.cronutils.model.CronType;
@@ -48,6 +49,7 @@ public class ExampleVoteConfiguration {
         .defaultOutputSource(mysqlConnector)
         .taskName("Heartbeat Vote")
         .read(HEART_BEAT_IN, executorService)
+        .process(new ProcessorA())
         .write(HEART_BEAT_OUT)
         .putData(DrawerProperties.GRAPH_SUBGRAPH, "PreVote")
         .build();

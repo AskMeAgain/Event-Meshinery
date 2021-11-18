@@ -15,9 +15,14 @@ import lombok.With;
 @AllArgsConstructor
 public class TaskData {
 
+  private static final ThreadLocal<TaskData> taskData = new ThreadLocal<>();
   @With(AccessLevel.PRIVATE)
   @Getter
   private Properties properties = new Properties();
+
+  public static TaskData getTaskData() {
+    return taskData.get();
+  }
 
   public TaskData put(String key, String value) {
     var newProperties = new Properties();

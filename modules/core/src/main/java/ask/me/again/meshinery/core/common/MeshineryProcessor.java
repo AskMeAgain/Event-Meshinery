@@ -14,4 +14,7 @@ public interface MeshineryProcessor<I extends Context, O extends Context> {
     return taskData;
   }
 
+  default TaskData getTaskData() {
+    return TaskData.getTaskData();
+  }
 }

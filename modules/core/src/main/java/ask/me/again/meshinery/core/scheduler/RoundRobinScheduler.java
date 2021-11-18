@@ -5,6 +5,7 @@ import ask.me.again.meshinery.core.common.MdcInjectingExecutorService;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.MeshineryTaskVerifier;
+import ask.me.again.meshinery.core.task.TaskData;
 import ask.me.again.meshinery.core.task.TaskRun;
 import java.util.Collections;
 import java.util.List;
@@ -167,7 +168,7 @@ public class RoundRobinScheduler {
 
         var executorService = currentTask.getExecutorService();
 
-        var resultFuture = getResultFuture(nextProcessor, context, executorService);
+        var resultFuture = getResultFuture(currentTask.getTaskData(),nextProcessor, context, executorService);
         currentTask = currentTask.withFuture(resultFuture);
       }
 
@@ -188,11 +189,13 @@ public class RoundRobinScheduler {
   }
 
   private CompletableFuture<Context> getResultFuture(
+      TaskData taskData,
       MeshineryProcessor<Context, Context> nextProcessor,
       Context context,
       MdcInjectingExecutorService executorService
   ) {
     try {
+      TaskData.taskData.set(taskData);
       return nextProcessor.processAsync(context, executorService);
     } catch (Exception e) {
       log.error(

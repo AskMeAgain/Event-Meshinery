@@ -16,7 +16,6 @@ public class ProcessorA implements MeshineryProcessor<Context, Context> {
   public CompletableFuture<Context> processAsync(Context context, Executor executor) {
     return CompletableFuture.supplyAsync(() -> {
       log.info("Rest call");
-
       try {
         Thread.sleep(1000);
       } catch (InterruptedException e) {

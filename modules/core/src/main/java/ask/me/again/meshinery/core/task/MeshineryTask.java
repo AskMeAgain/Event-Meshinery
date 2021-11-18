@@ -53,6 +53,7 @@ public class MeshineryTask<K, C extends Context> {
         .stream()
         .map(input -> TaskRun.builder()
             .taskName(getTaskName())
+            .taskData(taskData)
             .id(input.getId())
             .future(CompletableFuture.completedFuture(input))
             .executorService(getExecutorService())

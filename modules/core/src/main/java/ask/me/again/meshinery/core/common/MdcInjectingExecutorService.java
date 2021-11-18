@@ -1,5 +1,6 @@
 package ask.me.again.meshinery.core.common;
 
+import ask.me.again.meshinery.core.task.TaskData;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -87,12 +88,15 @@ public class MdcInjectingExecutorService implements ExecutorService {
   @Override
   public void execute(Runnable command) {
     var mdc = MDC.getCopyOfContextMap();
+    var taskData = TaskData.taskData.get();
     executorService.execute(() -> {
       MDC.setContextMap(mdc);
+      TaskData.taskData.set(taskData);
       try {
         command.run();
       } finally {
         MDC.clear();
+        TaskData.taskData.remove();
       }
     });
   }
