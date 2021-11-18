@@ -326,7 +326,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
         handleException,
         backoffTime
     ).toBuilder()
-        .taskData(taskData.put("graph.processor", newProcessor.toString()))
+        .taskData(newProcessor.addToTaskData(taskData.put("graph.processor", newProcessor.toString())))
         .build();
   }
 

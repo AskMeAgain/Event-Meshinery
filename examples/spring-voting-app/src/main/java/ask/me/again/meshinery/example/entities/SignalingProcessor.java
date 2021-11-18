@@ -2,6 +2,8 @@ package ask.me.again.meshinery.example.entities;
 
 import ask.me.again.meshinery.connectors.mysql.MysqlConnector;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
+import ask.me.again.meshinery.core.task.TaskData;
+import ask.me.again.meshinery.draw.DrawerProperties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,11 @@ public class SignalingProcessor implements MeshineryProcessor<VotingContext, Vot
 
   private final MysqlConnector<VotingContext> mysqlInputSource;
   private final String key;
+
+  @Override
+  public TaskData addToTaskData(TaskData taskData) {
+    return taskData.put(DrawerProperties.GRAPH_INPUTKEY, key);
+  }
 
   @Override
   public CompletableFuture<VotingContext> processAsync(VotingContext context, Executor executor) {
