@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import org.slf4j.MDC;
 
 /**
  * Processor which takes a list of different Processors and returns a single processor which combines the processors.
@@ -52,6 +53,12 @@ public class FluidProcessor<I extends Context, O extends Context> implements Mes
 
   @Override
   public CompletableFuture<O> processAsync(I context, Executor executor) {
-    return ComposableFutureUtils.getoCompletableFuture(processorList, context, executor);
+    return ComposableFutureUtils.combineProcessors(
+        processorList,
+        context,
+        executor,
+        MDC.getCopyOfContextMap(),
+        getTaskData()
+    );
   }
 }

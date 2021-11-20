@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Processor which will process the provided MeshineryProcessors and runs them in parallel. The executor of this
@@ -37,7 +36,7 @@ public class ParallelProcessor<C extends Context> implements MeshineryProcessor<
 
     var futures = processorList.stream()
         .map(x -> x.processAsync(context, executor))
-        .collect(Collectors.toList());
+        .toList();
 
     return allOf(futures).thenApply(combine);
   }

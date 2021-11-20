@@ -1,8 +1,8 @@
 package ask.me.again.meshinery.core.task;
 
 import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.InputSource;
-import ask.me.again.meshinery.core.common.MdcInjectingExecutorService;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.OutputSource;
 import java.time.Instant;
@@ -28,7 +28,7 @@ public class MeshineryTask<K, C extends Context> {
   @Getter private final TaskData taskData;
   @Getter private final InputSource<K, C> inputSource;
   @Getter private final OutputSource<K, C> defaultOutputSource;
-  @Getter private final MdcInjectingExecutorService executorService;
+  @Getter private final DataInjectingExecutorService executorService;
   @Getter private final Function<Throwable, Context> handleException;
   @Getter private final List<MeshineryProcessor<Context, Context>> processorList;
   Instant nextExecution = Instant.now();

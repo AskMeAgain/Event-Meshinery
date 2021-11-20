@@ -7,7 +7,7 @@ import lombok.Value;
 import lombok.With;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class TestContext implements Context {
 

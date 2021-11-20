@@ -11,7 +11,7 @@ import lombok.SneakyThrows;
 
 public class SchedulerBuilder {
 
-  Runnable shutdownHook;
+  Runnable shutdownHook = () -> {};
   int backpressureLimit = 200;
   boolean isBatchJob;
   List<MeshineryTask<? extends Object, ? extends Context>> tasks = new ArrayList<>();

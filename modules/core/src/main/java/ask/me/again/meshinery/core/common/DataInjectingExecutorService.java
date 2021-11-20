@@ -18,7 +18,7 @@ import org.slf4j.MDC;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class MdcInjectingExecutorService implements ExecutorService {
+public class DataInjectingExecutorService implements ExecutorService {
 
   private final ExecutorService executorService;
 
@@ -88,15 +88,15 @@ public class MdcInjectingExecutorService implements ExecutorService {
   @Override
   public void execute(Runnable command) {
     var mdc = MDC.getCopyOfContextMap();
-    var taskData = TaskData.taskData.get();
+    var taskData = TaskData.getTaskData();
     executorService.execute(() -> {
       MDC.setContextMap(mdc);
-      TaskData.taskData.set(taskData);
+      TaskData.setTaskData(taskData);
       try {
         command.run();
       } finally {
         MDC.clear();
-        TaskData.taskData.remove();
+        TaskData.clearTaskData();
       }
     });
   }

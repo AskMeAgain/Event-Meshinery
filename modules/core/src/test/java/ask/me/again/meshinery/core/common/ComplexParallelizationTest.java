@@ -12,7 +12,7 @@ import ask.me.again.meshinery.core.utils.processor.ToTestContextProcessor;
 import ask.me.again.meshinery.core.utils.sources.TestInputSource;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.eq;
 
 class ComplexParallelizationTest extends AbstractTestBase {
 
-  @RepeatedTest(10)
+  @Test
   @SuppressWarnings("unchecked")
   void testComplexParallelization() throws InterruptedException {
     //Arrange ---------------------------------------------------------------------------------

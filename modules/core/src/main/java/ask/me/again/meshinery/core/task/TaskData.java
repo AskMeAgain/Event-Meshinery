@@ -24,6 +24,14 @@ public class TaskData {
     return taskData.get();
   }
 
+  public static void setTaskData(TaskData taskData) {
+    TaskData.taskData.set(taskData);
+  }
+
+  public static void clearTaskData() {
+    TaskData.taskData.remove();
+  }
+
   public TaskData put(String key, String value) {
     var newProperties = new Properties();
     newProperties.putAll(properties);

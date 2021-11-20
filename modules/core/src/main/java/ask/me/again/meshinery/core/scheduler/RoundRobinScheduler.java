@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.scheduler;
 
 import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.common.MdcInjectingExecutorService;
+import ask.me.again.meshinery.core.common.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.MeshineryTaskVerifier;
@@ -24,7 +24,7 @@ import org.slf4j.MDC;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinScheduler {
 
-  private final List<MeshineryTask<?, ? extends Context>> tasks;
+  private final List<MeshineryTask<?, ?>> tasks;
   private final List<ExecutorService> executorServices;
   private final ConcurrentLinkedQueue<TaskRun> todoQueue;
   private final int backpressureLimit;
@@ -168,7 +168,7 @@ public class RoundRobinScheduler {
 
         var executorService = currentTask.getExecutorService();
 
-        var resultFuture = getResultFuture(currentTask.getTaskData(),nextProcessor, context, executorService);
+        var resultFuture = getResultFuture(currentTask.getTaskData(), nextProcessor, context, executorService);
         currentTask = currentTask.withFuture(resultFuture);
       }
 
@@ -192,10 +192,10 @@ public class RoundRobinScheduler {
       TaskData taskData,
       MeshineryProcessor<Context, Context> nextProcessor,
       Context context,
-      MdcInjectingExecutorService executorService
+      DataInjectingExecutorService executorService
   ) {
     try {
-      TaskData.taskData.set(taskData);
+      TaskData.setTaskData(taskData);
       return nextProcessor.processAsync(context, executorService);
     } catch (Exception e) {
       log.error(

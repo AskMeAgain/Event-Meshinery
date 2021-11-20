@@ -8,7 +8,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
+@Slf4j
 public class TaskReplayFactory {
 
   private final Map<String, MeshineryTask<?, ? extends Context>> taskMap;
@@ -20,13 +23,24 @@ public class TaskReplayFactory {
         .collect(Collectors.toMap(MeshineryTask::getTaskName, Function.identity()));
   }
 
-  public <C extends Context> void writeMessage(String taskName, C context)
-      throws ExecutionException, InterruptedException {
+  public <C extends Context> void replay(String taskName, C context) throws ExecutionException, InterruptedException {
 
-    var processorList = taskMap.get(taskName).getProcessorList();
+    MDC.put("task.name", taskName);
+    MDC.put("uid", context.getId());
+    log.info("Replaying a new Context");
 
-    ComposableFutureUtils.getoCompletableFuture(processorList, context, executorService)
-        .get();
+    var meshineryTask = taskMap.get(taskName);
+    var processorList = meshineryTask.getProcessorList();
+
+    ComposableFutureUtils.combineProcessors(
+        processorList,
+        context,
+        executorService,
+        MDC.getCopyOfContextMap(),
+        meshineryTask.getTaskData()
+    ).get();
+
+    MDC.clear();
   }
 
 }

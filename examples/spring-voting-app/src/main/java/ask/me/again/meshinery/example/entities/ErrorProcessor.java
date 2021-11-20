@@ -14,13 +14,5 @@ public class ErrorProcessor implements MeshineryProcessor<VotingContext, VotingC
   @Override
   public CompletableFuture<VotingContext> processAsync(VotingContext context, Executor executor) {
     throw new RuntimeException("exception!");
-    //    return CompletableFuture.supplyAsync(() -> {
-    //
-    //      //throw new RuntimeException("error!");
-    //      log.info("Finished Request '{}'", context.getId());
-    //
-    //      return context;
-    //
-    //    }, executor);
   }
 }

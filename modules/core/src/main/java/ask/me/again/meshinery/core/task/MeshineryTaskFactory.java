@@ -1,8 +1,8 @@
 package ask.me.again.meshinery.core.task;
 
 import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.InputSource;
-import ask.me.again.meshinery.core.common.MdcInjectingExecutorService;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.core.processors.DynamicOutputProcessor;
@@ -27,14 +27,14 @@ import lombok.NoArgsConstructor;
 public class MeshineryTaskFactory<K, C extends Context> {
 
   private K inputKey;
-  private String taskName;
+  private String taskName = "default";
   private long backoffTime;
   private InputSource<K, C> inputSource;
   private OutputSource<K, C> defaultOutputSource;
-  private MdcInjectingExecutorService executorService;
-  private Function<Throwable, Context> handleException;
+  private DataInjectingExecutorService executorService;
+  private Function<Throwable, Context> handleException = e -> null;
 
-  private TaskData taskData = new TaskData();
+  private TaskData taskData = new TaskData().put("task.name", "default");
   private List<MeshineryProcessor<Context, Context>> processorList = new ArrayList<>();
 
   private <I extends Context> MeshineryTaskFactory(
@@ -43,7 +43,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
       String name,
       InputSource inputSource,
       OutputSource defaultOutputSource,
-      MdcInjectingExecutorService executorService,
+      DataInjectingExecutorService executorService,
       K inputKey,
       TaskData taskData,
       Function<Throwable, Context> handleException,
@@ -102,7 +102,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
   public MeshineryTaskFactory<K, C> read(K inputKey, ExecutorService executorService) {
     return toBuilder()
         .inputKey(inputKey)
-        .executorService(new MdcInjectingExecutorService(executorService))
+        .executorService(new DataInjectingExecutorService(executorService))
         .taskData(taskData.put("graph.inputKey", inputKey.toString()))
         .build();
   }

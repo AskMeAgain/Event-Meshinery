@@ -14,6 +14,7 @@ public class TestContextProcessor implements MeshineryProcessor<TestContext, Tes
 
   @Override
   public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
+    int i = 0;
     return CompletableFuture.supplyAsync(() -> wait(context), executor);
   }
 

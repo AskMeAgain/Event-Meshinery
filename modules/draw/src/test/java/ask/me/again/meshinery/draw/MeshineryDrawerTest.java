@@ -2,6 +2,7 @@ package ask.me.again.meshinery.draw;
 
 
 import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import java.io.IOException;
@@ -32,27 +33,43 @@ class MeshineryDrawerTest {
     drawer.draw();
 
     //Assert ---------------------------------------------------------------------------------
-    Mockito.verify(applyEdge, Mockito.times(2)).onEachEdge(any(), any());
+    Mockito.verify(applyEdge, Mockito.times(3)).onEachEdge(any(), any());
     Mockito.verify(applyNode, Mockito.times(3)).onEachNode(any(), any());
     Mockito.verify(applyGraph, Mockito.times(1)).onGraph(any());
 
   }
 
   private List<MeshineryTask<?, ?>> getTasks() {
+    OutputSource<String, Context> outputSource = new OutputSource<>() {
+      @Override
+      public String getName() {
+        return "TestSource";
+      }
+
+      @Override
+      public void writeOutput(String key, Context output) {
+
+      }
+    };
+
     return List.of(
         MeshineryTaskFactory.<String, Context>builder()
+            .defaultOutputSource(outputSource)
             .read("A", null)
             .taskName("A")
             .write("B")
             .build(),
         MeshineryTaskFactory.<String, Context>builder()
+            .defaultOutputSource(outputSource)
             .read("B", null)
             .taskName("B")
             .write("C")
             .build(),
         MeshineryTaskFactory.<String, Context>builder()
+            .defaultOutputSource(outputSource)
             .read("C", null)
             .taskName("C")
+            .write("B")
             .build()
     );
   }
