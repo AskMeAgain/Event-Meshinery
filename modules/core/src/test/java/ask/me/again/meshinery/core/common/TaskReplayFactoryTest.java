@@ -4,11 +4,10 @@ import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.core.task.TaskReplayFactory;
 import ask.me.again.meshinery.core.utils.context.TestContext;
+import ask.me.again.meshinery.core.utils.processor.TaskDataTestProcessor;
 import ask.me.again.meshinery.core.utils.processor.TestContextProcessor;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,7 +22,7 @@ class TaskReplayFactoryTest {
     //Arrange ----------------------------------------------------------------------------------------------------------
     var processorA = Mockito.spy(new TestContextProcessor(1));
     var processorB = Mockito.spy(new TestContextProcessor(2));
-    var testDataProcessor = Mockito.spy(new TaskDataProcessor());
+    var testDataProcessor = Mockito.spy(new TaskDataTestProcessor());
 
     OutputSource<String, TestContext> outputSource = Mockito.mock(OutputSource.class);
 
@@ -53,16 +52,4 @@ class TaskReplayFactoryTest {
     Mockito.verify(outputSource).writeOutput(eq("OutputKey"), eq(new TestContext(61234)));
 
   }
-
-  private static class TaskDataProcessor implements MeshineryProcessor<TestContext, TestContext> {
-
-    @Override
-    public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
-      return CompletableFuture.completedFuture(context.toBuilder()
-          .id(context.getIndex() + getTaskData().getSingle("test"))
-          .index(Integer.parseInt(context.getIndex() + getTaskData().getSingle("test")))
-          .build());
-    }
-  }
-
 }

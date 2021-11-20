@@ -4,9 +4,8 @@ import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
 import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.core.utils.AbstractTestBase;
 import ask.me.again.meshinery.core.utils.context.TestContext;
+import ask.me.again.meshinery.core.utils.processor.TaskDataTestProcessor;
 import ask.me.again.meshinery.core.utils.sources.TestInputSource;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -43,7 +42,8 @@ class TaskDataTest extends AbstractTestBase {
         .build();
 
     var expected = new TestContext(0).toBuilder()
-        .id("1234")
+        .id("01234")
+        .index(1234)
         .build();
 
     //Act ------------------------------------------------------------------------------------
@@ -58,15 +58,5 @@ class TaskDataTest extends AbstractTestBase {
     assertThat(batchJobFinished).isTrue();
     Mockito.verify(defaultOutput).writeOutput(any(), eq(expected));
 
-  }
-
-  private static class TaskDataTestProcessor implements MeshineryProcessor<TestContext, TestContext> {
-
-    @Override
-    public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
-      return CompletableFuture.completedFuture(context.toBuilder()
-          .id(getTaskData().getSingle("test"))
-          .build());
-    }
   }
 }

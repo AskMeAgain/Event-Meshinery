@@ -5,7 +5,6 @@ import ask.me.again.meshinery.core.source.CronInputSource;
 import ask.me.again.meshinery.core.source.MemoryConnector;
 import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
-import ask.me.again.meshinery.draw.DrawerProperties;
 import ask.me.again.meshinery.example.entities.ErrorProcessor;
 import ask.me.again.meshinery.example.entities.ProcessorA;
 import ask.me.again.meshinery.example.entities.SignalingProcessor;
@@ -17,6 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
+
+import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_SUBGRAPH;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -51,7 +52,7 @@ public class ExampleVoteConfiguration {
         .read(HEART_BEAT_IN, executorService)
         .process(new ProcessorA())
         .write(HEART_BEAT_OUT)
-        .putData(DrawerProperties.GRAPH_SUBGRAPH, "PreVote")
+        .putData(GRAPH_SUBGRAPH, "PreVote")
         .build();
   }
 
@@ -68,7 +69,7 @@ public class ExampleVoteConfiguration {
         })
         .write(APPROVED_IN, VotingContext::isApproved)
         .write(REJECTED_IN, context -> !context.isApproved())
-        .putData(DrawerProperties.GRAPH_SUBGRAPH, "PreVote")
+        .putData(GRAPH_SUBGRAPH, "PreVote")
         .build();
   }
 

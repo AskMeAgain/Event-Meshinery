@@ -19,6 +19,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 
+import static ask.me.again.meshinery.core.task.TaskDataProperties.TASK_NAME;
+import static ask.me.again.meshinery.core.task.TaskDataProperties.UID;
+
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.MODULE)
 @SuppressWarnings("checkstyle:MissingJavadocType")
@@ -138,8 +141,8 @@ public class RoundRobinScheduler {
         continue;
       }
 
-      MDC.put("taskid", currentTask.getTaskName());
-      MDC.put("uid", currentTask.getId());
+      MDC.put(TASK_NAME, currentTask.getTaskName());
+      MDC.put(UID, currentTask.getId());
 
       while (currentTask.getFuture().isDone()) {
         var queue = currentTask.getQueue();

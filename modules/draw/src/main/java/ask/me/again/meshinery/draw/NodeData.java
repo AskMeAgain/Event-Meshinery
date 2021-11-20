@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.draw;
 
-import java.util.Properties;
+import ask.me.again.meshinery.core.task.TaskData;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
@@ -10,5 +10,5 @@ import lombok.Value;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class NodeData {
   String name;
-  Properties properties;
+  TaskData taskData;
 }

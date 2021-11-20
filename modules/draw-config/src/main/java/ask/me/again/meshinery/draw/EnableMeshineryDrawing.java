@@ -9,6 +9,6 @@ import org.springframework.context.annotation.Import;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import(MeshineryDrawerConfiguration.class)
+@Import({MeshineryDrawerConfiguration.class, DrawerApiController.class})
 public @interface EnableMeshineryDrawing {
 }

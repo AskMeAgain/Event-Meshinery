@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 
+import static ask.me.again.meshinery.core.task.TaskDataProperties.TASK_NAME;
+import static ask.me.again.meshinery.core.task.TaskDataProperties.UID;
+
 @Slf4j
 public class TaskReplayFactory {
 
@@ -25,19 +28,18 @@ public class TaskReplayFactory {
 
   public <C extends Context> void replay(String taskName, C context) throws ExecutionException, InterruptedException {
 
-    MDC.put("task.name", taskName);
-    MDC.put("uid", context.getId());
+    MDC.put(TASK_NAME, taskName);
+    MDC.put(UID, context.getId());
     log.info("Replaying a new Context");
 
-    var meshineryTask = taskMap.get(taskName);
-    var processorList = meshineryTask.getProcessorList();
+    var task = taskMap.get(taskName);
 
     ComposableFutureUtils.combineProcessors(
-        processorList,
+        task.getProcessorList(),
         context,
         executorService,
         MDC.getCopyOfContextMap(),
-        meshineryTask.getTaskData()
+        task.getTaskData()
     ).get();
 
     MDC.clear();

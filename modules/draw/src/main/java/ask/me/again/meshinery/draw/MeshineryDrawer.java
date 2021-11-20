@@ -2,18 +2,21 @@ package ask.me.again.meshinery.draw;
 
 import ask.me.again.meshinery.core.task.MeshineryTask;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import lombok.Builder;
+import lombok.SneakyThrows;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.stream.file.FileSinkImages;
 
-import static ask.me.again.meshinery.draw.DrawerProperties.GRAPH_INPUTKEY;
-import static ask.me.again.meshinery.draw.DrawerProperties.GRAPH_OUTPUTKEY;
-import static ask.me.again.meshinery.draw.DrawerProperties.GRAPH_SUBGRAPH;
+import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_INPUT_KEY;
+import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_OUTPUT_KEY;
+import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_SUBGRAPH;
 
 @Builder
 @SuppressWarnings("checkstyle:MissingJavadocType")
@@ -29,9 +32,12 @@ public class MeshineryDrawer {
   private final GraphCustomizer graphAssignment;
 
   public byte[] draw(String... subgraph) throws IOException {
+    return draw(getTasksBySubgraph(subgraph));
+  }
 
+  private List<MeshineryTask<?, ?>> getTasksBySubgraph(String... subgraph) {
     if (subgraph.length == 0) {
-      return draw(tasks);
+      return tasks;
     }
 
     var filteredTasks = new ArrayList<MeshineryTask<?, ?>>();
@@ -46,7 +52,7 @@ public class MeshineryDrawer {
       }
     }
 
-    return draw(filteredTasks);
+    return filteredTasks;
   }
 
   private byte[] draw(List<MeshineryTask<?, ?>> tasks) throws IOException {
@@ -58,34 +64,7 @@ public class MeshineryDrawer {
     var nodeSet = new HashMap<String, NodeData>();
     var edges = new HashSet<EdgeData>();
 
-    for (var task : tasks) {
-      var graphData = task.getTaskData();
-
-      var inputKeys = graphData.get(GRAPH_INPUTKEY);
-      for (var inputKey : inputKeys) {
-
-        nodeSet.put(inputKey, new NodeData(inputKey, graphData.getProperties()));
-
-        if (inputKeys.size() > 1) {
-          var joinedName = "%s_%s_joined".formatted(inputKeys.get(0), inputKeys.get(1));
-          nodeSet.put(joinedName, new NodeData(joinedName, graphData.getProperties()));
-        }
-
-        for (var outputKeys : graphData.get(GRAPH_OUTPUTKEY)) {
-
-          if (inputKeys.size() > 1) {
-            //join
-            var combinedNode = "%s_%s_joined".formatted(inputKeys.get(0), inputKeys.get(1));
-            edges.add(
-                new EdgeData(task.getTaskName(), "%s_%s".formatted(inputKey, combinedNode), inputKey, combinedNode));
-
-            drawNormalEdge(nodeSet, edges, task, combinedNode, outputKeys);
-          } else {
-            drawNormalEdge(nodeSet, edges, task, inputKey, outputKeys);
-          }
-        }
-      }
-    }
+    gatherGraphData(tasks, nodeSet, edges);
 
     nodeSet.forEach((k, nodeName) -> nodeAssignment.onEachNode(graph, nodeName));
     edges.forEach(container -> edgeAssignment.onEachEdge(graph, container));
@@ -101,17 +80,81 @@ public class MeshineryDrawer {
     return Files.readAllBytes(tempFile);
   }
 
+  public byte[] drawMermaidDiagram(String... subGraph) {
+    return drawMermaidDiagram(getTasksBySubgraph(subGraph));
+  }
+
+  @SneakyThrows
+  private byte[] drawMermaidDiagram(List<MeshineryTask<?, ?>> tasks) {
+
+    var edges = new HashSet<EdgeData>();
+
+    gatherGraphData(tasks, new HashMap<>(), edges);
+
+
+    var tempFile = Files.createTempFile("mermaid", "txt");
+
+    PrintWriter writer = new PrintWriter(tempFile.toAbsolutePath().toString(), StandardCharsets.UTF_8);
+    writer.println("graph LR");
+
+    edges.forEach(container -> {
+      var str = removeStars(container.getFrom()) + " --> " + removeStars(container.getTo());
+      writer.println(str);
+    });
+
+    writer.close();
+
+    return Files.readAllBytes(tempFile.toAbsolutePath());
+  }
+
+  private void gatherGraphData(
+      List<MeshineryTask<?, ?>> tasks, HashMap<String, NodeData> nodeSet, HashSet<EdgeData> edges
+  ) {
+    for (var task : tasks) {
+      var taskData = task.getTaskData();
+
+      var inputKeys = taskData.get(GRAPH_INPUT_KEY);
+      for (var inputKey : inputKeys) {
+
+        nodeSet.put(inputKey, new NodeData(inputKey, taskData));
+
+        if (inputKeys.size() > 1) {
+          var joinedName = "%s_%s_joined".formatted(inputKeys.get(0), inputKeys.get(1));
+          nodeSet.put(joinedName, new NodeData(joinedName, taskData));
+        }
+
+        for (var outputKeys : taskData.get(GRAPH_OUTPUT_KEY)) {
+
+          if (inputKeys.size() > 1) {
+            //join
+            var combinedNode = "%s_%s_joined".formatted(inputKeys.get(0), inputKeys.get(1));
+            edges.add(
+                new EdgeData(task.getTaskName(), "%s_%s".formatted(inputKey, combinedNode), inputKey, combinedNode));
+
+            drawNormalEdge(nodeSet, edges, task, combinedNode, outputKeys);
+          } else {
+            drawNormalEdge(nodeSet, edges, task, inputKey, outputKeys);
+          }
+        }
+      }
+    }
+  }
+
+  private String removeStars(String container) {
+    return container.replace('*', ' ');
+  }
+
   private void drawNormalEdge(
       HashMap<String, NodeData> nodeSet, HashSet<EdgeData> edges, MeshineryTask<?, ?> task, String inputKey,
       String outputKeys
   ) {
     edges.add(new EdgeData(
         task.getTaskName(),
-        "%s_%s".formatted(inputKey, outputKeys.toString()),
-        inputKey.toString(),
-        outputKeys.toString()
+        "%s_%s".formatted(inputKey, outputKeys),
+        inputKey,
+        outputKeys
     ));
-    nodeSet.put(outputKeys.toString(), new NodeData(outputKeys.toString(), task.getTaskData().getProperties()));
+    nodeSet.put(outputKeys, new NodeData(outputKeys, task.getTaskData()));
   }
 
 }
