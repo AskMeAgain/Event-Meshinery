@@ -5,8 +5,8 @@ plugins {
 
 dependencies {
     api project(':modules:core')
-    api project(':modules:draw')
-
-    api('org.springframework.boot:spring-boot-starter-web:2.5.4')
+    api 'io.prometheus:simpleclient:0.12.0'
+    api 'io.prometheus:simpleclient_common:0.12.0'
 }
+
 

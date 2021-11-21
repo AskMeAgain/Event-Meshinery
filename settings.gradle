@@ -2,6 +2,8 @@ rootProject.name = 'EventMeshinery'
 
 include('modules:core')
 include('modules:draw')
+include('modules:monitoring')
+include('modules:monitoring-config')
 include('modules:draw-config')
 include('modules:spring-config')
 include('modules:connectors:kafka:kafka-connector')
