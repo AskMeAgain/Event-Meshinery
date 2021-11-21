@@ -1,6 +1,7 @@
 package ask.me.again.meshinery.core.scheduler;
 
 import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.ProcessorDecorator;
 import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.TaskRun;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import lombok.SneakyThrows;
 public class SchedulerBuilder {
 
   List<? extends Runnable> shutdownHook = Collections.emptyList();
+  List<ProcessorDecorator<? extends Context, ? extends Context>> processorDecorator = Collections.emptyList();
   List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
   int backpressureLimit = 200;
   boolean isBatchJob;
@@ -33,6 +35,11 @@ public class SchedulerBuilder {
 
   public SchedulerBuilder tasks(List<MeshineryTask<?, ? extends Context>> task) {
     tasks.addAll(task);
+    return this;
+  }
+
+  public SchedulerBuilder registerDecorators(List<ProcessorDecorator<?, ?>> processorDecorators) {
+    this.processorDecorator = processorDecorators;
     return this;
   }
 
@@ -66,7 +73,8 @@ public class SchedulerBuilder {
         backpressureLimit,
         isBatchJob,
         shutdownHook,
-        startupHook
+        startupHook,
+        processorDecorator
     );
   }
 }

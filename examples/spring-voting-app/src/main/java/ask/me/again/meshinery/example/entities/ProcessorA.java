@@ -11,15 +11,16 @@ public class ProcessorA implements MeshineryProcessor<VotingContext, VotingConte
 
   @Override
   public CompletableFuture<VotingContext> processAsync(VotingContext context, Executor executor) {
+    log.info("INSIDE THE PROCESSOR!!!");
     return CompletableFuture.supplyAsync(() -> {
-      log.info("Rest call");
+      log.info("INSIDE THE NEW THREAD");
       try {
         Thread.sleep(3000);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
 
-      log.info("Received");
+      log.info("RECEIVED NEW THREAD");
 
       return context;
 

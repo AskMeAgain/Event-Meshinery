@@ -3,6 +3,7 @@ package ask.me.again.meshinery.core.scheduler;
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
+import ask.me.again.meshinery.core.common.ProcessorDecorator;
 import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.MeshineryTaskVerifier;
 import ask.me.again.meshinery.core.task.TaskData;
@@ -37,7 +38,7 @@ public class RoundRobinScheduler {
   private final boolean isBatchJob;
   private final List<? extends Runnable> shutdownHook;
   private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
-
+  private final List<ProcessorDecorator<? extends Context, ? extends Context>> processorDecorator;
   private boolean internalShutdown = false;
 
   public static SchedulerBuilder builder() {
@@ -205,16 +206,28 @@ public class RoundRobinScheduler {
       DataInjectingExecutorService executorService
   ) {
     try {
-
       TaskData.setTaskData(taskData);
-      return nextProcessor.processAsync(context, executorService);
+      var decoratedProcessor = applyDecorators(nextProcessor);
+      return decoratedProcessor.processAsync(context, executorService);
     } catch (Exception e) {
       log.error(
           "Error while preparing/processing processor '{}'. Shutting down gracefully",
-          nextProcessor.getClass().getSimpleName()
+          nextProcessor.getClass().getSimpleName(),
+          e
       );
       gracefulShutdown();
       return CompletableFuture.completedFuture(null);
     }
+  }
+
+  private MeshineryProcessor<Context, Context> applyDecorators(MeshineryProcessor<Context, Context> nextProcessor) {
+    var innerProcessor = nextProcessor;
+
+    for (ProcessorDecorator<? extends Context, ? extends Context> decorator : processorDecorator) {
+      var castingMagic = (ProcessorDecorator<Context, Context>) decorator;
+      innerProcessor = castingMagic.wrap(innerProcessor);
+    }
+
+    return innerProcessor;
   }
 }

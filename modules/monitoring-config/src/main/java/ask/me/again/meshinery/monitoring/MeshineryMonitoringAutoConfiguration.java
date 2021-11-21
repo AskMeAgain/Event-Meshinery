@@ -1,5 +1,6 @@
 package ask.me.again.meshinery.monitoring;
 
+import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.springconfig.CustomizeStartupHook;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnMissingBean(MeshineryMonitoringAutoConfiguration.class)
 public class MeshineryMonitoringAutoConfiguration {
+
+  @Bean
+  TimingDecorator<? extends Context, ?> timingDecorator() {
+    return new TimingDecorator<>();
+  }
 
   @Bean
   CustomizeStartupHook startupHook() {
@@ -27,6 +33,18 @@ public class MeshineryMonitoringAutoConfiguration {
           "Number of registered tasks.",
           () -> (double) scheduler.getTasks().size()
       );
+
+      var gauge = MeshineryMonitoringService.createGauge(
+          "processors_per_task",
+          "Number of registered processors.",
+          "task_name"
+      );
+
+      scheduler.getTasks().forEach(task -> {
+        var size = (double) task.getProcessorList().size();
+        var newGauge = gauge.labels(task.getTaskName());
+        newGauge.set(size);
+      });
     };
   }
 }

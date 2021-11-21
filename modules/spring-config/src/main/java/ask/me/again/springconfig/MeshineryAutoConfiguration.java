@@ -1,5 +1,6 @@
 package ask.me.again.springconfig;
 
+import ask.me.again.meshinery.core.common.ProcessorDecorator;
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
 import ask.me.again.meshinery.core.task.MeshineryTask;
 import java.util.List;
@@ -21,12 +22,16 @@ public class MeshineryAutoConfiguration {
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public RoundRobinScheduler roundRobinScheduler(
-      List<MeshineryTask<?, ?>> tasks, List<CustomizeShutdownHook> shutdownHook, List<CustomizeStartupHook> startupHook
+      List<MeshineryTask<?, ?>> tasks,
+      List<CustomizeShutdownHook> shutdownHook,
+      List<CustomizeStartupHook> startupHook,
+      List<ProcessorDecorator<?, ?>> processorDecorators
   ) {
     return RoundRobinScheduler.builder()
         .isBatchJob(isBatchJob)
         .registerShutdownHook(shutdownHook)
         .registerStartupHook(startupHook)
+        .registerDecorators(processorDecorators)
         .tasks(tasks)
         .buildAndStart();
   }
