@@ -4,6 +4,7 @@ import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.TaskRun;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -12,8 +13,8 @@ import lombok.SneakyThrows;
 
 public class SchedulerBuilder {
 
-  List<? extends Runnable> shutdownHook;
-  List<? extends Consumer<RoundRobinScheduler>> startupHook;
+  List<? extends Runnable> shutdownHook = Collections.emptyList();
+  List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
   int backpressureLimit = 200;
   boolean isBatchJob;
   List<MeshineryTask<? extends Object, ? extends Context>> tasks = new ArrayList<>();
