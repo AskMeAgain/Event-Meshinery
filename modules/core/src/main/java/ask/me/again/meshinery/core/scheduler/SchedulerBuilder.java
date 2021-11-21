@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 import lombok.SneakyThrows;
 
 public class SchedulerBuilder {
 
   Runnable shutdownHook = () -> {};
+  Consumer<RoundRobinScheduler> startupHook = x -> {};
   int backpressureLimit = 200;
   boolean isBatchJob;
   List<MeshineryTask<? extends Object, ? extends Context>> tasks = new ArrayList<>();
@@ -38,6 +40,11 @@ public class SchedulerBuilder {
     return this;
   }
 
+  public SchedulerBuilder registerStartupHook(Consumer<RoundRobinScheduler> startupHook) {
+    this.startupHook = startupHook;
+    return this;
+  }
+
   public SchedulerBuilder isBatchJob(boolean flag) {
     isBatchJob = flag;
     return this;
@@ -57,7 +64,8 @@ public class SchedulerBuilder {
         todoQueue,
         backpressureLimit,
         isBatchJob,
-        shutdownHook
+        shutdownHook,
+        startupHook
     );
   }
 }

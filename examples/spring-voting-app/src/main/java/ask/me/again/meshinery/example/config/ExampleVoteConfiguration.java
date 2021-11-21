@@ -24,7 +24,7 @@ import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_SUBGRAPH
 public class ExampleVoteConfiguration {
 
   public static final String HEART_BEAT_OUT = "HEART_BEAT_OUT";
-  public static final String HEART_BEAT_IN = "0/10 * * * * *";
+  public static final String HEART_BEAT_IN = "0/1 * * * * *";
   public static final String REST_SIGNAL_IN = "REST_SIGNAL_IN";
   public static final String APPROVED_IN = "APPROVED_IN";
   public static final String REJECTED_IN = "REJECTED_IN";

@@ -1,7 +1,6 @@
 package ask.me.again.meshinery.example.entities;
 
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
-import ask.me.again.meshinery.monitoring.MonitoringTest;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +13,8 @@ public class ProcessorA implements MeshineryProcessor<VotingContext, VotingConte
   public CompletableFuture<VotingContext> processAsync(VotingContext context, Executor executor) {
     return CompletableFuture.supplyAsync(() -> {
       log.info("Rest call");
-      MonitoringTest.processRequest();
       try {
-        Thread.sleep(1000);
+        Thread.sleep(3000);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }

@@ -13,7 +13,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ import static ask.me.again.meshinery.core.task.TaskDataProperties.TASK_NAME;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.UID;
 
 @Slf4j
+@Getter
 @RequiredArgsConstructor(access = AccessLevel.MODULE)
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinScheduler {
@@ -34,6 +37,7 @@ public class RoundRobinScheduler {
   private final boolean isBatchJob;
   private final Runnable shutdownHook;
   private boolean internalShutdown = false;
+  private final Consumer<RoundRobinScheduler> startupHook;
 
   public static SchedulerBuilder builder() {
     return new SchedulerBuilder();
@@ -57,6 +61,8 @@ public class RoundRobinScheduler {
     var taskExecutor = Executors.newSingleThreadExecutor();
     executorServices.add(taskExecutor);
     taskExecutor.execute(this::runWorker);
+
+    startupHook.accept(this);
 
     return this;
   }
@@ -198,6 +204,7 @@ public class RoundRobinScheduler {
       DataInjectingExecutorService executorService
   ) {
     try {
+
       TaskData.setTaskData(taskData);
       return nextProcessor.processAsync(context, executorService);
     } catch (Exception e) {

@@ -27,13 +27,22 @@ public class MeshineryAutoConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean(CustomizeStartupHook.class)
+  public CustomizeStartupHook startupHook() {
+    return scheduler -> {
+      //empty
+    };
+  }
+
+  @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public RoundRobinScheduler roundRobinScheduler(
-      List<MeshineryTask<?, ?>> tasks, CustomizeShutdownHook shutdownHook
+      List<MeshineryTask<?, ?>> tasks, CustomizeShutdownHook shutdownHook, CustomizeStartupHook startupHook
   ) {
     return RoundRobinScheduler.builder()
         .isBatchJob(isBatchJob)
         .registerShutdownHook(shutdownHook::run)
+        .registerStartupHook(startupHook::apply)
         .tasks(tasks)
         .buildAndStart();
   }
