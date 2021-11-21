@@ -5,7 +5,6 @@ plugins {
 
 dependencies {
     api project(':modules:monitoring')
-
-    api('org.springframework.boot:spring-boot-starter-web:2.5.4')
+    api project(':modules:spring-config')
 }
 

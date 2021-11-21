@@ -12,8 +12,8 @@ import lombok.SneakyThrows;
 
 public class SchedulerBuilder {
 
-  Runnable shutdownHook = () -> {};
-  Consumer<RoundRobinScheduler> startupHook = x -> {};
+  List<? extends Runnable> shutdownHook;
+  List<? extends Consumer<RoundRobinScheduler>> startupHook;
   int backpressureLimit = 200;
   boolean isBatchJob;
   List<MeshineryTask<? extends Object, ? extends Context>> tasks = new ArrayList<>();
@@ -35,12 +35,12 @@ public class SchedulerBuilder {
     return this;
   }
 
-  public SchedulerBuilder registerShutdownHook(Runnable shutdownHook) {
+  public SchedulerBuilder registerShutdownHook(List<? extends Runnable> shutdownHook) {
     this.shutdownHook = shutdownHook;
     return this;
   }
 
-  public SchedulerBuilder registerStartupHook(Consumer<RoundRobinScheduler> startupHook) {
+  public SchedulerBuilder registerStartupHook(List<? extends Consumer<RoundRobinScheduler>> startupHook) {
     this.startupHook = startupHook;
     return this;
   }

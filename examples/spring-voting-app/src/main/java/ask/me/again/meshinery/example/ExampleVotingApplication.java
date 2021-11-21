@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Import;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @SpringBootApplication
 @EnableMeshinery
-@EnableMeshineryDrawing
 @EnableMeshineryMonitoring
+@EnableMeshineryDrawing
 @Import({
     ExampleVoteConfiguration.class,
     ExampleController.class,

@@ -12,6 +12,5 @@ dependencies {
     implementation project(':modules:connectors:mysql:mysql-connector-config');
 
     implementation 'ch.qos.logback:logback-classic:1.2.6'
-    implementation project(':modules:monitoring')
     implementation project(':modules:monitoring-config')
 }

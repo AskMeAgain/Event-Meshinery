@@ -11,38 +11,22 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @RequiredArgsConstructor
-@SuppressWarnings("checkstyle:MissingJavadocType")
 @ConditionalOnMissingBean(MeshineryAutoConfiguration.class)
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryAutoConfiguration {
 
   @Value("${meshinery.batch-job:false}")
   private boolean isBatchJob;
 
   @Bean
-  @ConditionalOnMissingBean(CustomizeShutdownHook.class)
-  public CustomizeShutdownHook shutdownhook() {
-    return () -> {
-      //empty
-    };
-  }
-
-  @Bean
-  @ConditionalOnMissingBean(CustomizeStartupHook.class)
-  public CustomizeStartupHook startupHook() {
-    return scheduler -> {
-      //empty
-    };
-  }
-
-  @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public RoundRobinScheduler roundRobinScheduler(
-      List<MeshineryTask<?, ?>> tasks, CustomizeShutdownHook shutdownHook, CustomizeStartupHook startupHook
+      List<MeshineryTask<?, ?>> tasks, List<CustomizeShutdownHook> shutdownHook, List<CustomizeStartupHook> startupHook
   ) {
     return RoundRobinScheduler.builder()
         .isBatchJob(isBatchJob)
-        .registerShutdownHook(shutdownHook::run)
-        .registerStartupHook(startupHook::apply)
+        .registerShutdownHook(shutdownHook)
+        .registerStartupHook(startupHook)
         .tasks(tasks)
         .buildAndStart();
   }

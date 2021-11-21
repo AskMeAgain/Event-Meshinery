@@ -3,6 +3,7 @@ package ask.me.again.meshinery.core.common;
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
 import ask.me.again.meshinery.core.utils.AbstractTestBase;
 import ask.me.again.meshinery.core.utils.context.TestContext;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ class ShutdownTest extends AbstractTestBase {
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
-        .registerShutdownHook(() -> flag.set(true))
+        .registerShutdownHook(List.of(() -> flag.set(true)))
         .buildAndStart();
 
     Thread.sleep(1000);

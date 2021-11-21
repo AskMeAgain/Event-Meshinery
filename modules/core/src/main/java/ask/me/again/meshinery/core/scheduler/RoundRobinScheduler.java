@@ -35,9 +35,10 @@ public class RoundRobinScheduler {
   private final ConcurrentLinkedQueue<TaskRun> todoQueue;
   private final int backpressureLimit;
   private final boolean isBatchJob;
-  private final Runnable shutdownHook;
+  private final List<? extends Runnable> shutdownHook;
+  private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
+
   private boolean internalShutdown = false;
-  private final Consumer<RoundRobinScheduler> startupHook;
 
   public static SchedulerBuilder builder() {
     return new SchedulerBuilder();
@@ -62,7 +63,7 @@ public class RoundRobinScheduler {
     executorServices.add(taskExecutor);
     taskExecutor.execute(this::runWorker);
 
-    startupHook.accept(this);
+    startupHook.forEach(hook -> hook.accept(this));
 
     return this;
   }
@@ -194,7 +195,7 @@ public class RoundRobinScheduler {
       }
     }
 
-    shutdownHook.run();
+    shutdownHook.forEach(Runnable::run);
   }
 
   private CompletableFuture<Context> getResultFuture(

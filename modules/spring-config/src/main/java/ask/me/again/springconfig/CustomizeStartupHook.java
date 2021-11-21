@@ -1,8 +1,8 @@
 package ask.me.again.springconfig;
 
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
+import java.util.function.Consumer;
 
 @FunctionalInterface
-public interface CustomizeStartupHook {
-  void apply(RoundRobinScheduler roundRobinScheduler);
+public interface CustomizeStartupHook extends Consumer<RoundRobinScheduler> {
 }

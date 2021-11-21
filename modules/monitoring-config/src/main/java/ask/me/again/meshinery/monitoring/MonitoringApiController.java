@@ -14,7 +14,7 @@ public class MonitoringApiController {
 
   @GetMapping("/prometheus")
   public String prometheus() {
-    var result = MonitoringTest.getMetrics();
+    var result = MeshineryMonitoringService.getMetrics();
     var headers = new HttpHeaders();
     headers.setCacheControl(CacheControl.noCache().getHeaderValue());
 

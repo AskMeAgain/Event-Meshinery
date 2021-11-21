@@ -11,7 +11,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MonitoringTest {
+public class MeshineryMonitoringService {
 
   public static final CollectorRegistry registry = new CollectorRegistry();
 
