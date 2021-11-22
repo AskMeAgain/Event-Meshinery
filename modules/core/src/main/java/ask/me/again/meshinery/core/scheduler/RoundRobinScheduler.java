@@ -36,7 +36,7 @@ public class RoundRobinScheduler {
   private final ConcurrentLinkedQueue<TaskRun> todoQueue;
   private final int backpressureLimit;
   private final boolean isBatchJob;
-  private final List<? extends Runnable> shutdownHook;
+  private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
   private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
   private final List<ProcessorDecorator<? extends Context, ? extends Context>> processorDecorator;
   private boolean internalShutdown = false;
@@ -196,7 +196,7 @@ public class RoundRobinScheduler {
       }
     }
 
-    shutdownHook.forEach(Runnable::run);
+    shutdownHook.forEach(hook -> hook.accept(this));
   }
 
   private CompletableFuture<Context> getResultFuture(

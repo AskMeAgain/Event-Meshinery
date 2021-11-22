@@ -22,7 +22,7 @@ class ShutdownTest extends AbstractTestBase {
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
-        .registerShutdownHook(List.of(() -> flag.set(true)))
+        .registerShutdownHook(List.of(scheduler -> flag.set(true)))
         .buildAndStart();
 
     Thread.sleep(1000);

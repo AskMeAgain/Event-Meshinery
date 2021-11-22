@@ -7,6 +7,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,6 +21,16 @@ public class MeshineryAutoConfiguration {
 
   @Value("${meshinery.batch-job:false}")
   private boolean isBatchJob;
+
+  @Bean
+  @ConditionalOnProperty(
+      prefix = "meshinery",
+      name = "shutdown-on-finished",
+      havingValue = "true",
+      matchIfMissing = true)
+  CustomizeShutdownHook shutdownHook(ApplicationContext context) {
+    return scheduler -> ((ConfigurableApplicationContext) context).close();
+  }
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
@@ -35,5 +48,4 @@ public class MeshineryAutoConfiguration {
         .tasks(tasks)
         .buildAndStart();
   }
-
 }
