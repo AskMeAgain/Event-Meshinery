@@ -15,11 +15,14 @@ public class TimingDecorator<I extends Context, O extends Context> implements Pr
   public MeshineryProcessor<I, O> wrap(MeshineryProcessor<I, O> processor) {
     var taskName = getTaskData().getSingle(TASK_NAME);
     var summary = MeshineryMonitoringService.requestTimeSummary.labels(taskName);
+    var inProcessingCounter = MeshineryMonitoringService.inProcessingGauge.labels(taskName);
 
     return (context, executor) -> {
+      inProcessingCounter.inc();
       var begin = Instant.now();
       return processor.processAsync(context, executor).whenComplete((c1, exception) -> {
         var diff = Duration.between(begin, Instant.now());
+        inProcessingCounter.dec();
         summary.observe(diff.toMillis());
       });
     };

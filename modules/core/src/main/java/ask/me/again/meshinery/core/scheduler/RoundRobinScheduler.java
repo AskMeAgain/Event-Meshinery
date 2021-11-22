@@ -85,7 +85,7 @@ public class RoundRobinScheduler {
 
           for (var reactiveTask : tasks) {
             //getting the input values
-            MDC.put("taskid", reactiveTask.getTaskName());
+            MDC.put(TASK_NAME, reactiveTask.getTaskName());
 
             var taskRuns = queryTaskRuns(reactiveTask);
 

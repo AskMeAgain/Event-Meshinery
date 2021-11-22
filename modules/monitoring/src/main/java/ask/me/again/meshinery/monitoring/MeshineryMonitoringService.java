@@ -20,6 +20,11 @@ public class MeshineryMonitoringService {
       .help("Time of all requests")
       .labelNames("task_name")
       .register(registry);
+  public static final Gauge inProcessingGauge = Gauge.build()
+      .name("processing_counter")
+      .help("Number of all currently in work processors")
+      .labelNames("task_name")
+      .register(registry);
 
   public static Gauge createGauge(String name, String helpText, String labelNames) {
     return Gauge.build()
