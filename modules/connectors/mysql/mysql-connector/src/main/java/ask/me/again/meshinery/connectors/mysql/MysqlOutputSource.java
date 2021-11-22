@@ -10,10 +10,25 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
 
+import static ask.me.again.meshinery.connectors.mysql.MysqlProperties.MYSQL_OVERRIDE_EXISTING;
+
 @Slf4j
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MysqlOutputSource<C extends Context> implements OutputSource<String, C> {
+
+  private static final String INSERT = """
+      INSERT INTO <TABLE> (id,context,state,processed) 
+      VALUES (:ID, :CONTEXT, :STATE, 0)
+      """;
+
+  private static final String OVERRIDE = """
+      INSERT INTO <TABLE> (id,context,state,processed) 
+      VALUES (:ID, :CONTEXT, :STATE, 0)
+      ON DUPLICATE KEY UPDATE 
+        context = :CONTEXT,
+        processed = 0
+      """;
 
   @Getter
   private final String name;
@@ -24,16 +39,16 @@ public class MysqlOutputSource<C extends Context> implements OutputSource<String
   @SneakyThrows
   public void writeOutput(String key, C output) {
 
-    var qualifiedType = QualifiedType.of(clazz).with(Json.class);
+    var insertOverride = getTaskData().has(MYSQL_OVERRIDE_EXISTING);
+    var insertStatement = insertOverride ? OVERRIDE : INSERT;
 
-    jdbi.useHandle(
-        handle -> handle.createUpdate(
-                "INSERT INTO <TABLE> (id,context,state,processed) VALUES (:ID, :CONTEXT, :STATE, 0)")
-            .define("TABLE", clazz.getSimpleName())
-            .bindByType("CONTEXT", output, qualifiedType)
-            .bind("STATE", key)
-            .bind("ID", output.getId())
-            .execute()
+    var qualifiedType = QualifiedType.of(clazz).with(Json.class);
+    jdbi.useHandle(h -> h.createUpdate(insertStatement)
+        .define("TABLE", clazz.getSimpleName())
+        .bindByType("CONTEXT", output, qualifiedType)
+        .bind("STATE", key)
+        .bind("ID", output.getId())
+        .execute()
     );
   }
 }

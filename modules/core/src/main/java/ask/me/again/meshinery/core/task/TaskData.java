@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Properties;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
@@ -15,9 +14,8 @@ import lombok.With;
 @AllArgsConstructor
 public class TaskData {
 
-  private static final ThreadLocal<TaskData> taskData = new ThreadLocal<>();
+  private static final ThreadLocal<TaskData> taskData = ThreadLocal.withInitial(TaskData::new);
 
-  @Getter
   @With(AccessLevel.PRIVATE)
   private Properties properties = new Properties();
 
@@ -45,6 +43,12 @@ public class TaskData {
     return this.withProperties(newProperties);
   }
 
+  public Properties getProperties() {
+    var newProperties = new Properties();
+    newProperties.putAll(properties);
+    return newProperties;
+  }
+
   public List<String> get(String key) {
     return (List<String>) properties.get(key);
   }
@@ -52,5 +56,9 @@ public class TaskData {
   public String getSingle(String key) {
     var list = (List<String>) properties.get(key);
     return list.get(0);
+  }
+
+  public boolean has(String key) {
+    return properties.containsKey(key);
   }
 }

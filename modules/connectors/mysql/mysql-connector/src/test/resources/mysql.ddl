@@ -5,5 +5,6 @@ CREATE TABLE `TestContext`
     `processed` tinyint(1) NOT NULL,
     `eid`       bigint       NOT NULL AUTO_INCREMENT,
     `state`     varchar(100) NOT NULL,
-    PRIMARY KEY (`eid`)
+    PRIMARY KEY (`eid`),
+    UNIQUE INDEX (id, state)
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

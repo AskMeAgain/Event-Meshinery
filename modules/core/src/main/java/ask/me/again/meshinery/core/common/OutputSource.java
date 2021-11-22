@@ -1,5 +1,7 @@
 package ask.me.again.meshinery.core.common;
 
+import ask.me.again.meshinery.core.task.TaskData;
+
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public interface OutputSource<K, C extends Context> {
 
@@ -7,4 +9,7 @@ public interface OutputSource<K, C extends Context> {
 
   void writeOutput(K key, C output);
 
+  default TaskData getTaskData() {
+    return TaskData.getTaskData();
+  }
 }

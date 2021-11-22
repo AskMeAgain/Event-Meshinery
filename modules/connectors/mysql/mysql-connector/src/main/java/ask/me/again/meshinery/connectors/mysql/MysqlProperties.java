@@ -5,7 +5,10 @@ import lombok.Data;
 @Data
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MysqlProperties {
-  int limit;
+
+  public static String MYSQL_OVERRIDE_EXISTING = "mysql.override-existing";
+
+  int limit = 10;
   String user;
   String password;
   String connectionString;
