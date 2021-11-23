@@ -1,12 +1,15 @@
 # Event Meshinery
 
-This framework is a state store independent event framework and designed to easily structure long running, multi step,
-processing tasks in a transparent way and safe way. The underlying state stores can be exchanged and combined to suit
+This framework is a state store independent event framework and designed 
+to easily structure long running, multi step or long delay heavy
+processing tasks in a transparent and safe way. 
+The underlying state stores can be exchanged and combined to suit
 your needs:
 
 * Read from a mysql db, and write to kafka.
 * Join Kafka messages from a Kafka topic with mysql db tables.
 * Define a multistep processing pipeline and be able to (re)start the processing from any 'checkpoint'.
+* Wait multiple days between two processing steps
 
 This framework was originally written to replace KafkaStreams in a specific usecase, but you can use this framework
 without Kafka. Currently supported are the following state stores, but you can easily provide your own:
@@ -19,14 +22,15 @@ without Kafka. Currently supported are the following state stores, but you can e
 
 * This framework lets you structure your code in a really transparent way by providing a state store independent api
 * You separate the business layer from the underlying implementation layer
-* You can resume a process in case of error and you will start exactly where you left off
+* You can resume a process in case of error and you 
+will start exactly where you left off (within bounds)
 * Fine granular configs for your thread management
 * Fast time-to-market: switching between state stores is super easy: Start with memory for fast iteration cycles, if you
   need more guarantees switch to mysql or kafka without much work
 * Easily integrated (using Spring or by constructing everything by hand)
 * Create a complete event diagram to map your events and how they interact with each other (see "Draw the Graph")
 
-## Architecture
+## Architecture (Short)
 
 The building blocks of this framework consists of 4 basic classes:
 
@@ -69,29 +73,6 @@ takes a mapping method to the new Context type and a new defaultOutputSource.
         .process(testContext2Processor) //this processor works on TestContext2
         .write(INPUT_KEY); //writing event
 
-### RoundRobinScheduler
-
-The execution of all Tasks is done by providing a list of tasks to a MeshineryScheduler (currently only
-RoundRobinScheduler). The scheduler also provides a way to specify backpressure, so the application is not getting
-overwhelmed.
-
-    var scheduler = RoundRobinScheduler.builder()
-        .isBatchJob(true) //if the inputsource returns nothing, then the scheduler will shutdown itself gracefully
-        .tasks(List.of(task1, task2)) //all these tasks are gathered together
-        .task(task3) //all these tasks are gathered together
-        .build(); //this will start the scheduling
-
-    scheduler.gracefulShutdown(); //this shutdowns the processor
-
-#### Execution Mode: BatchJob
-
-There are 2 execution modes: BatchJob and Continuous. The BatchJob will run all tasks. If a single iteration of an
-inputsource doesnt yield **any** new result, the application will shutdown itself gracefully.
-
-#### Execution Mode: Continuous (isBatchJob = false)
-
-This mode just means that the application will run until it is stopped gracefully via .shutdownGracefully()
-
 ### Source
 
 There are Input and OutputSources. InputSources provide the data which gets passed to processors. OutputSources write
@@ -102,20 +83,6 @@ example) for a MeshineryTask, but there can be multiple OutputSources.
 
 A Source describes a connection to a statestore. Most of the time, you only need to define a single source per
 Statestore, as the Source knows where to look/write to by the provided key.
-
-#### Mysql Source
-
-A Key provided to a mysql source correspondes to a different value in a column. A mysqlsource handles a single Table.
-
-**Example:**
-
-a MeshineryTask reads with key "InputKey". This results in a sql query:
-
-    SELECT * FROM <TABLE> WHERE processed != 0 AND state = 'InputKey';
-
-a MeshineryTasks writes with key "OutputKey". This results in a sql query:
-
-    INSERT INTO <TABLE> (data, processed, state) VALUES ("testdata", 0, "OutputKey");
 
 #### Kafka Source
 
@@ -219,9 +186,9 @@ Example Processor
       }
     }
 
-Notice the following log message has Context Id (12) and Taskname (After Join) 
+Notice the following log message has Context Id (12) and Taskname (After Join Task) 
 
-    21:59:19.519 INFO [After Join] 12 [pool-1-thread-20] a.m.a.m.e.e.ProcessorFinished - Finished Request
+    21:59:19.519 INFO [After Join Task] 12 [pool-1-thread-20] a.m.a.m.e.e.ProcessorFinished - Finished Request
 
 Logback example config:
 
