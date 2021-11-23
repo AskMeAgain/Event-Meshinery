@@ -2,10 +2,10 @@
 
 This package provides an AutoConfiguration class which you can use to bootstrap your applications.
 
-## Installation
+## Setup
 
 Add @EnableMeshinery to your spring configuration and provide MeshineryTask Beans. The autoconfiguration will pickup the
-MeshineryTasks and run the schedule automatically.
+MeshineryTasks and run the Tasks automatically.
 
 ## Properties
 

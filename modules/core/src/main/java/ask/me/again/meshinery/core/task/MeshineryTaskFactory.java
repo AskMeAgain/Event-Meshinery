@@ -6,7 +6,6 @@ import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.core.processors.DynamicOutputProcessor;
-import ask.me.again.meshinery.core.processors.OutputProcessor;
 import ask.me.again.meshinery.core.processors.StopProcessor;
 import ask.me.again.meshinery.core.source.JoinedInputSource;
 import java.util.ArrayList;
@@ -25,6 +24,7 @@ import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_INPUT_KE
 import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_INPUT_SOURCE;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_OUTPUT_KEY;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_OUTPUT_SOURCE;
+import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_PROCESSOR;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.TASK_NAME;
 
 @Builder(toBuilder = true, access = AccessLevel.PRIVATE)
@@ -231,7 +231,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
     var newTaskData = taskData.put(GRAPH_OUTPUT_SOURCE, outputSource.getName())
         .put(GRAPH_OUTPUT_KEY, key.toString());
 
-    return addNewProcessor(new OutputProcessor<>(key, writeIf, outputSource))
+    return addNewProcessor(new DynamicOutputProcessor<>(writeIf, c -> key, outputSource))
         .toBuilder()
         .taskData(newTaskData)
         .build();
@@ -245,11 +245,9 @@ public class MeshineryTaskFactory<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public final MeshineryTaskFactory<K, C> write(K key, Predicate<C> writeIf) {
-    var newTaskData = taskData.put(GRAPH_OUTPUT_KEY, key.toString());
-
-    return addNewProcessor(new OutputProcessor<>(key, writeIf, defaultOutputSource))
+    return addNewProcessor(new DynamicOutputProcessor<>(writeIf, c -> key, defaultOutputSource))
         .toBuilder()
-        .taskData(newTaskData)
+        .taskData(taskData.put(GRAPH_OUTPUT_KEY, key.toString()))
         .build();
   }
 
@@ -332,7 +330,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
         handleException,
         backoffTime
     ).toBuilder()
-        .taskData(newProcessor.addToTaskData(taskData.put("graph.processor", newProcessor.toString())))
+        .taskData(newProcessor.addToTaskData(taskData.put(GRAPH_PROCESSOR, newProcessor.toString())))
         .build();
   }
 
