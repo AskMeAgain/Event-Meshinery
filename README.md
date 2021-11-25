@@ -2,6 +2,8 @@
 
 # Table of contents
 1. [Motivation](#Motivation)
+2. [Advantages](#Advantages)
+3. [Module Structure](#Module-Structure)
 
 This framework is a state store independent event framework and designed 
 to easily structure long running, multi step or long delay heavy
@@ -40,7 +42,7 @@ To solve this problem, the Event-Meshinery framework removes a guarantee:
 This is possible if your events are completely independent of each other and it doesnt matter if you process message B
 before message A, even if it is stored in the same partition.
 
-## Advantages of Event-Meshinery
+## Advantages of Event-Meshinery <a name="Advantages"></a>
 
 * This framework lets you structure your code in a really transparent way by providing a state store independent api, by separate the business layer from the underlying implementation layer
 * You can resume a process in case of error and you 
@@ -51,7 +53,7 @@ will start exactly where you left off (within bounds)
 * Easily integrated (using Spring or by constructing everything by hand)
 * Create a complete event diagram to map your events and how they interact with each other (see "Draw the Graph")
 
-## Module Structure
+## Module Structure <a name="Module-Structure"></a>
 
 The architecture of this repo is simple: you have all normal modules and XXX-spring
 which all implement an autoconfiguration for.
@@ -59,7 +61,7 @@ which all implement an autoconfiguration for.
   quickly, you should just checkout the spring versions.
 * If you want to have more control or dont want to use spring, choose the normal versions instead
 
-## Architecture
+## Architecture <a name="Architecture"></a>
 
 [Detailed architecture documentation](modules/core/core-architecture.md)
 
@@ -71,7 +73,7 @@ The building blocks of this framework consist of 4 basic classes:
 * Input/OutputSources
 
 
-### (Data)Context
+### (Data)Context <a name="Context"></a>
 
 A single tasks defines a single data context, which gets worked and passed on in processors. This context is used in
 processors for input and output type. If you want to change this type, you need to call the contextSwitch() method which
