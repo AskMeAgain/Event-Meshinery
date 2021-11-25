@@ -1,24 +1,5 @@
 # Core Architecture
 
-## Motivation
-
-Doing long running (blocking) calls (like rest) via Kafka Streams represents a challenge as this blocks a single thread
-in the Kafka Streams framework from processing other messages and a single partition from getting processed:
-
-**If you block a partition with a long running call, then you cannot process any other messages from this partition
-until the processing is unblocked.**
-
-This means that you can only scale in Kafka Streams as far as your Kafka Cluster (Partition count) allows:
-If your Kafka Cluster has 32 Partitions per topic, you can only have a max number of 32 running threads and can only run
-32 stream processors/message processing in parallel.
-
-To solve this problem, the Event-Meshinery framework removes a guarantee:
-
-**Messages are not processed in a partition in order, but processed as they arrive.**
-
-This is possible if your events are completely independent of each other and it doesnt matter if you process message B
-before message A, even if it is stored in the same partition.
-
 ##  Architecture
 
 There are 6 building blocks of the framework:

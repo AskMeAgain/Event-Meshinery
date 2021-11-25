@@ -1,5 +1,8 @@
 # Event Meshinery
 
+# Table of contents
+1. [Motivation](#Motivation)
+
 This framework is a state store independent event framework and designed 
 to easily structure long running, multi step or long delay heavy
 processing tasks in a transparent and safe way. 
@@ -18,10 +21,28 @@ without Kafka. Currently supported are the following state stores, but you can e
 * MySql
 * Memory
 
-## Advantages
+## Motivation <a name="Motivation"></a>
 
-* This framework lets you structure your code in a really transparent way by providing a state store independent api
-* You separate the business layer from the underlying implementation layer
+Doing long running (blocking) calls (like rest) via Kafka Streams represents a challenge as this blocks a single thread
+in the Kafka Streams framework from processing other messages and a single partition from getting processed:
+
+**If you block a partition with a long running call, then you cannot process any other messages from this partition
+until the processing is unblocked.**
+
+This means that you can only scale in Kafka Streams as far as your Kafka Cluster (Partition count) allows:
+If your Kafka Cluster has 32 Partitions per topic, you can only have a max number of 32 running threads and can only run
+32 stream processors/message processing in parallel.
+
+To solve this problem, the Event-Meshinery framework removes a guarantee:
+
+**Messages are not processed in a partition in order, but processed as they arrive.**
+
+This is possible if your events are completely independent of each other and it doesnt matter if you process message B
+before message A, even if it is stored in the same partition.
+
+## Advantages of Event-Meshinery
+
+* This framework lets you structure your code in a really transparent way by providing a state store independent api, by separate the business layer from the underlying implementation layer
 * You can resume a process in case of error and you 
 will start exactly where you left off (within bounds)
 * Fine granular configs for your thread management
@@ -30,14 +51,39 @@ will start exactly where you left off (within bounds)
 * Easily integrated (using Spring or by constructing everything by hand)
 * Create a complete event diagram to map your events and how they interact with each other (see "Draw the Graph")
 
-## Architecture (Short)
+## Module Structure
 
-The building blocks of this framework consists of 4 basic classes:
+The architecture of this repo is simple: you have all normal modules and XXX-spring
+which all implement an autoconfiguration for.
+* If you want to start a new project
+  quickly, you should just checkout the spring versions.
+* If you want to have more control or dont want to use spring, choose the normal versions instead
+
+## Architecture
+
+[Detailed architecture documentation](modules/core/core-architecture.md)
+
+The building blocks of this framework consist of 4 basic classes:
 
 * MeshineryTask
 * MeshineryProcessor
 * RoundRobinScheduler
 * Input/OutputSources
+
+
+### (Data)Context
+
+A single tasks defines a single data context, which gets worked and passed on in processors. This context is used in
+processors for input and output type. If you want to change this type, you need to call the contextSwitch() method which
+takes a mapping method to the new Context type and a new defaultOutputSource.
+
+    var task = MeshineryTask.<String, TestContext>builder()
+        .inputSource(inputSource)
+        .defaultOutputSource(defaultOutput)
+        .read(INPUT_KEY, executor) //here the Context is TestContext
+        .contextSwitch(contextOutput, this::map) //we switch to TestContext2 via the mapping method
+        .process(testContext2Processor) //this processor works on TestContext2
+        .write(INPUT_KEY); //writing event
 
 ### MeshineryTasks
 
@@ -59,19 +105,45 @@ A task can have any amount of processors and sub processing (via processors). Th
 how the pipeline should react. **The goal is that each tasks describes exactly WHAT processor and WHEN a processor is
 executed.** This allows for super transparent code which allows you to argue about the execution on a higher level.
 
-### Context
+### Meshinery Processors
 
-A single tasks defines a single data edgeData (Context), which gets worked and passed on. This edgeData is used in
-processors for input and output type. If you want to change this type, you need to call the contextSwitch() method which
-takes a mapping method to the new Context type and a new defaultOutputSource.
+[Detailed list of all utility processors](modules/core/processors.md)
 
-    var task = MeshineryTask.<String, TestContext>builder()
-        .inputSource(inputSource)
-        .defaultOutputSource(defaultOutput)
-        .read(INPUT_KEY, executor) //here the Context is TestContext
-        .contextSwitch(contextOutput, this::map) //we switch to TestContext2 via the mapping method
-        .process(testContext2Processor) //this processor works on TestContext2
-        .write(INPUT_KEY); //writing event
+Meshinery Processors define the actual business work, like doing restcalls, calculating user information etc.
+
+    public class ProcessorFinished implements MeshineryProcessor<Context, Context> {
+    
+        @Override
+        public CompletableFuture<Context> processAsync(Context context, Executor executor) {
+            return CompletableFuture.supplyAsync(() -> {
+            
+                  //restcall
+                  Thread.sleep(1000);
+                  log.info("Finished Request");
+            
+                  return context;
+            
+                }, executor);
+        }
+    }
+
+### Round Robin Scheduler
+
+[Detailed Documentation](modules/core/scheduler.md)
+
+The scheduler takes a list of tasks, creates small "work packages" (called TaskRuns)
+from them, and executes them on all available threads. You can register
+some hooks and decorators which will work "globally" for all tasks
+
+    RoundRobinScheduler.builder()
+        .isBatchJob(true)
+        .task(task)
+        .registerDecorators([..])
+        .registerShutdownHook([..])
+        .registerStartupHook([..])
+        .backpressureLimit(100)
+        .buildAndStart();
+
 
 ### Source
 
@@ -82,15 +154,18 @@ There can only be a single InputSource (but you can combine multiple input sourc
 example) for a MeshineryTask, but there can be multiple OutputSources.
 
 A Source describes a connection to a statestore. Most of the time, you only need to define a single source per
-Statestore, as the Source knows where to look/write to by the provided key.
-
-#### Kafka Source
-
-A Key provided to a kafka source correspondes to a different kafka topic A source is connected to a broker.
+Statestore, as the Source knows where to look/write to by the provided (event)key.
 
 #### Memory Source
 
 A key describes a specific list in a dictionary.
+
+#### Kafka Source
+
+* [Detailed Documentation](modules/connectors/kafka/kafka-connector/kafka.md)  
+* [Detailed Spring Integration Documentation](modules/connectors/kafka/kafka-connector-config/kafka.md)
+
+A Key provided to a kafka source correspondes to a different kafka topic A source is connected to a broker.
 
 #### Cron Source
 
@@ -110,13 +185,13 @@ read method
         .read("0/3 * * * * *", executorService) //this cron will be executed.
         .write("start");
 
-#### Joins
+### Joins
 
 You can join data, by providing two input sources (can be from different state stores!) to a JoinInputSource object. You
 also need to provide a mapping function which receives left and right side of the join and returns a new object.
 Currently only **Inner Joins** are supported.
 
-And the key on which the join happens is the Id field of the Context object.
+The key on which the join happens is the Id field of the Context object.
 
     var joinedSource = new JoinedInputSource<>(leftSource, rightSource, KEY, this::combine);
     var task = MeshineryTask<String, TestContext>()
