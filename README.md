@@ -1,28 +1,28 @@
 # Event Meshinery
 
 ## Table of contents
+
 1. [Description](#Description)
 2. [Motivation](#Motivation)
 3. [Advantages](#Advantages)
 4. [Module Structure](#Module-Structure)
 5. [Architecture](#Architecture)
-   1. [Datacontext](#Context)
-   2. [MeshineryTasks](#MeshineryTasks)
-   3. [MeshineryProcessors](#MeshineryProcessors)
-   4. [Round Robin Scheduler](#Scheduler)
-   5. [Sources](#Sources)
-      1. [Memory](#Memory)
-      2. [Cron](#Cron)
-      3. [Kafka](#Kafka)
-      4. [Joins](#Joins)
+    1. [Datacontext](#Context)
+    2. [MeshineryTasks](#MeshineryTasks)
+    3. [MeshineryProcessors](#Meshinery Processors)
+    4. [Round Robin Scheduler](#Scheduler)
+    5. [Sources](#Sources)
+        1. [Memory](#Memory)
+        2. [Cron](#Cron)
+        3. [Mysql](#Mysql)
+        3. [Kafka](#Kafka)
+        4. [Joins](#Joins)
 
 ## Description
 
-This framework is a state store independent event framework and designed 
-to easily structure long running, multi step or long delay heavy
-processing tasks in a transparent and safe way. 
-The underlying state stores can be exchanged and combined to suit
-your needs:
+This framework is a state store independent event framework and designed to easily structure long running, multi step or
+long delay heavy processing tasks in a transparent and safe way. The underlying state stores can be exchanged and
+combined to suit your needs:
 
 * Read from a mysql db, and write to kafka.
 * Join Kafka messages from a Kafka topic with mysql db tables.
@@ -57,9 +57,9 @@ before message A, even if it is stored in the same partition.
 
 ## Advantages of Event-Meshinery <a name="Advantages"></a>
 
-* This framework lets you structure your code in a really transparent way by providing a state store independent api, by separate the business layer from the underlying implementation layer
-* You can resume a process in case of error and you 
-will start exactly where you left off (within bounds)
+* This framework lets you structure your code in a really transparent way by providing a state store independent api, by
+  separate the business layer from the underlying implementation layer
+* You can resume a process in case of error and you will start exactly where you left off (within bounds)
 * Fine granular configs for your thread management
 * Fast time-to-market: switching between state stores is super easy: Start with memory for fast iteration cycles, if you
   need more guarantees switch to mysql or kafka without much work
@@ -68,10 +68,10 @@ will start exactly where you left off (within bounds)
 
 ## Module Structure <a name="Module-Structure"></a>
 
-The architecture of this repo is simple: you have all normal modules and XXX-spring
-which all implement an autoconfiguration for.
-* If you want to start a new project
-  quickly, you should just checkout the spring versions.
+The architecture of this repo is simple: you have all normal modules and XXX-spring which all implement an
+autoconfiguration for.
+
+* If you want to start a new project quickly, you should just checkout the spring versions.
 * If you want to have more control or dont want to use spring, choose the normal versions instead
 
 ## Architecture <a name="Architecture"></a>
@@ -84,7 +84,6 @@ The building blocks of this framework consist of 4 basic classes:
 * MeshineryProcessor
 * RoundRobinScheduler
 * Input/OutputSources
-
 
 ### (Data)Context <a name="Context"></a>
 
@@ -102,10 +101,10 @@ takes a mapping method to the new Context type and a new defaultOutputSource.
 
 ### MeshineryTasks
 
-MeshineryTask describes a single **business** unit of work, which consists of an input source ,
-a list of processors to solve a part of the business logic and one or
-multiple output calls. An input source takes an eventkey/id, which gets fed to the inputsource to produce data. This
-data is fed to the processors and multiple output sources, which spawn more events.
+MeshineryTask describes a single **business** unit of work, which consists of an input source , a list of processors to
+solve a part of the business logic and one or multiple output calls. An input source takes an eventkey/id, which gets
+fed to the inputsource to produce data. This data is fed to the processors and multiple output sources, which spawn more
+events.
 
     var meshineryTask = MeshineryTask.<String, TestContext>builder()
         .read("state-a", executorService) //Input state & thread config
@@ -142,13 +141,13 @@ Meshinery Processors define the actual business work, like doing restcalls, calc
         }
     }
 
-### Round Robin Scheduler
+### Round Robin Scheduler <a name="Scheduler"></a>
 
 [Detailed Documentation](modules/core/scheduler.md)
 
 The scheduler takes a list of tasks, creates small "work packages" (called TaskRuns)
-from them, and executes them on all available threads. You can register
-some hooks and decorators which will work "globally" for all tasks
+from them, and executes them on all available threads. You can register some hooks and decorators which will work "
+globally" for all tasks
 
     RoundRobinScheduler.builder()
         .isBatchJob(true)
@@ -159,8 +158,7 @@ some hooks and decorators which will work "globally" for all tasks
         .backpressureLimit(100)
         .buildAndStart();
 
-
-### Source
+### Sources
 
 There are Input and OutputSources. InputSources provide the data which gets passed to processors. OutputSources write
 the data to a state store and trigger a new event.
@@ -171,18 +169,11 @@ example) for a MeshineryTask, but there can be multiple OutputSources.
 A Source describes a connection to a statestore. Most of the time, you only need to define a single source per
 Statestore, as the Source knows where to look/write to by the provided (event)key.
 
-#### Memory Source
+#### Memory Source  <a name="Memory"></a>
 
 A key describes a specific list in a dictionary.
 
-#### Kafka Source
-
-* [Detailed Documentation](modules/connectors/kafka/kafka-connector/kafka.md)  
-* [Detailed Spring Integration Documentation](modules/connectors/kafka/kafka-connector-config/kafka.md)
-
-A Key provided to a kafka source correspondes to a different kafka topic A source is connected to a broker.
-
-#### Cron Source
+#### Cron Source  <a name="Cron"></a>
 
 This source emits a value in a schedule. This schedule is specified by a provided cron. The underlying cron library
 is [cron-utils](https://github.com/jmrozanec/cron-utils)
@@ -199,6 +190,29 @@ read method
         .taskName("Cron Heartbeat")
         .read("0/3 * * * * *", executorService) //this cron will be executed.
         .write("start");
+
+
+#### Mysql Source <a name="Mysql"></a>
+
+A Key provided to a mysql source correspondes to a different value in a column. A mysqlsource handles a
+single Table.
+
+Example:
+
+a MeshineryTask reads with key "InputKey". This results in a sql query:
+
+      SELECT * FROM <TABLE> WHERE processed != 0 AND state = 'InputKey';
+
+a MeshineryTasks writes with key "OutputKey". This results in a sql query:
+
+      INSERT INTO <TABLE> (data, processed, state) VALUES ("testdata", 0, "OutputKey");
+
+#### Kafka Source <a name="Kafka"></a>
+
+* [Detailed Documentation](modules/connectors/kafka/kafka-connector/kafka.md)
+* [Detailed Spring Integration Documentation](modules/connectors/kafka/kafka-connector-config/kafka.md)
+
+A Key provided to a kafka source correspondes to a different kafka topic A source is connected to a broker.
 
 ### Joins
 
@@ -255,10 +269,10 @@ round robin scheduler. You can throw here hard, turn off the scheduler. Do some 
 
 ## Logging
 
-This Framework already does the hard work with logging: Setting up the MDC for each thread
-correctly. Each log request in EACH processor will have a correct mdc value of: 
+This Framework already does the hard work with logging: Setting up the MDC for each thread correctly. Each log request
+in EACH processor will have a correct mdc value of:
 
-* "taskid" -> taskName 
+* "taskid" -> taskName
 * "uid" -> ContextId
 
 Example Processor
@@ -276,7 +290,7 @@ Example Processor
       }
     }
 
-Notice the following log message has Context Id (12) and Taskname (After Join Task) 
+Notice the following log message has Context Id (12) and Taskname (After Join Task)
 
     21:59:19.519 INFO [After Join Task] 12 [pool-1-thread-20] a.m.a.m.e.e.ProcessorFinished - Finished Request
 
