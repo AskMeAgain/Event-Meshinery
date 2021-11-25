@@ -15,8 +15,11 @@
         1. [Memory](#Memory)
         2. [Cron](#Cron)
         3. [Mysql](#Mysql)
-        3. [Kafka](#Kafka)
-        4. [Joins](#Joins)
+        4. [Kafka](#Kafka)
+        5. [Joins](#Joins)
+6. [On Failure](#On Failure)
+   1. [Exception Handling](#Exception Handling)
+7. [Logging](#Logging)
 
 ## Description
 

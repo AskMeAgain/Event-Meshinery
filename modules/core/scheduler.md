@@ -20,5 +20,6 @@ There are 2 execution modes: BatchJob and Continuous. The BatchJob will run all 
 inputsource doesnt yield **any** new result, the application will shutdown itself gracefully.
 
 ### Execution Mode: Continuous 
+
 isBatchJob = false  
 This mode just means that the application will run until it is stopped gracefully via .shutdownGracefully()
