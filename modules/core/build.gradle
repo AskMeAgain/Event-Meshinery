@@ -1,9 +1,8 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 dependencies {
-
     api 'com.cronutils:cron-utils:9.1.5'
-
 }

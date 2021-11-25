@@ -1,11 +1,51 @@
-apply plugin: 'java'
+plugins {
+    id 'java-library'
+}
 
+apply plugin: 'java'
 
 subprojects {
     apply plugin: "checkstyle"
     apply plugin: "jacoco"
 
+    plugins.withType(MavenPublishPlugin).whenPluginAdded {
+
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    groupId = 'ask.me.again'
+                    artifactId = 'meshinery-' + project.name
+                    version = '0.4'
+
+                    from components.java
+                }
+            }
+
+            repositories {
+                maven {
+                    name = "GitHubPackages"
+                    url = "https://maven.pkg.github.com/AskMeAgain/Event-Meshinery"
+                    credentials {
+                        username = 'AskMeAgain'
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
+                }
+            }
+        }
+
+        javadoc {
+            if (JavaVersion.current().isJava9Compatible()) {
+                options.addBooleanOption('html5', true)
+            }
+        }
+    }
+
     plugins.withType(JavaPlugin).whenPluginAdded {
+
+        java {
+            withJavadocJar()
+            withSourcesJar()
+        }
 
         jacocoTestReport {
             enabled false
@@ -43,6 +83,7 @@ subprojects {
 
         repositories {
             mavenCentral()
+            mavenLocal()
         }
 
         test {

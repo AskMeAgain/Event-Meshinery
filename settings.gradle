@@ -15,5 +15,3 @@ include('examples:base-app')
 include('examples:spring-app')
 include('examples:spring-voting-app')
 include('examples:spring-kafka-app')
-
-
