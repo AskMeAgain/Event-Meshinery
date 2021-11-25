@@ -27,13 +27,13 @@ jobs:
     - name: Set output
       id: vars
       run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-    - name: Build with Gradle
-      run: gradle build
+#    - name: Build with Gradle
+#      run: gradle build
     - name: Run tests
       run: gradle test
-    - name: Publish to GitHub Packages
-      run: gradle publish
-      env:
-        RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
-        USERNAME: ${{ github.actor }}
-        TOKEN: ${{ secrets.TOKEN }}
+#    - name: Publish to GitHub Packages
+#      run: gradle publish
+#      env:
+#        RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
+#        USERNAME: ${{ github.actor }}
+#        TOKEN: ${{ secrets.TOKEN }}

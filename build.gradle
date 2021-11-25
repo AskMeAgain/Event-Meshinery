@@ -4,6 +4,7 @@ plugins {
 
 apply plugin: 'java'
 
+
 subprojects {
     apply plugin: "checkstyle"
     apply plugin: "jacoco"
@@ -96,6 +97,10 @@ subprojects {
             maxErrors = 0
             toolVersion '9.1'
             configFile = rootProject.file('checkstyle.xml')
+        }
+
+        checkstyleTest {
+            enabled = false
         }
     }
 
