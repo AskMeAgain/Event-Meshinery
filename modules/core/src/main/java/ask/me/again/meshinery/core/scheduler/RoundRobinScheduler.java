@@ -38,7 +38,7 @@ public class RoundRobinScheduler {
   private final boolean isBatchJob;
   private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
   private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
-  private final List<ProcessorDecorator<? extends Context, ? extends Context>> processorDecorator;
+  private final List<ProcessorDecorator<Context, Context>> processorDecorator;
   private boolean internalShutdown = false;
 
   public static SchedulerBuilder builder() {
@@ -223,9 +223,8 @@ public class RoundRobinScheduler {
   private MeshineryProcessor<Context, Context> applyDecorators(MeshineryProcessor<Context, Context> nextProcessor) {
     var innerProcessor = nextProcessor;
 
-    for (ProcessorDecorator<? extends Context, ? extends Context> decorator : processorDecorator) {
-      var castingMagic = (ProcessorDecorator<Context, Context>) decorator;
-      innerProcessor = castingMagic.wrap(innerProcessor);
+    for (var decorator : processorDecorator) {
+      innerProcessor = decorator.wrap(innerProcessor);
     }
 
     return innerProcessor;

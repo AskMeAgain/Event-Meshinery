@@ -1,5 +1,6 @@
 package ask.me.again.springconfig;
 
+import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.ProcessorDecorator;
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
 import ask.me.again.meshinery.core.task.MeshineryTask;
@@ -38,7 +39,7 @@ public class MeshineryAutoConfiguration {
       List<MeshineryTask<?, ?>> tasks,
       List<CustomizeShutdownHook> shutdownHook,
       List<CustomizeStartupHook> startupHook,
-      List<ProcessorDecorator<?, ?>> processorDecorators
+      List<ProcessorDecorator<Context, Context>> processorDecorators
   ) {
     return RoundRobinScheduler.builder()
         .isBatchJob(isBatchJob)

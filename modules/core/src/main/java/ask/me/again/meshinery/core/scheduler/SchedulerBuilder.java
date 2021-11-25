@@ -16,7 +16,7 @@ import lombok.SneakyThrows;
 public class SchedulerBuilder {
 
   List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
-  List<ProcessorDecorator<? extends Context, ? extends Context>> processorDecorator = Collections.emptyList();
+  List<ProcessorDecorator<Context, Context>> processorDecorator = Collections.emptyList();
   List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
   int backpressureLimit = 200;
   boolean isBatchJob;
@@ -39,7 +39,7 @@ public class SchedulerBuilder {
     return this;
   }
 
-  public SchedulerBuilder registerDecorators(List<ProcessorDecorator<?, ?>> processorDecorators) {
+  public SchedulerBuilder registerDecorators(List<ProcessorDecorator<Context, Context>> processorDecorators) {
     this.processorDecorator = processorDecorators;
     return this;
   }

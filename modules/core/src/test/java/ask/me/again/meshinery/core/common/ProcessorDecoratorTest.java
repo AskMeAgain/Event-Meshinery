@@ -28,14 +28,18 @@ class ProcessorDecoratorTest {
     var executor = Executors.newSingleThreadExecutor();
     OutputSource<String, TestContext> mockOutputSource = Mockito.mock(OutputSource.class);
 
-    var decorator = new ProcessorDecorator<TestContext, TestContext>() {
+    var decorator = new ProcessorDecorator<>() {
       @Override
-      public MeshineryProcessor<TestContext, TestContext> wrap(
-          MeshineryProcessor<TestContext, TestContext> processor
+      public MeshineryProcessor<Context, Context> wrap(
+          MeshineryProcessor<Context, Context> processor
       ) {
-        return (context, executor) -> processor.processAsync(context.toBuilder()
-            .index(context.getIndex() + 1)
-            .build(), executor);
+
+        return (c, executor) -> {
+          var context = (TestContext) c;
+          return processor.processAsync(context.toBuilder()
+              .index(context.getIndex() + 1)
+              .build(), executor);
+        };
       }
     };
 
