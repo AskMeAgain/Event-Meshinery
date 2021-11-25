@@ -15,7 +15,7 @@ subprojects {
                 mavenJava(MavenPublication) {
                     groupId = 'ask.me.again'
                     artifactId = 'meshinery-' + project.name
-                    version = '0.4'
+                    version = System.getenv("RELEASE_VERSION")
 
                     from components.java
                 }
@@ -26,8 +26,8 @@ subprojects {
                     name = "GitHubPackages"
                     url = "https://maven.pkg.github.com/AskMeAgain/Event-Meshinery"
                     credentials {
-                        username = 'AskMeAgain'
-                        password = System.getenv("GITHUB_TOKEN")
+                        username = System.getenv("USERNAME")
+                        password = System.getenv("TOKEN")
                     }
                 }
             }
