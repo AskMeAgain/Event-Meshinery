@@ -24,8 +24,7 @@ public class MeshineryDrawer {
 
   private final List<MeshineryTask<?, ?>> tasks;
 
-  @Builder.Default
-  private final FileSinkImages.OutputType outputType = FileSinkImages.OutputType.PNG;
+  private final DrawerProperties properties;
 
   private final NodeCustomizer nodeAssignment;
   private final EdgeCustomizer edgeAssignment;
@@ -36,8 +35,12 @@ public class MeshineryDrawer {
   }
 
   private byte[] draw(List<MeshineryTask<?, ?>> tasks) throws IOException {
+
     var graph = new DefaultGraph("id");
-    var fileSinkImages = new FileSinkImages(outputType, FileSinkImages.Resolutions.HD720);
+    var fileSinkImages = new FileSinkImages(
+        FileSinkImages.OutputType.valueOf(properties.getOutputFormat()),
+        FileSinkImages.Resolutions.valueOf(properties.getResolution())
+    );
 
     fileSinkImages.setLayoutPolicy(FileSinkImages.LayoutPolicy.COMPUTED_FULLY_AT_NEW_IMAGE);
 
@@ -90,7 +93,6 @@ public class MeshineryDrawer {
     var edges = new HashSet<EdgeData>();
 
     gatherGraphData(tasks, new HashMap<>(), edges);
-
 
     var tempFile = Files.createTempFile("mermaid", "txt");
 

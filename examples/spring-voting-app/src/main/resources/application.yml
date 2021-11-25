@@ -1,4 +1,6 @@
 meshinery:
+  draw:
+    resolution: 'HD1080'
   connectors:
     mysql:
       limit: 10

@@ -4,6 +4,7 @@ import ask.me.again.meshinery.core.task.MeshineryTask;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,14 +14,22 @@ import org.springframework.context.annotation.Configuration;
 public class MeshineryDrawerConfiguration {
 
   @Bean
+  @ConfigurationProperties("meshinery.draw")
+  public DrawerProperties drawerProperties() {
+    return new DrawerProperties();
+  }
+
+  @Bean
   MeshineryDrawer setupMeshineryDrawer(
       NodeCustomizer nodeCustomizer,
       EdgeCustomizer edgeCustomizer,
       List<MeshineryTask<?, ?>> tasks,
-      GraphCustomizer graphCustomizer
+      GraphCustomizer graphCustomizer,
+      DrawerProperties drawerProperties
   ) {
     return MeshineryDrawer.builder()
         .tasks(tasks)
+        .properties(drawerProperties)
         .edgeAssignment(edgeCustomizer)
         .nodeAssignment(nodeCustomizer)
         .graphAssignment(graphCustomizer)
