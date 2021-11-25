@@ -1,9 +1,22 @@
 # Event Meshinery
 
-# Table of contents
-1. [Motivation](#Motivation)
-2. [Advantages](#Advantages)
-3. [Module Structure](#Module-Structure)
+## Table of contents
+1. [Description](#Description)
+2. [Motivation](#Motivation)
+3. [Advantages](#Advantages)
+4. [Module Structure](#Module-Structure)
+5. [Architecture](#Architecture)
+   1. [Datacontext](#Context)
+   2. [MeshineryTasks](#MeshineryTasks)
+   3. [MeshineryProcessors](#MeshineryProcessors)
+   4. [Round Robin Scheduler](#Scheduler)
+   5. [Sources](#Sources)
+      1. [Memory](#Memory)
+      2. [Cron](#Cron)
+      3. [Kafka](#Kafka)
+      4. [Joins](#Joins)
+
+## Description
 
 This framework is a state store independent event framework and designed 
 to easily structure long running, multi step or long delay heavy
