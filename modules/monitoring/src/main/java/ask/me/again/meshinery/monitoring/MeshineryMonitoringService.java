@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j
 public class MeshineryMonitoringService {
 
@@ -26,6 +27,7 @@ public class MeshineryMonitoringService {
       .labelNames("task_name")
       .register(registry);
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static Gauge createGauge(String name, String helpText, String labelNames) {
     return Gauge.build()
         .name(name)
@@ -34,6 +36,7 @@ public class MeshineryMonitoringService {
         .register(registry);
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static void registerNewGauge(String name, String helpText, Supplier<Double> value) {
 
     var gauge = Gauge.build()
@@ -51,6 +54,7 @@ public class MeshineryMonitoringService {
     gauge.setChild(child);
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @SneakyThrows
   public static String getMetrics() {
     ByteArrayOutputStream response = new ByteArrayOutputStream();

@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Bean;
 
 import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_SUBGRAPH;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j
 @RequiredArgsConstructor
 public class ExampleVoteConfiguration {
@@ -56,6 +57,7 @@ public class ExampleVoteConfiguration {
         .build();
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @Bean
   public MeshineryTask<String, VotingContext> userVote() {
     return basicTask()
@@ -73,6 +75,7 @@ public class ExampleVoteConfiguration {
         .build();
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @Bean
   public MeshineryTask<String, VotingContext> afterVoteRejected() {
     return basicTask()
@@ -86,6 +89,7 @@ public class ExampleVoteConfiguration {
         .build();
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @Bean
   public MeshineryTask<String, VotingContext> afterVoteApproved() {
     return basicTask()

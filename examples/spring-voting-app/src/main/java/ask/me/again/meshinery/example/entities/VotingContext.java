@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Value
 @Builder(toBuilder = true)
 @Jacksonized

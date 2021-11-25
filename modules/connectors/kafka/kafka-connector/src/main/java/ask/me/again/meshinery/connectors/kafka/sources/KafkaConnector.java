@@ -11,6 +11,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
 public class KafkaConnector<C extends Context> implements OutputSource<String, C>, InputSource<String, C> {
 
@@ -20,6 +21,7 @@ public class KafkaConnector<C extends Context> implements OutputSource<String, C
   private final KafkaOutputSource<C> outputSource;
 
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public KafkaConnector(String name, Class<C> clazz, ObjectMapper objectMapper, KafkaProperties kafkaProperties) {
     var kafkaConsumerFactory = new KafkaConsumerFactory(kafkaProperties);
     var kafkaProducerFactory = new KafkaProducerFactory(kafkaProperties);

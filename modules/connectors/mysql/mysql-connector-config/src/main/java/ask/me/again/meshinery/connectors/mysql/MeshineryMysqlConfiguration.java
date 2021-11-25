@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 public class MeshineryMysqlConfiguration {
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @Bean
   public Jdbi jdbi(MysqlProperties mysqlProperties) {
     return Jdbi.create(

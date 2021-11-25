@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j
 @RequiredArgsConstructor
 public class ExampleVoteConfiguration {
@@ -41,6 +42,7 @@ public class ExampleVoteConfiguration {
         .build();
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @Bean
   public MeshineryTask<String, VoteContext> userVote() {
     return basicTask()
@@ -56,6 +58,7 @@ public class ExampleVoteConfiguration {
         .build();
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @Bean
   public MeshineryTask<String, VoteContext> afterVoteApproved() {
     return basicTask()
@@ -69,6 +72,7 @@ public class ExampleVoteConfiguration {
         .build();
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @Bean
   public MeshineryTask<String, VoteContext> afterVoteRejected() {
     return basicTask()

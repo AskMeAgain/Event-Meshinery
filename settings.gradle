@@ -11,7 +11,10 @@ include('modules:connectors:kafka:kafka-connector-config')
 include('modules:connectors:mysql:mysql-connector')
 include('modules:connectors:mysql:mysql-connector-config')
 
-include('examples:base-app')
-include('examples:spring-app')
-include('examples:spring-voting-app')
-include('examples:spring-kafka-app')
+//so we dont do stuff on CICD
+if(!System.getenv("TOKEN")) {
+    include('examples:base-app')
+    include('examples:spring-app')
+    include('examples:spring-voting-app')
+    include('examples:spring-kafka-app')
+}

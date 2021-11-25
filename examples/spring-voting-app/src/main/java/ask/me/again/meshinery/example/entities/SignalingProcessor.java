@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_INPUT_KEY;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j
 @RequiredArgsConstructor
 public class SignalingProcessor implements MeshineryProcessor<VotingContext, VotingContext> {

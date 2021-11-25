@@ -27,6 +27,7 @@ import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_OUTPUT_S
 import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_PROCESSOR;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.TASK_NAME;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Builder(toBuilder = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -113,6 +114,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
         .build();
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTaskFactory<K, C> putData(String key, String value) {
     return toBuilder()
         .taskData(taskData.put(key, value))
@@ -306,7 +308,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
   }
 
   /**
-   * Adds an interval between input source polling
+   * Adds an interval between input source polling.
    *
    * @param milliSeconds the time in milliseconds
    * @return returns itself for builder pattern
@@ -334,6 +336,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
         .build();
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<K, C> build() {
     return new MeshineryTask<>(
         backoffTime,

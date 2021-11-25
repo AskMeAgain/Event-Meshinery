@@ -9,9 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import static ask.me.again.meshinery.core.task.TaskDataProperties.TASK_NAME;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j
 public class TimingDecorator<I extends Context, O extends Context> implements ProcessorDecorator<I, O> {
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryProcessor<I, O> wrap(MeshineryProcessor<I, O> processor) {
     var taskName = getTaskData().getSingle(TASK_NAME);
     var summary = MeshineryMonitoringService.requestTimeSummary.labels(taskName);

@@ -35,26 +35,6 @@ public class MeshineryDrawer {
     return draw(getTasksBySubgraph(subgraph));
   }
 
-  private List<MeshineryTask<?, ?>> getTasksBySubgraph(String... subgraph) {
-    if (subgraph.length == 0) {
-      return tasks;
-    }
-
-    var filteredTasks = new ArrayList<MeshineryTask<?, ?>>();
-    for (var task : tasks) {
-      var taskSubgraphs = task.getTaskData().get(GRAPH_SUBGRAPH);
-      if (taskSubgraphs != null) {
-        for (var providedSubgraph : subgraph) {
-          if (taskSubgraphs.contains(providedSubgraph)) {
-            filteredTasks.add(task);
-          }
-        }
-      }
-    }
-
-    return filteredTasks;
-  }
-
   private byte[] draw(List<MeshineryTask<?, ?>> tasks) throws IOException {
     var graph = new DefaultGraph("id");
     var fileSinkImages = new FileSinkImages(outputType, FileSinkImages.Resolutions.HD720);
@@ -78,6 +58,26 @@ public class MeshineryDrawer {
     fileSinkImages.setRenderer(FileSinkImages.RendererType.SCALA);
     fileSinkImages.writeAll(graph, tempFile.toString());
     return Files.readAllBytes(tempFile);
+  }
+
+  private List<MeshineryTask<?, ?>> getTasksBySubgraph(String... subgraph) {
+    if (subgraph.length == 0) {
+      return tasks;
+    }
+
+    var filteredTasks = new ArrayList<MeshineryTask<?, ?>>();
+    for (var task : tasks) {
+      var taskSubgraphs = task.getTaskData().get(GRAPH_SUBGRAPH);
+      if (taskSubgraphs != null) {
+        for (var providedSubgraph : subgraph) {
+          if (taskSubgraphs.contains(providedSubgraph)) {
+            filteredTasks.add(task);
+          }
+        }
+      }
+    }
+
+    return filteredTasks;
   }
 
   public byte[] drawMermaidDiagram(String... subGraph) {

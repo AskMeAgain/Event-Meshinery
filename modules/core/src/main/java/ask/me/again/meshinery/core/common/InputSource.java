@@ -6,6 +6,7 @@ import java.util.List;
 public interface InputSource<K, I extends Context> {
 
   String getName();
+
   List<I> getInputs(K key);
 
 }

@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import lombok.SneakyThrows;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class SchedulerBuilder {
 
   List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();

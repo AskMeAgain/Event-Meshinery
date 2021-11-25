@@ -2,6 +2,7 @@ package ask.me.again.meshinery.core.task;
 
 import lombok.experimental.UtilityClass;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @UtilityClass
 public class TaskDataProperties {
 

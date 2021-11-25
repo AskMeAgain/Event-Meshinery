@@ -14,18 +14,21 @@ import org.slf4j.MDC;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.TASK_NAME;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.UID;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j
 public class TaskReplayFactory {
 
   private final Map<String, MeshineryTask<?, ? extends Context>> taskMap;
   private final ExecutorService executorService;
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public TaskReplayFactory(List<MeshineryTask<?, ? extends Context>> tasks, ExecutorService executorService) {
     this.executorService = executorService;
     this.taskMap = tasks.stream()
         .collect(Collectors.toMap(MeshineryTask::getTaskName, Function.identity()));
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public <C extends Context> void replay(String taskName, C context) throws ExecutionException, InterruptedException {
 
     MDC.put(TASK_NAME, taskName);

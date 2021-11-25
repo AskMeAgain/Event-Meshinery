@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jdbi.v3.core.Jdbi;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
 public class MysqlConnector<C extends Context> implements InputSource<String, C>, OutputSource<String, C> {
 
@@ -17,6 +18,7 @@ public class MysqlConnector<C extends Context> implements InputSource<String, C>
   private final MysqlInputSource<C> mysqlInputSource;
   private final MysqlOutputSource<C> mysqlOutputSource;
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MysqlConnector(String name, Class<C> clazz, Jdbi jdbi, MysqlProperties mysqlProperties) {
     this.name = name;
     this.mysqlInputSource = new MysqlInputSource<>(name, jdbi, clazz, mysqlProperties);

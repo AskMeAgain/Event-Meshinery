@@ -27,10 +27,10 @@ jobs:
     - name: Set output
       id: vars
       run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
- #   - name: Build with Gradle
- #     run: gradle build
- #   - name: Run tests
- #     run: gradle test
+    - name: Build with Gradle
+      run: gradle build
+    - name: Run tests
+      run: gradle test
     - name: Publish to GitHub Packages
       run: gradle publish
       env:

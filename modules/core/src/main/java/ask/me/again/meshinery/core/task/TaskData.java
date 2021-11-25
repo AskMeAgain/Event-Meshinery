@@ -31,6 +31,7 @@ public class TaskData {
     TaskData.taskData.remove();
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public TaskData put(String key, String value) {
     var newProperties = new Properties();
     newProperties.putAll(properties);
@@ -43,6 +44,7 @@ public class TaskData {
     return this.withProperties(newProperties);
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public Properties getProperties() {
     var newProperties = new Properties();
     newProperties.putAll(properties);

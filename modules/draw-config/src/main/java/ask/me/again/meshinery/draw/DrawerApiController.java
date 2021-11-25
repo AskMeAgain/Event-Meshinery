@@ -23,6 +23,7 @@ public class DrawerApiController {
 
   private final MeshineryDrawer meshineryDrawer;
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @CrossOrigin(origins = "http://localhost:3000")
   @GetMapping("/mermaid")
   public ResponseEntity<ByteArrayResource> mermaid() {
@@ -38,6 +39,7 @@ public class DrawerApiController {
         .body(new ByteArrayResource(result));
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @CrossOrigin(origins = "http://localhost:3000")
   @GetMapping("/mermaid/{subgraph}")
   public ResponseEntity<ByteArrayResource> mermaid(@PathVariable("subgraph") String subgraphs) {
@@ -53,6 +55,7 @@ public class DrawerApiController {
         .body(new ByteArrayResource(result));
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @GetMapping("/png/{subgraph}")
   public ResponseEntity<ByteArrayResource> png(@PathVariable("subgraph") String subgraphs) throws IOException {
 
@@ -68,6 +71,7 @@ public class DrawerApiController {
         .body(new ByteArrayResource(result));
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @GetMapping("/png")
   public ResponseEntity<ByteArrayResource> png() throws IOException {
     var result = meshineryDrawer.draw();
