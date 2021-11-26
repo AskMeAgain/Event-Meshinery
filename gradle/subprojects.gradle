@@ -1,0 +1,81 @@
+apply plugin: "checkstyle"
+apply plugin: "jacoco"
+apply from: "${rootDir}/gradle/publish.gradle"
+
+plugins.withType(JavaPlugin).whenPluginAdded {
+
+    jacocoTestReport {
+        enabled false
+    }
+
+    dependencies {
+        //Lombok
+        compileOnly 'org.projectlombok:lombok:1.18.22'
+        annotationProcessor 'org.projectlombok:lombok:1.18.22'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+        testCompileOnly 'org.projectlombok:lombok:1.18.22'
+
+        //Mockito
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+        testImplementation 'org.assertj:assertj-core:3.20.2'
+        testImplementation "org.mockito:mockito-core:3.12.4"
+        testImplementation 'org.mockito:mockito-inline:2.13.0'
+
+        //Spring Test
+        testImplementation('org.springframework.boot:spring-boot-starter-test:2.5.4')
+
+        //Testcontainers
+        testImplementation 'org.testcontainers:mysql:1.16.0'
+
+        //logging
+        implementation 'org.slf4j:slf4j-api:1.7.28'
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    checkstyle {
+        ignoreFailures = false
+        maxWarnings = 0
+        maxErrors = 0
+        toolVersion '9.1'
+        configFile = rootProject.file('checkstyle.xml')
+    }
+
+    checkstyleTest {
+        enabled = false
+    }
+}
+
+plugins.withType(JavaLibraryPlugin).whenPluginAdded {
+
+    javadoc {
+        options.addBooleanOption('html5', true)
+    }
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    jacocoTestReport {
+        enabled true
+        dependsOn test
+        reports {
+            html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+        }
+    }
+}

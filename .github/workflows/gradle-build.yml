@@ -3,9 +3,7 @@
 
 name: Gradle Package
 
-on:
-  release:
-    types: [created]
+on: push
 
 jobs:
   build:
@@ -24,12 +22,5 @@ jobs:
         distribution: 'adopt'
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
-    - name: Set output
-      id: vars
-      run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-#    - name: Publish to GitHub Packages
-#      run: gradle publish
-#      env:
-#        RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
-#        USERNAME: ${{ github.actor }}
-#        TOKEN: ${{ secrets.TOKEN }}
+    - name: Run tests
+      run: gradle test jacocoMergeSubprojects

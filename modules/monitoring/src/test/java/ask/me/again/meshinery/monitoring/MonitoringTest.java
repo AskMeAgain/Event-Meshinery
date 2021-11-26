@@ -19,7 +19,7 @@ class MonitoringTest {
   void testMonitoringDecorator() {
     //Arrange ----------------------------------------------------------------------------------------------------------
     TaskData.setTaskData(new TaskData().put(TASK_NAME, TASK_NAME_VALUE));
-    MDC.put("","");
+    MDC.put("", "");
     var decorator = new TimingDecorator<TestContext, TestContext>();
     var simpleProcessor = new TestContextProcessor(0);
     var decoratedProcessor = decorator.wrap(simpleProcessor);
@@ -28,9 +28,9 @@ class MonitoringTest {
     var context = new TestContext(1);
     var executor = new DataInjectingExecutorService(Executors.newSingleThreadExecutor());
     decoratedProcessor.processAsync(context, executor);
-    assertThat(MeshineryMonitoringService.inProcessingGauge.labels(TASK_NAME_VALUE).get()).isEqualTo(1);
 
     //Assert -----------------------------------------------------------------------------------------------------------
+    assertThat(MeshineryMonitoringService.inProcessingGauge.labels(TASK_NAME_VALUE).get()).isEqualTo(1);
   }
 
 }

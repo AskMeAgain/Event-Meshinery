@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.stream.file.FileSinkImages;
@@ -24,6 +25,7 @@ public class MeshineryDrawer {
 
   private final List<MeshineryTask<?, ?>> tasks;
 
+  @NonNull
   private final DrawerProperties properties;
 
   private final NodeCustomizer nodeAssignment;

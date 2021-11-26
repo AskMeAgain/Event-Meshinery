@@ -1,0 +1,24 @@
+plugins.withType(MavenPublishPlugin).whenPluginAdded {
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = 'ask.me.again'
+                artifactId = 'meshinery-' + project.name
+                version = System.getenv("RELEASE_VERSION")
+
+                from components.java
+            }
+        }
+
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = "https://maven.pkg.github.com/AskMeAgain/Event-Meshinery"
+                credentials {
+                    username = System.getenv("USERNAME")
+                    password = System.getenv("TOKEN")
+                }
+            }
+        }
+    }
+}

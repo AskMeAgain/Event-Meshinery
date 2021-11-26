@@ -22,8 +22,13 @@ class MeshineryDrawerTest {
     var applyNode = Mockito.mock(NodeCustomizer.class);
     var applyGraph = Mockito.mock(GraphCustomizer.class);
 
+    var properties = new DrawerProperties();
+    properties.setOutputFormat("PNG");
+    properties.setResolution("HD720");
+
     var drawer = MeshineryDrawer.builder()
         .tasks(getTasks())
+        .properties(properties)
         .graphAssignment(applyGraph)
         .nodeAssignment(applyNode)
         .edgeAssignment(applyEdge)
