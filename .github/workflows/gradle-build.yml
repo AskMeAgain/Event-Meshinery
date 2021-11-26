@@ -31,4 +31,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: code-coverage-report
-        path: build/reports/jacoco/jacocoAggregatedReport/html/
+        path: build/reports/jacoco/jacocoAggregatedReport/html/index.html
