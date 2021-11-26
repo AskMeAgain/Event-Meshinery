@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 
+import static ask.me.again.meshinery.core.common.MeshineryUtils.applyDecorators;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.TASK_NAME;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.UID;
 
@@ -207,7 +208,7 @@ public class RoundRobinScheduler {
   ) {
     try {
       TaskData.setTaskData(taskData);
-      var decoratedProcessor = applyDecorators(nextProcessor);
+      var decoratedProcessor = applyDecorators(nextProcessor, processorDecorator);
       return decoratedProcessor.processAsync(context, executorService);
     } catch (Exception e) {
       log.error(
@@ -218,15 +219,5 @@ public class RoundRobinScheduler {
       gracefulShutdown();
       return CompletableFuture.completedFuture(null);
     }
-  }
-
-  private MeshineryProcessor<Context, Context> applyDecorators(MeshineryProcessor<Context, Context> nextProcessor) {
-    var innerProcessor = nextProcessor;
-
-    for (var decorator : processorDecorator) {
-      innerProcessor = decorator.wrap(innerProcessor);
-    }
-
-    return innerProcessor;
   }
 }

@@ -4,7 +4,9 @@ import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
+import ask.me.again.meshinery.core.common.MeshineryUtils;
 import ask.me.again.meshinery.core.common.OutputSource;
+import ask.me.again.meshinery.core.common.ProcessorDecorator;
 import ask.me.again.meshinery.core.processors.DynamicOutputProcessor;
 import ask.me.again.meshinery.core.processors.StopProcessor;
 import ask.me.again.meshinery.core.source.JoinedInputSource;
@@ -19,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_INPUT_KEY;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_INPUT_SOURCE;
@@ -43,6 +46,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
 
   private TaskData taskData = new TaskData().put(TASK_NAME, taskName);
   private List<MeshineryProcessor<Context, Context>> processorList = new ArrayList<>();
+  @Singular private List<ProcessorDecorator<C, C>> decorators = new ArrayList<>();
 
   private <I extends Context> MeshineryTaskFactory(
       MeshineryProcessor<I, C> newProcessor,
@@ -133,12 +137,12 @@ public class MeshineryTaskFactory<K, C extends Context> {
       InputSource<K, C> rightInputSource, K rightKey, BiFunction<C, C, C> combine
   ) {
     var name = "%s->%s__%s->%s".formatted(inputSource.getName(), inputKey, rightInputSource.getName(), rightKey);
-    var newTaskData = taskData.put(GRAPH_INPUT_SOURCE, rightInputSource.getName())
-        .put(GRAPH_INPUT_KEY, rightKey.toString());
 
     return toBuilder()
         .inputSource(new JoinedInputSource<>(name, inputSource, rightInputSource, rightKey, combine))
-        .taskData(newTaskData)
+        .taskData(taskData
+            .put(GRAPH_INPUT_SOURCE, rightInputSource.getName())
+            .put(GRAPH_INPUT_KEY, rightKey.toString()))
         .build();
   }
 
@@ -164,12 +168,17 @@ public class MeshineryTaskFactory<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public <N extends Context> MeshineryTaskFactory<K, N> contextSwitch(
-      OutputSource<K, N> newOutputSource, Function<C, N> map
+      OutputSource<K, N> newOutputSource,
+      Function<C, N> map,
+      List<ProcessorDecorator<N, N>> decorators
   ) {
     MeshineryProcessor<C, N> newProcessor = (context, ex) -> CompletableFuture.completedFuture(map.apply(context));
+
     return addNewProcessor(newProcessor)
         .toBuilder()
         .defaultOutputSource(newOutputSource)
+        .clearDecorators()
+        .decorators(decorators)
         .taskData(taskData.put(GRAPH_OUTPUT_SOURCE, newOutputSource.getName()))
         .build();
   }
@@ -192,7 +201,15 @@ public class MeshineryTaskFactory<K, C extends Context> {
    * @return returns itself for builder pattern
    */
   public MeshineryTaskFactory<K, C> process(MeshineryProcessor<C, C> processor) {
-    return addNewProcessor(processor);
+    var decorated = MeshineryUtils.applyDecorators(processor, decorators);
+
+    return addNewProcessor(decorated);
+  }
+
+  public MeshineryTaskFactory<K, C> registerDecorator(ProcessorDecorator<C, C> decorator) {
+    return toBuilder()
+        .decorator(decorator)
+        .build();
   }
 
   /**

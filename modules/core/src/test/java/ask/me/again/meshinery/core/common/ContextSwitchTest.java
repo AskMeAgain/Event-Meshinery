@@ -8,6 +8,7 @@ import ask.me.again.meshinery.core.utils.context.TestContext2;
 import ask.me.again.meshinery.core.utils.processor.TestContext2Processor;
 import ask.me.again.meshinery.core.utils.processor.TestContextProcessor;
 import ask.me.again.meshinery.core.utils.sources.TestInputSource;
+import java.util.Collections;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -48,10 +49,10 @@ class ContextSwitchTest extends AbstractTestBase {
         .read(INPUT_KEY, executor)
         .process(processorA)
         .write(INPUT_KEY)
-        .contextSwitch(contextOutput, this::map)
+        .contextSwitch(contextOutput, this::map, Collections.emptyList())
         .process(processorB)
         .write(INPUT_KEY)
-        .contextSwitch(context2Output, this::map)
+        .contextSwitch(context2Output, this::map, Collections.emptyList())
         .process(processorA)
         .write(INPUT_KEY)
         .build();

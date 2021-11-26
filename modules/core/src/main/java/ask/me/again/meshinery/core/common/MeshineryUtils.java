@@ -10,7 +10,7 @@ import org.slf4j.MDC;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @UtilityClass
-public class ComposableFutureUtils {
+public class MeshineryUtils {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static <I extends Context, O extends Context> CompletableFuture<O> combineProcessors(
@@ -31,5 +31,18 @@ public class ComposableFutureUtils {
     }
 
     return (CompletableFuture<O>) temp;
+  }
+
+  public static <I extends Context, O extends Context> MeshineryProcessor<I, O> applyDecorators(
+      MeshineryProcessor<I, O> nextProcessor,
+      List<ProcessorDecorator<I, O>> processorDecorator
+  ) {
+    var innerProcessor = nextProcessor;
+
+    for (var decorator : processorDecorator) {
+      innerProcessor = decorator.wrap(innerProcessor);
+    }
+
+    return innerProcessor;
   }
 }

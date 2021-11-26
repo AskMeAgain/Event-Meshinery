@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.task;
 
-import ask.me.again.meshinery.core.common.ComposableFutureUtils;
 import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.MeshineryUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -37,7 +37,7 @@ public class TaskReplayFactory {
 
     var task = taskMap.get(taskName);
 
-    ComposableFutureUtils.combineProcessors(
+    MeshineryUtils.combineProcessors(
         task.getProcessorList(),
         context,
         executorService,

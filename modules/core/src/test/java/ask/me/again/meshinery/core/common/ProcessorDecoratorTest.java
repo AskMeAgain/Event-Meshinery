@@ -68,4 +68,50 @@ class ProcessorDecoratorTest {
 
   }
 
+  @SneakyThrows
+  @Test
+  void testTaskDecorator() {
+    //Arrange ----------------------------------------------------------------------------------------------------------
+    var inputSource = TestInputSource.<TestContext>builder()
+        .todo(new TestContext(0))
+        .build();
+    var executor = Executors.newSingleThreadExecutor();
+    OutputSource<String, TestContext> mockOutputSource = Mockito.mock(OutputSource.class);
+
+    var decorator = new ProcessorDecorator<TestContext, TestContext>() {
+      @Override
+      public MeshineryProcessor<TestContext, TestContext> wrap(
+          MeshineryProcessor<TestContext, TestContext> processor
+      ) {
+        return (context, executor) -> processor.processAsync(context.toBuilder()
+            .index(context.getIndex() + 1)
+            .build(), executor);
+      }
+    };
+
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
+        .inputSource(inputSource)
+        .defaultOutputSource(mockOutputSource)
+        .read("", executor)
+        .registerDecorator(decorator)
+        .process(new TestContextProcessor(1))
+        .write("")
+        .build();
+
+    //Act --------------------------------------------------------------------------------------------------------------
+    RoundRobinScheduler.builder()
+        .isBatchJob(true)
+        .task(task)
+        .buildAndStart();
+    var batchJobFinished = executor.awaitTermination(2, TimeUnit.SECONDS);
+
+    //Assert -----------------------------------------------------------------------------------------------------------
+    assertThat(batchJobFinished).isTrue();
+    Mockito.verify(mockOutputSource).writeOutput(any(), eq(TestContext.builder()
+        .id("2")
+        .index(2)
+        .build()));
+
+  }
+
 }

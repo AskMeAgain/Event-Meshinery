@@ -7,6 +7,7 @@ import ask.me.again.meshinery.example.entities.ExampleOutputSource;
 import ask.me.again.meshinery.example.entities.ExampleOutputSource2;
 import ask.me.again.meshinery.example.entities.ProcessorA;
 import ask.me.again.meshinery.example.entities.ProcessorB;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -34,10 +35,10 @@ public class MainApplication {
         .read("topic-a", fixedThread)
         .process(processorA)
         .write("topic-b")
-        .contextSwitch(outputSource2, MainApplication::create)
+        .contextSwitch(outputSource2, MainApplication::create, Collections.emptyList())
         .process(processorB)
         .write("topic-c")
-        .contextSwitch(outputSource, MainApplication::create2)
+        .contextSwitch(outputSource, MainApplication::create2, Collections.emptyList())
         .process(processorA)
         .write("topic-d-FINISHED")
         .build();
@@ -49,10 +50,10 @@ public class MainApplication {
         .read("topic-x", fixedThread)
         .process(processorA)
         .write("topic-y")
-        .contextSwitch(outputSource2, MainApplication::create)
+        .contextSwitch(outputSource2, MainApplication::create, Collections.emptyList())
         .process(processorB)
         .write("topic-z")
-        .contextSwitch(outputSource, MainApplication::create2)
+        .contextSwitch(outputSource, MainApplication::create2, Collections.emptyList())
         .process(processorA)
         .write("topic-w-FINISHED")
         .build();
