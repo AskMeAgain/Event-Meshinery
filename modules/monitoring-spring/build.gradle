@@ -6,6 +6,6 @@ plugins {
 
 dependencies {
     api project(':modules:monitoring')
-    api project(':modules:spring-config')
+    api project(':modules:core-spring')
 }
 

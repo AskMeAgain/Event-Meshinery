@@ -25,11 +25,11 @@
             <option value="$PROJECT_DIR$/modules/connectors/mysql/mysql-connector" />
             <option value="$PROJECT_DIR$/modules/connectors/mysql/mysql-connector-config" />
             <option value="$PROJECT_DIR$/modules/core" />
+            <option value="$PROJECT_DIR$/modules/core-spring" />
             <option value="$PROJECT_DIR$/modules/draw" />
-            <option value="$PROJECT_DIR$/modules/draw-config" />
+            <option value="$PROJECT_DIR$/modules/draw-spring" />
             <option value="$PROJECT_DIR$/modules/monitoring" />
-            <option value="$PROJECT_DIR$/modules/monitoring-config" />
-            <option value="$PROJECT_DIR$/modules/spring-config" />
+            <option value="$PROJECT_DIR$/modules/monitoring-spring" />
           </set>
         </option>
       </GradleProjectSettings>

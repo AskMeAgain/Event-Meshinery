@@ -5,19 +5,19 @@
 1. [Description](#Description)
 2. [Motivation](#Motivation)
 3. [Advantages](#Advantages)
-4. [Module Structure](#Module-Structure)
+4. [ModuleStructure](#Module-Structure)
 5. [Architecture](#Architecture)
-    1. [Datacontext](#Context)
+    1. [DataContext](#Context)
     2. [MeshineryTasks](#MeshineryTasks)
     3. [MeshineryProcessors](#Meshinery Processors)
-    4. [Round Robin Scheduler](#Scheduler)
+    4. [RoundRobinScheduler](#Scheduler)
     5. [Sources](#Sources)
         1. [Memory](#Memory)
         2. [Cron](#Cron)
         3. [Mysql](#Mysql)
         4. [Kafka](#Kafka)
-        5. [Joins](#Joins)
-6. [On Failure](#On Failure)
+        5. [Joins](#Joins)  
+6. [On Failure](#Failure)
    1. [Exception Handling](#Exception Handling)
 7. [Logging](#Logging)
 
@@ -243,7 +243,7 @@ in the graph
       .read("after-left", executorService)
       .write("after-join");
 
-## On Failure
+## On Failure <a name="Failure"></a>
 
 This framework works with the at-most-once guarantee, which means that a state transition is only looked at once, since
 it assumes that in case of a failure a use case specific error correction procedure needs to be called. If a processing
