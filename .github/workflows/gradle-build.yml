@@ -23,7 +23,7 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
     - name: Run tests
-      run: gradle test jacocoMergeSubprojects
+      run: gradle test jacocoAggregatedReport
     - name: Archive code coverage results
       uses: actions/upload-artifact@v2
       with:
