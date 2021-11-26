@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     api project(':modules:core')
+    testImplementation project(':modules:core').sourceSets.test.output
     api 'io.prometheus:simpleclient:0.12.0'
     api 'io.prometheus:simpleclient_common:0.12.0'
 }

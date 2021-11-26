@@ -1,4 +1,4 @@
-package ask.me.again.springconfig;
+package ask.me.again.meshinery.spring;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

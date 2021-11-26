@@ -1,4 +1,4 @@
-package ask.me.again.springconfig;
+package ask.me.again.meshinery.spring;
 
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
 import java.util.function.Consumer;

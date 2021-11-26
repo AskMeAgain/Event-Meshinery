@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.monitoring;
 
 import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.springconfig.CustomizeStartupHook;
+import ask.me.again.meshinery.spring.CustomizeStartupHook;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

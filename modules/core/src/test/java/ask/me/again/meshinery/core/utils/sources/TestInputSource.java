@@ -30,7 +30,7 @@ public class TestInputSource implements InputSource<String, TestContext> {
     iterations--;
 
     return todos.stream()
-                .map(testContext -> testContext.withId((++internalCounter) + ""))
-                .toList();
+        .map(testContext -> testContext.withId((++internalCounter) + ""))
+        .toList();
   }
 }

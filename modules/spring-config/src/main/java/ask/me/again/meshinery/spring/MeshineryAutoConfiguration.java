@@ -1,4 +1,4 @@
-package ask.me.again.springconfig;
+package ask.me.again.meshinery.spring;
 
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.ProcessorDecorator;
@@ -7,7 +7,6 @@ import ask.me.again.meshinery.core.task.MeshineryTask;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -16,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(MeshineryAutoConfiguration.class)
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryAutoConfiguration {
 

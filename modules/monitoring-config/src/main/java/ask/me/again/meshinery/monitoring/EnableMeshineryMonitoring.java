@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.monitoring;
 
-import ask.me.again.springconfig.MeshineryAutoConfiguration;
+import ask.me.again.meshinery.spring.MeshineryAutoConfiguration;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
