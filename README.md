@@ -8,8 +8,8 @@
 4. [ModuleStructure](#Module-Structure)
 5. [Architecture](#Architecture)
     1. [DataContext](#Context)
-    2. [MeshineryTasks](#MeshineryTasks)
-    3. [MeshineryProcessors](#Meshinery Processors)
+    2. [MeshineryTasks](#Task)
+    3. [MeshineryProcessors](#Processor)
     4. [RoundRobinScheduler](#Scheduler)
     5. [Sources](#Sources)
         1. [Memory](#Memory)
@@ -103,7 +103,7 @@ takes a mapping method to the new Context type and a new defaultOutputSource.
         .process(testContext2Processor) //this processor works on TestContext2
         .write(INPUT_KEY); //writing event
 
-### MeshineryTasks
+### MeshineryTasks <a name="Task"></a>
 
 MeshineryTask describes a single **business** unit of work, which consists of an input source , a list of processors to
 solve a part of the business logic and one or multiple output calls. An input source takes an eventkey/id, which gets
@@ -123,7 +123,7 @@ A task can have any amount of processors and sub processing (via processors). Th
 how the pipeline should react. **The goal is that each tasks describes exactly WHAT processor and WHEN a processor is
 executed.** This allows for super transparent code which allows you to argue about the execution on a higher level.
 
-### Meshinery Processors
+### Meshinery Processors <a name="Processor"></a>
 
 [Detailed list of all utility processors](modules/core/processors.md)
 

@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.processors;
 
-import ask.me.again.meshinery.core.common.AccesingInputSource;
+import ask.me.again.meshinery.core.common.AccessingInputSource;
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.task.TaskData;
@@ -16,7 +16,7 @@ import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_INPUT_KE
 @RequiredArgsConstructor
 public class SignalingProcessor<K, C extends Context> implements MeshineryProcessor<C, C> {
 
-  private final AccesingInputSource<K, C> inputSource;
+  private final AccessingInputSource<K, C> inputSource;
   private final K key;
 
   @Override

@@ -64,7 +64,7 @@ public class ExampleVoteConfiguration {
         .inputSource(memoryConnector)
         .taskName("Uservote")
         .read(REST_SIGNAL_IN, executorService)
-        .process(new SignalingProcessor(mysqlConnector, HEART_BEAT_OUT))
+        .readNewInput(HEART_BEAT_OUT, mysqlConnector)
         .process((context, executor) -> {
           log.info("Voted for vote on: {} and approved: {}", context.getId(), context.isApproved());
           return CompletableFuture.completedFuture(context);

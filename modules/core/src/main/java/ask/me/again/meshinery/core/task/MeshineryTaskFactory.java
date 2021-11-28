@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.task;
 
-import ask.me.again.meshinery.core.common.AccesingInputSource;
+import ask.me.again.meshinery.core.common.AccessingInputSource;
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.InputSource;
@@ -127,7 +127,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
         .build();
   }
 
-  public MeshineryTaskFactory<K, C> readNewInput(K key, AccesingInputSource<K, C> newInputSource) {
+  public MeshineryTaskFactory<K, C> readNewInput(K key, AccessingInputSource<K, C> newInputSource) {
     return addNewProcessor(new SignalingProcessor(newInputSource, key));
   }
 
