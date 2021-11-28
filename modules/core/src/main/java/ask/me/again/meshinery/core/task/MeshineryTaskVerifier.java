@@ -20,6 +20,7 @@ public class MeshineryTaskVerifier {
     log.info("Starting Scheduler with following Tasks: {}", getAndVerifyTaskList(tasks));
     log.info("Starting Scheduler with following Input Source: {}", getInputSources(tasks));
     log.info("Starting Scheduler with following Output Source: {}", getOutputSources(tasks));
+    verifyReadKey(tasks);
   }
 
   private static Set<String> getOutputSources(List<MeshineryTask<?, ?>> tasks) {
@@ -36,6 +37,19 @@ public class MeshineryTaskVerifier {
         .collect(Collectors.toSet());
   }
 
+  private static void verifyReadKey(List<MeshineryTask<?, ?>> tasks) {
+    var result = tasks.stream()
+        .map(MeshineryTask::getInputKey)
+        .map(Object::toString)
+        .toList();
+
+    var duplicates = findDuplicates(result);
+
+    if (!duplicates.isEmpty()) {
+      throw new RuntimeException("Found duplicate Read keys: [" + String.join(", ", duplicates) + "]");
+    }
+  }
+
   private static List<String> getAndVerifyTaskList(List<MeshineryTask<?, ?>> tasks) {
     var result = tasks.stream()
         .map(MeshineryTask::getTaskName)
@@ -43,7 +57,7 @@ public class MeshineryTaskVerifier {
 
     var duplicates = findDuplicates(result);
 
-    if (duplicates.size() > 0) {
+    if (!duplicates.isEmpty()) {
       throw new RuntimeException("Found duplicate job names: [" + String.join(", ", duplicates) + "]");
     }
 
