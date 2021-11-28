@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.task;
 
 import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.common.DataInjectingExecutorService;
+import ask.me.again.meshinery.core.other.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.OutputSource;

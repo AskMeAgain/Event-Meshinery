@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.task;
 
 import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.common.MeshineryUtils;
+import ask.me.again.meshinery.core.other.MeshineryUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;

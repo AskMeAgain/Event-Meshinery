@@ -2,7 +2,7 @@ package ask.me.again.meshinery.core.processors;
 
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
-import ask.me.again.meshinery.core.common.MeshineryUtils;
+import ask.me.again.meshinery.core.other.MeshineryUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

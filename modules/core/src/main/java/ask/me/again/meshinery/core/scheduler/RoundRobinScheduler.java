@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.scheduler;
 
 import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.common.DataInjectingExecutorService;
+import ask.me.again.meshinery.core.other.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.ProcessorDecorator;
 import ask.me.again.meshinery.core.task.MeshineryTask;
@@ -22,7 +22,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 
-import static ask.me.again.meshinery.core.common.MeshineryUtils.applyDecorators;
+import static ask.me.again.meshinery.core.other.MeshineryUtils.applyDecorators;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.TASK_NAME;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.UID;
 

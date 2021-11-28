@@ -1,4 +1,4 @@
-package ask.me.again.meshinery.core.common;
+package ask.me.again.meshinery.core.other;
 
 import ask.me.again.meshinery.core.task.TaskData;
 import java.util.Collection;

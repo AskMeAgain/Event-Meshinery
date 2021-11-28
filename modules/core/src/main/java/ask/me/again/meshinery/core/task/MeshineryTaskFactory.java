@@ -2,10 +2,10 @@ package ask.me.again.meshinery.core.task;
 
 import ask.me.again.meshinery.core.common.AccessingInputSource;
 import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.common.DataInjectingExecutorService;
+import ask.me.again.meshinery.core.other.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
-import ask.me.again.meshinery.core.common.MeshineryUtils;
+import ask.me.again.meshinery.core.other.MeshineryUtils;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.core.common.ProcessorDecorator;
 import ask.me.again.meshinery.core.processors.DynamicOutputProcessor;
