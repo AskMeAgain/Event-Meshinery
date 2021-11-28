@@ -7,7 +7,7 @@ import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.example.entities.ErrorProcessor;
 import ask.me.again.meshinery.example.entities.ProcessorA;
-import ask.me.again.meshinery.example.entities.SignalingProcessor;
+import ask.me.again.meshinery.core.processors.SignalingProcessor;
 import ask.me.again.meshinery.example.entities.VotingContext;
 import com.cronutils.model.CronType;
 import java.util.concurrent.CompletableFuture;

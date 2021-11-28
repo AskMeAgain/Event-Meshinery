@@ -1,5 +1,6 @@
 package ask.me.again.meshinery.core.task;
 
+import ask.me.again.meshinery.core.common.AccesingInputSource;
 import ask.me.again.meshinery.core.common.Context;
 import ask.me.again.meshinery.core.common.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.InputSource;
@@ -8,6 +9,7 @@ import ask.me.again.meshinery.core.common.MeshineryUtils;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.core.common.ProcessorDecorator;
 import ask.me.again.meshinery.core.processors.DynamicOutputProcessor;
+import ask.me.again.meshinery.core.processors.SignalingProcessor;
 import ask.me.again.meshinery.core.processors.StopProcessor;
 import ask.me.again.meshinery.core.source.JoinedInputSource;
 import java.util.ArrayList;
@@ -123,6 +125,10 @@ public class MeshineryTaskFactory<K, C extends Context> {
     return toBuilder()
         .taskData(taskData.put(key, value))
         .build();
+  }
+
+  public MeshineryTaskFactory<K, C> readNewInput(K key, AccesingInputSource<K, C> newInputSource) {
+    return addNewProcessor(new SignalingProcessor(newInputSource, key));
   }
 
   /**

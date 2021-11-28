@@ -18,7 +18,7 @@
         4. [Kafka](#Kafka)
         5. [Joins](#Joins)
 6. [On Failure](#Failure)
-    1. [Exception Handling](#Exception Handling)
+    1. [Exception Handling](#ExceptionHandling)
 7. [Logging](#Logging)
 8. [RoadMap](#RoadMap)
 
@@ -252,7 +252,7 @@ processing again.
 Each InputSource gives you an easy way of replaying a single event, which feeds the event back into the scheduler to
 work on.
 
-### Exception Handling
+### Exception Handling <a name="ExceptionHandling"></a>
 
 You can handle exceptions which happen **inside** a completable future (in a processor), by setting a new error handler.
 The default behaviour is that null is returned, which will then just stop the execution of this single event, by the
