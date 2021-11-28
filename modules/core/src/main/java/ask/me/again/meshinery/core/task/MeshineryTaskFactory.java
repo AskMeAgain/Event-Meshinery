@@ -11,7 +11,7 @@ import ask.me.again.meshinery.core.common.ProcessorDecorator;
 import ask.me.again.meshinery.core.processors.DynamicOutputProcessor;
 import ask.me.again.meshinery.core.processors.SignalingProcessor;
 import ask.me.again.meshinery.core.processors.StopProcessor;
-import ask.me.again.meshinery.core.source.JoinedInputSource;
+import ask.me.again.meshinery.core.source.JoinedInnerInputSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -145,7 +145,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
     var name = "%s->%s__%s->%s".formatted(inputSource.getName(), inputKey, rightInputSource.getName(), rightKey);
 
     return toBuilder()
-        .inputSource(new JoinedInputSource<>(name, inputSource, rightInputSource, rightKey, combine))
+        .inputSource(new JoinedInnerInputSource<>(name, inputSource, rightInputSource, rightKey, combine))
         .taskData(taskData
             .put(GRAPH_INPUT_SOURCE, rightInputSource.getName())
             .put(GRAPH_INPUT_KEY, rightKey.toString()))

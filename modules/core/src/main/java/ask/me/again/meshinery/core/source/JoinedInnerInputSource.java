@@ -7,15 +7,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.PassiveExpiringMap;
 
 @Slf4j
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class JoinedInputSource<K, C extends Context> implements InputSource<K, C> {
+public class JoinedInnerInputSource<K, C extends Context> implements InputSource<K, C> {
 
   @Getter
   private final String name;
@@ -63,10 +65,18 @@ public class JoinedInputSource<K, C extends Context> implements InputSource<K, C
 
   private void setup(K leftKey, K rightKey) {
     if (!leftJoinResultsMap.containsKey(leftKey)) {
-      leftJoinResultsMap.put(leftKey, new HashMap<>());
+      leftJoinResultsMap.put(leftKey, createCache());
     }
     if (!rightJoinResultsMap.containsKey(rightKey)) {
-      rightJoinResultsMap.put(rightKey, new HashMap<>());
+      rightJoinResultsMap.put(rightKey, createCache());
     }
+  }
+
+  private Map<String, C> createCache() {
+    var expirationPolicy = new PassiveExpiringMap.ConstantTimeToLiveExpirationPolicy<String, C>(
+        5, TimeUnit.MINUTES
+    );
+
+    return new PassiveExpiringMap<>(expirationPolicy);
   }
 }

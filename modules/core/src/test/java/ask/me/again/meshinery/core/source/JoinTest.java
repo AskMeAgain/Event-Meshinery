@@ -14,7 +14,7 @@ class JoinTest {
     //Arrange ----------------------------------------------------------------------------------------------------------
     var leftSource = new MemoryConnector<String, TestContext>("default");
     var rightSource = new MemoryConnector<String, TestContext>("default");
-    var joinedSource = new JoinedInputSource<>("joined", leftSource, rightSource, KEY, this::combine);
+    var joinedSource = new JoinedInnerInputSource<>("joined", leftSource, rightSource, KEY, this::combine);
 
     //Act --------------------------------------------------------------------------------------------------------------
     leftSource.writeOutput(KEY, new TestContext(1));

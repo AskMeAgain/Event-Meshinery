@@ -40,6 +40,9 @@ public class MemoryConnector<K, C extends Context> implements AccessingInputSour
     if (map.containsKey(key)) {
       for (int i = 0; i < batchSize; i++) {
         var stringCConcurrentNavigableMap = map.get(key);
+        if (stringCConcurrentNavigableMap.isEmpty()) {
+          break;
+        }
         var stringCEntry = stringCConcurrentNavigableMap.firstEntry();
         stringCConcurrentNavigableMap.remove(stringCEntry.getKey());
         var item = stringCEntry.getValue();
