@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.source;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.InputSource;
 import java.util.Collections;
 import java.util.List;
@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class SignalingInputSource<K, C extends Context> implements InputSource<K, C> {
+public class SignalingInputSource<K, C extends DataContext> implements InputSource<K, C> {
 
   @Getter
   private final String name;

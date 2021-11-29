@@ -1,8 +1,7 @@
 package ask.me.again.meshinery.connectors.mysql;
 
 import ask.me.again.meshinery.core.common.AccessingInputSource;
-import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.common.InputSource;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.OutputSource;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +11,7 @@ import org.jdbi.v3.core.Jdbi;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
-public class MysqlConnector<C extends Context> implements AccessingInputSource<String, C>, OutputSource<String, C> {
+public class MysqlConnector<C extends DataContext> implements AccessingInputSource<String, C>, OutputSource<String, C> {
 
   @Getter
   private final String name;

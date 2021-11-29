@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.connectors.kafka.sources;
 
 import ask.me.again.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.InputSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
-public class KafkaInputSource<C extends Context> implements InputSource<String, C> {
+public class KafkaInputSource<C extends DataContext> implements InputSource<String, C> {
 
   @Getter
   private final String name;

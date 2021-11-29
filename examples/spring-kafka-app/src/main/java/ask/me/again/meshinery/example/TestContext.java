@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.example;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -10,7 +10,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @Builder(toBuilder = true)
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class TestContext implements Context {
+public class TestContext implements DataContext {
 
   int testValue1;
 

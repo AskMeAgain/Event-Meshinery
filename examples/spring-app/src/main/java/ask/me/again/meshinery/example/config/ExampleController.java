@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.example.config;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
 import ask.me.again.meshinery.core.source.MemoryConnector;
 import ask.me.again.meshinery.example.entities.VoteContext;
@@ -21,7 +21,7 @@ public class ExampleController {
 
   private final ApplicationContext context;
   private final RoundRobinScheduler roundRobinScheduler;
-  private final MemoryConnector<String, Context> memoryConnector;
+  private final MemoryConnector<String, DataContext> memoryConnector;
   private final MemoryConnector<String, VoteContext> voteOutputSource;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")

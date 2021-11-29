@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.task;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.other.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class MeshineryTask<K, C extends Context> {
+public class MeshineryTask<K, C extends DataContext> {
 
   private final long backoffTime;
   @Getter private final K inputKey;
@@ -29,8 +29,8 @@ public class MeshineryTask<K, C extends Context> {
   @Getter private final InputSource<K, C> inputSource;
   @Getter private final OutputSource<K, C> defaultOutputSource;
   @Getter private final DataInjectingExecutorService executorService;
-  @Getter private final Function<Throwable, Context> handleException;
-  @Getter private final List<MeshineryProcessor<Context, Context>> processorList;
+  @Getter private final Function<Throwable, DataContext> handleException;
+  @Getter private final List<MeshineryProcessor<DataContext, DataContext>> processorList;
   Instant nextExecution = Instant.now();
 
   /**

@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.monitoring;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.spring.CustomizeStartupHook;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class MeshineryMonitoringAutoConfiguration {
 
   @Bean
-  TimingDecorator<? extends Context, ?> timingDecorator() {
+  TimingDecorator<? extends DataContext, ?> timingDecorator() {
     return new TimingDecorator<>();
   }
 

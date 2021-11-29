@@ -30,8 +30,8 @@ class ProcessorDecoratorTest {
 
     var decorator = new ProcessorDecorator<>() {
       @Override
-      public MeshineryProcessor<Context, Context> wrap(
-          MeshineryProcessor<Context, Context> processor
+      public MeshineryProcessor<DataContext, DataContext> wrap(
+          MeshineryProcessor<DataContext, DataContext> processor
       ) {
 
         return (c, executor) -> {

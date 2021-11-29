@@ -3,7 +3,7 @@ package ask.me.again.meshinery.core.common;
 import ask.me.again.meshinery.core.task.TaskData;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public interface OutputSource<K, C extends Context> {
+public interface OutputSource<K, C extends DataContext> {
 
   String getName();
 

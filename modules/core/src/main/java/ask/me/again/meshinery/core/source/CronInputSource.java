@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.source;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.InputSource;
 import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinitionBuilder;
@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class CronInputSource<C extends Context> implements InputSource<String, C> {
+public class CronInputSource<C extends DataContext> implements InputSource<String, C> {
 
   @Getter
   private final String name;

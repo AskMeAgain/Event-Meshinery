@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.draw;
 
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
@@ -45,32 +45,32 @@ class MeshineryDrawerTest {
   }
 
   private List<MeshineryTask<?, ?>> getTasks() {
-    OutputSource<String, Context> outputSource = new OutputSource<>() {
+    OutputSource<String, DataContext> outputSource = new OutputSource<>() {
       @Override
       public String getName() {
         return "TestSource";
       }
 
       @Override
-      public void writeOutput(String key, Context output) {
+      public void writeOutput(String key, DataContext output) {
 
       }
     };
 
     return List.of(
-        MeshineryTaskFactory.<String, Context>builder()
+        MeshineryTaskFactory.<String, DataContext>builder()
             .defaultOutputSource(outputSource)
             .read("A", null)
             .taskName("A")
             .write("B")
             .build(),
-        MeshineryTaskFactory.<String, Context>builder()
+        MeshineryTaskFactory.<String, DataContext>builder()
             .defaultOutputSource(outputSource)
             .read("B", null)
             .taskName("B")
             .write("C")
             .build(),
-        MeshineryTaskFactory.<String, Context>builder()
+        MeshineryTaskFactory.<String, DataContext>builder()
             .defaultOutputSource(outputSource)
             .read("C", null)
             .taskName("C")

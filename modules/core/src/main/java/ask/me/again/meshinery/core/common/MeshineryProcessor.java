@@ -6,7 +6,7 @@ import java.util.concurrent.Executor;
 
 @FunctionalInterface
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public interface MeshineryProcessor<I extends Context, O extends Context> {
+public interface MeshineryProcessor<I extends DataContext, O extends DataContext> {
 
   CompletableFuture<O> processAsync(I context, Executor executor);
 

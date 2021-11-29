@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.processors;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.other.MeshineryUtils;
 import java.util.ArrayList;
@@ -17,15 +17,15 @@ import org.slf4j.MDC;
  * @param <I> InputType
  * @param <O> OutputType
  */
-public class FluidProcessor<I extends Context, O extends Context> implements MeshineryProcessor<I, O> {
+public class FluidProcessor<I extends DataContext, O extends DataContext> implements MeshineryProcessor<I, O> {
 
-  List<MeshineryProcessor<Context, Context>> processorList;
+  List<MeshineryProcessor<DataContext, DataContext>> processorList;
 
   private FluidProcessor() {
     processorList = new ArrayList<>();
   }
 
-  private FluidProcessor(List<MeshineryProcessor<Context, Context>> newProcessorList) {
+  private FluidProcessor(List<MeshineryProcessor<DataContext, DataContext>> newProcessorList) {
     processorList = newProcessorList;
   }
 
@@ -35,7 +35,7 @@ public class FluidProcessor<I extends Context, O extends Context> implements Mes
    * @param <I> Input Type
    * @return returns itself for builder pattern
    */
-  public static <I extends Context> FluidProcessor<I, I> builder() {
+  public static <I extends DataContext> FluidProcessor<I, I> builder() {
     return new FluidProcessor<>();
   }
 
@@ -46,8 +46,8 @@ public class FluidProcessor<I extends Context, O extends Context> implements Mes
    * @param <N>          New return type
    * @return returns itself for builder pattern.
    */
-  public <N extends Context> FluidProcessor<I, N> process(MeshineryProcessor<O, N> newProcessor) {
-    processorList.add((MeshineryProcessor<Context, Context>) newProcessor);
+  public <N extends DataContext> FluidProcessor<I, N> process(MeshineryProcessor<O, N> newProcessor) {
+    processorList.add((MeshineryProcessor<DataContext, DataContext>) newProcessor);
     return new FluidProcessor<>(processorList);
   }
 

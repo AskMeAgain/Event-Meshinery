@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.example.config;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.OutputSource;
 import ask.me.again.meshinery.core.source.CronInputSource;
@@ -20,8 +20,8 @@ import org.springframework.context.annotation.Configuration;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class ExampleHeartbeatSplitJoinConfiguration {
 
-  private final OutputSource<String, Context> outputSource;
-  private final InputSource<String, Context> inputSource;
+  private final OutputSource<String, DataContext> outputSource;
+  private final InputSource<String, DataContext> inputSource;
 
   private final ExecutorService executorService;
 
@@ -30,7 +30,7 @@ public class ExampleHeartbeatSplitJoinConfiguration {
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTask<String, Context> task1() {
+  public MeshineryTask<String, DataContext> task1() {
     return basicTask()
         .taskName("Start")
         .read("start", executorService)
@@ -41,7 +41,7 @@ public class ExampleHeartbeatSplitJoinConfiguration {
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTask<String, Context> task2() {
+  public MeshineryTask<String, DataContext> task2() {
     return basicTask()
         .taskName("Pre Split")
         .read("pre-split", executorService)
@@ -53,7 +53,7 @@ public class ExampleHeartbeatSplitJoinConfiguration {
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTask<String, Context> task3() {
+  public MeshineryTask<String, DataContext> task3() {
     return basicTask()
         .taskName("Left")
         .read("left", executorService)
@@ -64,7 +64,7 @@ public class ExampleHeartbeatSplitJoinConfiguration {
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTask<String, Context> task4() {
+  public MeshineryTask<String, DataContext> task4() {
     return basicTask()
         .taskName("Right")
         .read("right", executorService)
@@ -75,7 +75,7 @@ public class ExampleHeartbeatSplitJoinConfiguration {
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTask<String, Context> join() {
+  public MeshineryTask<String, DataContext> join() {
     return basicTask()
         .taskName("Join")
         .joinOn(inputSource, "after-right", (l, r) -> l)
@@ -86,7 +86,7 @@ public class ExampleHeartbeatSplitJoinConfiguration {
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTask<String, Context> afterJoinTask() {
+  public MeshineryTask<String, DataContext> afterJoinTask() {
     return basicTask()
         .taskName("After Join")
         .read("after-join", executorService)
@@ -97,7 +97,7 @@ public class ExampleHeartbeatSplitJoinConfiguration {
 
   @Bean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTask<String, Context> heartbeat() {
+  public MeshineryTask<String, DataContext> heartbeat() {
     var atomicInt = new AtomicInteger();
     var contextCronInputSource = new CronInputSource<>(
         "Cron heartbeat",
@@ -105,7 +105,7 @@ public class ExampleHeartbeatSplitJoinConfiguration {
         () -> () -> atomicInt.incrementAndGet() + ""
     );
 
-    return MeshineryTaskFactory.<String, Context>builder()
+    return MeshineryTaskFactory.<String, DataContext>builder()
         .inputSource(contextCronInputSource)
         .defaultOutputSource(outputSource)
         .taskName("Cron Heartbeat")
@@ -114,8 +114,8 @@ public class ExampleHeartbeatSplitJoinConfiguration {
         .build();
   }
 
-  private MeshineryTaskFactory<String, Context> basicTask() {
-    return MeshineryTaskFactory.<String, Context>builder()
+  private MeshineryTaskFactory<String, DataContext> basicTask() {
+    return MeshineryTaskFactory.<String, DataContext>builder()
         .inputSource(inputSource)
         .defaultOutputSource(outputSource);
   }

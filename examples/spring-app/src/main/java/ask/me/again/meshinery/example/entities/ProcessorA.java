@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.example.entities;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class ProcessorA implements MeshineryProcessor<Context, Context> {
+public class ProcessorA implements MeshineryProcessor<DataContext, DataContext> {
 
   @Override
-  public CompletableFuture<Context> processAsync(Context context, Executor executor) {
+  public CompletableFuture<DataContext> processAsync(DataContext context, Executor executor) {
     return CompletableFuture.supplyAsync(() -> {
       log.info("Rest call");
       try {

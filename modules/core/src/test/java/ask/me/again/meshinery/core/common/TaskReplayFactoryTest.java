@@ -26,7 +26,7 @@ class TaskReplayFactoryTest {
 
     OutputSource<String, TestContext> outputSource = Mockito.mock(OutputSource.class);
 
-    List<MeshineryTask<?, ? extends Context>> tasks = List.of(
+    List<MeshineryTask<?, ? extends DataContext>> tasks = List.of(
         MeshineryTaskFactory.<String, TestContext>builder()
             .defaultOutputSource(outputSource)
             .taskName("test")
@@ -44,7 +44,7 @@ class TaskReplayFactoryTest {
     var taskReplayFactory = new TaskReplayFactory(tasks, executor);
 
     //Act --------------------------------------------------------------------------------------------------------------
-    taskReplayFactory.replay("test", new TestContext(3));
+    taskReplayFactory.injectData("test", new TestContext(3));
 
     //Assert -----------------------------------------------------------------------------------------------------------
     Mockito.verify(processorA).processAsync(any(), any());

@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.connectors.mysql;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.task.TaskData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -94,7 +94,7 @@ class InputsTest extends AbstractMysqlTest {
   @Jacksonized
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class TestContext implements Context {
+  public static class TestContext implements DataContext {
     String id;
     String otherData;
   }

@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.core.task;
 
 import ask.me.again.meshinery.core.common.AccessingInputSource;
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.other.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
@@ -36,7 +36,7 @@ import static ask.me.again.meshinery.core.task.TaskDataProperties.TASK_NAME;
 @Builder(toBuilder = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MeshineryTaskFactory<K, C extends Context> {
+public class MeshineryTaskFactory<K, C extends DataContext> {
 
   private K inputKey;
   private String taskName = "default";
@@ -44,27 +44,27 @@ public class MeshineryTaskFactory<K, C extends Context> {
   private InputSource<K, C> inputSource;
   private OutputSource<K, C> defaultOutputSource;
   private DataInjectingExecutorService executorService;
-  private Function<Throwable, Context> handleException = e -> null;
+  private Function<Throwable, DataContext> handleException = e -> null;
 
   private TaskData taskData = new TaskData().put(TASK_NAME, taskName);
-  private List<MeshineryProcessor<Context, Context>> processorList = new ArrayList<>();
+  private List<MeshineryProcessor<DataContext, DataContext>> processorList = new ArrayList<>();
   @Singular private List<ProcessorDecorator<C, C>> decorators = new ArrayList<>();
 
-  private <I extends Context> MeshineryTaskFactory(
+  private <I extends DataContext> MeshineryTaskFactory(
       MeshineryProcessor<I, C> newProcessor,
-      List<MeshineryProcessor<Context, Context>> oldProcessorList,
+      List<MeshineryProcessor<DataContext, DataContext>> oldProcessorList,
       String name,
       InputSource inputSource,
       OutputSource defaultOutputSource,
       DataInjectingExecutorService executorService,
       K inputKey,
       TaskData taskData,
-      Function<Throwable, Context> handleException,
+      Function<Throwable, DataContext> handleException,
       long backoffTime
   ) {
     taskName = name;
     this.backoffTime = backoffTime;
-    oldProcessorList.add((MeshineryProcessor<Context, Context>) newProcessor);
+    oldProcessorList.add((MeshineryProcessor<DataContext, DataContext>) newProcessor);
     this.processorList = oldProcessorList;
     this.inputSource = inputSource;
     this.defaultOutputSource = defaultOutputSource;
@@ -74,7 +74,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
     this.handleException = handleException;
   }
 
-  public static <K, C extends Context> MeshineryTaskFactory<K, C> builder() {
+  public static <K, C extends DataContext> MeshineryTaskFactory<K, C> builder() {
     return new MeshineryTaskFactory<>();
   }
 
@@ -173,7 +173,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
    * @param <N>             Type of the new Context
    * @return returns itself for builder pattern
    */
-  public <N extends Context> MeshineryTaskFactory<K, N> contextSwitch(
+  public <N extends DataContext> MeshineryTaskFactory<K, N> contextSwitch(
       OutputSource<K, N> newOutputSource,
       Function<C, N> map,
       List<ProcessorDecorator<N, N>> decorators
@@ -324,7 +324,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
    * @param handleError The method which will be passed to the .handle() method of completable future
    * @return returns itself for builder pattern
    */
-  public final MeshineryTaskFactory<K, C> exceptionHandler(Function<Throwable, Context> handleError) {
+  public final MeshineryTaskFactory<K, C> exceptionHandler(Function<Throwable, DataContext> handleError) {
     return toBuilder()
         .handleException(handleError)
         .build();
@@ -342,7 +342,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
         .build();
   }
 
-  private <N extends Context> MeshineryTaskFactory<K, N> addNewProcessor(MeshineryProcessor<C, N> newProcessor) {
+  private <N extends DataContext> MeshineryTaskFactory<K, N> addNewProcessor(MeshineryProcessor<C, N> newProcessor) {
     return new MeshineryTaskFactory<>(
         newProcessor,
         processorList,

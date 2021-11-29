@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.connectors.mysql;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.InputSource;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +14,7 @@ import org.jdbi.v3.json.Json;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
-public class MysqlInputSource<C extends Context> implements InputSource<String, C> {
+public class MysqlInputSource<C extends DataContext> implements InputSource<String, C> {
 
   public static final String SELECT_QUERY = """
       SELECT context 
@@ -84,7 +84,7 @@ public class MysqlInputSource<C extends Context> implements InputSource<String, 
       }
 
       var preparedIds = firstResult.stream()
-          .map(Context::getId)
+          .map(DataContext::getId)
           .collect(Collectors.toList());
 
 

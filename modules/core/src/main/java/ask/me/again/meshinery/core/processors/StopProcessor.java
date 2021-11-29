@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.processors;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -12,7 +12,7 @@ import java.util.function.Predicate;
  *
  * @param <C> Context type
  */
-public record StopProcessor<C extends Context>(Predicate<C> stopIf) implements MeshineryProcessor<C, C> {
+public record StopProcessor<C extends DataContext>(Predicate<C> stopIf) implements MeshineryProcessor<C, C> {
 
   @Override
   public CompletableFuture<C> processAsync(C context, Executor executor) {

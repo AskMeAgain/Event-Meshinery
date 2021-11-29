@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.connectors.kafka.sources;
 
 import ask.me.again.meshinery.connectors.kafka.factories.KafkaProducerFactory;
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.OutputSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class KafkaOutputSource<C extends Context> implements OutputSource<String, C> {
+public class KafkaOutputSource<C extends DataContext> implements OutputSource<String, C> {
 
   @Getter
   private final String name;

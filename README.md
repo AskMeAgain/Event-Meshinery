@@ -201,8 +201,8 @@ Only **Mysql** and **Memory** provide the AccessingInputSource interface.
 ## Module Structure <a name="Module-Structure"></a>
 
 * [Core](modules/core/core.md) contains, the scheduler and everything "basic" you need. You only need this to start
-    * [Core-Spring](modules/core-spring/core-spring.md) contains the **Spring** AutoConfiguration for the core library, like starting the Scheduler
-      automatically and providing some utility hooks
+    * [Core-Spring](modules/core-spring/core-spring.md) contains the **Spring** AutoConfiguration for the core library,
+      like starting the Scheduler automatically and providing some utility hooks
 * [Monitoring](modules/monitoring/monitoring.md) contains a prometheus monitoring solution
     * [Monitoring-Spring](modules/monitoring-spring/monitoring-spring.md) contains the **Spring** AutoConfiguration of
       the monitoring
@@ -227,6 +227,15 @@ processing again.
 Each InputSource gives you an easy way of replaying a single event, which feeds the event back into the scheduler to
 work on.
 
+### TaskReplayFactory
+
+The core library includes a TaskReplayFactory, which allows you to "inject"
+any Contextobject into any task, just by specifying a Taskname and providing a datacontext. You can do this for error
+correcting or manual triggering of tasks (altough a memory source would be more elegant here).
+
+This TaskReplayFactory can run (A)synchronous and is available as an endpoint in
+the [Core-Spring](modules/core-spring/core-spring.md) package.
+
 ### Exception Handling <a name="ExceptionHandling"></a>
 
 You can handle exceptions which happen **inside** a completable future (in a processor), by setting a new error handler.
@@ -247,30 +256,36 @@ round robin scheduler. You can throw here hard, turn off the scheduler. Do some 
 ## Logging
 
 This Framework already does the hard work with logging: Setting up the MDC for each thread correctly. Each log message
-in EACH processor, **even in new threads by the CompletableFuture.runAsync()** will have a correct mdc value **
-AUTOMATICALLY** of:
+in EACH processor, **even in new threads by the CompletableFuture.runAsync()**
+will have a correct mdc value **AUTOMATICALLY** of:
 
 * "taskid" -> taskName
 * "uid" -> ContextId
 
 ## Monitoring
 
+* [Detailed Documentation](modules/monitoring/monitoring.md)
+* [Spring Integration](modules/monitoring-spring/monitoring-spring.md)
+
+The Monitoring package gives you the ability to monitor parts of your application. It
+uses [prometheus/client_java](https://github.com/prometheus/client_java)
+package to expose metrics in a format compatible with prometheus. It exposes a registry which can be exposed via rest (
+already done in the Sprint integration)
+and easily expanded by your needs.
+
 ## Drawing Graphs
 
-* [Detailed Documentation](modules/draw/draw.md)  
+* [Detailed Documentation](modules/draw/draw.md)
 * [Spring Integration](modules/draw-spring/draw-spring.md)
 
-Since this framework provides a single way of defining tasks, we can use this
-to draw diagrams. These diagrams are rendered based on the actual implementation/connection
-of tasks. 
+Since this framework provides a single way of defining tasks, we can use this to draw diagrams. These diagrams are
+rendered based on the actual implementation/connection of tasks.
 
 Example of the created diagram
 ![example-graph](modules/draw/example-graph.png)
 
-There is also a Mermaid implementation which can be hooked
-into [this]() plugin to provide a real time overview of the task definitions.
-The Draw-Spring package provides an endpoint for this, but you can easily
-implement this by yourself.
+There is also a Mermaid implementation which can be hooked into [this]() plugin to provide a real time overview of the
+task definitions. The Draw-Spring package provides an endpoint for this, but you can easily implement this by yourself.
 
 ## Roadmap
 

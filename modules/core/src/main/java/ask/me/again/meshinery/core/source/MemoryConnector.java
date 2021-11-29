@@ -1,28 +1,21 @@
 package ask.me.again.meshinery.core.source;
 
 import ask.me.again.meshinery.core.common.AccessingInputSource;
-import ask.me.again.meshinery.core.common.Context;
-import ask.me.again.meshinery.core.common.InputSource;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.OutputSource;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @NoArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class MemoryConnector<K, C extends Context> implements AccessingInputSource<K, C>, OutputSource<K, C> {
+public class MemoryConnector<K, C extends DataContext> implements AccessingInputSource<K, C>, OutputSource<K, C> {
 
   @Getter
   private String name = "default";

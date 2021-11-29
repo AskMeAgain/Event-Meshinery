@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.monitoring;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.ProcessorDecorator;
 import java.time.Duration;
@@ -16,7 +16,7 @@ import static ask.me.again.meshinery.core.task.TaskDataProperties.TASK_NAME;
  * @param <O> Output Context Type
  */
 @Slf4j
-public class TimingDecorator<I extends Context, O extends Context> implements ProcessorDecorator<I, O> {
+public class TimingDecorator<I extends DataContext, O extends DataContext> implements ProcessorDecorator<I, O> {
 
   /**
    * Wraps a processor and adds a monitoring around it.

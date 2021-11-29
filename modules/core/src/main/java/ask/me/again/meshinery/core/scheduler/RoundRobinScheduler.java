@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.scheduler;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.other.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.ProcessorDecorator;
@@ -39,7 +39,7 @@ public class RoundRobinScheduler {
   private final boolean isBatchJob;
   private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
   private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
-  private final List<ProcessorDecorator<Context, Context>> processorDecorator;
+  private final List<ProcessorDecorator<DataContext, DataContext>> processorDecorator;
   private boolean internalShutdown = false;
 
   public static SchedulerBuilder builder() {
@@ -125,7 +125,7 @@ public class RoundRobinScheduler {
     });
   }
 
-  private List<TaskRun> queryTaskRuns(MeshineryTask<?, ? extends Context> reactiveTask) {
+  private List<TaskRun> queryTaskRuns(MeshineryTask<?, ? extends DataContext> reactiveTask) {
     try {
       return reactiveTask.getNewTaskRuns();
     } catch (Exception e) {
@@ -200,10 +200,10 @@ public class RoundRobinScheduler {
     shutdownHook.forEach(hook -> hook.accept(this));
   }
 
-  private CompletableFuture<Context> getResultFuture(
+  private CompletableFuture<DataContext> getResultFuture(
       TaskData taskData,
-      MeshineryProcessor<Context, Context> nextProcessor,
-      Context context,
+      MeshineryProcessor<DataContext, DataContext> nextProcessor,
+      DataContext context,
       DataInjectingExecutorService executorService
   ) {
     try {

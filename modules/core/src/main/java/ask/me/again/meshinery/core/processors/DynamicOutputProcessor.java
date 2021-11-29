@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.processors;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.OutputSource;
 import java.util.concurrent.CompletableFuture;
@@ -14,7 +14,7 @@ import java.util.function.Predicate;
  * @param <K> KeyType
  * @param <C> ContextType
  */
-public record DynamicOutputProcessor<K, C extends Context>(Predicate<C> writeIf, Function<C, K> keyMethod,
+public record DynamicOutputProcessor<K, C extends DataContext>(Predicate<C> writeIf, Function<C, K> keyMethod,
     OutputSource<K, C> outputSource) implements MeshineryProcessor<C, C> {
 
   @Override

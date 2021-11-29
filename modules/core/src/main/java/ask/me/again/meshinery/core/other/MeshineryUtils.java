@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.other;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import ask.me.again.meshinery.core.common.ProcessorDecorator;
 import ask.me.again.meshinery.core.task.TaskData;
@@ -16,16 +16,16 @@ import org.slf4j.MDC;
 public class MeshineryUtils {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static <I extends Context, O extends Context> CompletableFuture<O> combineProcessors(
-      List<MeshineryProcessor<Context, Context>> processorList,
+  public static <I extends DataContext, O extends DataContext> CompletableFuture<O> combineProcessors(
+      List<MeshineryProcessor<DataContext, DataContext>> processorList,
       I context,
       Executor executor,
       Map<String, String> mdc,
       TaskData taskData
   ) {
-    CompletableFuture<Context> temp = CompletableFuture.completedFuture(context);
+    CompletableFuture<DataContext> temp = CompletableFuture.completedFuture(context);
 
-    for (MeshineryProcessor<Context, Context> newProcessor : processorList) {
+    for (MeshineryProcessor<DataContext, DataContext> newProcessor : processorList) {
       temp = temp.thenCompose(x -> {
         MDC.setContextMap(mdc);
         TaskData.setTaskData(taskData);
@@ -36,7 +36,7 @@ public class MeshineryUtils {
     return (CompletableFuture<O>) temp;
   }
 
-  public static <I extends Context, O extends Context> MeshineryProcessor<I, O> applyDecorators(
+  public static <I extends DataContext, O extends DataContext> MeshineryProcessor<I, O> applyDecorators(
       MeshineryProcessor<I, O> nextProcessor,
       List<ProcessorDecorator<I, O>> processorDecorator
   ) {

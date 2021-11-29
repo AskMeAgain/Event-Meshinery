@@ -3,16 +3,15 @@ package ask.me.again.meshinery.connectors.kafka.sources;
 import ask.me.again.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
 import ask.me.again.meshinery.connectors.kafka.factories.KafkaProducerFactory;
 import ask.me.again.meshinery.connectors.kafka.properties.KafkaProperties;
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.core.common.OutputSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class KafkaConnector<C extends Context> implements OutputSource<String, C>, InputSource<String, C> {
+public class KafkaConnector<C extends DataContext> implements OutputSource<String, C>, InputSource<String, C> {
 
   @Getter
   private final String name;

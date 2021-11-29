@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.scheduler;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.ProcessorDecorator;
 import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.TaskRun;
@@ -16,15 +16,15 @@ import lombok.SneakyThrows;
 public class SchedulerBuilder {
 
   List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
-  List<ProcessorDecorator<Context, Context>> processorDecorator = Collections.emptyList();
+  List<ProcessorDecorator<DataContext, DataContext>> processorDecorator = Collections.emptyList();
   List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
   int backpressureLimit = 200;
   boolean isBatchJob;
-  List<MeshineryTask<? extends Object, ? extends Context>> tasks = new ArrayList<>();
+  List<MeshineryTask<? extends Object, ? extends DataContext>> tasks = new ArrayList<>();
   List<ExecutorService> executorServices = new ArrayList<>();
   ConcurrentLinkedQueue<TaskRun> todoQueue = new ConcurrentLinkedQueue<>();
 
-  public SchedulerBuilder task(MeshineryTask<?, ? extends Context> task) {
+  public SchedulerBuilder task(MeshineryTask<?, ? extends DataContext> task) {
     tasks.add(task);
     return this;
   }
@@ -34,12 +34,12 @@ public class SchedulerBuilder {
     return this;
   }
 
-  public SchedulerBuilder tasks(List<MeshineryTask<?, ? extends Context>> task) {
+  public SchedulerBuilder tasks(List<MeshineryTask<?, ? extends DataContext>> task) {
     tasks.addAll(task);
     return this;
   }
 
-  public SchedulerBuilder registerDecorators(List<ProcessorDecorator<Context, Context>> processorDecorators) {
+  public SchedulerBuilder registerDecorators(List<ProcessorDecorator<DataContext, DataContext>> processorDecorators) {
     this.processorDecorator = processorDecorators;
     return this;
   }

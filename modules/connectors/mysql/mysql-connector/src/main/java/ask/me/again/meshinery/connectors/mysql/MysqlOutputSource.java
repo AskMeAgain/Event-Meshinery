@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.connectors.mysql;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.OutputSource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import static ask.me.again.meshinery.connectors.mysql.MysqlProperties.MYSQL_OVER
 @Slf4j
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class MysqlOutputSource<C extends Context> implements OutputSource<String, C> {
+public class MysqlOutputSource<C extends DataContext> implements OutputSource<String, C> {
 
   private static final String INSERT = """
       INSERT INTO <TABLE> (id,context,state,processed) 

@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.core.task;
 
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.other.DataInjectingExecutorService;
 import ask.me.again.meshinery.core.common.MeshineryProcessor;
 import java.util.Queue;
@@ -21,12 +21,12 @@ public class TaskRun {
   String taskName;
 
   @With
-  CompletableFuture<Context> future;
+  CompletableFuture<DataContext> future;
 
   DataInjectingExecutorService executorService;
 
-  Queue<MeshineryProcessor<Context, Context>> queue;
+  Queue<MeshineryProcessor<DataContext, DataContext>> queue;
 
-  Function<Throwable, Context> handleError;
+  Function<Throwable, DataContext> handleError;
   TaskData taskData;
 }
