@@ -124,6 +124,11 @@ Below is the actual implementation of the StopProcessor
         }
     }
 
+## SignalingProcessor
+
+This processor will transform an incoming dataContext to another dataContext,
+by looking up an event-key and the dataContext id in an AccessingInputSource.
+
 ## A complex example of a MeshineryTask
 
     //this will run on a Kafka instance

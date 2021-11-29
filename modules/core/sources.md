@@ -90,7 +90,7 @@ also need to provide a mapping function which receives left and right side of th
 Currently only **Inner Joins** are supported.
 
 The source also takes in a time-to-live interval which will evict "old"
-and unused keys, as the source keeps everything in memory.
+and unused keys, **as the source keeps everything in memory.**
 
 The key on which the join happens is the Id field of the DataContext.
 

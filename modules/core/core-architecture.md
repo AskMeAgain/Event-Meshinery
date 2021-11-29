@@ -2,30 +2,37 @@
 
 ##  Architecture
 
-There are 6 building blocks of the framework:
+There are 7 building blocks of the framework:
 
-* Tasks
+* MeshineryTasks
+* DataContext
 * TaskData
 * TaskRuns
-* Processors
+* MeshineryProcessors
 * Sources
 * Scheduler
 
 **Tasks** define a unit of work: Read data from X using the
-**input source** and use then feed it to Y **processors**. 
-**TaskData** is a KeyValue config map of a task (readonly). This data is provided by 
-the framework and by the user. 
+**input source** and then feed it to Y **processors**.  
 
-The **Scheduler** iterates over all tasks, uses the input source to get data
+**TaskData** is a KeyValue config map of a task (readonly), which is filled by 
+the framework and by the user and is accessible from the inputSources, OutputSources and processors.
+
+A **DataContext** is an object, which is passed from Task to Task and processor to processor and is
+consecutively filled by each processor and passed "forward" with new data, for example with Lomboks
+"toBuilder" method. The idea here is to have a single entity, which is used by multiple tasks. This
+prevents the user from having million different dtos between MeshineryTasks.
+
+The **Scheduler** iterates over all tasks, uses the input source to get dataContexts
 and prepares a TaskRun object for each returned data entry.
 
-A **TaskRun** contains of a single data entry, a list of processors and the
-task data (number of processors, task name etc).
+A **TaskRun** contains of a single dataContext, a list (readonly) of processors  and the
+taskData (number of processors, task name etc).
 
-The scheduler then iterates over each TaskRun's
+The scheduler then iterates over each TaskRuns
 processor list and executes the next processor in an available thread.
-TaskRuns are scheduled all on the same thread, but the execution happens on different
-threads (using the Java Executor class).
+TaskRuns are created/scheduled on the same thread, but the execution of "inner completableFuture runs", 
+happens on different threads (using the Java Executor class).
 TaskRuns run therefore in parallel and completely independent of each other.
 
 **All processors of a TaskRun are not necessary executed on the same thread.**
