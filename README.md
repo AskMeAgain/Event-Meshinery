@@ -25,17 +25,17 @@
 ## Description
 
 This framework is a state store independent event framework and designed to easily structure **long running**,
-**multi step** or **long delay heavy** processing tasks in a transparent and safe way. The underlying state stores can be exchanged and
-combined to suit your needs:
+**multi step** or **long delay heavy** processing tasks in a transparent and safe way. The underlying state stores can
+be exchanged and combined to suit your needs:
 
 * Read from a mysql db, and write to kafka and vice versa.
 * Join Kafka messages from a Kafka topic with mysql db tables.
 * Define a multistep processing pipeline and be able to (re)start the processing from any 'checkpoint'.
 * Wait multiple days between two processing steps
+* Checkout the [cook book](modules/core/cookbook.md) for more ideas
 
-This framework was originally written to replace KafkaStreams in a specific usecase, 
-but you can use this framework without Kafka. 
-Currently supported are the following state stores, but you can easily provide your own:
+This framework was originally written to replace KafkaStreams in a specific usecase, but you can use this framework
+without Kafka. Currently supported are the following state stores, but you can easily provide your own:
 
 * Apache Kafka
 * MySql
@@ -49,28 +49,26 @@ Doing long running (blocking) procedures (like rest calls) via Kafka Streams rep
 until the processing is unblocked.**
 
 This means that you can only scale in Kafka Streams as far as your Kafka Cluster (Partition count) allows:
-If your Kafka Cluster has 32 Partitions per topic, you can only have a max number of 
-32 running threads and can only run
+If your Kafka Cluster has 32 Partitions per topic, you can only have a max number of 32 running threads and can only run
 32 stream processor/message processing in parallel (for this topic).
 
 To solve this problem, the Event-Meshinery framework removes a guarantee:
 
 **Messages in a partition are not processed in order, but processed as they arrive.**
 
-This is possible if your events are completely independent of each other and the order of events
-in a single topic/partition is not important.
+This is possible if your events are completely independent of each other and the order of events in a single
+topic/partition is not important.
 
 ## Advantages of Event-Meshinery <a name="Advantages"></a>
 
-* Structure your code in a really transparent way by providing a state store independent api, by
-  separating the business layer from the underlying implementation layer
+* Structure your code in a really transparent way by providing a state store independent api, by separating the business
+  layer from the underlying implementation layer
 * You can resume a process in case of error and you will start exactly where you left off (within bounds)
 * Fine granular configs for your thread management (if needed)
-* Fast time-to-market: switching between state stores is super easy: Start with memory
-  for fast iteration cycles, if you
+* Fast time-to-market: switching between state stores is super easy: Start with memory for fast iteration cycles, if you
   need more guarantees switch to mysql or kafka without much work
 * Easily integrated (using Spring or by constructing everything by hand)
-* Create a complete event diagram to map your events and how they interact with each other 
+* Create a complete event diagram to map your events and how they interact with each other
 * Automatic Grafana Monitoring integration.
 
 ## Architecture <a name="Architecture"></a>
@@ -99,6 +97,8 @@ takes a mapping method to the new Context type and a new defaultOutputSource.
         .write(INPUT_KEY); //writing event
 
 ### MeshineryTasks <a name="Task"></a>
+
+[Detailed Documentation](modules/core/tasks.md)
 
 MeshineryTask describes a single **business** unit of work, which consists of an input source , a list of processors to
 solve a part of the business logic and one or multiple output calls. An input source takes an eventkey/id, which gets
@@ -164,16 +164,15 @@ globally" for all tasks
 There are Input and OutputSources. InputSources provide the data which gets passed to processors. OutputSources write
 the data to a state store and trigger one or more new events.
 
-There can only be a single InputSource for a MeshineryTask (but you can combine multiple input sources to a single source for joins for
-example), and there can be multiple OutputSources.
+There can only be a single InputSource for a MeshineryTask (but you can combine multiple input sources to a single
+source for joins for example), and there can be multiple OutputSources.
 
-A Source describes a connection to a statestore
-and takes an event-key as input, which is passed to the state store, to
-get specific data. Each State Store implements the
-event-key lookup differently, but you can imagine these as different states of the data.
+A Source describes a connection to a statestore and takes an event-key as input, which is passed to the state store, to
+get specific data. Each State Store implements the event-key lookup differently, but you can imagine these as different
+states of the data.
 
-In mysql the event-key is just another column, in Kafka this event-key is a topic
-and in Memory, an event-key is just a different List.
+In mysql the event-key is just another column, in Kafka this event-key is a topic and in Memory, an event-key is just a
+different List.
 
 Currently supported are the following sources:
 
@@ -189,31 +188,34 @@ And the following Utility Source:
 
 #### AccessingInputSource
 
-An accessing input source, provides more utility then a normal InputSource. A normal input source
-is just an abstraction of a Queue. You just provide an event key, and call "getData()" as often
-as you can to request new data. This data is not ordered and is not accessible by Id.
+An accessing input source, provides more utility then a normal InputSource. A normal input source is just an abstraction
+of a Queue. You just provide an event key, and call "getData()" as often as you can to request new data. This data is
+not ordered and is not accessible by Id.
 
-The AccessingInputSource has a _getContext(key, id)_ method which returns **only** the specific context.
-Not all sources can provide this, for example a lookup of a specific Message 
-in a Kafka Topic is unrealistic to implement. But a Mysql lookup is easily done.
+The AccessingInputSource has a _getContext(key, id)_ method which returns **only** the specific context. Not all sources
+can provide this, for example a lookup of a specific Message in a Kafka Topic is unrealistic to implement. But a Mysql
+lookup is easily done.
 
 Only **Mysql** and **Memory** provide the AccessingInputSource interface.
 
 ## Module Structure <a name="Module-Structure"></a>
 
-* **Core** contains, the scheduler and everything "basic" you need. You only need this to start
-  * **Core-Spring** contains the **Spring** AutoConfiguration for the core library, like starting the Scheduler
-    automatically and providing some utility hooks
-* **Monitoring** contains a prometheus monitoring solution
-  * **Monitoring-Spring** contains the **Spring** AutoConfiguration of the monitoring
-* **Draw** contains the MeshineryDrawer class, which takes MeshineryTasks and draws system diagrams
+* [Core](modules/core/core.md) contains, the scheduler and everything "basic" you need. You only need this to start
+    * [Core-Spring](modules/core-spring/core-spring.md) contains the **Spring** AutoConfiguration for the core library, like starting the Scheduler
+      automatically and providing some utility hooks
+* [Monitoring](modules/monitoring/monitoring.md) contains a prometheus monitoring solution
+    * [Monitoring-Spring](modules/monitoring-spring/monitoring-spring.md) contains the **Spring** AutoConfiguration of
+      the monitoring
+* [Draw](modules/draw/draw.md) contains the MeshineryDrawer class, which takes MeshineryTasks and draws system diagrams
   for multiple sources: Pictures (PNG,JPG) and Mermaid (for Grafana for example
-  * **Draw-Spring** contains a **Spring** AutoConfiguration of the Drawing with Endpoints 
-* **Connectors-Mysql** has the Mysql integration
-  * **Connectors-Mysql-Spring** has the Spring AutoConfiguration
-* **Connectors-Kafka** has the Kafka integration
-  * **Connectors-Kafka-Spring** has the Spring AutoConfiguration
-
+    * [Draw-Spring](modules/draw-spring/draw-spring.md)) contains a **Spring** AutoConfiguration of the Drawing with
+      Endpoints
+* [Connectors-Mysql](modules/connectors/mysql/mysql-connector/mysql.md) has the Mysql integration
+    * [Connectors-Mysql-Spring](modules/connectors/mysql/mysql-connector-spring/mysql-spring.md) has the Spring
+      AutoConfiguration
+* [Connectors-Kafka](modules/connectors/kafka/kafka-connector/kafka.md) has the Kafka integration
+    * [Connectors-Kafka-Spring](modules/connectors/kafka/kafka-connector-spring/kafka-spring.md) has the Spring
+      AutoConfiguration
 
 ## On Failure <a name="Failure"></a>
 
@@ -244,12 +246,31 @@ round robin scheduler. You can throw here hard, turn off the scheduler. Do some 
 
 ## Logging
 
-This Framework already does the hard work with logging: Setting up the MDC for each thread correctly. 
-Each log message in EACH processor, **even in new threads 
-by the CompletableFuture.runAsync()** will have a correct mdc value **AUTOMATICALLY** of:
+This Framework already does the hard work with logging: Setting up the MDC for each thread correctly. Each log message
+in EACH processor, **even in new threads by the CompletableFuture.runAsync()** will have a correct mdc value **
+AUTOMATICALLY** of:
 
 * "taskid" -> taskName
 * "uid" -> ContextId
+
+## Monitoring
+
+## Drawing Graphs
+
+* [Detailed Documentation](modules/draw/draw.md)  
+* [Spring Integration](modules/draw-spring/draw-spring.md)
+
+Since this framework provides a single way of defining tasks, we can use this
+to draw diagrams. These diagrams are rendered based on the actual implementation/connection
+of tasks. 
+
+Example of the created diagram
+![example-graph](modules/draw/example-graph.png)
+
+There is also a Mermaid implementation which can be hooked
+into [this]() plugin to provide a real time overview of the task definitions.
+The Draw-Spring package provides an endpoint for this, but you can easily
+implement this by yourself.
 
 ## Roadmap
 

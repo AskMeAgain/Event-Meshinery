@@ -9,11 +9,21 @@ import lombok.extern.slf4j.Slf4j;
 
 import static ask.me.again.meshinery.core.task.TaskDataProperties.TASK_NAME;
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
+/**
+ * Adds a timing metric to a prometheus registry. Uses TASK_NAME of the taskData properties to label the metric
+ *
+ * @param <I> Input Context Type
+ * @param <O> Output Context Type
+ */
 @Slf4j
 public class TimingDecorator<I extends Context, O extends Context> implements ProcessorDecorator<I, O> {
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  /**
+   * Wraps a processor and adds a monitoring around it.
+   *
+   * @param processor The processor to wrap
+   * @return the new wrapped/decorated processor
+   */
   public MeshineryProcessor<I, O> wrap(MeshineryProcessor<I, O> processor) {
     var taskName = getTaskData().getSingle(TASK_NAME);
     var summary = MeshineryMonitoringService.requestTimeSummary.labels(taskName);

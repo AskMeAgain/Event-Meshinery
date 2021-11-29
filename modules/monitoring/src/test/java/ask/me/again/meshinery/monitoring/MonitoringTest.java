@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MonitoringTest {
 
-  public static final String TASK_NAME_VALUE = "test";
+  private static final String TASK_NAME_VALUE = "test";
 
   @Test
   void testMonitoringDecorator() {
