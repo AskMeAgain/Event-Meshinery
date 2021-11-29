@@ -48,7 +48,7 @@ public class ExampleVoteConfiguration {
     return basicTask()
         .taskName("Uservote")
         .read("prepare-vote-1", executorService)
-        .joinOn(voteInputSource, "user-vote", (l, r) -> r)
+        .joinOn(voteInputSource, "user-vote", 5 * 60, (l, r) -> r)
         .process((context, executor) -> {
           log.info("Voted for vote on: {} and approved: {}", context.getId(), context.isApproved());
           return CompletableFuture.completedFuture(context);

@@ -78,7 +78,7 @@ public class ExampleHeartbeatSplitJoinConfiguration {
   public MeshineryTask<String, DataContext> join() {
     return basicTask()
         .taskName("Join")
-        .joinOn(inputSource, "after-right", (l, r) -> l)
+        .joinOn(inputSource, "after-right", 5 * 60, (l, r) -> l)
         .read("after-left", executorService)
         .write("after-join")
         .build();

@@ -140,12 +140,15 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
    * @return returns itself for builder pattern
    */
   public MeshineryTaskFactory<K, C> joinOn(
-      InputSource<K, C> rightInputSource, K rightKey, BiFunction<C, C, C> combine
+      InputSource<K, C> rightInputSource,
+      K rightKey,
+      int timeToLiveSeconds,
+      BiFunction<C, C, C> combine
   ) {
     var name = "%s->%s__%s->%s".formatted(inputSource.getName(), inputKey, rightInputSource.getName(), rightKey);
 
     return toBuilder()
-        .inputSource(new JoinedInnerInputSource<>(name, inputSource, rightInputSource, rightKey, combine, 60 * 5))
+        .inputSource(new JoinedInnerInputSource<>(name, inputSource, rightInputSource, rightKey, combine, timeToLiveSeconds))
         .taskData(taskData
             .put(GRAPH_INPUT_SOURCE, rightInputSource.getName())
             .put(GRAPH_INPUT_KEY, rightKey.toString()))

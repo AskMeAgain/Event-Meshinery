@@ -15,8 +15,8 @@ import org.slf4j.MDC;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.TASK_NAME;
 import static ask.me.again.meshinery.core.task.TaskDataProperties.UID;
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class TaskReplayFactory {
 
   private final Map<String, MeshineryTask<?, ? extends DataContext>> taskMap;
