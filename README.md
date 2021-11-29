@@ -24,17 +24,18 @@
 
 ## Description
 
-This framework is a state store independent event framework and designed to easily structure long running, multi step or
-long delay heavy processing tasks in a transparent and safe way. The underlying state stores can be exchanged and
+This framework is a state store independent event framework and designed to easily structure **long running**,
+**multi step** or **long delay heavy** processing tasks in a transparent and safe way. The underlying state stores can be exchanged and
 combined to suit your needs:
 
-* Read from a mysql db, and write to kafka.
+* Read from a mysql db, and write to kafka and vice versa.
 * Join Kafka messages from a Kafka topic with mysql db tables.
 * Define a multistep processing pipeline and be able to (re)start the processing from any 'checkpoint'.
 * Wait multiple days between two processing steps
 
-This framework was originally written to replace KafkaStreams in a specific usecase, but you can use this framework
-without Kafka. Currently supported are the following state stores, but you can easily provide your own:
+This framework was originally written to replace KafkaStreams in a specific usecase, 
+but you can use this framework without Kafka. 
+Currently supported are the following state stores, but you can easily provide your own:
 
 * Apache Kafka
 * MySql
@@ -42,41 +43,35 @@ without Kafka. Currently supported are the following state stores, but you can e
 
 ## Motivation <a name="Motivation"></a>
 
-Doing long running (blocking) calls (like rest) via Kafka Streams represents a challenge as this blocks a single thread
-in the Kafka Streams framework from processing other messages and a single partition from getting processed:
+Doing long running (blocking) procedures (like rest calls) via Kafka Streams represents a challenge:
 
 **If you block a partition with a long running call, then you cannot process any other messages from this partition
 until the processing is unblocked.**
 
 This means that you can only scale in Kafka Streams as far as your Kafka Cluster (Partition count) allows:
-If your Kafka Cluster has 32 Partitions per topic, you can only have a max number of 32 running threads and can only run
-32 stream processors/message processing in parallel.
+If your Kafka Cluster has 32 Partitions per topic, you can only have a max number of 
+32 running threads and can only run
+32 stream processor/message processing in parallel (for this topic).
 
 To solve this problem, the Event-Meshinery framework removes a guarantee:
 
-**Messages are not processed in a partition in order, but processed as they arrive.**
+**Messages in a partition are not processed in order, but processed as they arrive.**
 
-This is possible if your events are completely independent of each other and it doesnt matter if you process message B
-before message A, even if it is stored in the same partition.
+This is possible if your events are completely independent of each other and the order of events
+in a single topic/partition is not important.
 
 ## Advantages of Event-Meshinery <a name="Advantages"></a>
 
-* This framework lets you structure your code in a really transparent way by providing a state store independent api, by
-  separate the business layer from the underlying implementation layer
+* Structure your code in a really transparent way by providing a state store independent api, by
+  separating the business layer from the underlying implementation layer
 * You can resume a process in case of error and you will start exactly where you left off (within bounds)
-* Fine granular configs for your thread management
-* Fast time-to-market: switching between state stores is super easy: Start with memory for fast iteration cycles, if you
+* Fine granular configs for your thread management (if needed)
+* Fast time-to-market: switching between state stores is super easy: Start with memory
+  for fast iteration cycles, if you
   need more guarantees switch to mysql or kafka without much work
 * Easily integrated (using Spring or by constructing everything by hand)
-* Create a complete event diagram to map your events and how they interact with each other (see "Draw the Graph")
-
-## Module Structure <a name="Module-Structure"></a>
-
-The architecture of this repo is simple: you have all normal modules and XXX-spring which all implement an
-autoconfiguration for.
-
-* If you want to start a new project quickly, you should just checkout the spring versions.
-* If you want to have more control or dont want to use spring, choose the normal versions instead
+* Create a complete event diagram to map your events and how they interact with each other 
+* Automatic Grafana Monitoring integration.
 
 ## Architecture <a name="Architecture"></a>
 
@@ -164,109 +159,61 @@ globally" for all tasks
 
 ### Sources
 
+[Detailed Documentation](modules/core/sources.md)
+
 There are Input and OutputSources. InputSources provide the data which gets passed to processors. OutputSources write
-the data to a state store and trigger a new event.
+the data to a state store and trigger one or more new events.
 
-There can only be a single InputSource (but you can combine multiple input sources to a single source for joins for
-example) for a MeshineryTask, but there can be multiple OutputSources.
+There can only be a single InputSource for a MeshineryTask (but you can combine multiple input sources to a single source for joins for
+example), and there can be multiple OutputSources.
 
-A Source describes a connection to a statestore. Most of the time, you only need to define a single source per
-Statestore, as the Source knows where to look/write to by the provided (event)key.
+A Source describes a connection to a statestore
+and takes an event-key as input, which is passed to the state store, to
+get specific data. Each State Store implements the
+event-key lookup differently, but you can imagine these as different states of the data.
 
-#### Memory Source  <a name="Memory"></a>
+In mysql the event-key is just another column, in Kafka this event-key is a topic
+and in Memory, an event-key is just a different List.
 
-A key describes a specific list in a dictionary.
+Currently supported are the following sources:
 
-#### Cron Source  <a name="Cron"></a>
+* Cron
+* Mysql
+* Kafka
+* Memory
 
-This source emits a value in based on a cron schedule. The underlying cron library
-is [cron-utils](https://github.com/jmrozanec/cron-utils)
-by [jmrozanec](https://github.com/jmrozanec). You can reuse the cron input source and provide different crons via the
-read method. If you want to schedule other input sources based on a cron, combine the SignalingInputsource with the
-cron (see [SignalingInputSource](#SignalingInputSource)).
+And the following Utility Source:
 
-    var atomicInt = new AtomicInteger(); //we do this so we have incrementing values in our context
-    //create input source
-    var contextCronInputSource = new CronInputSource<>(CronType.SPRING, () -> createNewContext(atomicInt.incrementAndGet()));
+* Signaling Source
+* InnerJoin Source
 
-    return MeshineryTask.<String, Context>builder()
-        .inputSource(contextCronInputSource) //we provide the cron input source
-        .defaultOutputSource(outputSource)
-        .taskName("Cron Heartbeat")
-        .read("0/3 * * * * *", executorService) //this cron will be executed.
-        .write("start");
+#### AccessingInputSource
 
-#### Mysql Source <a name="Mysql"></a>
+An accessing input source, provides more utility then a normal InputSource. A normal input source
+is just an abstraction of a Queue. You just provide an event key, and call "getData()" as often
+as you can to request new data. This data is not ordered and is not accessible by Id.
 
-A Key provided to a mysql source correspondes to a different value in a column. A mysqlsource handles a single Table.
+The AccessingInputSource has a _getContext(key, id)_ method which returns **only** the specific context.
+Not all sources can provide this, for example a lookup of a specific Message 
+in a Kafka Topic is unrealistic to implement. But a Mysql lookup is easily done.
 
-Example:
+Only **Mysql** and **Memory** provide the AccessingInputSource interface.
 
-a MeshineryTask reads with key "InputKey". This results in a sql query:
+## Module Structure <a name="Module-Structure"></a>
 
-      SELECT * FROM <TABLE> WHERE processed != 0 AND state = 'InputKey';
+* **Core** contains, the scheduler and everything "basic" you need. You only need this to start
+  * **Core-Spring** contains the **Spring** AutoConfiguration for the core library, like starting the Scheduler
+    automatically and providing some utility hooks
+* **Monitoring** contains a prometheus monitoring solution
+  * **Monitoring-Spring** contains the **Spring** AutoConfiguration of the monitoring
+* **Draw** contains the MeshineryDrawer class, which takes MeshineryTasks and draws system diagrams
+  for multiple sources: Pictures (PNG,JPG) and Mermaid (for Grafana for example
+  * **Draw-Spring** contains a **Spring** AutoConfiguration of the Drawing with Endpoints 
+* **Connectors-Mysql** has the Mysql integration
+  * **Connectors-Mysql-Spring** has the Spring AutoConfiguration
+* **Connectors-Kafka** has the Kafka integration
+  * **Connectors-Kafka-Spring** has the Spring AutoConfiguration
 
-a MeshineryTasks writes with key "OutputKey". This results in a sql query:
-
-      INSERT INTO <TABLE> (data, processed, state) VALUES ("testdata", 0, "OutputKey");
-
-#### Kafka Source <a name="Kafka"></a>
-
-* [Detailed Documentation](modules/connectors/kafka/kafka-connector/kafka.md)
-* [Detailed Spring Integration Documentation](modules/connectors/kafka/kafka-connector-config/kafka.md)
-
-A Key provided to a kafka source correspondes to a different kafka topic A source is connected to a broker.
-
-### Signaling Input Source <a name="SignalingInputSource"></a>
-
-This source combines two inputsources. It will ask the signal inputsource for input
-and if a result is returned, it will run
-the other input source and run the task with this new input instead. 
-You can use this for example to run a task based on cron schedule,
-or by executing a flow from a Webhook by other applications.
-
-    var cronSignal = new CronInputSource<String, TestContext>();
-    var realValueSource = new MemoryConnector<String, TestContext>();
-
-    var signalSource = new SignalingInputSource<>(
-        "signal-source",  //source name
-        signal, //signal source
-        realValueSource //this will be the real source
-        "real-value-event-key" //this key will be used for the realValueSource 
-    );
-
-    var task = MeshineryTask<String, TestContext>()
-        .taskName("RunEventOnCronSchedule")
-        .inputSource(signalSource)
-        .read("0 0 0 * * *", executorService) //the cron
-        .process([..]) //processors
-        .write("after-schedule-done"); //the new event
-
-### Joins
-
-You can join data, by providing two input sources (can be from different state stores!) to a JoinInputSource object. You
-also need to provide a mapping function which receives left and right side of the join and returns a new object.
-Currently only **Inner Joins** are supported.
-
-The key on which the join happens is the Id field of the Context object.
-
-    var joinedSource = new JoinedInputSource<>(leftSource, rightSource, KEY, this::combine);
-    var task = MeshineryTask<String, TestContext>()
-      .taskName("Join")
-      .inputSource(joinedSource)
-      .read("after-left", executorService)
-      .write("after-join");
-
-Or you can use the provided builder method .joinOn(), which lets you specify the new source, join key of the right side
-of the join and the combine method. This will also set the correct data so the Drawer can correctly draw joined methods
-in the graph
-
-    var task = MeshineryTask<String, TestContext>()
-      .taskName("Join")
-      .inputSource(memorySource) //left side of the join
-      .joinOn(memorySource, "key2", (l, r) -> l) //right side of the join, will use 'key2' as input key of the right source
-      .read("after-left", executorService)
-      .write("after-join");
 
 ## On Failure <a name="Failure"></a>
 
@@ -284,7 +231,7 @@ You can handle exceptions which happen **inside** a completable future (in a pro
 The default behaviour is that null is returned, which will then just stop the execution of this single event, by the
 round robin scheduler. You can throw here hard, turn off the scheduler. Do some rest/db calls and other stuff.
 
-    var task = MeshineryTask.<String, TestContext>builder()
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
       .inputSource(inputSource)
       .defaultOutputSource(outputSource)
       .read(KEY, executor)
@@ -297,40 +244,12 @@ round robin scheduler. You can throw here hard, turn off the scheduler. Do some 
 
 ## Logging
 
-This Framework already does the hard work with logging: Setting up the MDC for each thread correctly. Each log request
-in EACH processor will have a correct mdc value of:
+This Framework already does the hard work with logging: Setting up the MDC for each thread correctly. 
+Each log message in EACH processor, **even in new threads 
+by the CompletableFuture.runAsync()** will have a correct mdc value **AUTOMATICALLY** of:
 
 * "taskid" -> taskName
 * "uid" -> ContextId
-
-Example Processor
-
-    @Slf4j
-    public class ProcessorFinished implements MeshineryProcessor<Context, Context> {
-      
-      @Override
-      public CompletableFuture<Context> processAsync(Context context, Executor executor) {
-        return CompletableFuture.supplyAsync(() -> {
-          log.info("Finished Request");
-    
-          return context;
-        }, executor);
-      }
-    }
-
-Notice the following log message has Context Id (12) and Taskname (After Join Task)
-
-    21:59:19.519 INFO [After Join Task] 12 [pool-1-thread-20] a.m.a.m.e.e.ProcessorFinished - Finished Request
-
-Logback example config:
-
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>
-                %d{HH:mm:ss.SSS} %level [%X{taskid}] %X{uid} [%t] %logger{20} - %msg%n
-            </Pattern> 
-        </layout>
-    </appender>
 
 ## Roadmap
 

@@ -9,8 +9,7 @@ dependencies {
     implementation project(':modules:core-spring');
     implementation project(':modules:draw-spring');
     implementation project(':modules:monitoring-spring');
-    implementation project(':modules:connectors:mysql:mysql-connector');
-    implementation project(':modules:connectors:mysql:mysql-connector-config');
+    implementation project(':modules:connectors:mysql:mysql-connector-spring');
 
     implementation 'ch.qos.logback:logback-classic:1.2.6'
 }

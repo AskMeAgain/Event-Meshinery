@@ -21,7 +21,6 @@ class SignalingInputSourceTest {
     resultSource.writeOutput("1", new TestContext(0));
 
     //Act ------------------------------------------------------------------------------------
-
     var empty1 = signalSource.getInputs(KEY);
 
     signal.writeOutput(KEY, new TestContext(1234));

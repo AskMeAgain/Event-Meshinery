@@ -7,9 +7,9 @@ include('modules:draw-spring')
 include('modules:monitoring')
 include('modules:monitoring-spring')
 include('modules:connectors:kafka:kafka-connector')
-include('modules:connectors:kafka:kafka-connector-config')
+include('modules:connectors:kafka:kafka-connector-spring')
 include('modules:connectors:mysql:mysql-connector')
-include('modules:connectors:mysql:mysql-connector-config')
+include('modules:connectors:mysql:mysql-connector-spring')
 
 //so we dont do stuff on CICD
 if(!System.getenv("TOKEN")) {

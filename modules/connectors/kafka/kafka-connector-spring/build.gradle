@@ -1,12 +1,13 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'maven-publish'
 }
 
 dependencies {
 
-    implementation project(':modules:core')
-    implementation project(':modules:connectors:kafka:kafka-connector')
+    api project(':modules:core')
+    api project(':modules:connectors:kafka:kafka-connector')
     implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
 
 }

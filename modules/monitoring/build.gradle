@@ -8,6 +8,8 @@ dependencies {
     api project(':modules:core')
     api 'io.prometheus:simpleclient:0.12.0'
     api 'io.prometheus:simpleclient_common:0.12.0'
+    testImplementation project(':modules:core').sourceSets.test.output
+
 }
 
 

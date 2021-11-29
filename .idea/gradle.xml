@@ -20,10 +20,10 @@
             <option value="$PROJECT_DIR$/modules/connectors" />
             <option value="$PROJECT_DIR$/modules/connectors/kafka" />
             <option value="$PROJECT_DIR$/modules/connectors/kafka/kafka-connector" />
-            <option value="$PROJECT_DIR$/modules/connectors/kafka/kafka-connector-config" />
+            <option value="$PROJECT_DIR$/modules/connectors/kafka/kafka-connector-spring" />
             <option value="$PROJECT_DIR$/modules/connectors/mysql" />
             <option value="$PROJECT_DIR$/modules/connectors/mysql/mysql-connector" />
-            <option value="$PROJECT_DIR$/modules/connectors/mysql/mysql-connector-config" />
+            <option value="$PROJECT_DIR$/modules/connectors/mysql/mysql-connector-spring" />
             <option value="$PROJECT_DIR$/modules/core" />
             <option value="$PROJECT_DIR$/modules/core-spring" />
             <option value="$PROJECT_DIR$/modules/draw" />
