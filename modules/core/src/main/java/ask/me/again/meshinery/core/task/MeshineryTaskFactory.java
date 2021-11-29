@@ -57,7 +57,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
       InputSource inputSource,
       OutputSource defaultOutputSource,
       DataInjectingExecutorService executorService,
-      K inputKey,
+      K eventKey,
       TaskData taskData,
       Function<Throwable, DataContext> handleException,
       long backoffTime
@@ -69,7 +69,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
     this.inputSource = inputSource;
     this.defaultOutputSource = defaultOutputSource;
     this.executorService = executorService;
-    this.inputKey = inputKey;
+    this.inputKey = eventKey;
     this.taskData = taskData;
     this.handleException = handleException;
   }
