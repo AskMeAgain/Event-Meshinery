@@ -14,6 +14,7 @@ public class SignalingInputSource<K, C extends Context> implements InputSource<K
   private final String name;
   private final InputSource<K, C> signalingInputSource;
   private final InputSource<K, C> innerInputSource;
+  private final K innerKey;
 
   @Override
   public List<C> getInputs(K key) {
@@ -24,6 +25,6 @@ public class SignalingInputSource<K, C extends Context> implements InputSource<K
       return Collections.emptyList();
     }
 
-    return innerInputSource.getInputs(key);
+    return innerInputSource.getInputs(innerKey);
   }
 }

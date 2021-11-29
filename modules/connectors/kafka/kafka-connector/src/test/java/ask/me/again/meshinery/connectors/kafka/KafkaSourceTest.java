@@ -2,6 +2,7 @@ package ask.me.again.meshinery.connectors.kafka;
 
 import ask.me.again.meshinery.connectors.kafka.sources.KafkaConnector;
 import ask.me.again.meshinery.core.utils.context.TestContext;
+import ask.me.again.meshinery.core.utils.context.TestContext2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +26,5 @@ class KafkaSourceTest extends AbstractKafkaTest {
 
     //Assert ----------------------------------------------------------------------------------
     assertThat(result).contains(input);
-
   }
 }

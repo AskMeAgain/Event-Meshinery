@@ -179,10 +179,11 @@ A key describes a specific list in a dictionary.
 
 #### Cron Source  <a name="Cron"></a>
 
-This source emits a value in a schedule. This schedule is specified by a provided cron. The underlying cron library
+This source emits a value in based on a cron schedule. The underlying cron library
 is [cron-utils](https://github.com/jmrozanec/cron-utils)
 by [jmrozanec](https://github.com/jmrozanec). You can reuse the cron input source and provide different crons via the
-read method
+read method. If you want to schedule other input sources based on a cron, combine the SignalingInputsource with the
+cron (see [SignalingInputSource](#SignalingInputSource)).
 
     var atomicInt = new AtomicInteger(); //we do this so we have incrementing values in our context
     //create input source
@@ -215,6 +216,31 @@ a MeshineryTasks writes with key "OutputKey". This results in a sql query:
 * [Detailed Spring Integration Documentation](modules/connectors/kafka/kafka-connector-config/kafka.md)
 
 A Key provided to a kafka source correspondes to a different kafka topic A source is connected to a broker.
+
+### Signaling Input Source <a name="SignalingInputSource"></a>
+
+This source combines two inputsources. It will ask the signal inputsource for input
+and if a result is returned, it will run
+the other input source and run the task with this new input instead. 
+You can use this for example to run a task based on cron schedule,
+or by executing a flow from a Webhook by other applications.
+
+    var cronSignal = new CronInputSource<String, TestContext>();
+    var realValueSource = new MemoryConnector<String, TestContext>();
+
+    var signalSource = new SignalingInputSource<>(
+        "signal-source",  //source name
+        signal, //signal source
+        realValueSource //this will be the real source
+        "real-value-event-key" //this key will be used for the realValueSource 
+    );
+
+    var task = MeshineryTask<String, TestContext>()
+        .taskName("RunEventOnCronSchedule")
+        .inputSource(signalSource)
+        .read("0 0 0 * * *", executorService) //the cron
+        .process([..]) //processors
+        .write("after-schedule-done"); //the new event
 
 ### Joins
 
@@ -302,10 +328,15 @@ Logback example config:
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
                 %d{HH:mm:ss.SSS} %level [%X{taskid}] %X{uid} [%t] %logger{20} - %msg%n
-            </Pattern>
+            </Pattern> 
         </layout>
     </appender>
 
 ## Roadmap
 
-TBD
+The following things are planned (not in order)
+
+* Quarkus/Micronaut integration
+* More Sources (Process, Sftp (Maybe), Docker)
+* More efficient RoundRobinScheduler (Circular Queue)
+* Sharding Possibilities in InputSources

@@ -15,14 +15,15 @@ class SignalingInputSourceTest {
     var signal = new MemoryConnector<String, TestContext>();
     var resultSource = new MemoryConnector<String, TestContext>();
 
+    var signalSource = new SignalingInputSource<>("signal", signal, resultSource, KEY);
+
     resultSource.writeOutput(KEY, new TestContext(1));
     resultSource.writeOutput("1", new TestContext(0));
 
-    var signalSource = new SignalingInputSource<>("signal", signal, resultSource);
-
     //Act ------------------------------------------------------------------------------------
+
     var empty1 = signalSource.getInputs(KEY);
-    
+
     signal.writeOutput(KEY, new TestContext(1234));
 
     var result = signalSource.getInputs(KEY);

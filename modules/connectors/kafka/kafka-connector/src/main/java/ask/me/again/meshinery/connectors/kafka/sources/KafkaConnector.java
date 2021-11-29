@@ -12,11 +12,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
-@RequiredArgsConstructor
 public class KafkaConnector<C extends Context> implements OutputSource<String, C>, InputSource<String, C> {
 
   @Getter
-  private String name = "default-kafka-source";
+  private final String name;
   private final KafkaInputSource<C> inputSource;
   private final KafkaOutputSource<C> outputSource;
 
