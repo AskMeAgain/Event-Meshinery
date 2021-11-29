@@ -14,7 +14,7 @@ class MemoryConnectorTest {
   void inputOutputTest() {
     //Arrange ---------------------------------------------------------------------------------
     var inputOutput = new MemoryConnector<String, TestContext>();
-    var input =new TestContext(2);
+    var input = new TestContext(2);
 
     //Act -------------------------------------------------------------------------------------
     inputOutput.writeOutput(TEST_KEY, input);
@@ -43,8 +43,8 @@ class MemoryConnectorTest {
     connector.writeOutput(TEST_KEY, input3);
     connector.writeOutput(TEST_KEY, input4);
 
-    var result = connector.getContext(TEST_KEY,"3");
-    var empty = connector.getContext(TEST_KEY,"5");
+    var result = connector.getContext(TEST_KEY, "3");
+    var empty = connector.getContext(TEST_KEY, "5");
 
     //Assert ----------------------------------------------------------------------------------
     assertThat(result).contains(input3);

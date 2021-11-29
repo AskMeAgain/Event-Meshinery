@@ -145,7 +145,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
     var name = "%s->%s__%s->%s".formatted(inputSource.getName(), inputKey, rightInputSource.getName(), rightKey);
 
     return toBuilder()
-        .inputSource(new JoinedInnerInputSource<>(name, inputSource, rightInputSource, rightKey, combine))
+        .inputSource(new JoinedInnerInputSource<>(name, inputSource, rightInputSource, rightKey, combine, 60 * 5))
         .taskData(taskData
             .put(GRAPH_INPUT_SOURCE, rightInputSource.getName())
             .put(GRAPH_INPUT_KEY, rightKey.toString()))

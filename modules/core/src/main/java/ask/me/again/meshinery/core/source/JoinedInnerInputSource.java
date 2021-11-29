@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 
@@ -25,10 +26,12 @@ public class JoinedInnerInputSource<K, C extends Context> implements InputSource
   private final InputSource<K, C> rightInputSource;
   private final K rightKey;
   private final BiFunction<C, C, C> combine;
+  private final int timeToLiveSeconds;
 
   private final Map<K, Map<String, C>> leftJoinResultsMap = new HashMap<>();
   private final Map<K, Map<String, C>> rightJoinResultsMap = new HashMap<>();
 
+  @SneakyThrows
   @Override
   public List<C> getInputs(K key) {
 
@@ -55,9 +58,22 @@ public class JoinedInnerInputSource<K, C extends Context> implements InputSource
     var duplicated = new HashSet<>(leftKeys);
 
     for (var id : duplicated) {
-      var leftContext = leftMap.remove(id);
-      var rightContext = rightMap.remove(id);
-      results.add(combine.apply(leftContext, rightContext));
+      var leftItem = leftMap.get(id);
+      var rightItem = rightMap.get(id);
+
+      if (leftItem == null) {
+        leftMap.remove(id);
+      }
+      if (rightItem == null) {
+        rightMap.remove(id);
+      }
+
+      if (leftItem != null && rightItem != null) {
+        var leftContext = leftMap.remove(id);
+        var rightContext = rightMap.remove(id);
+
+        results.add(combine.apply(leftContext, rightContext));
+      }
     }
 
     return results;
@@ -74,7 +90,7 @@ public class JoinedInnerInputSource<K, C extends Context> implements InputSource
 
   private Map<String, C> createCache() {
     var expirationPolicy = new PassiveExpiringMap.ConstantTimeToLiveExpirationPolicy<String, C>(
-        5, TimeUnit.MINUTES
+        timeToLiveSeconds, TimeUnit.SECONDS
     );
 
     return new PassiveExpiringMap<>(expirationPolicy);
