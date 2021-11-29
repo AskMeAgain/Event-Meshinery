@@ -1,15 +1,8 @@
 package ask.me.again.meshinery.connectors.kafka;
 
-import ask.me.again.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
-import ask.me.again.meshinery.connectors.kafka.factories.KafkaProducerFactory;
-import ask.me.again.meshinery.connectors.kafka.sources.KafkaInputSource;
-import ask.me.again.meshinery.connectors.kafka.sources.KafkaOutputSource;
-import ask.me.again.meshinery.core.common.Context;
+import ask.me.again.meshinery.connectors.kafka.sources.KafkaConnector;
+import ask.me.again.meshinery.core.utils.context.TestContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,30 +14,17 @@ class KafkaSourceTest extends AbstractKafkaTest {
   @Test
   void testInputOutput() {
     //Arrange ---------------------------------------------------------------------------------
+    var objectMapper = new ObjectMapper();
     var kafkaProperties = getKafkaProperties();
-    var consumerFactory = new KafkaConsumerFactory(kafkaProperties);
-    var producerFactory = new KafkaProducerFactory(kafkaProperties);
-    var inputSource = new KafkaInputSource<>("test-input", TestContext.class, new ObjectMapper(), consumerFactory);
-    var outputSource = new KafkaOutputSource<>("test-output", producerFactory, new ObjectMapper());
-    var input = TestContext.builder()
-        .id("12")
-        .build();
+    var connector = new KafkaConnector<>("kafka-default-source", TestContext.class, objectMapper, kafkaProperties);
+    var input = new TestContext(12);
 
     //Act -------------------------------------------------------------------------------------
-    outputSource.writeOutput(TOPIC, input);
-    var result = inputSource.getInputs(TOPIC);
+    connector.writeOutput(TOPIC, input);
+    var result = connector.getInputs(TOPIC);
 
     //Assert ----------------------------------------------------------------------------------
     assertThat(result).contains(input);
 
   }
-
-  @Value
-  @Builder
-  @Jacksonized
-  @AllArgsConstructor
-  private static class TestContext implements Context {
-    String id;
-  }
-
 }
