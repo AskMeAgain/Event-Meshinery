@@ -4,10 +4,11 @@ import ask.me.again.meshinery.core.common.DataContext;
 import ask.me.again.meshinery.core.common.InputSource;
 import java.util.Collections;
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+@Builder
 public class SignalingInputSource<K, C extends DataContext> implements InputSource<K, C> {
 
   @Getter

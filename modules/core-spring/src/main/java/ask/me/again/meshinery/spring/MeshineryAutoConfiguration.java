@@ -21,6 +21,9 @@ public class MeshineryAutoConfiguration {
   @Value("${meshinery.batch-job:false}")
   private boolean isBatchJob;
 
+  @Value("${meshinery.graceful-shutdown-on-error:true}")
+  private boolean gracefulShutdownOnError;
+
   @Bean
   @ConditionalOnProperty(
       prefix = "meshinery",
@@ -44,6 +47,7 @@ public class MeshineryAutoConfiguration {
         .registerShutdownHook(shutdownHook)
         .registerStartupHook(startupHook)
         .registerDecorators(processorDecorators)
+        .gracefulShutdownOnError(gracefulShutdownOnError)
         .tasks(tasks)
         .buildAndStart();
   }

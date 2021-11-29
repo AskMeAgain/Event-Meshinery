@@ -1,4 +1,6 @@
 meshinery:
+  shutdown-on-finished: false
+  graceful-shutdown-on-error: false
   draw:
     resolution: 'HD1080'
   connectors:

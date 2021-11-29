@@ -23,6 +23,7 @@ public class SchedulerBuilder {
   List<MeshineryTask<? extends Object, ? extends DataContext>> tasks = new ArrayList<>();
   List<ExecutorService> executorServices = new ArrayList<>();
   ConcurrentLinkedQueue<TaskRun> todoQueue = new ConcurrentLinkedQueue<>();
+  boolean gracefulShutdownOnError = true;
 
   public SchedulerBuilder task(MeshineryTask<?, ? extends DataContext> task) {
     tasks.add(task);
@@ -54,6 +55,11 @@ public class SchedulerBuilder {
     return this;
   }
 
+  public SchedulerBuilder gracefulShutdownOnError(boolean gracefulShutdownOnError) {
+    this.gracefulShutdownOnError = gracefulShutdownOnError;
+    return this;
+  }
+
   public SchedulerBuilder isBatchJob(boolean flag) {
     isBatchJob = flag;
     return this;
@@ -75,7 +81,8 @@ public class SchedulerBuilder {
         isBatchJob,
         shutdownHook,
         startupHook,
-        processorDecorator
+        processorDecorator,
+        gracefulShutdownOnError
     );
   }
 }

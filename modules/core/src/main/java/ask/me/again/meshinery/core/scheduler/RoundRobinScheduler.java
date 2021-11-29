@@ -41,6 +41,7 @@ public class RoundRobinScheduler {
   private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
   private final List<ProcessorDecorator<DataContext, DataContext>> processorDecorator;
   private boolean internalShutdown = false;
+  private final boolean gracefulShutdownOnError;
 
   public static SchedulerBuilder builder() {
     return new SchedulerBuilder();
@@ -129,9 +130,12 @@ public class RoundRobinScheduler {
     try {
       return reactiveTask.getNewTaskRuns();
     } catch (Exception e) {
-      log.error("Error while requesting new input data. Shutting down scheduler", e);
-      gracefulShutdown();
-      return Collections.emptyList();
+      if (gracefulShutdownOnError) {
+        log.error("Error while requesting new input data. Shutting down scheduler", e);
+        gracefulShutdown();
+        return Collections.emptyList();
+      }
+      throw e;
     }
   }
 
@@ -211,13 +215,17 @@ public class RoundRobinScheduler {
       var decoratedProcessor = applyDecorators(nextProcessor, processorDecorator);
       return decoratedProcessor.processAsync(context, executorService);
     } catch (Exception e) {
-      log.error(
-          "Error while preparing/processing processor '{}'. Shutting down gracefully",
-          nextProcessor.getClass().getSimpleName(),
-          e
-      );
-      gracefulShutdown();
-      return CompletableFuture.completedFuture(null);
+      if (gracefulShutdownOnError) {
+        log.error(
+            "Error while preparing/processing processor '{}'. Shutting down gracefully",
+            nextProcessor.getClass().getSimpleName(),
+            e
+        );
+        gracefulShutdown();
+        return CompletableFuture.completedFuture(null);
+      }
+
+      throw e;
     }
   }
 }

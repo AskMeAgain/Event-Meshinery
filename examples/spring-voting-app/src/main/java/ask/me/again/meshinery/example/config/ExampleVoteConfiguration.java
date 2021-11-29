@@ -3,6 +3,7 @@ package ask.me.again.meshinery.example.config;
 import ask.me.again.meshinery.connectors.mysql.MysqlConnector;
 import ask.me.again.meshinery.core.source.CronInputSource;
 import ask.me.again.meshinery.core.source.MemoryConnector;
+import ask.me.again.meshinery.core.source.SignalingInputSource;
 import ask.me.again.meshinery.core.task.MeshineryTask;
 import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.example.entities.ErrorProcessor;
@@ -46,37 +47,27 @@ public class ExampleVoteConfiguration {
         () -> new VotingContext(atomicInt.incrementAndGet() + "", false)
     );
 
+    var signalingSource = SignalingInputSource.<String, VotingContext>builder()
+        .signalingInputSource(contextCronInputSource)
+        .innerInputSource(memoryConnector)
+        .innerKey(REST_SIGNAL_IN)
+        .name("what a nice name")
+        .build();
+
     return MeshineryTaskFactory.<String, VotingContext>builder()
-        .inputSource(contextCronInputSource)
+        .inputSource(signalingSource)
         .defaultOutputSource(mysqlConnector)
         .taskName("Heartbeat Vote")
+        .putData(GRAPH_SUBGRAPH, "PreVote")
         .read(HEART_BEAT_IN, executorService)
         .process(new ProcessorA())
-        .write(HEART_BEAT_OUT)
-        .putData(GRAPH_SUBGRAPH, "PreVote")
-        .build();
-  }
-
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  @Bean
-  public MeshineryTask<String, VotingContext> userVote() {
-    return basicTask()
-        .inputSource(memoryConnector)
-        .taskName("Uservote")
-        .read(REST_SIGNAL_IN, executorService)
-        .readNewInput(HEART_BEAT_OUT, mysqlConnector)
-        .process((context, executor) -> {
-          log.info("Voted for vote on: {} and approved: {}", context.getId(), context.isApproved());
-          return CompletableFuture.completedFuture(context);
-        })
         .write(APPROVED_IN, VotingContext::isApproved)
         .write(REJECTED_IN, context -> !context.isApproved())
-        .putData(GRAPH_SUBGRAPH, "PreVote")
         .build();
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @Bean
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, VotingContext> afterVoteRejected() {
     return basicTask()
         .taskName("After Vote Rejected")
@@ -89,8 +80,8 @@ public class ExampleVoteConfiguration {
         .build();
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @Bean
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<String, VotingContext> afterVoteApproved() {
     return basicTask()
         .taskName("After Vote Approved")

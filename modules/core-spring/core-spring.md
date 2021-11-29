@@ -12,6 +12,7 @@ MeshineryTasks and run the Tasks automatically.
 | Property  | Default | Result  |
 |---|---|---|
 | meshinery.batch-job | false  | Enables Batchprocessing |
+| meshinery.graceful-shutdown-on-error | true | shutdowns the scheduler on error | 
 
 ## Hooks
 
