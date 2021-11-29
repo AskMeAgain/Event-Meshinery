@@ -18,15 +18,15 @@ import org.springframework.context.annotation.Configuration;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryAutoConfiguration {
 
-  @Value("${meshinery.batch-job:false}")
+  @Value("${meshinery.core.batch-job:false}")
   private boolean isBatchJob;
 
-  @Value("${meshinery.graceful-shutdown-on-error:true}")
+  @Value("${meshinery.core.graceful-shutdown-on-error:true}")
   private boolean gracefulShutdownOnError;
 
   @Bean
   @ConditionalOnProperty(
-      prefix = "meshinery",
+      prefix = "meshinery.core",
       name = "shutdown-on-finished",
       havingValue = "true",
       matchIfMissing = true)

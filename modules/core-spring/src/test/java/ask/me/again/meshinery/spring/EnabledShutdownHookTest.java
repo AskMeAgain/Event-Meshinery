@@ -7,7 +7,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@TestPropertySource(properties = "meshinery.shutdown-on-finished=true")
+@TestPropertySource(properties = "meshinery.core. shutdown-on-finished=true")
 @SpringJUnitConfig(MeshineryAutoConfiguration.class)
 class EnabledShutdownHookTest {
 
