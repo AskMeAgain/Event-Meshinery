@@ -4,25 +4,50 @@ import ask.me.again.meshinery.core.utils.context.TestContext;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class MemoryConnectorTest {
+
+  public static final String TEST_KEY = "TestKey";
 
   @Test
   void inputOutputTest() {
     //Arrange ---------------------------------------------------------------------------------
-    var inputOutput = new MemoryConnector<String, TestContext>("default");
-    var input = TestContext.builder()
-        .id("2")
-        .build();
+    var inputOutput = new MemoryConnector<String, TestContext>();
+    var input =new TestContext(2);
 
     //Act -------------------------------------------------------------------------------------
-    inputOutput.writeOutput("TestKey", input);
+    inputOutput.writeOutput(TEST_KEY, input);
     var resultEmpty = inputOutput.getInputs("TestKey2");
-    var result = inputOutput.getInputs("TestKey");
-    var resultEmpty2 = inputOutput.getInputs("TestKey");
+    var result = inputOutput.getInputs(TEST_KEY);
+    var resultEmpty2 = inputOutput.getInputs(TEST_KEY);
 
     //Assert ----------------------------------------------------------------------------------
-    Assertions.assertThat(result).first().isEqualTo(input);
-    Assertions.assertThat(resultEmpty).isEmpty();
-    Assertions.assertThat(resultEmpty2).isEmpty();
+    assertThat(result).first().isEqualTo(input);
+    assertThat(resultEmpty).isEmpty();
+    assertThat(resultEmpty2).isEmpty();
+  }
+
+  @Test
+  void accessingInputTest() {
+    //Arrange ---------------------------------------------------------------------------------
+    var connector = new MemoryConnector<String, TestContext>();
+    var input1 = new TestContext(1);
+    var input2 = new TestContext(2);
+    var input3 = new TestContext(3);
+    var input4 = new TestContext(4);
+
+    //Act -------------------------------------------------------------------------------------
+    connector.writeOutput(TEST_KEY, input1);
+    connector.writeOutput(TEST_KEY, input2);
+    connector.writeOutput(TEST_KEY, input3);
+    connector.writeOutput(TEST_KEY, input4);
+
+    var result = connector.getContext(TEST_KEY,"3");
+    var empty = connector.getContext(TEST_KEY,"5");
+
+    //Assert ----------------------------------------------------------------------------------
+    assertThat(result).contains(input3);
+    assertThat(empty).isEmpty();
   }
 }

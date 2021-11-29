@@ -128,7 +128,7 @@ public class MeshineryTaskFactory<K, C extends Context> {
   }
 
   public MeshineryTaskFactory<K, C> readNewInput(K key, AccessingInputSource<K, C> newInputSource) {
-    return addNewProcessor(new SignalingProcessor(newInputSource, key));
+    return addNewProcessor(new SignalingProcessor<>(newInputSource, key));
   }
 
   /**
