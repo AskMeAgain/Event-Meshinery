@@ -1,11 +1,11 @@
 package ask.me.again.meshinery.example;
 
-import ask.me.again.meshinery.draw.EnableMeshineryDrawing;
+import io.github.askmeagain.meshinery.draw.EnableMeshineryDrawing;
 import ask.me.again.meshinery.example.config.ExampleController;
 import ask.me.again.meshinery.example.config.ExampleHeartbeatSplitJoinConfiguration;
 import ask.me.again.meshinery.example.config.ExampleVoteConfiguration;
 import ask.me.again.meshinery.example.config.InputConfiguration;
-import ask.me.again.meshinery.spring.EnableMeshinery;
+import io.github.askmeagain.meshinery.core.EnableMeshinery;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;

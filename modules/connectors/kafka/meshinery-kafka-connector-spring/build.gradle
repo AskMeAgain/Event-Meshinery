@@ -1,0 +1,13 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+dependencies {
+
+    api project(':modules:meshinery-core')
+    api project(':modules:connectors:kafka:meshinery-kafka-connector')
+
+    implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
+
+}

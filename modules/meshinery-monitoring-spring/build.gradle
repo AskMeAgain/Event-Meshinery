@@ -1,0 +1,10 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+dependencies {
+    api project(':modules:meshinery-monitoring')
+    api project(':modules:meshinery-core-spring')
+}
+

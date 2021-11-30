@@ -6,7 +6,7 @@ dependencies {
 
     implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
 
-    implementation project(':modules:core-spring');
-    implementation project(':modules:draw-spring');
-    implementation project(':modules:connectors:kafka:kafka-connector-spring');
+    implementation project(':modules:meshinery-core-spring');
+    implementation project(':modules:meshinery-draw-spring');
+    implementation project(':modules:connectors:kafka:meshinery-kafka-connector-spring');
 }

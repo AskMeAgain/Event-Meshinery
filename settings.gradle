@@ -1,15 +1,15 @@
 rootProject.name = 'EventMeshinery'
 
-include('modules:core')
-include('modules:core-spring')
-include('modules:draw')
-include('modules:draw-spring')
-include('modules:monitoring')
-include('modules:monitoring-spring')
-include('modules:connectors:kafka:kafka-connector')
-include('modules:connectors:kafka:kafka-connector-spring')
-include('modules:connectors:mysql:mysql-connector')
-include('modules:connectors:mysql:mysql-connector-spring')
+include('modules:meshinery-core')
+include('modules:meshinery-core-spring')
+include('modules:meshinery-draw')
+include('modules:meshinery-draw-spring')
+include('modules:meshinery-monitoring')
+include('modules:meshinery-monitoring-spring')
+include('modules:connectors:kafka:meshinery-kafka-connector')
+include('modules:connectors:kafka:meshinery-kafka-connector-spring')
+include('modules:connectors:mysql:meshinery-mysql-connector')
+include('modules:connectors:mysql:meshinery-mysql-connector-spring')
 
 //so we dont do stuff on CICD
 if(!System.getenv("TOKEN")) {

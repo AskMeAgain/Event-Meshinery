@@ -19,17 +19,17 @@
             <option value="$PROJECT_DIR$/modules" />
             <option value="$PROJECT_DIR$/modules/connectors" />
             <option value="$PROJECT_DIR$/modules/connectors/kafka" />
-            <option value="$PROJECT_DIR$/modules/connectors/kafka/kafka-connector" />
-            <option value="$PROJECT_DIR$/modules/connectors/kafka/kafka-connector-spring" />
+            <option value="$PROJECT_DIR$/modules/connectors/kafka/meshinery-kafka-connector" />
+            <option value="$PROJECT_DIR$/modules/connectors/kafka/meshinery-kafka-connector-spring" />
             <option value="$PROJECT_DIR$/modules/connectors/mysql" />
-            <option value="$PROJECT_DIR$/modules/connectors/mysql/mysql-connector" />
-            <option value="$PROJECT_DIR$/modules/connectors/mysql/mysql-connector-spring" />
-            <option value="$PROJECT_DIR$/modules/core" />
-            <option value="$PROJECT_DIR$/modules/core-spring" />
-            <option value="$PROJECT_DIR$/modules/draw" />
-            <option value="$PROJECT_DIR$/modules/draw-spring" />
-            <option value="$PROJECT_DIR$/modules/monitoring" />
-            <option value="$PROJECT_DIR$/modules/monitoring-spring" />
+            <option value="$PROJECT_DIR$/modules/connectors/mysql/meshinery-mysql-connector" />
+            <option value="$PROJECT_DIR$/modules/connectors/mysql/meshinery-mysql-connector-spring" />
+            <option value="$PROJECT_DIR$/modules/meshinery-core" />
+            <option value="$PROJECT_DIR$/modules/meshinery-core-spring" />
+            <option value="$PROJECT_DIR$/modules/meshinery-draw" />
+            <option value="$PROJECT_DIR$/modules/meshinery-draw-spring" />
+            <option value="$PROJECT_DIR$/modules/meshinery-monitoring" />
+            <option value="$PROJECT_DIR$/modules/meshinery-monitoring-spring" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -1,6 +1,5 @@
 apply plugin: "checkstyle"
 apply plugin: "jacoco"
-apply from: "${rootDir}/gradle/publish.gradle"
 
 plugins.withType(JavaPlugin).whenPluginAdded {
 
@@ -61,15 +60,6 @@ plugins.withType(JavaPlugin).whenPluginAdded {
 }
 
 plugins.withType(JavaLibraryPlugin).whenPluginAdded {
-
-    javadoc {
-        options.addBooleanOption('html5', true)
-    }
-
-    java {
-        withJavadocJar()
-        withSourcesJar()
-    }
 
     jacocoTestReport {
         enabled true

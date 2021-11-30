@@ -1,10 +1,10 @@
 package ask.me.again.meshinery.example.config;
 
-import ask.me.again.meshinery.connectors.kafka.KafkaConfiguration;
-import ask.me.again.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
-import ask.me.again.meshinery.connectors.kafka.factories.KafkaProducerFactory;
-import ask.me.again.meshinery.connectors.kafka.sources.KafkaInputSource;
-import ask.me.again.meshinery.connectors.kafka.sources.KafkaOutputSource;
+import io.github.askmeagain.meshinery.connectors.kafka.KafkaConfiguration;
+import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
+import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaProducerFactory;
+import io.github.askmeagain.meshinery.connectors.kafka.sources.KafkaInputSource;
+import io.github.askmeagain.meshinery.connectors.kafka.sources.KafkaOutputSource;
 import ask.me.again.meshinery.example.TestContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.concurrent.ExecutorService;

@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.example.entities;
 
-import ask.me.again.meshinery.core.common.InputSource;
+import io.github.askmeagain.meshinery.core.common.InputSource;
 import ask.me.again.meshinery.example.TestContext;
 import java.util.List;
 import lombok.Getter;

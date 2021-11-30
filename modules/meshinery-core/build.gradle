@@ -1,0 +1,14 @@
+plugins {
+    id 'java-library'
+    id "com.vanniktech.maven.publish.base" version "0.18.0"
+}
+
+dependencies {
+    api 'com.cronutils:cron-utils:9.1.5'
+    implementation 'org.apache.commons:commons-collections4:4.4'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
+}
+
+mavenPublishing {
+    configure new com.vanniktech.maven.publish.JavaLibrary(new com.vanniktech.maven.publish.JavadocJar.Javadoc(), true)
+}

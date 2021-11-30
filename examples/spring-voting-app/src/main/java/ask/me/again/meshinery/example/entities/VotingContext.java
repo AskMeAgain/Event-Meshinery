@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.example.entities;
 
-import ask.me.again.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.DataContext;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;

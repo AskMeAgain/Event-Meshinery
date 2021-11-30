@@ -1,23 +1,38 @@
-plugins.withType(MavenPublishPlugin).whenPluginAdded {
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                groupId = 'ask.me.again'
-                artifactId = 'meshinery-' + project.name
-                version = System.getenv("RELEASE_VERSION")
+plugins.withId("com.vanniktech.maven.publish.base") {
 
-                from components.java
-            }
-        }
+    group = "io.github.askmeagain"
+    version = "0.0.5"
 
-        repositories {
-            maven {
-                name = "GitHubPackages"
-                url = "https://maven.pkg.github.com/AskMeAgain/Event-Meshinery"
-                credentials {
-                    username = System.getenv("USERNAME")
-                    password = System.getenv("TOKEN")
+    mavenPublishing {
+        publishToMavenCentral("DEFAULT")
+
+        // Will only apply to non snapshot builds.
+        // Uses credentials as described above, supports both regular and in memory signing.
+        signAllPublications()
+
+        pom {
+            name = project.name
+            description = "A description of what my library does."
+            inceptionYear = "2021"
+            url = "https://github.com/AskMeAgain/Event-Meshinery"
+            licenses {
+                license {
+                    name = "MIT License"
+                    url = "https://opensource.org/licenses/MIT"
+                    distribution = "https://opensource.org/licenses/MIT"
                 }
+            }
+            developers {
+                developer {
+                    id = "AskMeAgain"
+                    name = "AskMeAgain"
+                    url = "https://github.com/AskMeAgain/"
+                }
+            }
+            scm {
+                url = "https://github.com/AskMeAgain/Event-Meshinery/"
+                connection = "scm:git:git://github.com/AskMeAgain/Event-Meshinery.git"
+                developerConnection = "scm:git:ssh://git@github.com/AskMeAgain/Event-Meshinery.git"
             }
         }
     }

@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+dependencies {
+
+    api project(':modules:meshinery-core')
+
+    api 'mysql:mysql-connector-java:8.0.12'
+    api 'org.jdbi:jdbi3-core:3.21.0'
+
+    api 'org.jdbi:jdbi3-jackson2:3.21.0'
+
+    api 'org.jdbi:jdbi3-sqlobject:3.21.0'
+    api 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
+
+    testImplementation project(':modules:meshinery-core').sourceSets.test.output
+
+}

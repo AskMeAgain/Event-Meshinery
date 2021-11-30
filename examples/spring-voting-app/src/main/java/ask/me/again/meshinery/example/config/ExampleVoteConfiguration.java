@@ -1,14 +1,13 @@
 package ask.me.again.meshinery.example.config;
 
-import ask.me.again.meshinery.connectors.mysql.MysqlConnector;
-import ask.me.again.meshinery.core.source.CronInputSource;
-import ask.me.again.meshinery.core.source.MemoryConnector;
-import ask.me.again.meshinery.core.source.SignalingInputSource;
-import ask.me.again.meshinery.core.task.MeshineryTask;
-import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.connectors.mysql.MysqlConnector;
+import io.github.askmeagain.meshinery.core.source.CronInputSource;
+import io.github.askmeagain.meshinery.core.source.MemoryConnector;
+import io.github.askmeagain.meshinery.core.source.SignalingInputSource;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
+import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.example.entities.ErrorProcessor;
 import ask.me.again.meshinery.example.entities.ProcessorA;
-import ask.me.again.meshinery.core.processors.SignalingProcessor;
 import ask.me.again.meshinery.example.entities.VotingContext;
 import com.cronutils.model.CronType;
 import java.util.concurrent.CompletableFuture;
@@ -18,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 
-import static ask.me.again.meshinery.core.task.TaskDataProperties.GRAPH_SUBGRAPH;
+import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_SUBGRAPH;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j

@@ -1,6 +1,6 @@
 package ask.me.again.meshinery.example.config;
 
-import ask.me.again.meshinery.core.source.MemoryConnector;
+import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import ask.me.again.meshinery.example.entities.VotingContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

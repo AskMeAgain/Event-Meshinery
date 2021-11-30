@@ -5,10 +5,10 @@ plugins {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
-
-apply plugin: 'java'
 
 subprojects {
     apply from: "${rootDir}/gradle/subprojects.gradle"
+    apply from: "${rootDir}/gradle/publish.gradle"
 }

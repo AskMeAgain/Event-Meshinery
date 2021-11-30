@@ -1,7 +1,7 @@
 package ask.me.again.meshinery.example;
 
-import ask.me.again.meshinery.core.scheduler.RoundRobinScheduler;
-import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
+import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.example.entities.ExampleInputSource;
 import ask.me.again.meshinery.example.entities.ExampleOutputSource;
 import ask.me.again.meshinery.example.entities.ExampleOutputSource2;

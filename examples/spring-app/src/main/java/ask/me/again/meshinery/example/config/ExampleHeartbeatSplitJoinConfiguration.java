@@ -1,11 +1,11 @@
 package ask.me.again.meshinery.example.config;
 
-import ask.me.again.meshinery.core.common.DataContext;
-import ask.me.again.meshinery.core.common.InputSource;
-import ask.me.again.meshinery.core.common.OutputSource;
-import ask.me.again.meshinery.core.source.CronInputSource;
-import ask.me.again.meshinery.core.task.MeshineryTask;
-import ask.me.again.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.InputSource;
+import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.source.CronInputSource;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
+import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import ask.me.again.meshinery.example.entities.ProcessorA;
 import ask.me.again.meshinery.example.entities.ProcessorFinished;
 import com.cronutils.model.CronType;
