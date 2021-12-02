@@ -3,11 +3,6 @@ plugins {
     id 'org.barfuin.gradle.jacocolog' version '1.2.3'
 }
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
 subprojects {
     apply from: "${rootDir}/gradle/subprojects.gradle"
     apply from: "${rootDir}/gradle/publish.gradle"

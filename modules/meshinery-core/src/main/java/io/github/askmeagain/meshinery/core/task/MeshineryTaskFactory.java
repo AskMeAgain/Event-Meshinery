@@ -141,7 +141,8 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
     var name = "%s->%s__%s->%s".formatted(inputSource.getName(), inputKey, rightInputSource.getName(), rightKey);
 
     return toBuilder()
-        .inputSource(new JoinedInnerInputSource<>(name, inputSource, rightInputSource, rightKey, combine, timeToLiveSeconds))
+        .inputSource(
+            new JoinedInnerInputSource<>(name, inputSource, rightInputSource, rightKey, combine, timeToLiveSeconds))
         .taskData(taskData
             .put(TaskDataProperties.GRAPH_INPUT_SOURCE, rightInputSource.getName())
             .put(TaskDataProperties.GRAPH_INPUT_KEY, rightKey.toString()))
@@ -176,12 +177,16 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
   ) {
     MeshineryProcessor<C, N> newProcessor = (context, ex) -> CompletableFuture.completedFuture(map.apply(context));
 
+    var newTaskData = inputSource.addToTaskData(
+        taskData.put(TaskDataProperties.GRAPH_OUTPUT_SOURCE, newOutputSource.getName())
+    );
+
     return addNewProcessor(newProcessor)
         .toBuilder()
         .defaultOutputSource(newOutputSource)
         .clearDecorators()
         .decorators(decorators)
-        .taskData(taskData.put(TaskDataProperties.GRAPH_OUTPUT_SOURCE, newOutputSource.getName()))
+        .taskData(newTaskData)
         .build();
   }
 
@@ -361,7 +366,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
         backoffTime,
         inputKey,
         taskName,
-        taskData,
+        inputSource.addToTaskData(taskData),
         inputSource,
         defaultOutputSource,
         executorService,

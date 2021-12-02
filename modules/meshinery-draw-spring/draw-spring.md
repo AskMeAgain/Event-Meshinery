@@ -2,7 +2,7 @@
 
 ## Installation
 
-Add @EnableMeshineryDrawing
+1. Add @EnableMeshineryDrawing to your SpringApplication
 
 ## Endpoints
 
@@ -12,8 +12,8 @@ subgraphs are recognized by a MeshineryTask property called _**graph.subgraph**_
 
 The general pattern is
 
-`url:port/draw/{format}/{optional:subgraph}
-`
+    url:port/draw/{format}/{optional:subgraph}
+
 ### Format: Png
 
 Returns a complete image
