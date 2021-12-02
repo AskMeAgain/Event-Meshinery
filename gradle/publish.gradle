@@ -1,10 +1,10 @@
 plugins.withId("com.vanniktech.maven.publish.base") {
 
     group = "io.github.askmeagain"
-    version = "0.0.5"
+    version = System.getenv("RELEASE_VERSION") + "-SNAPSHOT"
 
     mavenPublishing {
-        publishToMavenCentral("DEFAULT")
+        publishToMavenCentral("S01")
 
         // Will only apply to non snapshot builds.
         // Uses credentials as described above, supports both regular and in memory signing.

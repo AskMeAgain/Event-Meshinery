@@ -27,9 +27,12 @@ jobs:
     - name: Set output
       id: vars
       run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-#    - name: Publish to GitHub Packages
-#      run: gradle publish
-#      env:
-#        RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
-#        USERNAME: ${{ github.actor }}
-#        TOKEN: ${{ secrets.TOKEN }}
+    - name: Publish to GitHub Packages
+      run: gradle publishMavenPublicationToMavenCentralRepository
+      env:
+        RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
+        ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_PRIV_KEY }}
+        ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.GPG_SHORT_PUB }}
+        ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_PW }}
+        ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USER }}
+        ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PW }}
