@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.*
+
 plugins {
     id 'java-library'
     id "com.vanniktech.maven.publish.base" version "0.18.0"
@@ -10,5 +12,5 @@ dependencies {
 }
 
 mavenPublishing {
-    configure new com.vanniktech.maven.publish.JavaLibrary(new com.vanniktech.maven.publish.JavadocJar.Javadoc(), true)
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
 }
