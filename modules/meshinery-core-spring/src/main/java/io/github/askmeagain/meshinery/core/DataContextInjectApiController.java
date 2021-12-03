@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import lombok.RequiredArgsConstructor;
@@ -17,17 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class DataContextInjectApiController {
 
   private final TaskReplayFactory taskReplayFactory;
+  private final ObjectMapper objectMapper;
 
   @SneakyThrows
   @PostMapping("/{taskName}")
-  public ResponseEntity<String> injectContext(
+  public <O extends DataContext> ResponseEntity<DataContext> injectContext(
       @PathVariable("taskName") String taskName,
-      @RequestBody DataContext context
+      @RequestBody String context
   ) {
-
-    taskReplayFactory.injectData(taskName, context);
-
-    return ResponseEntity.ok("Inject successful");
+    var body = taskReplayFactory.<O>injectData(taskName, (O)objectMapper.convertValue(context, Object.class));
+    return ResponseEntity.ok(body);
   }
 
 }

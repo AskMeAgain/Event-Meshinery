@@ -45,3 +45,9 @@ or you can provide a Predicate which tells the write method if it should write t
 ### I only want to trigger a flow every X days
 
 Combine a CronInputSource with the needed InputSource
+
+### I had an exception while processing. What to do now?
+
+1. You can fix the content of the dataContext and retrigger the flow via 
+the TaskReplayFactory.
+  **This will directly inject the data into the processors and not write to the statestore**

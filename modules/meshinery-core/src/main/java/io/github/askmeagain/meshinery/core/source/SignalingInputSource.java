@@ -3,7 +3,6 @@ package io.github.askmeagain.meshinery.core.source;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.task.TaskData;
-import io.github.askmeagain.meshinery.core.task.TaskDataProperties;
 import java.util.Collections;
 import java.util.List;
 import lombok.Builder;
@@ -13,6 +12,9 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_
 
 @Builder
 public class SignalingInputSource<K, C extends DataContext> implements InputSource<K, C> {
+
+  @Builder.Default
+  private final boolean lockIn = false;
 
   @Getter
   private final String name;

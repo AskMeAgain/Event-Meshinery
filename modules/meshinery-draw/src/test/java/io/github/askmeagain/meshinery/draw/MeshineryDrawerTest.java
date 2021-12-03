@@ -35,7 +35,7 @@ class MeshineryDrawerTest {
         .build();
 
     //Act ------------------------------------------------------------------------------------
-    drawer.draw();
+    drawer.drawPng();
 
     //Assert ---------------------------------------------------------------------------------
     Mockito.verify(applyEdge, Mockito.times(3)).onEachEdge(any(), any());

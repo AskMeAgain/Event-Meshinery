@@ -1,6 +1,9 @@
+import com.vanniktech.maven.publish.*
+
 plugins {
     id 'java'
     id 'java-library'
+    id "com.vanniktech.maven.publish.base"
 }
 
 dependencies {
@@ -9,4 +12,8 @@ dependencies {
 
     implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
 
+}
+
+mavenPublishing {
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
 }

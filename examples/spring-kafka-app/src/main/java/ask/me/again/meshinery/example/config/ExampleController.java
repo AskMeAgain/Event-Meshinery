@@ -55,7 +55,7 @@ public class ExampleController {
     var result = MeshineryDrawer.builder()
         .tasks(tasks)
         .build()
-        .draw();
+        .drawPng();
 
     var headers = new HttpHeaders();
     headers.setCacheControl(CacheControl.noCache().getHeaderValue());

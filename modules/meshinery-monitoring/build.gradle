@@ -1,6 +1,9 @@
+import com.vanniktech.maven.publish.*
+
 plugins {
     id 'java'
     id 'java-library'
+    id "com.vanniktech.maven.publish.base"
 }
 
 dependencies {
@@ -8,7 +11,10 @@ dependencies {
     api 'io.prometheus:simpleclient:0.12.0'
     api 'io.prometheus:simpleclient_common:0.12.0'
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
+}
 
+mavenPublishing {
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
 }
 
 

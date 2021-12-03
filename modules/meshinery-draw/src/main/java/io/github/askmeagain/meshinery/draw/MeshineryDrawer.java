@@ -32,11 +32,11 @@ public class MeshineryDrawer {
   private final EdgeCustomizer edgeAssignment;
   private final GraphCustomizer graphAssignment;
 
-  public byte[] draw(String... subgraph) throws IOException {
-    return draw(getTasksBySubgraph(subgraph));
+  public byte[] drawPng(String... subgraph) throws IOException {
+    return drawPng(getTasksBySubgraph(subgraph));
   }
 
-  private byte[] draw(List<MeshineryTask<?, ?>> tasks) throws IOException {
+  private byte[] drawPng(List<MeshineryTask<?, ?>> tasks) throws IOException {
 
     var graph = new DefaultGraph("id");
     var fileSinkImages = new FileSinkImages(

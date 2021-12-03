@@ -59,7 +59,7 @@ public class DrawerApiController {
   @GetMapping("/png/{subgraph}")
   public ResponseEntity<ByteArrayResource> png(@PathVariable("subgraph") String subgraphs) throws IOException {
 
-    var result = meshineryDrawer.draw(subgraphs);
+    var result = meshineryDrawer.drawPng(subgraphs);
 
     var headers = new HttpHeaders();
     headers.setCacheControl(CacheControl.noCache().getHeaderValue());
@@ -74,7 +74,7 @@ public class DrawerApiController {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @GetMapping("/png")
   public ResponseEntity<ByteArrayResource> png() throws IOException {
-    var result = meshineryDrawer.draw();
+    var result = meshineryDrawer.drawPng();
 
     var headers = new HttpHeaders();
     headers.setCacheControl(CacheControl.noCache().getHeaderValue());

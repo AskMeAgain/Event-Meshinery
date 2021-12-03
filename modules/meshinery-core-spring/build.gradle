@@ -1,11 +1,20 @@
+import com.vanniktech.maven.publish.*
+
 plugins {
     id 'java'
     id 'java-library'
     id 'org.springframework.boot' version '2.5.4'
+    id "com.vanniktech.maven.publish.base"
 }
 
 dependencies {
     api('org.springframework.boot:spring-boot-starter-web:2.5.4')
 
     api project(':modules:meshinery-core')
+
+    testImplementation project(':modules:meshinery-core').sourceSets.test.output
+}
+
+mavenPublishing {
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
 }

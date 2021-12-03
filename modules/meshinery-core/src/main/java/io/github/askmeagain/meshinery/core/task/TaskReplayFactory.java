@@ -44,12 +44,14 @@ public class TaskReplayFactory {
    * @throws ExecutionException   throws execution exception
    * @throws InterruptedException throws interrupted exception
    */
-  public <C extends DataContext> void injectData(String taskName, C context)
+  public <C extends DataContext> DataContext injectData(String taskName, C context)
       throws ExecutionException, InterruptedException {
 
-    createTaskInjection(taskName, context).get();
+    var result = createTaskInjection(taskName, context).get();
 
     MDC.clear();
+
+    return result;
   }
 
   /**

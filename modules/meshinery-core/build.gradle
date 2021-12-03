@@ -2,7 +2,7 @@ import com.vanniktech.maven.publish.*
 
 plugins {
     id 'java-library'
-    id "com.vanniktech.maven.publish.base" version "0.18.0"
+    id "com.vanniktech.maven.publish.base"
 }
 
 dependencies {
