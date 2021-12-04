@@ -1,0 +1,4 @@
+meshinery:
+  core:
+    inject:
+      - "abc"
