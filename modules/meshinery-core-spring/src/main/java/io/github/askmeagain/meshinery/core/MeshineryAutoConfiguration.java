@@ -4,17 +4,23 @@ import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
+import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import java.util.List;
+import java.util.concurrent.Executors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 @Configuration
 @RequiredArgsConstructor
+@Import(DataContextInjectApiController.class)
+@EnableConfigurationProperties(MeshineryConfigProperties.class)
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryAutoConfiguration {
 
@@ -23,6 +29,11 @@ public class MeshineryAutoConfiguration {
 
   @Value("${meshinery.core.graceful-shutdown-on-error:true}")
   private boolean gracefulShutdownOnError;
+
+  @Bean
+  public TaskReplayFactory taskReplayFactory(List<MeshineryTask<?, ?>> tasks) {
+    return new TaskReplayFactory(tasks, Executors.newSingleThreadExecutor());
+  }
 
   @Bean
   @ConditionalOnProperty(

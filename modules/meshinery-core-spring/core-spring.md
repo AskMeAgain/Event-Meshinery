@@ -7,11 +7,27 @@ This package provides an AutoConfiguration class which you can use to bootstrap 
 Add @EnableMeshinery to your spring configuration and provide MeshineryTask Beans. The autoconfiguration will pickup the
 MeshineryTasks and run the Tasks automatically.
 
+## Injecting DataContext Endpoint
+
+When enabling the Spring Integration, a new endpoint is registered, which lets you send json via Rest to get injected
+into a context. It is a Bridge from Rest to the TaskReplayFactory.
+
+First you need to register a dataContext class, to make it eligible for injection. You can do this by adding the data to
+EnableMeshinery annotation or by adding a spring property.
+
+    @EnableMeshinery(inject = {TestDataContext.class, Test2DataContext.class})
+
+You then have access to the following endpoints. Async just returns instantly instead of waiting for the end.
+
+    host:port/inject/{ContextType}/{TaskName}
+    host:port/injectAsync/{ContextType}/{TaskName}
+
 ## Properties
 
 | Property  | Default | Result  |
 |---|---|---|
 | meshinery.batch-job | false  | Enables Batchprocessing |
+| meshinery.inject | false  | This is a list where you add a fully qualified name to make it eligible for injecting via rest endpoint|
 | meshinery.graceful-shutdown-on-error | true | shutdowns the scheduler on error | 
 
 ## Hooks

@@ -2,9 +2,10 @@ package io.github.askmeagain.meshinery.core;
 
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
-import java.nio.charset.Charset;
-import java.util.concurrent.CompletableFuture;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -27,35 +28,58 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {DataContextInjectApiController.class})
 class DataContextInjectApiControllerTest {
 
-  private static final MediaType APPLICATION_JSON_UTF8 =
-      new MediaType(
-          MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final TestContext INPUT_CONTEXT = new TestContext(0);
+  private static final TestContext RESULT_CONTEXT = new TestContext(1);
+  private static final MediaType APPLICATION_JSON_UTF8 = new MediaType(
+      MediaType.APPLICATION_JSON.getType(),
+      MediaType.APPLICATION_JSON.getSubtype(),
+      StandardCharsets.UTF_8
+  );
 
+  @Autowired private DataContextInjectApiController controller;
+  @Autowired private MockMvc mockMvc;
 
-  @Autowired
-  private MockMvc mockMvc;
+  @MockBean private TaskReplayFactory taskReplayFactory;
+  @MockBean private MeshineryConfigProperties meshineryConfigProperties;
 
-  @MockBean
-  private TaskReplayFactory taskReplayFactory;
+  @BeforeEach
+  void fillingPostConstructMethod() {
+    Mockito.when(meshineryConfigProperties.getInject()).thenReturn(List.of(TestContext.class.getCanonicalName()));
+    controller.setup();
+  }
 
   @Test
   @SneakyThrows
   void injectContext() {
     //Arrange --------------------------------------------------------------------------------
-    var objectMapper = new ObjectMapper();
-    TestContext inputContext = new TestContext(0);
-    TestContext result = new TestContext(1);
-    Mockito.when(taskReplayFactory.injectDataAsync(eq("testTask"), eq(inputContext)))
-        .thenReturn(CompletableFuture.completedFuture(result));
+    Mockito.when(taskReplayFactory.injectData(eq("testTask"), eq(INPUT_CONTEXT)))
+        .thenReturn(RESULT_CONTEXT);
 
     //Act ------------------------------------------------------------------------------------
     //Assert ---------------------------------------------------------------------------------
-    mockMvc.perform(post("/inject/testTask")
+    mockMvc.perform(post("/inject/TestContext/testTask")
             .contentType(APPLICATION_JSON_UTF8)
-            .content(objectMapper.writeValueAsString(inputContext)))
-        .andExpect(content().string("abc"))
+            .content(OBJECT_MAPPER.writeValueAsString(INPUT_CONTEXT)))
+        .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(RESULT_CONTEXT)))
         .andExpect(status()
             .isOk());
+  }
 
+  @Test
+  @SneakyThrows
+  void injectContextAsync() {
+    //Arrange --------------------------------------------------------------------------------
+    Mockito.when(taskReplayFactory.injectDataAsync(eq("testTask"), eq(INPUT_CONTEXT)))
+        .thenReturn(null);
+
+    //Act ------------------------------------------------------------------------------------
+    //Assert ---------------------------------------------------------------------------------
+    mockMvc.perform(post("/inject/TestContext/testTask/async")
+            .contentType(APPLICATION_JSON_UTF8)
+            .content(OBJECT_MAPPER.writeValueAsString(INPUT_CONTEXT)))
+        .andExpect(content().string("Accepted"))
+        .andExpect(status()
+            .isAccepted());
   }
 }

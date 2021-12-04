@@ -2,6 +2,7 @@ package io.github.askmeagain.meshinery.core.common;
 
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.MeshineryTaskNotFoundException;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.TaskDataTestProcessor;
@@ -18,7 +19,7 @@ import static org.mockito.ArgumentMatchers.eq;
 class TaskReplayFactoryTest {
 
   @Test
-  void testInputFactory() throws ExecutionException, InterruptedException {
+  void testInputFactory() throws ExecutionException, InterruptedException, MeshineryTaskNotFoundException {
     //Arrange ----------------------------------------------------------------------------------------------------------
     var processorA = Mockito.spy(new TestContextProcessor(1));
     var processorB = Mockito.spy(new TestContextProcessor(2));

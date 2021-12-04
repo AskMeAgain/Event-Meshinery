@@ -1,5 +1,7 @@
 meshinery:
   core:
+    inject:
+      - "ask.me.again.meshinery.example.entities.VotingContext"
     shutdown-on-finished: false
     graceful-shutdown-on-error: false
   draw:

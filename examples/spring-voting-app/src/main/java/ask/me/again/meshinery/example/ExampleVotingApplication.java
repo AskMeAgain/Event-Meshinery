@@ -1,12 +1,12 @@
 package ask.me.again.meshinery.example;
 
-import io.github.askmeagain.meshinery.connectors.mysql.MeshineryMysqlConfiguration;
-import io.github.askmeagain.meshinery.draw.EnableMeshineryDrawing;
 import ask.me.again.meshinery.example.config.ExampleController;
 import ask.me.again.meshinery.example.config.ExampleVoteConfiguration;
 import ask.me.again.meshinery.example.config.InputConfiguration;
-import io.github.askmeagain.meshinery.monitoring.EnableMeshineryMonitoring;
+import io.github.askmeagain.meshinery.connectors.mysql.EnableMeshineryMysqlConnector;
 import io.github.askmeagain.meshinery.core.EnableMeshinery;
+import io.github.askmeagain.meshinery.draw.EnableMeshineryDrawing;
+import io.github.askmeagain.meshinery.monitoring.EnableMeshineryMonitoring;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
@@ -16,11 +16,11 @@ import org.springframework.context.annotation.Import;
 @EnableMeshinery
 @EnableMeshineryMonitoring
 @EnableMeshineryDrawing
+@EnableMeshineryMysqlConnector
 @Import({
     ExampleVoteConfiguration.class,
     ExampleController.class,
-    InputConfiguration.class,
-    MeshineryMysqlConfiguration.class
+    InputConfiguration.class
 })
 public class ExampleVotingApplication {
 

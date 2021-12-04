@@ -27,7 +27,6 @@ public class TaskReplayFactory {
    *
    * @param tasks           list of tasks to choose from
    * @param executorService the executorService which should be used
-   *
    */
   public TaskReplayFactory(List<MeshineryTask<?, ? extends DataContext>> tasks, ExecutorService executorService) {
     this.executorService = executorService;
@@ -45,7 +44,7 @@ public class TaskReplayFactory {
    * @throws InterruptedException throws interrupted exception
    */
   public <C extends DataContext> DataContext injectData(String taskName, C context)
-      throws ExecutionException, InterruptedException {
+      throws ExecutionException, InterruptedException, MeshineryTaskNotFoundException {
 
     var result = createTaskInjection(taskName, context).get();
 
@@ -61,7 +60,8 @@ public class TaskReplayFactory {
    * @param context  to use
    * @param <C>      type of the context
    */
-  public <C extends DataContext> CompletableFuture<C> injectDataAsync(String taskName, C context) {
+  public <C extends DataContext> CompletableFuture<C> injectDataAsync(String taskName, C context)
+      throws MeshineryTaskNotFoundException {
 
     MDC.put(TASK_NAME, taskName);
     MDC.put(UID, context.getId());
@@ -74,13 +74,22 @@ public class TaskReplayFactory {
     return result;
   }
 
-  private <C extends DataContext> CompletableFuture<C> createTaskInjection(String taskName, C context) {
+  private <C extends DataContext> CompletableFuture<C> createTaskInjection(String taskName, C context)
+      throws MeshineryTaskNotFoundException {
 
-    MDC.put(TASK_NAME, taskName);
+    var replacedTaskName = taskName.replace('_', ' ');
+
+    MDC.put(TASK_NAME, replacedTaskName);
     MDC.put(UID, context.getId());
+
     log.info("Replaying a new Context synchronous");
 
-    var task = taskMap.get(taskName);
+    if (!taskMap.containsKey(replacedTaskName)) {
+      throw new MeshineryTaskNotFoundException("Could not find Task with name '%s' in [%s]"
+          .formatted(replacedTaskName, String.join(", ", taskMap.keySet())));
+    }
+
+    var task = taskMap.get(replacedTaskName);
 
     return MeshineryUtils.combineProcessors(
         task.getProcessorList(),

@@ -1,15 +1,14 @@
 package ask.me.again.meshinery.example.config;
 
+import ask.me.again.meshinery.example.entities.ProcessorA;
+import ask.me.again.meshinery.example.entities.VotingContext;
+import com.cronutils.model.CronType;
 import io.github.askmeagain.meshinery.connectors.mysql.MysqlConnector;
 import io.github.askmeagain.meshinery.core.source.CronInputSource;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.source.SignalingInputSource;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
-import ask.me.again.meshinery.example.entities.ErrorProcessor;
-import ask.me.again.meshinery.example.entities.ProcessorA;
-import ask.me.again.meshinery.example.entities.VotingContext;
-import com.cronutils.model.CronType;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -89,7 +88,7 @@ public class ExampleVoteConfiguration {
           log.info("APPROVED: {}", context.getId());
           return CompletableFuture.completedFuture(context);
         })
-        .process(new ErrorProcessor())
+        //.process(new ErrorProcessor())
         .write(FINISHED_IN)
         .build();
   }
