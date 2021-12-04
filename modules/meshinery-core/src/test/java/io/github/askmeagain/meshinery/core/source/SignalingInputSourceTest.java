@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SignalingInputSourceTest {
 
-  public static final String KEY = "";
+  private static final String KEY = "";
 
   @Test
   void signalingInputTest() {
@@ -15,7 +15,7 @@ class SignalingInputSourceTest {
     var signal = new MemoryConnector<String, TestContext>();
     var resultSource = new MemoryConnector<String, TestContext>();
 
-    var signalSource = new SignalingInputSource<>("signal", signal, resultSource, KEY);
+    var signalSource = new SignalingInputSource<>(false, "signal", signal, resultSource, KEY);
 
     resultSource.writeOutput(KEY, new TestContext(1));
     resultSource.writeOutput("1", new TestContext(0));
@@ -34,6 +34,50 @@ class SignalingInputSourceTest {
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(result).contains(new TestContext(1));
+    assertThat(empty1).isEmpty();
+    assertThat(empty2).isEmpty();
+    assertThat(empty3).isEmpty();
+  }
+
+
+  @Test
+  void signalingLockIn() {
+    //Arrange --------------------------------------------------------------------------------
+    var signal = new MemoryConnector<String, TestContext>();
+    var resultSource = new MemoryConnector<String, TestContext>();
+
+    var signalSource = new SignalingInputSource<>(true, "signal", signal, resultSource, KEY);
+
+    resultSource.writeOutput(KEY, new TestContext(1));
+
+
+    //Act ------------------------------------------------------------------------------------
+    var empty1 = signalSource.getInputs(KEY);
+    signal.writeOutput(KEY, new TestContext(1234));
+
+    var result1 = signalSource.getInputs(KEY);
+
+    resultSource.writeOutput(KEY, new TestContext(2));
+    var result2 = signalSource.getInputs(KEY);
+
+    resultSource.writeOutput(KEY, new TestContext(3));
+    var result3 = signalSource.getInputs(KEY);
+
+    resultSource.writeOutput(KEY, new TestContext(4));
+    var result4 = signalSource.getInputs(KEY);
+
+    resultSource.writeOutput("1", new TestContext(0));
+    var empty2 = signalSource.getInputs(KEY);
+
+    signal.writeOutput(KEY, new TestContext(1234));
+
+    var empty3 = signalSource.getInputs(KEY);
+
+    //Assert ---------------------------------------------------------------------------------
+    assertThat(result1).contains(new TestContext(1));
+    assertThat(result2).contains(new TestContext(2));
+    assertThat(result3).contains(new TestContext(3));
+    assertThat(result4).contains(new TestContext(4));
     assertThat(empty1).isEmpty();
     assertThat(empty2).isEmpty();
     assertThat(empty3).isEmpty();

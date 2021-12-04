@@ -5,16 +5,21 @@ import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import lombok.Builder;
 import lombok.Getter;
 
 import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_INPUT_KEY;
 
 @Builder
-public class SignalingInputSource<K, C extends DataContext> implements InputSource<K, C> {
+public class SignalingInputSource<K extends Comparable<K>, C extends DataContext> implements InputSource<K, C> {
 
   @Builder.Default
   private final boolean lockIn = false;
+
+
+  private final Set<K> locked = new ConcurrentSkipListSet<>();
 
   @Getter
   private final String name;
@@ -30,12 +35,25 @@ public class SignalingInputSource<K, C extends DataContext> implements InputSour
   @Override
   public List<C> getInputs(K key) {
 
-    var signal = signalingInputSource.getInputs(key);
+    if (!lockIn || !locked.contains(key)) {
+      var signal = signalingInputSource.getInputs(key);
 
-    if (signal.isEmpty()) {
-      return Collections.emptyList();
+      if (signal.isEmpty()) {
+        return Collections.emptyList();
+      }
     }
 
-    return innerInputSource.getInputs(innerKey);
+    var result = innerInputSource.getInputs(innerKey);
+
+    if (lockIn) {
+      var isLockedIn = locked.contains(key);
+      if (isLockedIn && result.isEmpty()) {
+        locked.remove(key);
+      } else if(!isLockedIn){
+        locked.add(key);
+      }
+    }
+
+    return result;
   }
 }

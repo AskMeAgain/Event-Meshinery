@@ -70,6 +70,7 @@ or by executing a flow from a Webhook by other applications.
     var realValueSource = new MemoryConnector<String, TestContext>();
 
     var signalSource = new SignalingInputSource<>(
+        false //is locked in or not
         "signal-source",  //source name
         signal, //signal source
         realValueSource //this will be the real source
@@ -82,6 +83,12 @@ or by executing a flow from a Webhook by other applications.
         .read("0 0 0 * * *", executorService) //the cron
         .process([..]) //processors
         .write("after-schedule-done"); //the new event
+
+#### Lock
+
+You can enable a locking mechanism in the SignalingInputSource. This means that
+when the signal comes, it will not ask for the signal again until the
+innerSource is exhausted. 
 
 ### Joins
 
