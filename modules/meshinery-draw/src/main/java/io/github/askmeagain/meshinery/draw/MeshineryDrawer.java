@@ -112,7 +112,9 @@ public class MeshineryDrawer {
   }
 
   private void gatherGraphData(
-      List<MeshineryTask<?, ?>> tasks, HashMap<String, NodeData> nodeSet, HashSet<EdgeData> edges
+      List<MeshineryTask<?, ?>> tasks,
+      HashMap<String, NodeData> nodeSet,
+      HashSet<EdgeData> edges
   ) {
     for (var task : tasks) {
       var taskData = task.getTaskData();
@@ -149,7 +151,10 @@ public class MeshineryDrawer {
   }
 
   private void drawNormalEdge(
-      HashMap<String, NodeData> nodeSet, HashSet<EdgeData> edges, MeshineryTask<?, ?> task, String inputKey,
+      HashMap<String, NodeData> nodeSet,
+      HashSet<EdgeData> edges,
+      MeshineryTask<?, ?> task,
+      String inputKey,
       String outputKeys
   ) {
     edges.add(new EdgeData(

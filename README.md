@@ -43,7 +43,8 @@ without Kafka. Currently supported are the following state stores, but you can e
 
 ## Motivation <a name="Motivation"></a>
 
-Doing long running (blocking) procedures (like rest calls) via Kafka Streams represents a challenge:
+Doing long running (blocking) procedures, like rest calls
+via [Kafka Streams](https://kafka.apache.org/documentation/streams/) represents a challenge:
 
 **If you block a partition with a long running call, then you cannot process any other messages from this partition
 until the processing is unblocked.**
@@ -61,35 +62,41 @@ topic/partition is not important.
 
 ## Advantages of Event-Meshinery <a name="Advantages"></a>
 
-* Structure your code in a really transparent way by providing a state store independent api, by separating the business
-  layer from the underlying implementation layer
-* You can resume a process in case of error and you will start exactly where you left off (within bounds)
-* Fine granular configs for your thread management (if needed)
-* Fast time-to-market: switching between state stores is super easy: Start with memory for fast iteration cycles, if you
-  need more guarantees switch to mysql or kafka without much work
-* Easily integrated (using Spring or by constructing everything by hand)
-* Create a complete event diagram to map your events and how they interact with each other
-* Automatic Grafana Monitoring integration.
+* Structure your code in a really transparent way by providing a **state store independent api**, by separating the
+  business layer from the underlying implementation layer. One look at a task definition tells you exactly WHAT happens
+  WHEN.
+* You can resume a process in case of error and you will start exactly where you left off (within bounds).
+* Fine granular configs for your thread management if needed.
+* Fast time-to-market: switching between state stores is super easy: Start with memory for fast iteration cycles, then
+  enable Kafka and/or Mysql in an agil way.
+* Easily integrated, using Spring or by constructing everything by hand.
+* Create a complete [event diagram](modules/meshinery-draw/draw.md) to map your events and how they interact with each
+  other
+* Automatic Prometheus Monitoring integration
+* Complete Spring integration. 1 Annotation starts everything, you only need to define the business logic and wire it
+  together.
 
 ## Module Structure <a name="Module-Structure"></a>
 
-* [Core](modules/meshinery-core/core.md) contains, the scheduler and everything basic you need. You only need this to
-  start
-    * [Core-Spring](modules/meshinery-core-spring/core-spring.md) contains the **Spring** AutoConfiguration for the core
-      library, like starting the Scheduler automatically and providing some utility hooks
-* [Monitoring](modules/meshinery-monitoring/monitoring.md) contains a prometheus monitoring solution
-    * [Monitoring-Spring](modules/meshinery-monitoring-spring/monitoring-spring.md) contains the **Spring**
+* [meshinery-core](modules/meshinery-core/core.md) contains, the scheduler and everything basic you need. You only need
+  this to start
+    * [meshinery-core-spring](modules/meshinery-core-spring/core-spring.md) contains the **Spring** AutoConfiguration
+      for the core library, like starting the Scheduler automatically and providing some utility hooks
+* [meshinery-monitoring](modules/meshinery-monitoring/monitoring.md) contains a prometheus monitoring solution
+    * [meshinery-monitoring-spring](modules/meshinery-monitoring-spring/monitoring-spring.md) contains the **Spring**
       AutoConfiguration of the monitoring
-* [Draw](modules/meshinery-draw/draw.md) contains the MeshineryDrawer class, which takes MeshineryTasks and draws system
-  diagrams for multiple sources: Pictures (PNG,JPG) and Mermaid
-    * [Draw-Spring](modules/meshinery-draw-spring/draw-spring.md) contains a **Spring** AutoConfiguration of the Drawing
-      with Endpoints
-* [Connectors-Mysql](modules/connectors/mysql/meshinery-mysql-connector/mysql.md) has the Mysql state store integration
-    * [Connectors-Mysql-Spring](modules/connectors/mysql/meshinery-mysql-connector-spring/mysql-spring.md) has the
-      Spring AutoConfiguration for Mysql
-* [Connectors-Kafka](modules/connectors/kafka/meshinery-kafka-connector/kafka.md) has the Kafka state store integration
-    * [Connectors-Kafka-Spring](modules/connectors/kafka/meshinery-kafka-connector-spring/kafka-spring.md) has the
-      Spring AutoConfiguration for Kafka
+* [meshinery-draw](modules/meshinery-draw/draw.md) contains the MeshineryDrawer class, which takes MeshineryTasks and
+  draws system diagrams for multiple sources: Pictures (PNG,JPG) and Mermaid
+    * [meshinery-draw-spring](modules/meshinery-draw-spring/draw-spring.md) contains a **Spring** AutoConfiguration of
+      the Drawing with Endpoints
+* [meshinery-connectors-mysql](modules/connectors/mysql/meshinery-mysql-connector/mysql.md) has the Mysql state store
+  integration
+    * [meshinery-connectors-mysql-spring](modules/connectors/mysql/meshinery-mysql-connector-spring/mysql-spring.md) has
+      the Spring AutoConfiguration for Mysql
+* [meshinery-connectors-kafka](modules/connectors/kafka/meshinery-kafka-connector/kafka.md) has the Kafka state store
+  integration
+    * [meshinery-connectors-kafka-spring](modules/connectors/kafka/meshinery-kafka-connector-spring/kafka-spring.md)
+      has the Spring AutoConfiguration for Kafka
 
 ## Architecture <a name="Architecture"></a>
 

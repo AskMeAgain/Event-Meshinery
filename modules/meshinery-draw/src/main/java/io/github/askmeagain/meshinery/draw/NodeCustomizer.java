@@ -7,6 +7,8 @@ import java.util.Queue;
 import java.util.Set;
 import org.graphstream.graph.implementations.DefaultGraph;
 
+import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_INPUT_SOURCE;
+
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public interface NodeCustomizer {
 
@@ -19,7 +21,7 @@ public interface NodeCustomizer {
     node.addAttribute("ui.label", nodeData.getName());
     node.addAttribute("layout.weight", 500);
 
-    var source = nodeData.getTaskData().getSingle("graph.inputSource");
+    var source = nodeData.getTaskData().getSingle(GRAPH_INPUT_SOURCE);
 
     var color = "blue";
 

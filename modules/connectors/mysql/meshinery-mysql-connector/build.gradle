@@ -18,6 +18,8 @@ dependencies {
     api 'org.jdbi:jdbi3-sqlobject:3.21.0'
     api 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
 
+    implementation('org.springframework.boot:spring-boot-starter-validation:2.6.1')
+
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
 
 }

@@ -8,9 +8,10 @@ plugins {
 }
 
 dependencies {
+    api project(':modules:meshinery-core')
     api('org.springframework.boot:spring-boot-starter-web:2.5.4')
 
-    api project(':modules:meshinery-core')
+    implementation('org.springframework.boot:spring-boot-starter-validation:2.6.1')
 
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
 }
