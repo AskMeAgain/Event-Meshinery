@@ -5,6 +5,8 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
+import java.util.Collections;
+import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -14,8 +16,10 @@ class DuplicateTaskNameTest {
   @Test
   void duplicateName() {
     //Arrange ----------------------------------------------------------------------------------------------------------
-    var duplicateTask = MeshineryTaskFactory.builder()
+    var duplicateTask = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("duplicateTask")
+        .inputSource(new TestInputSource(Collections.emptyList(), 0, 0))
+        .read("", Executors.newSingleThreadExecutor())
         .build();
 
     //Act --------------------------------------------------------------------------------------------------------------

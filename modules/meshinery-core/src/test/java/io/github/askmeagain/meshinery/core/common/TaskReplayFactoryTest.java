@@ -7,6 +7,8 @@ import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.TaskDataTestProcessor;
 import io.github.askmeagain.meshinery.core.utils.processor.TestContextProcessor;
+import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -30,6 +32,8 @@ class TaskReplayFactoryTest {
     List<MeshineryTask<?, ? extends DataContext>> tasks = List.of(
         MeshineryTaskFactory.<String, TestContext>builder()
             .defaultOutputSource(outputSource)
+            .inputSource(new TestInputSource(Collections.emptyList(), 0, 0))
+            .read("", Executors.newSingleThreadExecutor())
             .taskName("test")
             .process(processorA)
             .process(processorB)
@@ -39,6 +43,8 @@ class TaskReplayFactoryTest {
             .build(),
         MeshineryTaskFactory.<String, TestContext>builder()
             .taskName("test2")
+            .inputSource(new TestInputSource(Collections.emptyList(), 0, 0))
+            .read("", Executors.newSingleThreadExecutor())
             .build()
     );
     var executor = Executors.newSingleThreadExecutor();

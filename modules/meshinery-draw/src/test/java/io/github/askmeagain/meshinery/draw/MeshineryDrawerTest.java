@@ -1,11 +1,13 @@
 package io.github.askmeagain.meshinery.draw;
 
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.OutputSource;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.utils.context.TestContext;
+import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
+import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,33 +47,27 @@ class MeshineryDrawerTest {
   }
 
   private List<MeshineryTask<?, ?>> getTasks() {
-    OutputSource<String, DataContext> outputSource = new OutputSource<>() {
-      @Override
-      public String getName() {
-        return "TestSource";
-      }
-
-      @Override
-      public void writeOutput(String key, DataContext output) {
-
-      }
-    };
+    var outputSource = new TestOutputSource();
+    var inputSource = new TestInputSource(Collections.emptyList(), 0, 0);
 
     return List.of(
-        MeshineryTaskFactory.<String, DataContext>builder()
+        MeshineryTaskFactory.<String, TestContext>builder()
             .defaultOutputSource(outputSource)
+            .inputSource(inputSource)
             .read("A", null)
             .taskName("A")
             .write("B")
             .build(),
-        MeshineryTaskFactory.<String, DataContext>builder()
+        MeshineryTaskFactory.<String, TestContext>builder()
             .defaultOutputSource(outputSource)
+            .inputSource(inputSource)
             .read("B", null)
             .taskName("B")
             .write("C")
             .build(),
-        MeshineryTaskFactory.<String, DataContext>builder()
+        MeshineryTaskFactory.<String, TestContext>builder()
             .defaultOutputSource(outputSource)
+            .inputSource(inputSource)
             .read("C", null)
             .taskName("C")
             .write("B")

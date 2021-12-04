@@ -2,18 +2,19 @@ package io.github.askmeagain.meshinery.core.task;
 
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
-import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.common.OutputSource;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
+import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
+import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.processors.DynamicOutputProcessor;
 import io.github.askmeagain.meshinery.core.processors.SignalingProcessor;
 import io.github.askmeagain.meshinery.core.processors.StopProcessor;
 import io.github.askmeagain.meshinery.core.source.JoinedInnerInputSource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
@@ -362,6 +363,9 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<K, C> build() {
+    Objects.requireNonNull(inputKey, "No input key specified");
+    Objects.requireNonNull(inputSource, "Input source not specified");
+
     return new MeshineryTask<>(
         backoffTime,
         inputKey,

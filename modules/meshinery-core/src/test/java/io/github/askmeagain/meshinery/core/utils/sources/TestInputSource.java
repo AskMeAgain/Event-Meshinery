@@ -4,11 +4,13 @@ import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.Collections;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 
 @Builder
+@AllArgsConstructor
 public class TestInputSource implements InputSource<String, TestContext> {
 
   @Getter
