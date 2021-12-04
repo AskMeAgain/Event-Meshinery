@@ -1,8 +1,15 @@
 # Mysql Connector Spring Integration
 
+    <dependency>
+        <groupId>io.github.askmeagain</groupId>
+        <artifactId>meshinery-mysql-connector-spring</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <type>module</type>
+    </dependency>
+
 ## Installation
 
-1. Implement package
+1. Add package
 2. Add _@EnableMeshineryMysqlConnector_ to the Application.
 
 ## Provided Beans

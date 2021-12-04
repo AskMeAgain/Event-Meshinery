@@ -9,8 +9,16 @@ This spring integration adds monitoring to your MeshineryApplications:
 
 ## Installation
 
-1. Add @EnableMeshinery annotation to your Spring application (to register the StartupHooks).
-2. Add @EnableMeshineryMonitoring to your Spring application.
+    <dependency>
+        <groupId>io.github.askmeagain</groupId>
+        <artifactId>meshinery-monitoring-spring</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <type>module</type>
+    </dependency>
+
+1. Install package
+2. Add @EnableMeshinery annotation to your Spring application (to register the StartupHooks).
+3. Add @EnableMeshineryMonitoring to your Spring application.
 
 ## Metric endpoints
 
@@ -20,7 +28,8 @@ for prometheus metrics. In the future there will be different formats if needed.
 
 ### Add own metrics
 
-This package uses [prometheus/client_java](https://github.com/prometheus/client_java) to collect and expose all the metrics. Just create a new metric
+This package uses [prometheus/client_java](https://github.com/prometheus/client_java) to collect and expose all the
+metrics. Just create a new metric
 and register this metric to 
 
     MeshineryMonitoringService.registry

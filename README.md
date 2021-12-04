@@ -32,7 +32,7 @@ be exchanged and combined to suit your needs:
 * Join Kafka messages from a Kafka topic with mysql db tables.
 * Define a multistep processing pipeline and be able to (re)start the processing from any 'checkpoint'.
 * Wait multiple days between two processing steps
-* Checkout the [cook book](modules/core/cookbook.md) for more ideas
+* Checkout the [cook book](modules/meshinery-core/cookbook.md) for more ideas
 
 This framework was originally written to replace KafkaStreams in a specific usecase, but you can use this framework
 without Kafka. Currently supported are the following state stores, but you can easily provide your own:
@@ -71,9 +71,29 @@ topic/partition is not important.
 * Create a complete event diagram to map your events and how they interact with each other
 * Automatic Grafana Monitoring integration.
 
+## Module Structure <a name="Module-Structure"></a>
+
+* [Core](modules/meshinery-core/core.md) contains, the scheduler and everything basic you need. You only need this to
+  start
+    * [Core-Spring](modules/meshinery-core-spring/core-spring.md) contains the **Spring** AutoConfiguration for the core
+      library, like starting the Scheduler automatically and providing some utility hooks
+* [Monitoring](modules/meshinery-monitoring/monitoring.md) contains a prometheus monitoring solution
+    * [Monitoring-Spring](modules/meshinery-monitoring-spring/monitoring-spring.md) contains the **Spring**
+      AutoConfiguration of the monitoring
+* [Draw](modules/meshinery-draw/draw.md) contains the MeshineryDrawer class, which takes MeshineryTasks and draws system
+  diagrams for multiple sources: Pictures (PNG,JPG) and Mermaid
+    * [Draw-Spring](modules/meshinery-draw-spring/draw-spring.md) contains a **Spring** AutoConfiguration of the Drawing
+      with Endpoints
+* [Connectors-Mysql](modules/connectors/mysql/meshinery-mysql-connector/mysql.md) has the Mysql state store integration
+    * [Connectors-Mysql-Spring](modules/connectors/mysql/meshinery-mysql-connector-spring/mysql-spring.md) has the
+      Spring AutoConfiguration for Mysql
+* [Connectors-Kafka](modules/connectors/kafka/meshinery-kafka-connector/kafka.md) has the Kafka state store integration
+    * [Connectors-Kafka-Spring](modules/connectors/kafka/meshinery-kafka-connector-spring/kafka-spring.md) has the
+      Spring AutoConfiguration for Kafka
+
 ## Architecture <a name="Architecture"></a>
 
-[Detailed architecture documentation](modules/core/core-architecture.md)
+[Detailed architecture documentation](modules/meshinery-core/core-architecture.md)
 
 The building blocks of this framework consist of 4 basic classes:
 
@@ -98,7 +118,7 @@ takes a mapping method to the new Context type and a new defaultOutputSource.
 
 ### MeshineryTasks <a name="Task"></a>
 
-[Detailed Documentation](modules/core/tasks.md)
+[Detailed Documentation](modules/meshinery-core/tasks.md)
 
 MeshineryTask describes a single **business** unit of work, which consists of an input source , a list of processors to
 solve a part of the business logic and one or multiple output calls. An input source takes an eventkey/id, which gets
@@ -120,7 +140,7 @@ executed.** This allows for super transparent code which allows you to argue abo
 
 ### Meshinery Processors <a name="Processor"></a>
 
-[Detailed list of all utility processors](modules/core/processors.md)
+[Detailed list of all utility processors](modules/meshinery-core/processors.md)
 
 Meshinery Processors define the actual business work, like doing restcalls, calculating user information etc.
 
@@ -142,7 +162,7 @@ Meshinery Processors define the actual business work, like doing restcalls, calc
 
 ### Round Robin Scheduler <a name="Scheduler"></a>
 
-[Detailed Documentation](modules/core/scheduler.md)
+[Detailed Documentation](modules/meshinery-core/scheduler.md)
 
 The scheduler takes a list of tasks, creates small "work packages" (called TaskRuns)
 from them, and executes them on all available threads. You can register some hooks and decorators which will work "
@@ -159,7 +179,7 @@ globally" for all tasks
 
 ### Sources
 
-[Detailed Documentation](modules/core/sources.md)
+[Detailed Documentation](modules/meshinery-core/sources.md)
 
 There are Input and OutputSources. InputSources provide the data which gets passed to processors. OutputSources write
 the data to a state store and trigger one or more new events.
@@ -198,25 +218,6 @@ lookup is easily done.
 
 Only **Mysql** and **Memory** provide the AccessingInputSource interface.
 
-## Module Structure <a name="Module-Structure"></a>
-
-* [Core](modules/core/core.md) contains, the scheduler and everything "basic" you need. You only need this to start
-    * [Core-Spring](modules/core-spring/core-spring.md) contains the **Spring** AutoConfiguration for the core library,
-      like starting the Scheduler automatically and providing some utility hooks
-* [Monitoring](modules/monitoring/monitoring.md) contains a prometheus monitoring solution
-    * [Monitoring-Spring](modules/monitoring-spring/monitoring-spring.md) contains the **Spring** AutoConfiguration of
-      the monitoring
-* [Draw](modules/draw/draw.md) contains the MeshineryDrawer class, which takes MeshineryTasks and draws system diagrams
-  for multiple sources: Pictures (PNG,JPG) and Mermaid (for Grafana for example
-    * [Draw-Spring](modules/draw-spring/draw-spring.md)) contains a **Spring** AutoConfiguration of the Drawing with
-      Endpoints
-* [Connectors-Mysql](modules/connectors/mysql/mysql-connector/mysql.md) has the Mysql integration
-    * [Connectors-Mysql-Spring](modules/connectors/mysql/mysql-connector-spring/mysql-spring.md) has the Spring
-      AutoConfiguration
-* [Connectors-Kafka](modules/connectors/kafka/kafka-connector/kafka.md) has the Kafka integration
-    * [Connectors-Kafka-Spring](modules/connectors/kafka/kafka-connector-spring/kafka-spring.md) has the Spring
-      AutoConfiguration
-
 ## On Failure <a name="Failure"></a>
 
 This framework works with the at-most-once guarantee, which means that a state transition is only looked at once, since
@@ -234,7 +235,7 @@ any Contextobject into any task, just by specifying a Taskname and providing a d
 correcting or manual triggering of tasks (altough a memory source would be more elegant here).
 
 This TaskReplayFactory can run (A)synchronous and is available as an endpoint in
-the [Core-Spring](modules/core-spring/core-spring.md) package.
+the [Core-Spring](modules/meshinery-core-spring/core-spring.md) package.
 
 ### Exception Handling <a name="ExceptionHandling"></a>
 
@@ -264,8 +265,8 @@ will have a correct mdc value **AUTOMATICALLY** of:
 
 ## Monitoring
 
-* [Detailed Documentation](modules/monitoring/monitoring.md)
-* [Spring Integration](modules/monitoring-spring/monitoring-spring.md)
+* [Detailed Documentation](modules/meshinery-monitoring/monitoring.md)
+* [Spring Integration](modules/meshinery-monitoring-spring/monitoring-spring.md)
 
 The Monitoring package gives you the ability to monitor parts of your application. It
 uses [prometheus/client_java](https://github.com/prometheus/client_java)
@@ -275,14 +276,14 @@ and easily expanded by your needs.
 
 ## Drawing Graphs
 
-* [Detailed Documentation](modules/draw/draw.md)
-* [Spring Integration](modules/draw-spring/draw-spring.md)
+* [Detailed Documentation](modules/meshinery-draw/draw.md)
+* [Spring Integration](modules/meshinery-draw-spring/draw-spring.md)
 
 Since this framework provides a single way of defining tasks, we can use this to draw diagrams. These diagrams are
 rendered based on the actual implementation/connection of tasks.
 
 Example of the created diagram
-![example-graph](modules/draw/example-graph.png)
+![example-graph](modules/meshinery-draw/example-graph.png)
 
 There is also a Mermaid implementation which can be hooked into [this]() plugin to provide a real time overview of the
 task definitions. The Draw-Spring package provides an endpoint for this, but you can easily implement this by yourself.

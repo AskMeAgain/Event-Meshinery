@@ -5,7 +5,7 @@ meshinery:
     shutdown-on-finished: false
     graceful-shutdown-on-error: false
   draw:
-    resolution: 'HD1080'
+    resolution: 'HD720'
   connectors:
     mysql:
       limit: 10

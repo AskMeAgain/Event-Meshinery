@@ -2,6 +2,13 @@
 
 This package provides an AutoConfiguration class which you can use to bootstrap your applications.
 
+    <dependency>
+        <groupId>io.github.askmeagain</groupId>
+        <artifactId>meshinery-core-spring</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <type>module</type>
+    </dependency>
+
 ## Setup
 
 Add @EnableMeshinery to your spring configuration and provide MeshineryTask Beans. The autoconfiguration will pickup the
