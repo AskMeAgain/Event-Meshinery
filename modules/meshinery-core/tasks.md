@@ -1,20 +1,23 @@
 # MeshineryTasks
 
 A Meshinery Tasks gives you a complete overview about what is happening in this specified business unit of work
-(on a broader scheme), by defining WHEN and HOW something happens. WHAT is
-defined by MeshineryProcessors.
+(on a broader scheme), by defining WHEN and HOW something happens. WHAT is defined by MeshineryProcessors.
 
-The MeshineryTaskFactory provides alot of utility builder methods, which register everything correctly.
-Most of the time these methods add a hidden processor and setup TaskData automatically, so the
-MeshineryDrawer can draw a correct diagram. 
+The MeshineryTaskFactory provides alot of utility builder methods, which register everything correctly. Most of the time
+these methods add a hidden processor and setup TaskData automatically, so the MeshineryDrawer can draw a correct
+diagram.
+
+## TaskProperties
+
+TBD
 
 ## Example
 
 Here is a complete example off two MeshineryTasks which are connected.
 
 We listen on a DB and whenever a new entry appears (because someone voted)
-we send the vote to a different server via rest and store the response.
-In the next step we print the response and do another restcall.
+we send the vote to a different server via rest and store the response. In the next step we print the response and do
+another restcall.
 
 **Note that this could all be coordinated via Kafka/Mysql/Memory and we can
 always just exchange the state stores in code without a problem.**
@@ -54,7 +57,7 @@ always just exchange the state stores in code without a problem.**
             .build();
     }
 
-## Methods
+## Configuration
 
 | Method  | Adds hidden processor | Summary  |
 |---|---|---|

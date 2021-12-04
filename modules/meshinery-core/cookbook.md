@@ -48,6 +48,8 @@ Combine a CronInputSource with the needed InputSource
 
 ### I had an exception while processing. What to do now?
 
-1. You can fix the content of the dataContext and retrigger the flow via 
-the TaskReplayFactory.
-  **This will directly inject the data into the processors and not write to the statestore**
+* You can fix the content of the dataContext and retrigger the flow via the TaskReplayFactory.
+  **This will directly inject the data into the processors and not write to the statestore**. If you trigger an event in
+  a processor via .write(), then this event will be written to the statestores.
+    * If you use the Meshinery-Core-Spring integration, then an endpoint is added which provides the replay
+      functionality out of the box
