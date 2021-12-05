@@ -12,6 +12,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.stream.file.FileSinkImages;
 
@@ -102,7 +103,7 @@ public class MeshineryDrawer {
     writer.println("graph LR");
 
     edges.forEach(container -> {
-      var str = removeStars(container.getFrom()) + " --> " + removeStars(container.getTo());
+      var str = normalizeText(container.getFrom()) + " --> " + normalizeText(container.getTo());
       writer.println(str);
     });
 
@@ -146,8 +147,12 @@ public class MeshineryDrawer {
     }
   }
 
-  private String removeStars(String container) {
-    return container.replace('*', ' ');
+  private String normalizeText(String container) {
+    var replacedText = container.replace('*', ' ')
+        .replace(' ', '_')
+        .replaceAll("_+", "_");
+
+    return StringUtils.strip(replacedText, "_");
   }
 
   private void drawNormalEdge(
