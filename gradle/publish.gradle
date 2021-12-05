@@ -1,7 +1,7 @@
 plugins.withId("com.vanniktech.maven.publish.base") {
 
     group = "io.github.askmeagain"
-    version = System.getenv("RELEASE_VERSION") + "-SNAPSHOT"
+    version = System.getenv("RELEASE_VERSION")
 
     mavenPublishing {
         publishToMavenCentral("S01")
