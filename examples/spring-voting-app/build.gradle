@@ -6,7 +6,7 @@ dependencies {
 
     implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
 
-    implementation project(':modules:meshinery-core-spring');
+    implementation ('io.github.askmeagain:meshinery-core-spring:0.0.2');
     implementation project(':modules:meshinery-draw-spring');
     implementation project(':modules:meshinery-monitoring-spring');
     implementation project(':modules:connectors:mysql:meshinery-mysql-connector-spring');

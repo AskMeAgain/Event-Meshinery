@@ -40,7 +40,11 @@ plugins.withType(JavaPlugin).whenPluginAdded {
     repositories {
         mavenCentral()
         maven {
-            url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+            url 'https://s01.oss.sonatype.org/content/repositories/staging/'
+//            credentials {
+//                username "$mavenUser"
+//                password "$mavenPassword"
+//            }
         }
     }
 
