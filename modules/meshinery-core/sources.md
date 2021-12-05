@@ -1,7 +1,22 @@
 # Sources
 
-Here is a general overview over all state store sources and 
-utility sources.
+Here is a general overview over all state store sources and utility sources.
+
+## InputSource & OutputSource & Connectors
+
+TBD
+
+### AccessingInputSource
+
+An accessing input source, provides more utility then a normal InputSource. A normal input source is just an abstraction
+of a Queue. You just provide an event key, and call "getData()" as often as you can to request new data. This data is
+not ordered and is not accessible by Id.
+
+The AccessingInputSource has a _getContext(key, id)_ method which returns **only** the specific context. Not all sources
+can provide this, for example a lookup of a specific Message in a Kafka Topic is unrealistic to implement. But a Mysql
+lookup is easily done.
+
+Only **Mysql** and **Memory** provide the AccessingInputSource interface.
 
 ## State Store Sources
 
