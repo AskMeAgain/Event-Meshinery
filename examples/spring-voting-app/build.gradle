@@ -3,14 +3,10 @@ plugins {
 }
 
 dependencies {
-
-    implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
-
-    //implementation ('io.github.askmeagain:meshinery-core-spring:0.0.2');
-    implementation project(':modules:meshinery-draw-spring');
-    implementation project(':modules:meshinery-core-spring');
-    implementation project(':modules:meshinery-monitoring-spring');
-    implementation project(':modules:connectors:mysql:meshinery-mysql-connector-spring');
-
-    implementation 'ch.qos.logback:logback-classic:1.2.6'
+    implementation "io.github.askmeagain:meshinery-core-spring:${meshinery_app_version}"
+    implementation "io.github.askmeagain:meshinery-draw-spring:${meshinery_app_version}"
+    implementation "io.github.askmeagain:meshinery-monitoring-spring:${meshinery_app_version}"
+    implementation "io.github.askmeagain:meshinery-mysql-connector-spring:${meshinery_app_version}"
+    implementation "org.springframework.boot:spring-boot-starter-web:${spring_boot_version}"
+    implementation "ch.qos.logback:logback-classic:${logback_version}"
 }

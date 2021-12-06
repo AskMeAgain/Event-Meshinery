@@ -3,16 +3,14 @@ import com.vanniktech.maven.publish.*
 plugins {
     id 'java'
     id 'java-library'
-    id 'org.springframework.boot' version '2.5.4'
+    id 'org.springframework.boot' version "${spring_boot_version}"
     id "com.vanniktech.maven.publish.base"
 }
 
 dependencies {
     api project(':modules:meshinery-core')
-    api('org.springframework.boot:spring-boot-starter-web:2.5.4')
-
-    implementation('org.springframework.boot:spring-boot-starter-validation:2.6.1')
-
+    api "org.springframework.boot:spring-boot-starter-web:${spring_boot_version}"
+    implementation "org.springframework.boot:spring-boot-starter-validation:${spring_boot_version}"
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
 }
 

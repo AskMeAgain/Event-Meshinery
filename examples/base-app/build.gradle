@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation project(':modules:meshinery-core');
+    implementation "io.github.askmeagain:meshinery-core:${meshinery_app_version}"
 }

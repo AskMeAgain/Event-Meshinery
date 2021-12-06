@@ -6,9 +6,9 @@ plugins {
 }
 
 dependencies {
-    api 'com.cronutils:cron-utils:9.1.5'
-    implementation 'org.apache.commons:commons-collections4:4.4'
-    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
+    api "com.cronutils:cron-utils:${cronutils_version}"
+    implementation "org.apache.commons:commons-collections4:${commons_collections4_version}"
+    testImplementation "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
 }
 
 mavenPublishing {

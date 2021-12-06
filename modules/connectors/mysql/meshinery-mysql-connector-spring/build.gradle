@@ -7,11 +7,8 @@ plugins {
 }
 
 dependencies {
-
     api project(':modules:connectors:mysql:meshinery-mysql-connector')
-
-    implementation('org.springframework.boot:spring-boot-starter-web:2.5.4')
-
+    implementation "org.springframework.boot:spring-boot-starter-web:${spring_boot_version}"
 }
 
 mavenPublishing {

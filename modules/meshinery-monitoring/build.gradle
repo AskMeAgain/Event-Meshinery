@@ -8,8 +8,8 @@ plugins {
 
 dependencies {
     api project(':modules:meshinery-core')
-    api 'io.prometheus:simpleclient:0.12.0'
-    api 'io.prometheus:simpleclient_common:0.12.0'
+    api "io.prometheus:simpleclient:${prometheus_simple_client_version}"
+    api "io.prometheus:simpleclient_common:${prometheus_simple_client_version}"
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
 }
 

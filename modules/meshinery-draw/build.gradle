@@ -8,9 +8,9 @@ plugins {
 
 dependencies {
     api project(':modules:meshinery-core')
-    api 'org.graphstream:gs-core:1.3'
-    implementation 'org.graphstream:gs-ui:1.3'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    api "org.graphstream:gs-core:${graphstream_version}"
+    implementation "org.graphstream:gs-ui:${graphstream_version}"
+    implementation "org.apache.commons:commons-lang3:${commons_lang_3_version}"
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
 }
 

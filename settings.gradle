@@ -12,7 +12,7 @@ include('modules:connectors:mysql:meshinery-mysql-connector')
 include('modules:connectors:mysql:meshinery-mysql-connector-spring')
 
 //so we dont do stuff on CICD
-if(!System.getenv("TOKEN")) {
+if (false) {
     include('examples:base-app')
     include('examples:spring-app')
     include('examples:spring-voting-app')

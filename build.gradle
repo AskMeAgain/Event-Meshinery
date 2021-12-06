@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
-    id 'org.barfuin.gradle.jacocolog' version '1.2.3'
-    id 'com.vanniktech.maven.publish.base' version '0.18.0'
+    id 'org.barfuin.gradle.jacocolog' version "${jacoco_log_version}"
+    id 'com.vanniktech.maven.publish.base' version "${maven_publish_vanniktech_version}"
 }
 
 subprojects {

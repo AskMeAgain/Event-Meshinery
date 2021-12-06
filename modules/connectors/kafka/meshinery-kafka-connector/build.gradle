@@ -9,13 +9,11 @@ plugins {
 dependencies {
 
     implementation project(':modules:meshinery-core')
-    implementation('org.springframework.boot:spring-boot-starter-validation:2.6.1')
-
-    api 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
-    api 'org.apache.kafka:kafka-clients:2.8.0'
-
+    implementation "org.springframework.boot:spring-boot-starter-validation:${spring_boot_version}"
+    api "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
+    api "org.apache.kafka:kafka-clients:${kafka_client_version}"
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
-    testImplementation "org.testcontainers:kafka:1.16.0"
+    testImplementation "org.testcontainers:kafka:${testcontainers_version}"
 }
 
 mavenPublishing {
