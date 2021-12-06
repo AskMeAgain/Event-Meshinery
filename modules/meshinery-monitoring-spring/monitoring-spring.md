@@ -12,7 +12,7 @@ This spring integration adds monitoring to your MeshineryApplications:
     <dependency>
         <groupId>io.github.askmeagain</groupId>
         <artifactId>meshinery-monitoring-spring</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.1.0</version>
         <type>module</type>
     </dependency>
 

@@ -8,7 +8,7 @@ from Kafka.
     <dependency>
         <groupId>io.github.askmeagain</groupId>
         <artifactId>meshinery-kafka-connector-spring</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.1.0</version>
         <type>module</type>
     </dependency>
 

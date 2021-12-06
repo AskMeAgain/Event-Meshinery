@@ -5,7 +5,7 @@ This package provides an AutoConfiguration class which you can use to bootstrap 
     <dependency>
         <groupId>io.github.askmeagain</groupId>
         <artifactId>meshinery-core-spring</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.1.0</version>
         <type>module</type>
     </dependency>
 

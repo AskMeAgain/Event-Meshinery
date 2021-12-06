@@ -8,8 +8,12 @@ plugins {
 
 dependencies {
     api project(':modules:meshinery-core')
-    api "org.graphstream:gs-core:${graphstream_version}"
-    implementation "org.graphstream:gs-ui:${graphstream_version}"
+    implementation("org.graphstream:gs-core:${graphstream_version}") {
+        exclude group: 'junit', module: 'junit'
+    }
+    implementation("org.graphstream:gs-ui:${graphstream_version}") {
+        exclude group: 'org.scala-lang', module: 'scala-library'
+    }
     implementation "org.apache.commons:commons-lang3:${commons_lang_3_version}"
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
 }

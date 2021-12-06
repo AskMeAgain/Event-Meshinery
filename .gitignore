@@ -3,5 +3,3 @@
 *.iml
 # Ignore Gradle build output directory
 build
-/sonatype_upload.asc
-/gradle.properties

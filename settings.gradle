@@ -15,6 +15,6 @@ include('modules:connectors:mysql:meshinery-mysql-connector-spring')
 if (false) {
     include('examples:base-app')
     include('examples:spring-app')
-    include('examples:spring-voting-app')
     include('examples:spring-kafka-app')
 }
+    include('examples:spring-voting-app')
