@@ -10,11 +10,3 @@ include('modules:connectors:kafka:meshinery-kafka-connector')
 include('modules:connectors:kafka:meshinery-kafka-connector-spring')
 include('modules:connectors:mysql:meshinery-mysql-connector')
 include('modules:connectors:mysql:meshinery-mysql-connector-spring')
-
-//so we dont do stuff on CICD
-if (false) {
-    include('examples:base-app')
-    include('examples:spring-app')
-    include('examples:spring-kafka-app')
-}
-    include('examples:spring-voting-app')

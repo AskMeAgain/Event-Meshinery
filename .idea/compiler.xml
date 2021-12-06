@@ -30,8 +30,6 @@
         <module name="EventMeshinery.modules.connectors.kafka.meshinery-kafka-connector.main" />
         <module name="EventMeshinery.modules.meshinery-core-spring.test" />
         <module name="EventMeshinery.modules.meshinery-core.test" />
-        <module name="EventMeshinery.examples.spring-voting-app.test" />
-        <module name="EventMeshinery.examples.spring-voting-app.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17" />

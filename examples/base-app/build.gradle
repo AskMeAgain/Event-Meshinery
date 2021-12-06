@@ -1,7 +1,0 @@
-plugins {
-    id 'java'
-}
-
-dependencies {
-    implementation "io.github.askmeagain:meshinery-core:${meshinery_app_version}"
-}

@@ -7,7 +7,7 @@ This package adds the Kafka state store sources.
     <dependency>
       <groupId>io.github.askmeagain</groupId>
       <artifactId>meshinery-kafka-connector</artifactId>
-      <version>0.1.0</version>
+      <version>0.0.1-SNAPSHOT</version>
       <type>module</type>
     </dependency>
 
