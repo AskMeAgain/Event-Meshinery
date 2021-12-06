@@ -4,11 +4,16 @@ plugins {
     id 'com.vanniktech.maven.publish.base' version '0.18.0'
 }
 
-repositories {
-    mavenCentral()
-}
-
 subprojects {
     apply from: "${rootDir}/gradle/subprojects.gradle"
     apply from: "${rootDir}/gradle/publish.gradle"
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        maven {
+            url 'https://s01.oss.sonatype.org/content/repositories/staging/'
+        }
+    }
 }
