@@ -21,6 +21,7 @@ public class MeshineryMonitoringService {
       .help("Time of all requests")
       .labelNames("task_name")
       .register(registry);
+
   public static final Gauge inProcessingGauge = Gauge.build()
       .name("processing_counter")
       .help("Number of all currently in work processors")
@@ -37,7 +38,7 @@ public class MeshineryMonitoringService {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static void registerNewGauge(String name, String helpText, Supplier<Double> value) {
+  public static void createGauge(String name, String helpText, Supplier<Double> value) {
 
     var gauge = Gauge.build()
         .name(name)

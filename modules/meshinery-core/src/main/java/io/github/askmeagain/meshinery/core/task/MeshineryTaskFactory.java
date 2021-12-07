@@ -109,7 +109,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
   public MeshineryTaskFactory<K, C> read(K inputKey, ExecutorService executorService) {
     return toBuilder()
         .inputKey(inputKey)
-        .executorService(new DataInjectingExecutorService(executorService))
+        .executorService(new DataInjectingExecutorService(inputKey.toString() + "-executor", executorService))
         .taskData(taskData.put(TaskDataProperties.GRAPH_INPUT_KEY, inputKey.toString()))
         .build();
   }

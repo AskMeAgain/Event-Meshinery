@@ -1,15 +1,15 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
+import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
+import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskVerifier;
 import io.github.askmeagain.meshinery.core.task.TaskData;
-import io.github.askmeagain.meshinery.core.task.TaskRun;
-import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.task.TaskDataProperties;
+import io.github.askmeagain.meshinery.core.task.TaskRun;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -53,14 +53,14 @@ public class RoundRobinScheduler {
     tasks.forEach(task -> executorServices.add(task.getExecutorService()));
 
     //the producer
-    var inputExecutor = Executors.newSingleThreadExecutor();
+    var inputExecutor = new DataInjectingExecutorService("input-executor", Executors.newSingleThreadExecutor());
     executorServices.add(inputExecutor);
     createInputScheduler(inputExecutor);
 
     Thread.sleep(100);
 
     //the worker
-    var taskExecutor = Executors.newSingleThreadExecutor();
+    var taskExecutor = new DataInjectingExecutorService("output-executor", Executors.newSingleThreadExecutor());
     executorServices.add(taskExecutor);
     taskExecutor.execute(this::runWorker);
 

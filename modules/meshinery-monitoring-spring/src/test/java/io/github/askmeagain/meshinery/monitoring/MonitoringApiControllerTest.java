@@ -1,7 +1,10 @@
 package io.github.askmeagain.meshinery.monitoring;
 
+import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
+import java.util.List;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -33,5 +36,29 @@ class MonitoringApiControllerTest {
             .string(containsString("processing_counter")))
         .andExpect(content()
             .string(containsString("processing_counter")));
+  }
+
+  @Test
+  @SneakyThrows
+  void test() {
+    //Arrange --------------------------------------------------------------------------------
+    MDC.put("", "");
+    var config = new MeshineryMonitoringAutoConfiguration();
+    RoundRobinScheduler.builder()
+        .registerStartupHook(List.of(config.executorRegistration()))
+        .isBatchJob(false)
+        .buildAndStart();
+
+    //Act ------------------------------------------------------------------------------------
+    //Assert ---------------------------------------------------------------------------------
+    mockMvc.perform(get("/metrics/prometheus"))
+        .andExpect(status()
+            .isOk())
+        .andExpect(content()
+            .string(containsString("executor_active_threads")))
+        .andExpect(content()
+            .string(containsString("executor=\"input-executor\"")))
+        .andExpect(content()
+            .string(containsString("executor=\"output-executor\"")));
   }
 }

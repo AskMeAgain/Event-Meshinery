@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -20,6 +21,9 @@ import org.slf4j.MDC;
 @RequiredArgsConstructor
 public class DataInjectingExecutorService implements ExecutorService {
 
+  @Getter
+  private final String name;
+  @Getter
   private final ExecutorService executorService;
 
   @Override
