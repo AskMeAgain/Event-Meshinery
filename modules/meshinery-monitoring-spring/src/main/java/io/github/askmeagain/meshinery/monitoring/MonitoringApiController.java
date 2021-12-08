@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.monitoring;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ public class MonitoringApiController {
     var result = MeshineryMonitoringService.getMetrics();
     var headers = new HttpHeaders();
     headers.setCacheControl(CacheControl.noCache().getHeaderValue());
-
-    return result;
+    headers.setContentType(MediaType.TEXT_PLAIN);
+    return result.replace("\n", "<br />\n");
   }
 }

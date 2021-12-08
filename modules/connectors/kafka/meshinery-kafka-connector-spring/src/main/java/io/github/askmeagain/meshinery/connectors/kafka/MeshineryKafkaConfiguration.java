@@ -10,21 +10,21 @@ import org.springframework.context.annotation.Configuration;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Configuration
 @EnableConfigurationProperties
-public class KafkaConfiguration {
+public class MeshineryKafkaConfiguration {
 
   @Bean
-  public KafkaConsumerFactory kafkaConsumerFactory(KafkaProperties kafkaProperties) {
-    return new KafkaConsumerFactory(kafkaProperties);
+  public KafkaConsumerFactory kafkaConsumerFactory(MeshineryKafkaProperties meshineryKafkaProperties) {
+    return new KafkaConsumerFactory(meshineryKafkaProperties);
   }
 
   @Bean
-  public KafkaProducerFactory kafkaProducerFactory(KafkaProperties kafkaProperties) {
-    return new KafkaProducerFactory(kafkaProperties);
+  public KafkaProducerFactory kafkaProducerFactory(MeshineryKafkaProperties meshineryKafkaProperties) {
+    return new KafkaProducerFactory(meshineryKafkaProperties);
   }
 
   @Bean
   @ConfigurationProperties("meshinery.connectors.kafka")
-  public KafkaProperties kafkaProperties() {
-    return new KafkaProperties();
+  public MeshineryKafkaProperties kafkaProperties() {
+    return new MeshineryKafkaProperties();
   }
 }

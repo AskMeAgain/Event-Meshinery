@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.connectors.kafka.factories;
 
-import io.github.askmeagain.meshinery.connectors.kafka.KafkaProperties;
+import io.github.askmeagain.meshinery.connectors.kafka.MeshineryKafkaProperties;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -14,10 +14,10 @@ public class KafkaConsumerFactory {
   private final Properties properties;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public KafkaConsumerFactory(KafkaProperties kafkaProperties) {
+  public KafkaConsumerFactory(MeshineryKafkaProperties meshineryKafkaProperties) {
     properties = new Properties();
-    properties.setProperty("bootstrap.servers", kafkaProperties.getBootstrapServer());
-    properties.setProperty("group.id", kafkaProperties.getGroupId());
+    properties.setProperty("bootstrap.servers", meshineryKafkaProperties.getBootstrapServers());
+    properties.setProperty("group.id", meshineryKafkaProperties.getGroupId());
     properties.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
     properties.setProperty("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
     properties.setProperty("auto.offset.reset", "earliest");

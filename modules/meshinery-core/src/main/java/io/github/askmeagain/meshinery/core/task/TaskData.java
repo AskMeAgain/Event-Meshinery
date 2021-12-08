@@ -44,6 +44,15 @@ public class TaskData {
     return this.withProperties(newProperties);
   }
 
+  public TaskData replace(String key, String value) {
+    var newProperties = new Properties();
+    newProperties.putAll(properties);
+    var list = new ArrayList<>();
+    list.add(value);
+    newProperties.put(key, list);
+    return this.withProperties(newProperties);
+  }
+
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public Properties getProperties() {
     var newProperties = new Properties();

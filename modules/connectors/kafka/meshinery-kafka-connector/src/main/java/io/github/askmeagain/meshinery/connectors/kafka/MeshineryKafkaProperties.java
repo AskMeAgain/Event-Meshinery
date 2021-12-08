@@ -7,9 +7,9 @@ import org.springframework.validation.annotation.Validated;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Data
 @Validated
-public class KafkaProperties {
+public class MeshineryKafkaProperties {
   @NotBlank
-  String bootstrapServer;
+  String bootstrapServers;
   @NotBlank
   String groupId;
 }

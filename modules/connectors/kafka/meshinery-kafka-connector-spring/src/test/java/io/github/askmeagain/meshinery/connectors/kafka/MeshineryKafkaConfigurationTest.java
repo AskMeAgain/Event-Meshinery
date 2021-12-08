@@ -8,23 +8,23 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig(
-    classes = KafkaConfiguration.class,
+    classes = MeshineryKafkaConfiguration.class,
     initializers = ConfigDataApplicationContextInitializer.class
 )
-class KafkaConfigurationTest {
+class MeshineryKafkaConfigurationTest {
 
   @Autowired
-  KafkaProperties kafkaProperties;
+  MeshineryKafkaProperties meshineryKafkaProperties;
 
   @Test
   void testProperties() {
     //Arrange --------------------------------------------------------------------------------
     //Act ------------------------------------------------------------------------------------
     //Assert ---------------------------------------------------------------------------------
-    assertThat(kafkaProperties)
+    assertThat(meshineryKafkaProperties)
         .extracting(
-            KafkaProperties::getBootstrapServer,
-            KafkaProperties::getGroupId
+            MeshineryKafkaProperties::getBootstrapServers,
+            MeshineryKafkaProperties::getGroupId
         )
         .containsExactly(
             "abc",

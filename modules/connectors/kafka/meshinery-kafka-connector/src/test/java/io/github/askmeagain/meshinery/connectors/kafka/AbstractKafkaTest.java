@@ -1,6 +1,5 @@
 package io.github.askmeagain.meshinery.connectors.kafka;
 
-import io.github.askmeagain.meshinery.connectors.kafka.KafkaProperties;
 import org.junit.jupiter.api.BeforeAll;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -16,9 +15,9 @@ public class AbstractKafkaTest {
     kafkaContainer.start();
   }
 
-  public KafkaProperties getKafkaProperties() {
-    var kafkaProperties = new KafkaProperties();
-    kafkaProperties.setBootstrapServer(kafkaContainer.getBootstrapServers());
+  public MeshineryKafkaProperties getKafkaProperties() {
+    var kafkaProperties = new MeshineryKafkaProperties();
+    kafkaProperties.setBootstrapServers(kafkaContainer.getBootstrapServers());
     kafkaProperties.setGroupId("Test");
     return kafkaProperties;
   }

@@ -159,7 +159,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
   public MeshineryTaskFactory<K, C> taskName(String name) {
     return toBuilder()
         .taskName(name)
-        .taskData(taskData.put(TaskDataProperties.TASK_NAME, name))
+        .taskData(taskData.replace(TaskDataProperties.TASK_NAME, name))
         .build();
   }
 
@@ -357,7 +357,8 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
         handleException,
         backoffTime
     ).toBuilder()
-        .taskData(newProcessor.addToTaskData(taskData.put(TaskDataProperties.GRAPH_PROCESSOR, newProcessor.toString())))
+        .taskData(newProcessor.addToTaskData(
+            taskData.put(TaskDataProperties.GRAPH_PROCESSOR, newProcessor.getClass().getSimpleName())))
         .build();
   }
 

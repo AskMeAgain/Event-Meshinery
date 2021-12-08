@@ -19,7 +19,7 @@ public class MeshineryMonitoringService {
   public static final Summary requestTimeSummary = Summary.build()
       .name("request_time")
       .help("Time of all requests")
-      .labelNames("task_name")
+      .labelNames("task_name", "processor_name")
       .register(registry);
 
   public static final Gauge inProcessingGauge = Gauge.build()

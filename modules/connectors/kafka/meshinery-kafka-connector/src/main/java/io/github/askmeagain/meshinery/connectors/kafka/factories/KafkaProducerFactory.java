@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.connectors.kafka.factories;
 
-import io.github.askmeagain.meshinery.connectors.kafka.KafkaProperties;
+import io.github.askmeagain.meshinery.connectors.kafka.MeshineryKafkaProperties;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -13,9 +13,9 @@ public class KafkaProducerFactory {
   private final Properties properties;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public KafkaProducerFactory(KafkaProperties kafkaProperties) {
+  public KafkaProducerFactory(MeshineryKafkaProperties meshineryKafkaProperties) {
     properties = new Properties();
-    properties.setProperty("bootstrap.servers", kafkaProperties.getBootstrapServer());
+    properties.setProperty("bootstrap.servers", meshineryKafkaProperties.getBootstrapServers());
     properties.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     properties.setProperty("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
   }

@@ -93,8 +93,11 @@ public class DataInjectingExecutorService implements ExecutorService {
   public void execute(Runnable command) {
     var mdc = MDC.getCopyOfContextMap();
     var taskData = TaskData.getTaskData();
+    var name2 = this.getName();
     executorService.execute(() -> {
-      MDC.setContextMap(mdc);
+      if (mdc != null) {
+        MDC.setContextMap(mdc);
+      }
       TaskData.setTaskData(taskData);
       try {
         command.run();

@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.connectors.kafka.sources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.askmeagain.meshinery.connectors.kafka.KafkaProperties;
+import io.github.askmeagain.meshinery.connectors.kafka.MeshineryKafkaProperties;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaProducerFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
@@ -19,14 +19,18 @@ public class KafkaConnector<C extends DataContext> implements OutputSource<Strin
   private final KafkaOutputSource<C> outputSource;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public KafkaConnector(Class<C> contextType, ObjectMapper objectMapper, KafkaProperties kafkaProperties) {
-    this("default", contextType, objectMapper, kafkaProperties);
+  public KafkaConnector(
+      Class<C> contextType, ObjectMapper objectMapper, MeshineryKafkaProperties meshineryKafkaProperties
+  ) {
+    this("default", contextType, objectMapper, meshineryKafkaProperties);
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public KafkaConnector(String name, Class<C> clazz, ObjectMapper objectMapper, KafkaProperties kafkaProperties) {
-    var kafkaConsumerFactory = new KafkaConsumerFactory(kafkaProperties);
-    var kafkaProducerFactory = new KafkaProducerFactory(kafkaProperties);
+  public KafkaConnector(
+      String name, Class<C> clazz, ObjectMapper objectMapper, MeshineryKafkaProperties meshineryKafkaProperties
+  ) {
+    var kafkaConsumerFactory = new KafkaConsumerFactory(meshineryKafkaProperties);
+    var kafkaProducerFactory = new KafkaProducerFactory(meshineryKafkaProperties);
 
     this.name = name;
     this.inputSource = new KafkaInputSource<>(name + "-input", clazz, objectMapper, kafkaConsumerFactory);

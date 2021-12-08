@@ -1,23 +1,21 @@
 package io.github.askmeagain.meshinery.core.source;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
 import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
+import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.InputSource;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class CronInputSource<C extends DataContext> implements InputSource<String, C> {
 
@@ -26,6 +24,16 @@ public class CronInputSource<C extends DataContext> implements InputSource<Strin
   private final CronParser parser;
   private final Supplier<C> supplier;
   private final ConcurrentHashMap<String, ZonedDateTime> nextExecutions = new ConcurrentHashMap<>();
+
+  public CronInputSource(CronParser parser, Supplier<C> supplier) {
+    this("cron-input-source", parser, supplier);
+  }
+
+  public CronInputSource(String name, CronParser parser, Supplier<C> supplier) {
+    this.name = name;
+    this.parser = parser;
+    this.supplier = supplier;
+  }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public CronInputSource(String name, CronType cronType, Supplier<C> supplier) {

@@ -26,7 +26,7 @@ class MonitoringTest {
 
     //Act --------------------------------------------------------------------------------------------------------------
     var context = new TestContext(1);
-    var executor = new DataInjectingExecutorService(Executors.newSingleThreadExecutor());
+    var executor = new DataInjectingExecutorService(TASK_NAME_VALUE, Executors.newSingleThreadExecutor());
     decoratedProcessor.processAsync(context, executor);
 
     //Assert -----------------------------------------------------------------------------------------------------------
