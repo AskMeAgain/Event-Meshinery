@@ -9,6 +9,7 @@ plugins {
 dependencies {
     api project(':modules:meshinery-monitoring')
     api project(':modules:meshinery-core-spring')
+    testImplementation project(':modules:meshinery-core').sourceSets.test.output
 }
 
 mavenPublishing {

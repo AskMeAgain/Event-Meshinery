@@ -1,7 +1,13 @@
 package io.github.askmeagain.meshinery.monitoring;
 
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
+import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.utils.context.TestContext;
+import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
+import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
@@ -44,10 +50,24 @@ class MonitoringApiControllerTest {
     //Arrange --------------------------------------------------------------------------------
     MDC.put("", "");
     var config = new MeshineryMonitoringAutoConfiguration();
+    var executor = Executors.newFixedThreadPool(3);
+
     RoundRobinScheduler.builder()
         .registerStartupHook(List.of(config.executorRegistration()))
+        .task(MeshineryTaskFactory.<String, TestContext>builder()
+            .taskName("cool-task-name")
+            .read("test", executor)
+            .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 2, 0))
+            .process((c, e) -> CompletableFuture.supplyAsync(() -> {
+              wait3Sec();
+              return c;
+            }, e))
+            .defaultOutputSource(new TestOutputSource())
+            .build())
         .isBatchJob(false)
         .buildAndStart();
+
+    Thread.sleep(1500);
 
     //Act ------------------------------------------------------------------------------------
     //Assert ---------------------------------------------------------------------------------
@@ -57,8 +77,15 @@ class MonitoringApiControllerTest {
         .andExpect(content()
             .string(containsString("executor_active_threads")))
         .andExpect(content()
-            .string(containsString("executor=\"input-executor\"")))
+            .string(containsString("executor=\"test-executor\",} 2.0")))
         .andExpect(content()
-            .string(containsString("executor=\"output-executor\"")));
+            .string(containsString("executor=\"input-executor\",} 1.0")))
+        .andExpect(content()
+            .string(containsString("executor=\"output-executor\",} 1.0")));
+  }
+
+  @SneakyThrows
+  private void wait3Sec() {
+    Thread.sleep(3000);
   }
 }
