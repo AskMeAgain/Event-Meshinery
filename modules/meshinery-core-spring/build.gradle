@@ -14,6 +14,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-validation:${spring_boot_version}"
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
     testImplementation project(':modules:meshinery-monitoring-spring')
+    testImplementation project(':modules:connectors:kafka:meshinery-kafka-connector-spring')
 }
 
 mavenPublishing {

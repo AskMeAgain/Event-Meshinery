@@ -1,29 +1,34 @@
 package io.github.askmeagain.meshinery.core;
 
-import com.cronutils.model.CronType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.askmeagain.meshinery.connectors.kafka.EnableMeshineryKafkaConnector;
+import io.github.askmeagain.meshinery.connectors.kafka.MeshineryKafkaProperties;
+import io.github.askmeagain.meshinery.connectors.kafka.sources.KafkaConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
-import io.github.askmeagain.meshinery.core.source.CronInputSource;
-import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
+import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import io.github.askmeagain.meshinery.monitoring.EnableMeshineryMonitoring;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.Disabled;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-@Disabled
+//@Disabled
+@Slf4j
 @EnableMeshinery
 @EnableMeshineryMonitoring
+@EnableMeshineryKafkaConnector
 @SpringBootApplication
 @Import({TestApplication.TestApplicationConfiguration.class})
 public class TestApplication {
@@ -42,7 +47,7 @@ public class TestApplication {
 
     @SneakyThrows
     private void wait3Sec() {
-      Thread.sleep(3000);
+      //Thread.sleep(3000);
     }
   }
 
@@ -51,8 +56,10 @@ public class TestApplication {
   public static class TestApplicationConfiguration {
 
     @Bean
-    public MemoryConnector<String, TestContext> memoryConnector() {
-      return new MemoryConnector<>();
+    public KafkaConnector<TestContext> kafkaConnector(
+        ObjectMapper objectMapper, MeshineryKafkaProperties meshineryKafkaProperties
+    ) {
+      return new KafkaConnector<>(TestContext.class, objectMapper, meshineryKafkaProperties);
     }
 
     @Bean
@@ -68,17 +75,16 @@ public class TestApplication {
     @Bean
     public MeshineryTask<String, TestContext> task1(
         MeshineryProcessor<TestContext, TestContext> processor,
-        MemoryConnector<String, TestContext> memoryConnector
+        KafkaConnector<TestContext> kafkaConnector
     ) {
-      var cronInput = new CronInputSource<>("cron input", CronType.SPRING, () -> TestContext.builder()
-          .id((int) ((Math.random() * 500000)) + "")
-          .build());
+      var inputSource =
+          new TestInputSource(List.of(TestContext.builder().build(), TestContext.builder().build()), 100, 0);
 
       return MeshineryTaskFactory.<String, TestContext>builder()
-          .defaultOutputSource(memoryConnector)
-          .inputSource(cronInput)
-          .taskName("Cool task 1")
-          .read("0/1 * * * * *", Executors.newSingleThreadExecutor())
+          .defaultOutputSource(kafkaConnector)
+          .inputSource(inputSource)
+          .taskName("InputSpawner")
+          .read("Doesnt matter", Executors.newSingleThreadExecutor())
           .process(processor)
           .write("b")
           .build();
@@ -87,14 +93,18 @@ public class TestApplication {
     @Bean
     public MeshineryTask<String, TestContext> task2(
         MeshineryProcessor<TestContext, TestContext> processor,
-        MemoryConnector<String, TestContext> memoryConnector
+        KafkaConnector<TestContext> kafkaConnector
     ) {
       return MeshineryTaskFactory.<String, TestContext>builder()
-          .defaultOutputSource(memoryConnector)
-          .inputSource(memoryConnector)
+          .defaultOutputSource(kafkaConnector)
+          .inputSource(kafkaConnector)
           .taskName("Cool task 2")
           .read("b", Executors.newSingleThreadExecutor())
           .process(processor)
+          .process(((context, executor) -> {
+            log.info("Received value");
+            return CompletableFuture.completedFuture(context);
+          }))
           .write("c")
           .build();
     }

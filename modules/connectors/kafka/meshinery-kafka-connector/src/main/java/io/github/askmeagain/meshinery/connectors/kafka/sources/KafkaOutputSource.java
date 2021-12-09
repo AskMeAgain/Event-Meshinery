@@ -1,14 +1,16 @@
 package io.github.askmeagain.meshinery.connectors.kafka.sources;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaProducerFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.OutputSource;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+@Slf4j
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class KafkaOutputSource<C extends DataContext> implements OutputSource<String, C> {
@@ -25,7 +27,9 @@ public class KafkaOutputSource<C extends DataContext> implements OutputSource<St
     var key = output.getId();
     var value = objectMapper.writeValueAsBytes(output);
 
+    //TODO flushing here??
     var record = new ProducerRecord<>(topic, key, value);
-    kafkaProducerFactory.get(topic).send(record);
+    log.info("Sending {}", topic);
+    kafkaProducerFactory.get(topic).send(record).get();
   }
 }

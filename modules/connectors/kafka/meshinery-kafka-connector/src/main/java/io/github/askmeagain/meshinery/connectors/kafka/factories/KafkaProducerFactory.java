@@ -4,8 +4,10 @@ import io.github.askmeagain.meshinery.connectors.kafka.MeshineryKafkaProperties;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 
+@Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class KafkaProducerFactory {
 
@@ -21,6 +23,7 @@ public class KafkaProducerFactory {
   }
 
   private KafkaProducer<String, byte[]> createKafkaProducer(String topic) {
+    log.info("Creating Producer for topic '{}'", topic);
     return new KafkaProducer<>(properties);
   }
 

@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Builder
 @AllArgsConstructor
 public class TestInputSource implements InputSource<String, TestContext> {
@@ -26,11 +28,13 @@ public class TestInputSource implements InputSource<String, TestContext> {
   @Override
   public List<TestContext> getInputs(String key) {
     if (iterations == 0) {
+      log.info("Stopping TestInputSource");
       return Collections.emptyList();
     }
 
     iterations--;
-
+    var maxValue = 1 + (internalCounter / todos.size() + iterations);
+    log.info("Iteration '{}' out of '{}'", maxValue - iterations, maxValue);
     return todos.stream()
         .map(testContext -> testContext.withId((++internalCounter) + ""))
         .toList();

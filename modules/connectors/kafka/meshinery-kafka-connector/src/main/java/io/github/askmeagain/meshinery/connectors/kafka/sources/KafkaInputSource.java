@@ -1,9 +1,9 @@
 package io.github.askmeagain.meshinery.connectors.kafka.sources;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSource;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -12,8 +12,10 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
+@Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
 public class KafkaInputSource<C extends DataContext> implements InputSource<String, C> {
@@ -30,6 +32,7 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
     var result = kafkaConsumerFactory.get(key)
         .poll(Duration.ofMillis(1000));
 
+    //log.error("Receiving: {} with key: {}" , result, key);
     return StreamSupport.stream(result.spliterator(), false)
         .map(ConsumerRecord::value)
         .map(x -> {

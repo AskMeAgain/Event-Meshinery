@@ -22,7 +22,7 @@ public class KafkaConnector<C extends DataContext> implements OutputSource<Strin
   public KafkaConnector(
       Class<C> contextType, ObjectMapper objectMapper, MeshineryKafkaProperties meshineryKafkaProperties
   ) {
-    this("default", contextType, objectMapper, meshineryKafkaProperties);
+    this("kafka-default-connector", contextType, objectMapper, meshineryKafkaProperties);
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
