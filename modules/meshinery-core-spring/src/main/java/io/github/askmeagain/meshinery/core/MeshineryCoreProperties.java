@@ -8,8 +8,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
 @ConfigurationProperties("meshinery.core")
-public class MeshineryConfigProperties {
+public class MeshineryCoreProperties {
 
   private final List<@NotNull String> inject = new ArrayList<>();
+
+  private boolean batchJob = false;
+
+  private boolean shutdownOnError = true;
 
 }

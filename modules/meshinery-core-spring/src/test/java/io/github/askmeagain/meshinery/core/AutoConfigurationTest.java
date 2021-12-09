@@ -24,7 +24,7 @@ class AutoConfigurationTest {
   }
 
   @Test
-  void autoConfigTest(@Autowired MeshineryConfigProperties properties) {
+  void autoConfigTest(@Autowired MeshineryCoreProperties properties) {
     //Arrange ----------------------------------------------------------------------------------------------------------
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------

@@ -58,7 +58,6 @@ public class TestApplication {
       return new TestProcessor();
     }
 
-
     @Bean
     public ExecutorService executorService() {
       return Executors.newFixedThreadPool(4);

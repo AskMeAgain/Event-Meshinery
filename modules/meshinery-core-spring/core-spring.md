@@ -33,9 +33,10 @@ You then have access to the following endpoints. Async just returns instantly in
 
 | Property  | Default | Result  |
 |---|---|---|
-| meshinery.batch-job | false  | Enables Batchprocessing |
-| meshinery.inject | false  | This is a list where you add a fully qualified name to make it eligible for injecting via rest endpoint|
-| meshinery.graceful-shutdown-on-error | true | shutdowns the scheduler on error | 
+| meshinery.core.batch-job | false  | Enables Batchprocessing |
+| meshinery.core.inject | -  | This is a list where you add a fully qualified name to make it eligible for injecting via rest endpoint|
+| meshinery.core.shutdown-on-error | true | shutdowns the scheduler on error | 
+| meshinery.core.shutdown-on-finished | false | shutdowns the spring app context when finished | 
 
 ## Hooks
 

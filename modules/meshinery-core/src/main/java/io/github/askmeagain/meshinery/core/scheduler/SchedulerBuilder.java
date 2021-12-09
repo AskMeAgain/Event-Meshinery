@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import lombok.SneakyThrows;
 
@@ -21,7 +20,6 @@ public class SchedulerBuilder {
   int backpressureLimit = 200;
   boolean isBatchJob;
   List<MeshineryTask<? extends Object, ? extends DataContext>> tasks = new ArrayList<>();
-  List<ExecutorService> executorServices = new ArrayList<>();
   ConcurrentLinkedQueue<TaskRun> todoQueue = new ConcurrentLinkedQueue<>();
   boolean gracefulShutdownOnError = true;
 
@@ -75,7 +73,6 @@ public class SchedulerBuilder {
   public RoundRobinScheduler build() {
     return new RoundRobinScheduler(
         tasks,
-        executorServices,
         todoQueue,
         backpressureLimit,
         isBatchJob,

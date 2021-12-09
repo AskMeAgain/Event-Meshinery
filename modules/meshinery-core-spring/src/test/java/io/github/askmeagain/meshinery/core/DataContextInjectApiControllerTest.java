@@ -41,11 +41,11 @@ class DataContextInjectApiControllerTest {
   @Autowired private MockMvc mockMvc;
 
   @MockBean private TaskReplayFactory taskReplayFactory;
-  @MockBean private MeshineryConfigProperties meshineryConfigProperties;
+  @MockBean private MeshineryCoreProperties meshineryCoreProperties;
 
   @BeforeEach
   void fillingPostConstructMethod() {
-    Mockito.when(meshineryConfigProperties.getInject()).thenReturn(List.of(TestContext.class.getCanonicalName()));
+    Mockito.when(meshineryCoreProperties.getInject()).thenReturn(List.of(TestContext.class.getCanonicalName()));
     controller.setup();
   }
 

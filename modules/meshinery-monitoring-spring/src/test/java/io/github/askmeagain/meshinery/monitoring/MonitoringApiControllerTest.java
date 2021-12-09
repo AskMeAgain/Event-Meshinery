@@ -57,7 +57,17 @@ class MonitoringApiControllerTest {
         .task(MeshineryTaskFactory.<String, TestContext>builder()
             .taskName("cool-task-name")
             .read("test", executor)
-            .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 2, 0))
+            .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 1, 0))
+            .process((c, e) -> CompletableFuture.supplyAsync(() -> {
+              wait3Sec();
+              return c;
+            }, e))
+            .defaultOutputSource(new TestOutputSource())
+            .build())
+        .task(MeshineryTaskFactory.<String, TestContext>builder()
+            .taskName("cool-task-name-2")
+            .read("test2", executor)
+            .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 1, 0))
             .process((c, e) -> CompletableFuture.supplyAsync(() -> {
               wait3Sec();
               return c;
@@ -75,13 +85,17 @@ class MonitoringApiControllerTest {
         .andExpect(status()
             .isOk())
         .andExpect(content()
-            .string(containsString("executor_active_threads")))
+            .string(containsString("executor_max_threads{executor=\"test-executor\",} 3.0")))
         .andExpect(content()
-            .string(containsString("executor=\"test-executor\",} 2.0")))
+            .string(containsString("executor_max_threads{executor=\"input-executor\",} 1.0")))
         .andExpect(content()
-            .string(containsString("executor=\"input-executor\",} 1.0")))
+            .string(containsString("executor_max_threads{executor=\"output-executor\",} 1.0")))
         .andExpect(content()
-            .string(containsString("executor=\"output-executor\",} 1.0")));
+            .string(containsString("executor_active_threads{executor=\"test-executor\",} 2.0")))
+        .andExpect(content()
+            .string(containsString("executor_active_threads{executor=\"input-executor\",} 1.0")))
+        .andExpect(content()
+            .string(containsString("executor_active_threads{executor=\"output-executor\",} 1.0")));
   }
 
   @SneakyThrows

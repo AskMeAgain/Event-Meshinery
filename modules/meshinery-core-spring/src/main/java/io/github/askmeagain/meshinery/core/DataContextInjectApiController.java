@@ -30,7 +30,7 @@ public class DataContextInjectApiController {
 
   private final Map<String, Class<?>> classMap = new HashMap<>();
   private final ApplicationContext applicationContext;
-  private final MeshineryConfigProperties meshineryConfigProperties;
+  private final MeshineryCoreProperties meshineryCoreProperties;
 
   @ExceptionHandler(value = {Exception.class})
   protected ResponseEntity<Object> handleConflict(Exception ex) {
@@ -48,7 +48,7 @@ public class DataContextInjectApiController {
           .forEach(x -> classMap.put(x.getSimpleName(), x));
     }
 
-    for (var fqn : meshineryConfigProperties.getInject()) {
+    for (var fqn : meshineryCoreProperties.getInject()) {
       Class<?> clazz = Class.forName(fqn);
       classMap.put(clazz.getSimpleName(), clazz);
     }

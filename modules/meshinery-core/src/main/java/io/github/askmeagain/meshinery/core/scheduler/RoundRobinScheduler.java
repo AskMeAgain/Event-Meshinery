@@ -11,7 +11,9 @@ import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.task.TaskDataProperties;
 import io.github.askmeagain.meshinery.core.task.TaskRun;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -31,15 +33,15 @@ import org.slf4j.MDC;
 public class RoundRobinScheduler {
 
   private final List<MeshineryTask<?, ?>> tasks;
-  private final List<ExecutorService> executorServices;
   private final ConcurrentLinkedQueue<TaskRun> todoQueue;
   private final int backpressureLimit;
   private final boolean isBatchJob;
   private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
   private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
   private final List<ProcessorDecorator<DataContext, DataContext>> processorDecorator;
-  private boolean internalShutdown = false;
   private final boolean gracefulShutdownOnError;
+  private boolean internalShutdown = false;
+  private final Set<ExecutorService> executorServices = new HashSet<>();
 
   public static SchedulerBuilder builder() {
     return new SchedulerBuilder();

@@ -29,15 +29,13 @@ public class MeshineryMonitoringAutoConfiguration {
           .labelNames("executor")
           .register(MeshineryMonitoringService.registry);
 
-
       roundRobinScheduler.getExecutorServices()
           .forEach(executorService -> {
             var dataInjectingExecutorService = (DataInjectingExecutorService) executorService;
 
             Gauge.Child child;
             var executorService1 = dataInjectingExecutorService.getExecutorService();
-            if (executorService1 instanceof ThreadPoolExecutor) {
-              var castedAgain = (ThreadPoolExecutor) executorService1;
+            if (executorService1 instanceof ThreadPoolExecutor castedAgain) {
               child = new Gauge.Child() {
                 @Override
                 public double get() {
@@ -54,6 +52,37 @@ public class MeshineryMonitoringAutoConfiguration {
             }
 
             gauge.setChild(child, dataInjectingExecutorService.getName());
+          });
+
+      var maxThreadGauge = Gauge.build()
+          .name("executor_max_threads")
+          .help("abc test")
+          .labelNames("executor")
+          .register(MeshineryMonitoringService.registry);
+
+      roundRobinScheduler.getExecutorServices()
+          .forEach(executorService -> {
+            var dataInjectingExecutorService = (DataInjectingExecutorService) executorService;
+
+            Gauge.Child child;
+            var executorService1 = dataInjectingExecutorService.getExecutorService();
+            if (executorService1 instanceof ThreadPoolExecutor castedAgain) {
+              child = new Gauge.Child() {
+                @Override
+                public double get() {
+                  return castedAgain.getMaximumPoolSize();
+                }
+              };
+            } else {
+              child = new Gauge.Child() {
+                @Override
+                public double get() {
+                  return 1;
+                }
+              };
+            }
+
+            maxThreadGauge.setChild(child, dataInjectingExecutorService.getName());
           });
     };
   }
