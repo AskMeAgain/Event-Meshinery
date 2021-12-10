@@ -14,7 +14,7 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_
 public abstract class AbstractDrawerTestBase {
 
   private final TestOutputSource outputSource = new TestOutputSource();
-  private final TestInputSource inputSource = new TestInputSource(Collections.emptyList(), 0, 0);
+  private final TestInputSource inputSource = new TestInputSource(Collections.emptyList(), 0, 0, 0);
 
   protected List<MeshineryTask<?, ?>> getSplit() {
     return List.of(

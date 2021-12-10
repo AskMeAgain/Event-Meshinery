@@ -57,7 +57,7 @@ class MonitoringApiControllerTest {
         .task(MeshineryTaskFactory.<String, TestContext>builder()
             .taskName("cool-task-name")
             .read("test", executor)
-            .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 1, 0))
+            .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 1, 0, 0))
             .process((c, e) -> CompletableFuture.supplyAsync(() -> {
               wait3Sec();
               return c;
@@ -67,7 +67,7 @@ class MonitoringApiControllerTest {
         .task(MeshineryTaskFactory.<String, TestContext>builder()
             .taskName("cool-task-name-2")
             .read("test2", executor)
-            .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 1, 0))
+            .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 1, 0, 0))
             .process((c, e) -> CompletableFuture.supplyAsync(() -> {
               wait3Sec();
               return c;

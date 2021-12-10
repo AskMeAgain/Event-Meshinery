@@ -10,7 +10,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class KafkaConsumerFactory {
+public class KafkaConsumerFactory implements AutoCloseable {
 
   private final Map<String, KafkaConsumer<String, byte[]>> consumers = new ConcurrentHashMap<>();
   private final Properties properties;
@@ -38,4 +38,8 @@ public class KafkaConsumerFactory {
     return stringKafkaConsumer;
   }
 
+  @Override
+  public void close() {
+    consumers.forEach((k, v) -> v.close());
+  }
 }

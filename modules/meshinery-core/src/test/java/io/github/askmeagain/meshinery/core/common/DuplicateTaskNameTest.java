@@ -18,7 +18,7 @@ class DuplicateTaskNameTest {
     //Arrange ----------------------------------------------------------------------------------------------------------
     var duplicateTask = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("duplicateTask")
-        .inputSource(new TestInputSource(Collections.emptyList(), 0, 0))
+        .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
         .read("", Executors.newSingleThreadExecutor())
         .build();
 

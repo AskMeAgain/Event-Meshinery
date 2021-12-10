@@ -18,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,6 +33,7 @@ import org.slf4j.MDC;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinScheduler {
 
+  public static final int INT = 20;
   private final List<MeshineryTask<?, ?>> tasks;
   private final ConcurrentLinkedQueue<TaskRun> todoQueue;
   private final int backpressureLimit;
@@ -41,6 +43,8 @@ public class RoundRobinScheduler {
   private final List<ProcessorDecorator<DataContext, DataContext>> processorDecorator;
   private final boolean gracefulShutdownOnError;
   private boolean internalShutdown = false;
+  private final AtomicInteger outputDone = new AtomicInteger();
+  private final AtomicInteger inputDone = new AtomicInteger();
   private final Set<ExecutorService> executorServices = new HashSet<>();
 
   public static SchedulerBuilder builder() {
@@ -57,14 +61,12 @@ public class RoundRobinScheduler {
     //the producer
     var inputExecutor = new DataInjectingExecutorService("input-executor", Executors.newSingleThreadExecutor());
     executorServices.add(inputExecutor);
-    createInputScheduler(inputExecutor);
-
-    Thread.sleep(100);
+    inputExecutor.execute(() -> createInputScheduler(inputExecutor));
 
     //the worker
     var taskExecutor = new DataInjectingExecutorService("output-executor", Executors.newSingleThreadExecutor());
     executorServices.add(taskExecutor);
-    taskExecutor.execute(this::runWorker);
+    taskExecutor.execute(() -> runWorker(taskExecutor));
 
     startupHook.forEach(hook -> hook.accept(this));
 
@@ -76,54 +78,50 @@ public class RoundRobinScheduler {
     internalShutdown = true;
   }
 
+  @SneakyThrows
   private void createInputScheduler(ExecutorService executor) {
-    executor.execute(() -> {
-      log.info("Starting input worker thread");
-      newInputIteration:
-      while (!executor.isShutdown() && !internalShutdown) {
+    log.info("Starting input worker thread");
+    newInputIteration:
+    while (!executor.isShutdown() && !internalShutdown) {
 
-        var itemsInThisIteration = 0;
-        if (todoQueue.size() < backpressureLimit) {
+      var emptyTaskRun = true;
+      for (var reactiveTask : tasks) {
+        //getting the input values
+        MDC.put(TaskDataProperties.TASK_NAME, reactiveTask.getTaskName());
 
-          for (var reactiveTask : tasks) {
-            //getting the input values
-            MDC.put(TaskDataProperties.TASK_NAME, reactiveTask.getTaskName());
+        var taskRuns = queryTaskRuns(reactiveTask);
+        todoQueue.addAll(taskRuns);
 
-            var taskRuns = queryTaskRuns(reactiveTask);
-
-            if (taskRuns.size() > 0) {
-              log.debug("Received data from input source: {}", reactiveTask.getInputSource().getName());
-            }
-
-            for (var taskRun : taskRuns) {
-              itemsInThisIteration++;
-
-              todoQueue.add(taskRun);
-
-              //checking backpressure
-              if (todoQueue.size() >= backpressureLimit) {
-                continue newInputIteration;
-              }
-            }
-          }
-        } else {
-          itemsInThisIteration = -1; //so we dont finish the batch job because of backpressure
+        if (!taskRuns.isEmpty()) {
+          emptyTaskRun = false;
         }
 
-        //we did not add any work in a single iteration. We are done
-        if (itemsInThisIteration == 0 && isBatchJob) {
-          log.info("Shutdown through batch job flag");
-          gracefulShutdown();
-          break;
-        }
-        //shutdown already triggered, we just stop
-        if (internalShutdown) {
-          break;
+        //checking backpressure
+        if (todoQueue.size() >= backpressureLimit) {
+          continue newInputIteration;
         }
       }
-      MDC.clear();
-      log.info("Input scheduler gracefully shutdown");
-    });
+
+      //shutdown already triggered, we just stop
+      if (internalShutdown) {
+        break;
+      }
+
+      if (emptyTaskRun) {
+        Thread.sleep(500);
+        inputDone.incrementAndGet();
+      } else {
+        inputDone.set(0);
+        outputDone.set(0);
+      }
+
+      if (inputDone.get() > INT && outputDone.get() > INT) {
+        break;
+      }
+    }
+
+    MDC.clear();
+    log.info("Input scheduler gracefully shutdown");
   }
 
   private List<TaskRun> queryTaskRuns(MeshineryTask<?, ? extends DataContext> reactiveTask) {
@@ -140,19 +138,25 @@ public class RoundRobinScheduler {
   }
 
   @SneakyThrows
-  private void runWorker() {
+  private void runWorker(ExecutorService executor) {
 
     log.info("Starting processing worker thread");
 
     //we use this label to break out of the task in case we dont want to work on it
     newTask:
-    while (!internalShutdown || !todoQueue.isEmpty()) {
-      var currentTask = todoQueue.poll();
+    while (!internalShutdown && !executor.isShutdown()) {
 
+      var currentTask = todoQueue.poll();
       if (currentTask == null) {
         Thread.sleep(500);
+        outputDone.incrementAndGet();
+        if (outputDone.get() > INT && inputDone.get() > INT) {
+          break;
+        }
         continue;
       }
+      inputDone.set(0);
+      outputDone.set(0);
 
       MDC.put(TaskDataProperties.TASK_NAME, currentTask.getTaskName());
       MDC.put(TaskDataProperties.UID, currentTask.getId());
@@ -175,6 +179,7 @@ public class RoundRobinScheduler {
         }
 
         var nextProcessor = queue.remove();
+
         var context = currentTask.getFuture().get();
 
         //we stop if the context is null

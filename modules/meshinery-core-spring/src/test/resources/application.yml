@@ -1,0 +1,24 @@
+meshinery:
+  core:
+    batch-job: true
+  connectors:
+    kafka:
+      bootstrap-servers: 'localhost:9092'
+      group-id: 'asd999'
+
+logging:
+  level:
+    org:
+      apache:
+        kafka:
+          common:
+            utils:
+              AppInfoParser: WARN
+          clients:
+            producer:
+              ProducerConfig: WARN
+            consumer:
+              ConsumerConfig: WARN
+              KafkaConsumer: WARN
+              internals:
+                ConsumerCoordinator: WARN

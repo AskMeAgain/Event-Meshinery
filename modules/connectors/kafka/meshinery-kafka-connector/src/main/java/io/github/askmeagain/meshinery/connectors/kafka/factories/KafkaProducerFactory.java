@@ -9,7 +9,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class KafkaProducerFactory {
+public class KafkaProducerFactory implements AutoCloseable {
 
   private final Map<String, KafkaProducer<String, byte[]>> producer = new HashMap<>();
   private final Properties properties;
@@ -31,4 +31,8 @@ public class KafkaProducerFactory {
     return producer.computeIfAbsent(key, this::createKafkaProducer);
   }
 
+  @Override
+  public void close() {
+    producer.forEach((k, v) -> v.close());
+  }
 }

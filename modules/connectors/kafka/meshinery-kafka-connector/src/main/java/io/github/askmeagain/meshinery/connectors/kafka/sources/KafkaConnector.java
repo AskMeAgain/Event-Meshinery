@@ -9,9 +9,12 @@ import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.OutputSource;
 import java.util.List;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class KafkaConnector<C extends DataContext> implements OutputSource<String, C>, InputSource<String, C> {
+public class KafkaConnector<C extends DataContext>
+    implements OutputSource<String, C>, InputSource<String, C>, AutoCloseable {
 
   @Getter
   private final String name;
@@ -45,5 +48,12 @@ public class KafkaConnector<C extends DataContext> implements OutputSource<Strin
   @Override
   public void writeOutput(String key, C output) {
     this.outputSource.writeOutput(key, output);
+  }
+
+  @Override
+  public void close() {
+    inputSource.close();
+    outputSource.close();
+    log.info("CLOSING KAFKA STUFF --------------------------------------------------");
   }
 }

@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -47,13 +48,15 @@ public class TestApplication {
 
     @SneakyThrows
     private void wait3Sec() {
-      //Thread.sleep(3000);
+      Thread.sleep(100);
     }
   }
 
   @RequiredArgsConstructor
   @Configuration(proxyBeanMethods = false)
   public static class TestApplicationConfiguration {
+
+    private static final String PREFIX = "TEST-6-";
 
     @Bean
     public KafkaConnector<TestContext> kafkaConnector(
@@ -69,43 +72,70 @@ public class TestApplication {
 
     @Bean
     public ExecutorService executorService() {
-      return Executors.newFixedThreadPool(4);
+      return Executors.newFixedThreadPool(20);
     }
 
     @Bean
     public MeshineryTask<String, TestContext> task1(
         MeshineryProcessor<TestContext, TestContext> processor,
-        KafkaConnector<TestContext> kafkaConnector
+        KafkaConnector<TestContext> kafkaConnector,
+        ExecutorService executorService
     ) {
       var inputSource =
-          new TestInputSource(List.of(TestContext.builder().build(), TestContext.builder().build()), 100, 0);
+          new TestInputSource(List.of(TestContext.builder().build()), 100, 0, 0);
 
       return MeshineryTaskFactory.<String, TestContext>builder()
           .defaultOutputSource(kafkaConnector)
           .inputSource(inputSource)
           .taskName("InputSpawner")
-          .read("Doesnt matter", Executors.newSingleThreadExecutor())
+          .read("Doesnt matter", executorService)
           .process(processor)
-          .write("b")
+          .process(((context, executor) -> {
+            log.info("------------------------------------------A with value");
+            return CompletableFuture.completedFuture(context);
+          }))
+          .write(PREFIX + "b")
           .build();
     }
 
     @Bean
     public MeshineryTask<String, TestContext> task2(
         MeshineryProcessor<TestContext, TestContext> processor,
-        KafkaConnector<TestContext> kafkaConnector
+        KafkaConnector<TestContext> kafkaConnector,
+        ExecutorService executorService
     ) {
       return MeshineryTaskFactory.<String, TestContext>builder()
           .defaultOutputSource(kafkaConnector)
           .inputSource(kafkaConnector)
           .taskName("Cool task 2")
-          .read("b", Executors.newSingleThreadExecutor())
+          .read(PREFIX + "b", executorService)
           .process(processor)
           .process(((context, executor) -> {
-            log.info("Received value");
+            log.info("------------------------------------------ B with value");
             return CompletableFuture.completedFuture(context);
           }))
-          .write("c")
+          .write(PREFIX + "c")
+          .build();
+    }
+
+    @Bean
+    public MeshineryTask<String, TestContext> task3(
+        MeshineryProcessor<TestContext, TestContext> processor,
+        KafkaConnector<TestContext> kafkaConnector,
+        ExecutorService executorService
+    ) {
+      var atomicInt = new AtomicInteger(1);
+      return MeshineryTaskFactory.<String, TestContext>builder()
+          .defaultOutputSource(kafkaConnector)
+          .inputSource(kafkaConnector)
+          .taskName("Cool task 3")
+          .read(PREFIX + "c", executorService)
+          .process(processor)
+          .process(((context, executor) -> {
+            log.info("------------------------------------------ Finished with value" + atomicInt.getAndIncrement());
+            return CompletableFuture.completedFuture(context);
+          }))
+          .write(PREFIX + "finished")
           .build();
     }
   }

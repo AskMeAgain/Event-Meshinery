@@ -13,7 +13,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 @Slf4j
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class KafkaOutputSource<C extends DataContext> implements OutputSource<String, C> {
+public class KafkaOutputSource<C extends DataContext> implements OutputSource<String, C>, AutoCloseable {
 
   @Getter
   private final String name;
@@ -29,7 +29,13 @@ public class KafkaOutputSource<C extends DataContext> implements OutputSource<St
 
     //TODO flushing here??
     var record = new ProducerRecord<>(topic, key, value);
-    log.info("Sending {}", topic);
-    kafkaProducerFactory.get(topic).send(record).get();
+    var stringKafkaProducer = kafkaProducerFactory.get(topic);
+    stringKafkaProducer.send(record).get();
+    stringKafkaProducer.flush();
+  }
+
+  @Override
+  public void close() {
+    kafkaProducerFactory.close();
   }
 }

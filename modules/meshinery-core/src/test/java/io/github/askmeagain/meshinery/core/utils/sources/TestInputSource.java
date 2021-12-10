@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -17,19 +18,29 @@ public class TestInputSource implements InputSource<String, TestContext> {
 
   @Getter
   private final String name = "test-input";
-
   @Singular
   List<TestContext> todos;
-
   @Builder.Default
   int iterations = 1;
   int internalCounter;
+  @Builder.Default
+  int delayMilliseconds = 0;
 
   @Override
+  @SneakyThrows
   public List<TestContext> getInputs(String key) {
     if (iterations == 0) {
+      iterations--;
       log.info("Stopping TestInputSource");
       return Collections.emptyList();
+    }
+
+    if (iterations == -1) {
+      return Collections.emptyList();
+    }
+
+    if (delayMilliseconds > 0) {
+      Thread.sleep(1000);
     }
 
     iterations--;

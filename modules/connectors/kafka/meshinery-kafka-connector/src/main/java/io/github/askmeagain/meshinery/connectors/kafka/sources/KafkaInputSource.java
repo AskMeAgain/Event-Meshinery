@@ -18,7 +18,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
-public class KafkaInputSource<C extends DataContext> implements InputSource<String, C> {
+public class KafkaInputSource<C extends DataContext> implements InputSource<String, C>, AutoCloseable {
 
   @Getter
   private final String name;
@@ -27,13 +27,12 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
   private final KafkaConsumerFactory kafkaConsumerFactory;
 
   @Override
-  public List<C> getInputs(String key) {
+  public List<C> getInputs(String topic) {
 
-    var result = kafkaConsumerFactory.get(key)
-        .poll(Duration.ofMillis(1000));
+    var result = kafkaConsumerFactory.get(topic)
+        .poll(Duration.ofMillis(0));
 
-    //log.error("Receiving: {} with key: {}" , result, key);
-    return StreamSupport.stream(result.spliterator(), false)
+    var resultList = StreamSupport.stream(result.spliterator(), false)
         .map(ConsumerRecord::value)
         .map(x -> {
           try {
@@ -45,6 +44,16 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
         })
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
+
+    if (!resultList.isEmpty()) {
+      log.error("Receiving: {} with key: {}", result.count(), topic);
+    }
+
+    return resultList;
   }
 
+  @Override
+  public void close() {
+    kafkaConsumerFactory.close();
+  }
 }
