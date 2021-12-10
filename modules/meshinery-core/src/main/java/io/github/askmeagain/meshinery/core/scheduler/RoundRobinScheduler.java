@@ -33,7 +33,7 @@ import org.slf4j.MDC;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinScheduler {
 
-  public static final int INT = 20;
+  private static final int BATCH_JOB_INTERNAL_COUNTER = 20;
   private final List<MeshineryTask<?, ?>> tasks;
   private final ConcurrentLinkedQueue<TaskRun> todoQueue;
   private final int backpressureLimit;
@@ -107,21 +107,25 @@ public class RoundRobinScheduler {
         break;
       }
 
-      if (emptyTaskRun) {
-        Thread.sleep(500);
-        inputDone.incrementAndGet();
-      } else {
-        inputDone.set(0);
-        outputDone.set(0);
-      }
-
-      if (inputDone.get() > INT && outputDone.get() > INT) {
+      if (isBatchJob && inputShutdownLogic(emptyTaskRun)) {
         break;
       }
+      Thread.sleep(100);
     }
 
     MDC.clear();
     log.info("Input scheduler gracefully shutdown");
+  }
+
+  private boolean inputShutdownLogic(boolean emptyTaskRun) {
+    if (emptyTaskRun) {
+      inputDone.incrementAndGet();
+    } else {
+      inputDone.set(0);
+      outputDone.set(0);
+    }
+
+    return inputDone.get() > BATCH_JOB_INTERNAL_COUNTER && outputDone.get() > BATCH_JOB_INTERNAL_COUNTER;
   }
 
   private List<TaskRun> queryTaskRuns(MeshineryTask<?, ? extends DataContext> reactiveTask) {
@@ -148,10 +152,12 @@ public class RoundRobinScheduler {
 
       var currentTask = todoQueue.poll();
       if (currentTask == null) {
-        Thread.sleep(500);
-        outputDone.incrementAndGet();
-        if (outputDone.get() > INT && inputDone.get() > INT) {
-          break;
+        Thread.sleep(100);
+        if (isBatchJob) {
+          outputDone.incrementAndGet();
+          if (outputDone.get() > BATCH_JOB_INTERNAL_COUNTER && inputDone.get() > BATCH_JOB_INTERNAL_COUNTER) {
+            break;
+          }
         }
         continue;
       }
