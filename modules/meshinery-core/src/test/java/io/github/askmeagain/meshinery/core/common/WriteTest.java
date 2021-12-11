@@ -27,8 +27,8 @@ class WriteTest {
         .build();
 
     var mockInputSource = Mockito.spy(inputSource);
-    OutputSource<String, TestContext> mockOutputSource = Mockito.mock(OutputSource.class);
-    OutputSource<String, TestContext> defaultOutputSource = Mockito.mock(OutputSource.class);
+    MeshineryConnector<String, TestContext> mockOutputSource = Mockito.mock(MeshineryConnector.class);
+    MeshineryConnector<String, TestContext> defaultOutputSource = Mockito.mock(MeshineryConnector.class);
     var executor = Executors.newSingleThreadExecutor();
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()

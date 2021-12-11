@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.core.source;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +13,7 @@ import lombok.Getter;
 import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_INPUT_KEY;
 
 @Builder
-public class SignalingInputSource<K extends Comparable<K>, C extends DataContext> implements InputSource<K, C> {
+public class SignalingInputSource<K extends Comparable<K>, C extends DataContext> implements MeshineryConnector<K, C> {
 
   @Builder.Default
   private final boolean lockIn = false;
@@ -23,8 +23,8 @@ public class SignalingInputSource<K extends Comparable<K>, C extends DataContext
 
   @Getter
   private final String name;
-  private final InputSource<K, C> signalingInputSource;
-  private final InputSource<K, C> innerInputSource;
+  private final MeshineryConnector<K, C> signalingInputSource;
+  private final MeshineryConnector<K, C> innerInputSource;
   private final K innerKey;
 
   @Override
@@ -49,11 +49,16 @@ public class SignalingInputSource<K extends Comparable<K>, C extends DataContext
       var isLockedIn = locked.contains(key);
       if (isLockedIn && result.isEmpty()) {
         locked.remove(key);
-      } else if(!isLockedIn){
+      } else if (!isLockedIn) {
         locked.add(key);
       }
     }
 
     return result;
+  }
+
+  @Override
+  public void writeOutput(K key, C output) {
+    throw new UnsupportedOperationException();
   }
 }

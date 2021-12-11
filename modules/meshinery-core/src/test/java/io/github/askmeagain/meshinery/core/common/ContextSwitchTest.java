@@ -39,9 +39,9 @@ class ContextSwitchTest extends AbstractTestBase {
 
     var executor = Executors.newSingleThreadExecutor();
 
-    OutputSource<String, TestContext> defaultOutput = Mockito.mock(OutputSource.class);
-    OutputSource<String, TestContext2> contextOutput = Mockito.mock(OutputSource.class);
-    OutputSource<String, TestContext> context2Output = Mockito.mock(OutputSource.class);
+    MeshineryConnector<String, TestContext> defaultOutput = Mockito.mock(MeshineryConnector.class);
+    MeshineryConnector<String, TestContext2> contextOutput = Mockito.mock(MeshineryConnector.class);
+    MeshineryConnector<String, TestContext> context2Output = Mockito.mock(MeshineryConnector.class);
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)

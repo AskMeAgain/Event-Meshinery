@@ -1,18 +1,22 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
+import io.github.askmeagain.meshinery.core.processors.DynamicOutputProcessor;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskVerifier;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.task.TaskDataProperties;
 import io.github.askmeagain.meshinery.core.task.TaskRun;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -33,9 +37,13 @@ import org.slf4j.MDC;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinScheduler {
 
-  private static final int BATCH_JOB_INTERNAL_COUNTER = 20;
   private final List<MeshineryTask<?, ?>> tasks;
-  private final ConcurrentLinkedQueue<TaskRun> todoQueue;
+
+  private final ConcurrentLinkedQueue<TaskRun> outputQueue = new ConcurrentLinkedQueue<>();
+  private final ConcurrentLinkedQueue<ConnectorKey> inputQueue = new ConcurrentLinkedQueue<>();
+
+  private final Map<ConnectorKey, MeshineryTask<?, ?>> taskRunLookupMap = new HashMap<>();
+
   private final int backpressureLimit;
   private final boolean isBatchJob;
   private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
@@ -57,11 +65,14 @@ public class RoundRobinScheduler {
 
     //task gathering
     tasks.forEach(task -> executorServices.add(task.getExecutorService()));
+    createLookupMap();
 
     //the producer
     var inputExecutor = new DataInjectingExecutorService("input-executor", Executors.newSingleThreadExecutor());
     executorServices.add(inputExecutor);
     inputExecutor.execute(() -> createInputScheduler(inputExecutor));
+
+    Thread.sleep(100);
 
     //the worker
     var taskExecutor = new DataInjectingExecutorService("output-executor", Executors.newSingleThreadExecutor());
@@ -73,6 +84,17 @@ public class RoundRobinScheduler {
     return this;
   }
 
+  private void createLookupMap() {
+    for (var task : tasks) {
+      var connectorKey = ConnectorKey.builder()
+          .connector((MeshineryConnector<Object, DataContext>) task.getInputConnector())
+          .key(task.getInputKey())
+          .build();
+
+      taskRunLookupMap.put(connectorKey, task);
+    }
+  }
+
   public void gracefulShutdown() {
     log.info("Graceful shutdown");
     internalShutdown = true;
@@ -81,56 +103,53 @@ public class RoundRobinScheduler {
   @SneakyThrows
   private void createInputScheduler(ExecutorService executor) {
     log.info("Starting input worker thread");
-    newInputIteration:
-    while (!executor.isShutdown() && !internalShutdown) {
 
-      var emptyTaskRun = true;
-      for (var reactiveTask : tasks) {
-        //getting the input values
-        MDC.put(TaskDataProperties.TASK_NAME, reactiveTask.getTaskName());
+    inputQueue.addAll(fillQueueFromTasks());
 
-        var taskRuns = queryTaskRuns(reactiveTask);
-        todoQueue.addAll(taskRuns);
+    while (!executor.isShutdown() && !internalShutdown && (!outputQueue.isEmpty() || !inputQueue.isEmpty())) {
+      if (backpressureLimit <= outputQueue.size()) {
+        log.warn("Waiting because of backpressure");
+        continue;
+      }
 
-        if (!taskRuns.isEmpty()) {
-          emptyTaskRun = false;
+      while (!inputQueue.isEmpty()) {
+        var work = inputQueue.peek();
+
+        var newInputs = queryTaskRuns(work);
+
+        outputQueue.addAll(newInputs); //in this order so any queue is always filled
+        inputQueue.remove();
+      }
+
+      if (outputQueue.isEmpty() && isBatchJob) {
+        log.info("Grace period for input thread");
+        Thread.sleep(5000);
+        if (outputQueue.isEmpty()) {
+          log.info("One iteration with no work and outputqueue is not working on anything (is empty)");
+          break;
         }
-
-        //checking backpressure
-        if (todoQueue.size() >= backpressureLimit) {
-          continue newInputIteration;
-        }
       }
 
-      //shutdown already triggered, we just stop
-      if (internalShutdown) {
-        break;
-      }
-
-      if (isBatchJob && inputShutdownLogic(emptyTaskRun)) {
-        break;
-      }
-      Thread.sleep(100);
+      inputQueue.addAll(fillQueueFromTasks());
     }
 
     MDC.clear();
     log.info("Input scheduler gracefully shutdown");
   }
 
-  private boolean inputShutdownLogic(boolean emptyTaskRun) {
-    if (emptyTaskRun) {
-      inputDone.incrementAndGet();
-    } else {
-      inputDone.set(0);
-      outputDone.set(0);
-    }
-
-    return inputDone.get() > BATCH_JOB_INTERNAL_COUNTER && outputDone.get() > BATCH_JOB_INTERNAL_COUNTER;
+  private List<ConnectorKey> fillQueueFromTasks() {
+    return tasks.stream()
+        .map(MeshineryTask::getConnectorKey)
+        .toList();
   }
 
-  private List<TaskRun> queryTaskRuns(MeshineryTask<?, ? extends DataContext> reactiveTask) {
+  private List<TaskRun> queryTaskRuns(ConnectorKey work) {
     try {
-      return reactiveTask.getNewTaskRuns();
+      if (!taskRunLookupMap.containsKey(work)) {
+        return Collections.emptyList();
+      }
+
+      return taskRunLookupMap.get(work).getNewTaskRuns();
     } catch (Exception e) {
       if (gracefulShutdownOnError) {
         log.error("Error while requesting new input data. Shutting down scheduler", e);
@@ -148,21 +167,21 @@ public class RoundRobinScheduler {
 
     //we use this label to break out of the task in case we dont want to work on it
     newTask:
-    while (!internalShutdown && !executor.isShutdown()) {
+    while (!executor.isShutdown() && !internalShutdown) {
+      MDC.clear();
 
-      var currentTask = todoQueue.poll();
-      if (currentTask == null) {
-        Thread.sleep(100);
-        if (isBatchJob) {
-          outputDone.incrementAndGet();
-          if (outputDone.get() > BATCH_JOB_INTERNAL_COUNTER && inputDone.get() > BATCH_JOB_INTERNAL_COUNTER) {
-            break;
-          }
+      var currentTask = outputQueue.peek();
+
+      if (currentTask == null && inputQueue.isEmpty() && isBatchJob) {
+        Thread.sleep(2000);
+        if (inputQueue.isEmpty()) {
+          break;
         }
+      }
+
+      if (currentTask == null) {
         continue;
       }
-      inputDone.set(0);
-      outputDone.set(0);
 
       MDC.put(TaskDataProperties.TASK_NAME, currentTask.getTaskName());
       MDC.put(TaskDataProperties.UID, currentTask.getId());
@@ -172,6 +191,7 @@ public class RoundRobinScheduler {
 
         //we stop if we reached the end of the queue
         if (queue.isEmpty()) {
+          outputQueue.remove();
           continue newTask;
         }
 
@@ -190,18 +210,17 @@ public class RoundRobinScheduler {
 
         //we stop if the context is null
         if (context == null) {
+          outputQueue.remove();
+          MDC.clear();
           continue newTask;
         }
+        var resultFuture = getResultFuture(currentTask, nextProcessor, context);
 
-        var executorService = currentTask.getExecutorService();
-
-        var resultFuture = getResultFuture(currentTask.getTaskData(), nextProcessor, context, executorService);
         currentTask = currentTask.withFuture(resultFuture);
       }
 
-      MDC.clear();
-
-      todoQueue.add(currentTask);
+      outputQueue.add(currentTask); //this way, so we have always atleast 1 item in queue to signal we have work todo
+      outputQueue.remove();
     }
 
     log.info("Reached end of Queue. Shutting down now");
@@ -216,15 +235,23 @@ public class RoundRobinScheduler {
   }
 
   private CompletableFuture<DataContext> getResultFuture(
-      TaskData taskData,
+      TaskRun taskRun,
       MeshineryProcessor<DataContext, DataContext> nextProcessor,
-      DataContext context,
-      DataInjectingExecutorService executorService
+      DataContext context
   ) {
     try {
-      TaskData.setTaskData(taskData);
+      TaskData.setTaskData(taskRun.getTaskData());
       var decoratedProcessor = MeshineryUtils.applyDecorators(nextProcessor, processorDecorator);
-      return decoratedProcessor.processAsync(context, executorService);
+      return decoratedProcessor.processAsync(context, taskRun.getExecutorService())
+          .thenApply(c -> {
+            if (nextProcessor instanceof DynamicOutputProcessor dynamicOutputProcessor) {
+              inputQueue.add(ConnectorKey.builder()
+                  .connector(dynamicOutputProcessor.outputSource())
+                  .key(dynamicOutputProcessor.keyMethod().apply(context))
+                  .build());
+            }
+            return c;
+          });
     } catch (Exception e) {
       if (gracefulShutdownOnError) {
         log.error(

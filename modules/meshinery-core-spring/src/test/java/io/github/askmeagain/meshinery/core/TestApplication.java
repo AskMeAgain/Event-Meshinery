@@ -15,7 +15,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -42,13 +41,15 @@ public class TestApplication {
     public CompletableFuture<TestContext> processAsync(
         TestContext context, Executor executor
     ) {
-      wait3Sec();
-      return CompletableFuture.completedFuture(context);
+      return CompletableFuture.supplyAsync(() -> {
+        wait3Sec();
+        return context;
+      });
     }
 
     @SneakyThrows
     private void wait3Sec() {
-      Thread.sleep(100);
+      Thread.sleep(1000);
     }
   }
 
@@ -72,7 +73,7 @@ public class TestApplication {
 
     @Bean
     public ExecutorService executorService() {
-      return Executors.newFixedThreadPool(20);
+      return Executors.newFixedThreadPool(40);
     }
 
     @Bean
@@ -82,7 +83,7 @@ public class TestApplication {
         ExecutorService executorService
     ) {
       var inputSource =
-          new TestInputSource(List.of(TestContext.builder().build()), 100, 0, 0);
+          new TestInputSource(List.of(TestContext.builder().build()), 1, 0, 0);
 
       return MeshineryTaskFactory.<String, TestContext>builder()
           .defaultOutputSource(kafkaConnector)
@@ -91,7 +92,7 @@ public class TestApplication {
           .read("Doesnt matter", executorService)
           .process(processor)
           .process(((context, executor) -> {
-            log.info("------------------------------------------A with value");
+            log.info("------ First Processor ------");
             return CompletableFuture.completedFuture(context);
           }))
           .write(PREFIX + "b")
@@ -111,7 +112,7 @@ public class TestApplication {
           .read(PREFIX + "b", executorService)
           .process(processor)
           .process(((context, executor) -> {
-            log.info("------------------------------------------ B with value");
+            log.info("------ Second Processor ------");
             return CompletableFuture.completedFuture(context);
           }))
           .write(PREFIX + "c")
@@ -124,7 +125,6 @@ public class TestApplication {
         KafkaConnector<TestContext> kafkaConnector,
         ExecutorService executorService
     ) {
-      var atomicInt = new AtomicInteger(1);
       return MeshineryTaskFactory.<String, TestContext>builder()
           .defaultOutputSource(kafkaConnector)
           .inputSource(kafkaConnector)
@@ -132,7 +132,7 @@ public class TestApplication {
           .read(PREFIX + "c", executorService)
           .process(processor)
           .process(((context, executor) -> {
-            log.info("------------------------------------------ Finished with value" + atomicInt.getAndIncrement());
+            log.info("------ THIRD PROCESSOR ------");
             return CompletableFuture.completedFuture(context);
           }))
           .write(PREFIX + "finished")

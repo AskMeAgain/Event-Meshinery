@@ -27,7 +27,7 @@ class SignalingProcessorTest {
         .iterations(4)
         .build();
     var memoryInputSource = new MemoryConnector<String, TestContext>();
-    OutputSource<String, TestContext> outputSource = Mockito.spy(memoryInputSource);
+    MemoryConnector<String, TestContext> outputSource = Mockito.spy(memoryInputSource);
 
     memoryInputSource.writeOutput("Ignored", new TestContext(0));
     memoryInputSource.writeOutput("Test", new TestContext(1));

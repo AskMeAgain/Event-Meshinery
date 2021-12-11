@@ -25,14 +25,14 @@ public class MeshineryTaskVerifier {
 
   private static Set<String> getOutputSources(List<MeshineryTask<?, ?>> tasks) {
     return tasks.stream()
-        .map(MeshineryTask::getDefaultOutputSource)
+        .map(MeshineryTask::getOutputConnector)
         .map(OutputSource::getName)
         .collect(Collectors.toSet());
   }
 
   private static Set<String> getInputSources(List<MeshineryTask<?, ?>> tasks) {
     return tasks.stream()
-        .map(MeshineryTask::getInputSource)
+        .map(MeshineryTask::getInputConnector)
         .map(InputSource::getName)
         .collect(Collectors.toSet());
   }

@@ -35,7 +35,7 @@ class ExceptionHandlingTest {
         .build();
 
     var mockInputSource = Mockito.spy(inputSource);
-    OutputSource<String, TestContext> mockOutputSource = Mockito.mock(OutputSource.class);
+    MeshineryConnector<String, TestContext> mockOutputSource = Mockito.mock(MeshineryConnector.class);
     var executor = Executors.newSingleThreadExecutor();
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
@@ -72,7 +72,7 @@ class ExceptionHandlingTest {
         .build();
 
     var mockInputSource = Mockito.spy(inputSource);
-    OutputSource<String, TestContext> mockOutputSource = Mockito.mock(OutputSource.class);
+    MeshineryConnector<String, TestContext> mockOutputSource = Mockito.mock(MeshineryConnector.class);
     var executor = Executors.newSingleThreadExecutor();
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()

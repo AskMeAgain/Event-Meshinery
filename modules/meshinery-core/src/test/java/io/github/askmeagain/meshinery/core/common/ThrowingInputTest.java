@@ -40,7 +40,7 @@ class ThrowingInputTest extends LogTestBase {
     assertThatLogContainsMessage("Error while requesting new input data. Shutting down scheduler");
   }
 
-  static class ThrowingInputSource implements InputSource<String, TestContext> {
+  static class ThrowingInputSource implements MeshineryConnector<String, TestContext> {
 
     @Override
     public String getName() {
@@ -48,8 +48,13 @@ class ThrowingInputTest extends LogTestBase {
     }
 
     @Override
+    public void writeOutput(String key, TestContext output) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
     public List<TestContext> getInputs(String key) {
-      throw new RuntimeException("Errror!");
+      throw new RuntimeException("Error!");
     }
   }
 }

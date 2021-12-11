@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core.utils.sources;
 
-import io.github.askmeagain.meshinery.core.common.InputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Builder
 @AllArgsConstructor
-public class TestInputSource implements InputSource<String, TestContext> {
+public class TestInputSource implements MeshineryConnector<String, TestContext> {
 
   @Getter
   private final String name = "test-input";
@@ -49,5 +49,10 @@ public class TestInputSource implements InputSource<String, TestContext> {
     return todos.stream()
         .map(testContext -> testContext.withId((++internalCounter) + ""))
         .toList();
+  }
+
+  @Override
+  public void writeOutput(String key, TestContext output) {
+    throw new UnsupportedOperationException();
   }
 }

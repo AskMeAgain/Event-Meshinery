@@ -5,6 +5,7 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.LogTestBase;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -44,11 +45,16 @@ class ThrowingOutputTest extends LogTestBase {
         "Error while preparing/processing processor 'DynamicOutputProcessor'. Shutting down gracefully");
   }
 
-  static class ThrowingOutputSource implements OutputSource<String, TestContext> {
+  static class ThrowingOutputSource implements MeshineryConnector<String, TestContext> {
 
     @Override
     public String getName() {
       return "default";
+    }
+
+    @Override
+    public List<TestContext> getInputs(String key) {
+      throw new UnsupportedOperationException();
     }
 
     @Override

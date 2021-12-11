@@ -26,7 +26,7 @@ class SimpleParallelizationTest extends AbstractTestBase {
     //Arrange ---------------------------------------------------------------------------------
     var executor = Executors.newFixedThreadPool(3);
 
-    OutputSource<String, TestContext> outputSource = Mockito.mock(OutputSource.class);
+    MeshineryConnector<String, TestContext> outputSource = Mockito.mock(MeshineryConnector.class);
 
     var inputSource = TestInputSource.<TestContext>builder()
         .todo(new TestContext(0))

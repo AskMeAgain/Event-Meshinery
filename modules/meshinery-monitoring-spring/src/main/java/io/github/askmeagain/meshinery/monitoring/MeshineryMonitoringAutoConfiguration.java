@@ -94,12 +94,12 @@ public class MeshineryMonitoringAutoConfiguration {
       MeshineryMonitoringService.createGauge(
           "todoqueue",
           "Number of currently waiting tasks in queue.",
-          () -> (double) scheduler.getTodoQueue().size()
+          () -> (double) scheduler.getOutputQueue().size()
       );
       MeshineryMonitoringService.createGauge(
           "todoqueue_open_capacity",
           "Number of possible items in todo queue.",
-          () -> (double) scheduler.getBackpressureLimit() - scheduler.getTodoQueue().size()
+          () -> (double) scheduler.getBackpressureLimit() - scheduler.getOutputQueue().size()
       );
       MeshineryMonitoringService.createGauge(
           "registered_tasks",

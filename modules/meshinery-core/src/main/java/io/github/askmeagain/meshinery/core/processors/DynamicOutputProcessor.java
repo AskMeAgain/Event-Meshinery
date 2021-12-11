@@ -1,8 +1,8 @@
 package io.github.askmeagain.meshinery.core.processors;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
-import io.github.askmeagain.meshinery.core.common.OutputSource;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
@@ -15,7 +15,7 @@ import java.util.function.Predicate;
  * @param <C> ContextType
  */
 public record DynamicOutputProcessor<K, C extends DataContext>(Predicate<C> writeIf, Function<C, K> keyMethod,
-    OutputSource<K, C> outputSource) implements MeshineryProcessor<C, C> {
+    MeshineryConnector<K, C> outputSource) implements MeshineryProcessor<C, C> {
 
   @Override
   public CompletableFuture<C> processAsync(C context, Executor executor) {

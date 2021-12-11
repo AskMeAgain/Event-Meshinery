@@ -45,10 +45,6 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
 
-    if (!resultList.isEmpty()) {
-      log.error("Receiving: {} with key: {}", result.count(), topic);
-    }
-
     return resultList;
   }
 

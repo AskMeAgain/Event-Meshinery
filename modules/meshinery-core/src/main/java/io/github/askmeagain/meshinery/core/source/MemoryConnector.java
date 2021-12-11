@@ -2,7 +2,7 @@ package io.github.askmeagain.meshinery.core.source;
 
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class MemoryConnector<K, C extends DataContext> implements AccessingInputSource<K, C>, OutputSource<K, C> {
+public class MemoryConnector<K, C extends DataContext> implements AccessingInputSource<K, C>, MeshineryConnector<K, C> {
 
   @Getter
   private String name = "default";

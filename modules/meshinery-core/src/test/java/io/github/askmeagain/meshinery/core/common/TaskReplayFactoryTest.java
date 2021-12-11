@@ -27,7 +27,7 @@ class TaskReplayFactoryTest {
     var processorB = Mockito.spy(new TestContextProcessor(2));
     var testDataProcessor = Mockito.spy(new TaskDataTestProcessor());
 
-    OutputSource<String, TestContext> outputSource = Mockito.mock(OutputSource.class);
+    MeshineryConnector<String, TestContext> outputSource = Mockito.mock(MeshineryConnector.class);
 
     List<MeshineryTask<?, ? extends DataContext>> tasks = List.of(
         MeshineryTaskFactory.<String, TestContext>builder()

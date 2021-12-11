@@ -5,16 +5,14 @@ import io.github.askmeagain.meshinery.connectors.kafka.MeshineryKafkaProperties;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaProducerFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
-import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import java.util.List;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class KafkaConnector<C extends DataContext>
-    implements OutputSource<String, C>, InputSource<String, C>, AutoCloseable {
+public class KafkaConnector<C extends DataContext> implements MeshineryConnector<String, C>, AutoCloseable {
 
   @Getter
   private final String name;

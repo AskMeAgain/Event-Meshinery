@@ -3,11 +3,9 @@ package io.github.askmeagain.meshinery.core.scheduler;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
-import io.github.askmeagain.meshinery.core.task.TaskRun;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 import lombok.SneakyThrows;
 
@@ -20,7 +18,6 @@ public class SchedulerBuilder {
   int backpressureLimit = 200;
   boolean isBatchJob;
   List<MeshineryTask<? extends Object, ? extends DataContext>> tasks = new ArrayList<>();
-  ConcurrentLinkedQueue<TaskRun> todoQueue = new ConcurrentLinkedQueue<>();
   boolean gracefulShutdownOnError = true;
 
   public SchedulerBuilder task(MeshineryTask<?, ? extends DataContext> task) {
@@ -73,7 +70,6 @@ public class SchedulerBuilder {
   public RoundRobinScheduler build() {
     return new RoundRobinScheduler(
         tasks,
-        todoQueue,
         backpressureLimit,
         isBatchJob,
         shutdownHook,
