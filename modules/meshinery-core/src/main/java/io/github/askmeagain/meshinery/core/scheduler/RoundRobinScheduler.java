@@ -17,9 +17,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -43,11 +43,11 @@ public class RoundRobinScheduler {
   private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
   private final List<ProcessorDecorator<DataContext, DataContext>> processorDecorator;
   private final boolean gracefulShutdownOnError;
-  private final int gracePeriod;
+  private final int gracePeriodMilliseconds;
 
   private boolean internalShutdown = false;
-  private final ConcurrentLinkedQueue<TaskRun> outputQueue = new ConcurrentLinkedQueue<>();
-  private final ConcurrentLinkedQueue<ConnectorKey> inputQueue = new ConcurrentLinkedQueue<>();
+  private final Queue<TaskRun> outputQueue;
+  private final Queue<ConnectorKey> inputQueue;
   private final Map<ConnectorKey, MeshineryTask<?, ?>> taskRunLookupMap = new HashMap<>();
   private final Set<ExecutorService> executorServices = new HashSet<>();
 
@@ -96,6 +96,8 @@ public class RoundRobinScheduler {
     internalShutdown = true;
   }
 
+  private boolean inputGracePeriod = false;
+
   @SneakyThrows
   private void createInputScheduler(ExecutorService executor) {
     log.info("Starting input worker thread");
@@ -119,12 +121,16 @@ public class RoundRobinScheduler {
       }
 
       if (outputQueue.isEmpty() && isBatchJob) {
-        log.info("Grace period for input thread");
-        Thread.sleep(gracePeriod);
-        if (outputQueue.isEmpty()) {
-          log.info("One iteration with no work and outputqueue is not working on anything (is empty)");
+        if (!inputGracePeriod) {
+          log.info("Grace period for input thread");
+          inputGracePeriod = true;
+          Thread.sleep(gracePeriodMilliseconds);
+        } else {
+          log.info("Grace period is done");
           break;
         }
+      } else {
+        inputGracePeriod = false;
       }
 
       inputQueue.addAll(fillQueueFromTasks());
@@ -169,8 +175,8 @@ public class RoundRobinScheduler {
       var currentTask = outputQueue.peek();
 
       if (currentTask == null && inputQueue.isEmpty() && isBatchJob) {
-        Thread.sleep(gracePeriod);
-        if (inputQueue.isEmpty()) {
+        Thread.sleep(gracePeriodMilliseconds);
+        if (inputQueue.isEmpty() && outputQueue.isEmpty()) {
           break;
         }
       }

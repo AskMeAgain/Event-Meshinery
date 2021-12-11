@@ -52,6 +52,5 @@ public class KafkaConnector<C extends DataContext> implements MeshineryConnector
   public void close() {
     inputSource.close();
     outputSource.close();
-    log.info("CLOSING KAFKA STUFF --------------------------------------------------");
   }
 }

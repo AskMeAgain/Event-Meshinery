@@ -39,7 +39,7 @@ class ShutdownTest extends AbstractTestBase {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
-        .gracePeriod(0)
+        .gracePeriodMilliseconds(0)
         .registerShutdownHook(List.of(scheduler -> flag.set(true)))
         .buildAndStart();
 

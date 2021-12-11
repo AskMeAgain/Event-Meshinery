@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-//@Disabled
 @Slf4j
 @EnableMeshinery
 @EnableMeshineryMonitoring
@@ -56,7 +55,7 @@ public class TestApplication {
   @Configuration(proxyBeanMethods = false)
   public static class TestApplicationConfiguration {
 
-    private static final String PREFIX = "TEST-6-";
+    private static final String PREFIX = "TEST-13-";
 
     @Bean
     public KafkaConnector<TestContext> kafkaConnector(

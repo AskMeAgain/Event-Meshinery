@@ -6,6 +6,7 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 import lombok.SneakyThrows;
 
@@ -61,7 +62,7 @@ public class SchedulerBuilder {
     return this;
   }
 
-  public SchedulerBuilder gracePeriod(int gracePeriodMilliseconds) {
+  public SchedulerBuilder gracePeriodMilliseconds(int gracePeriodMilliseconds) {
     this.gracePeriodMilliseconds = gracePeriodMilliseconds;
     return this;
   }
@@ -82,7 +83,9 @@ public class SchedulerBuilder {
         startupHook,
         processorDecorator,
         gracefulShutdownOnError,
-        gracePeriodMilliseconds
+        gracePeriodMilliseconds,
+        new ConcurrentLinkedQueue<>(),
+        new ConcurrentLinkedQueue<>()
     );
   }
 }

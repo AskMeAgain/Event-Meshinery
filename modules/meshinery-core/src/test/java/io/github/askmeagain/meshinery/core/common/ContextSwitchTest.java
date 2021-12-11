@@ -61,7 +61,7 @@ class ContextSwitchTest extends AbstractTestBase {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
-        .gracePeriod(0)
+        .gracePeriodMilliseconds(0)
         .buildAndStart();
 
     var batchJobFinished = executor.awaitTermination(4000, TimeUnit.MILLISECONDS);

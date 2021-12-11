@@ -52,7 +52,7 @@ class ExceptionHandlingTest {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
-        .gracePeriod(0)
+        .gracePeriodMilliseconds(0)
         .buildAndStart();
 
     var batchJobFinished = executor.awaitTermination(1, TimeUnit.SECONDS);
@@ -93,7 +93,7 @@ class ExceptionHandlingTest {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
-        .gracePeriod(0)
+        .gracePeriodMilliseconds(0)
         .buildAndStart();
 
     var batchJobFinished = executor.awaitTermination(1, TimeUnit.SECONDS);

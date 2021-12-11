@@ -40,7 +40,7 @@ class BatchJobTest {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
-        .gracePeriod(0)
+        .gracePeriodMilliseconds(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(500, TimeUnit.MILLISECONDS);
 

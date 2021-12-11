@@ -14,6 +14,6 @@ public class MeshineryKafkaProperties {
   @NotBlank
   String groupId;
 
-  Properties producerProperties;
-  Properties consumerProperties;
+  Properties producerProperties = new Properties();
+  Properties consumerProperties = new Properties();
 }

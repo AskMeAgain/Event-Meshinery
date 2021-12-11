@@ -31,6 +31,12 @@ public class MeshineryAutoConfiguration {
   }
 
   @Bean
+  @ConditionalOnProperty(prefix = "meshinery.core", name = "batch-job", havingValue = "true")
+  public ApplicationTimeHook batchJobTiming() {
+    return new ApplicationTimeHook();
+  }
+
+  @Bean
   @ConditionalOnProperty(
       prefix = "meshinery.core",
       name = "shutdown-on-finished",
@@ -54,6 +60,7 @@ public class MeshineryAutoConfiguration {
         .registerStartupHook(startupHook)
         .registerDecorators(processorDecorators)
         .gracefulShutdownOnError(meshineryCoreProperties.isShutdownOnError())
+        .gracePeriodMilliseconds(meshineryCoreProperties.getGracePeriodMilliseconds())
         .tasks(tasks)
         .buildAndStart();
   }

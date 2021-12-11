@@ -44,7 +44,7 @@ class SignalingProcessorTest {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
-        .gracePeriod(0)
+        .gracePeriodMilliseconds(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(1500, TimeUnit.MILLISECONDS);
 

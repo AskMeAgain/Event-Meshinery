@@ -16,4 +16,6 @@ public class MeshineryCoreProperties {
 
   private boolean shutdownOnError = true;
 
+  private int gracePeriodMilliseconds = 2000;
+
 }
