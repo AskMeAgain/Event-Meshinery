@@ -1,6 +1,6 @@
 meshinery:
   core:
-    batch-job: false
+    batch-job: true
   connectors:
     kafka:
       bootstrap-servers: 'localhost:9092'
