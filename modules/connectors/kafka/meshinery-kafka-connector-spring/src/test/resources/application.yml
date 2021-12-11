@@ -1,5 +1,5 @@
 meshinery:
   connectors:
     kafka:
-      bootstrap-server: "abc"
+      bootstrap-servers: "abc"
       group-id: "groupid"
