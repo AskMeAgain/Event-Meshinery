@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atMost;
+import static org.mockito.Mockito.times;
 
 class BackpressureTest {
 
@@ -45,7 +45,6 @@ class BackpressureTest {
 
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(batchJobFinished).isFalse(); //here we needed to stop prematurely
-    //the backpressure will be matched +-1 as the scheduler pushes/pops to the queue continuously
-    Mockito.verify(processor, atMost(11)).processAsync(any(), any());
+    Mockito.verify(processor, times(10)).processAsync(any(), any());
   }
 }

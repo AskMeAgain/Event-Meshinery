@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 class BatchJobTest {
@@ -25,24 +26,26 @@ class BatchJobTest {
         .todo(new TestContext(0))
         .iterations(ITERATIONS)
         .build();
-    var mockInputSource = Mockito.spy(inputSource);
+    var mockOutputSource = Mockito.spy(new TestOutputSource());
     var executor = Executors.newSingleThreadExecutor();
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
-        .inputSource(mockInputSource)
-        .defaultOutputSource(new TestOutputSource())
+        .inputSource(inputSource)
+        .defaultOutputSource(mockOutputSource)
         .read(KEY, executor)
+        .write("")
         .build();
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .gracePeriod(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(500, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
-    Mockito.verify(mockInputSource, Mockito.times(ITERATIONS + 1)).getInputs(eq(KEY));
+    Mockito.verify(mockOutputSource, Mockito.times(ITERATIONS)).writeOutput(eq(""), any());
   }
 }

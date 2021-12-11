@@ -11,7 +11,6 @@ import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 
 class WriteTest {
 
@@ -43,13 +42,13 @@ class WriteTest {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
+        .gracePeriod(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(1, TimeUnit.SECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
 
-    Mockito.verify(mockInputSource, Mockito.times(ITERATIONS)).getInputs(eq(KEY));
     Mockito.verify(mockOutputSource).writeOutput(any(), any());
     Mockito.verify(defaultOutputSource, Mockito.times(2)).writeOutput(any(), any());
   }

@@ -6,7 +6,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class TestContextProcessor implements MeshineryProcessor<TestContext, TestContext> {
 
@@ -14,7 +16,10 @@ public class TestContextProcessor implements MeshineryProcessor<TestContext, Tes
 
   @Override
   public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
-    return CompletableFuture.supplyAsync(() -> wait(context), executor);
+    return CompletableFuture.supplyAsync(() -> {
+      log.info("Computing stuff");
+      return wait(context);
+    }, executor);
   }
 
   @SneakyThrows

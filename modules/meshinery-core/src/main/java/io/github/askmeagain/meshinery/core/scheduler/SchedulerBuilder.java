@@ -16,6 +16,7 @@ public class SchedulerBuilder {
   List<ProcessorDecorator<DataContext, DataContext>> processorDecorator = Collections.emptyList();
   List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
   int backpressureLimit = 200;
+  int gracePeriodMilliseconds = 2000;
   boolean isBatchJob;
   List<MeshineryTask<? extends Object, ? extends DataContext>> tasks = new ArrayList<>();
   boolean gracefulShutdownOnError = true;
@@ -60,6 +61,11 @@ public class SchedulerBuilder {
     return this;
   }
 
+  public SchedulerBuilder gracePeriod(int gracePeriodMilliseconds) {
+    this.gracePeriodMilliseconds = gracePeriodMilliseconds;
+    return this;
+  }
+
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public RoundRobinScheduler buildAndStart() {
     return build().start();
@@ -75,7 +81,8 @@ public class SchedulerBuilder {
         shutdownHook,
         startupHook,
         processorDecorator,
-        gracefulShutdownOnError
+        gracefulShutdownOnError,
+        gracePeriodMilliseconds
     );
   }
 }

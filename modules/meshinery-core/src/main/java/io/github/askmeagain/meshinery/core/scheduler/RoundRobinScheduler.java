@@ -12,8 +12,6 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskVerifier;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.task.TaskDataProperties;
 import io.github.askmeagain.meshinery.core.task.TaskRun;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +22,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -39,23 +36,19 @@ import org.slf4j.MDC;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinScheduler {
 
-  public static final int GRACE_PERIOD = 2000;
   private final List<MeshineryTask<?, ?>> tasks;
-
-  private final ConcurrentLinkedQueue<TaskRun> outputQueue = new ConcurrentLinkedQueue<>();
-  private final ConcurrentLinkedQueue<ConnectorKey> inputQueue = new ConcurrentLinkedQueue<>();
-
-  private final Map<ConnectorKey, MeshineryTask<?, ?>> taskRunLookupMap = new HashMap<>();
-
   private final int backpressureLimit;
   private final boolean isBatchJob;
   private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
   private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
   private final List<ProcessorDecorator<DataContext, DataContext>> processorDecorator;
   private final boolean gracefulShutdownOnError;
+  private final int gracePeriod;
+
   private boolean internalShutdown = false;
-  private final AtomicInteger outputDone = new AtomicInteger();
-  private final AtomicInteger inputDone = new AtomicInteger();
+  private final ConcurrentLinkedQueue<TaskRun> outputQueue = new ConcurrentLinkedQueue<>();
+  private final ConcurrentLinkedQueue<ConnectorKey> inputQueue = new ConcurrentLinkedQueue<>();
+  private final Map<ConnectorKey, MeshineryTask<?, ?>> taskRunLookupMap = new HashMap<>();
   private final Set<ExecutorService> executorServices = new HashSet<>();
 
   public static SchedulerBuilder builder() {
@@ -64,9 +57,9 @@ public class RoundRobinScheduler {
 
   @SneakyThrows
   RoundRobinScheduler start() {
-    MeshineryTaskVerifier.verifyTasks(tasks);
 
-    //task gathering
+    //setup
+    MeshineryTaskVerifier.verifyTasks(tasks);
     tasks.forEach(task -> executorServices.add(task.getExecutorService()));
     createLookupMap();
 
@@ -112,6 +105,7 @@ public class RoundRobinScheduler {
     while (!executor.isShutdown() && !internalShutdown && (!outputQueue.isEmpty() || !inputQueue.isEmpty())) {
       if (backpressureLimit <= outputQueue.size()) {
         log.warn("Waiting because of backpressure");
+        Thread.sleep(500);
         continue;
       }
 
@@ -126,7 +120,7 @@ public class RoundRobinScheduler {
 
       if (outputQueue.isEmpty() && isBatchJob) {
         log.info("Grace period for input thread");
-        Thread.sleep(GRACE_PERIOD);
+        Thread.sleep(gracePeriod);
         if (outputQueue.isEmpty()) {
           log.info("One iteration with no work and outputqueue is not working on anything (is empty)");
           break;
@@ -165,10 +159,9 @@ public class RoundRobinScheduler {
 
   @SneakyThrows
   private void runWorker(ExecutorService executor) {
-    var begin = Instant.now();
     log.info("Starting processing worker thread");
 
-    //we use this label to break out of the task in case we dont want to work on it
+    //we use this label to break out of the task in case we cant work on it (not done or returns null)
     newTask:
     while (!executor.isShutdown() && !internalShutdown) {
       MDC.clear();
@@ -176,7 +169,7 @@ public class RoundRobinScheduler {
       var currentTask = outputQueue.peek();
 
       if (currentTask == null && inputQueue.isEmpty() && isBatchJob) {
-        Thread.sleep(GRACE_PERIOD);
+        Thread.sleep(gracePeriod);
         if (inputQueue.isEmpty()) {
           break;
         }
@@ -225,8 +218,6 @@ public class RoundRobinScheduler {
       outputQueue.remove();
     }
 
-    log.info("Reached end of Queue. Shutting down now");
-
 
     for (var executorService : executorServices) {
       if (!executorService.isShutdown()) {
@@ -234,10 +225,7 @@ public class RoundRobinScheduler {
       }
     }
 
-    var diff = Duration.between(begin, Instant.now());
-    log.info("Seconds: " + diff.minusMillis(GRACE_PERIOD).getSeconds());
-    log.info("Grace period: " + GRACE_PERIOD);
-
+    log.info("Output scheduler shutting down now");
 
     shutdownHook.forEach(hook -> hook.accept(this));
   }

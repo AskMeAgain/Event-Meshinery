@@ -29,11 +29,10 @@ class ContextSwitchTest extends AbstractTestBase {
   @SuppressWarnings("unchecked")
   void contextSwitchTest() throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
-    var inputSource = TestInputSource.<TestContext>builder()
+    var inputSource = TestInputSource.builder()
         .todo(new TestContext(0))
         .build();
     var mockInputSource = Mockito.spy(inputSource);
-
     var processorA = Mockito.spy(new TestContextProcessor(0));
     var processorB = Mockito.spy(new TestContext2Processor(0));
 
@@ -48,31 +47,32 @@ class ContextSwitchTest extends AbstractTestBase {
         .defaultOutputSource(defaultOutput)
         .read(INPUT_KEY, executor)
         .process(processorA)
-        .write(INPUT_KEY)
+        .write(INPUT_KEY + "asd")
         .contextSwitch(contextOutput, this::map, Collections.emptyList())
         .process(processorB)
-        .write(INPUT_KEY)
+        .write(INPUT_KEY + "asd")
         .contextSwitch(context2Output, this::map, Collections.emptyList())
         .process(processorA)
-        .write(INPUT_KEY)
+        .write(INPUT_KEY + "asd")
+        .backoffTime(100)
         .build();
 
     //Act ------------------------------------------------------------------------------------
-    RoundRobinScheduler.<String, TestContext>builder()
+    RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .gracePeriod(0)
         .buildAndStart();
 
-    var batchJobFinished = executor.awaitTermination(10, TimeUnit.SECONDS);
+    var batchJobFinished = executor.awaitTermination(4000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
 
-    Mockito.verify(mockInputSource, times(2)).getInputs(eq(INPUT_KEY));
     Mockito.verify(processorA, times(2)).processAsync(any(), any());
     Mockito.verify(processorB).processAsync(any(), any());
-    Mockito.verify(defaultOutput).writeOutput(eq(INPUT_KEY), any());
-    Mockito.verify(contextOutput).writeOutput(eq(INPUT_KEY), any());
-    Mockito.verify(context2Output).writeOutput(eq(INPUT_KEY), eq(EXPECTED));
+    Mockito.verify(defaultOutput).writeOutput(eq(INPUT_KEY + "asd"), any());
+    Mockito.verify(contextOutput).writeOutput(eq(INPUT_KEY + "asd"), any());
+    Mockito.verify(context2Output).writeOutput(eq(INPUT_KEY + "asd"), eq(EXPECTED));
   }
 }

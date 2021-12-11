@@ -53,8 +53,6 @@ public class MeshineryTask<K, C extends DataContext> {
       return Collections.emptyList();
     }
 
-    log.debug("Creating new TaskRuns");
-
     nextExecution = now.plusMillis(backoffTimeMilli);
     return inputConnector.getInputs(inputKey)
         .stream()

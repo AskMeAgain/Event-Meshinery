@@ -47,6 +47,7 @@ class BranchTest {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .gracePeriod(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(1500, TimeUnit.MILLISECONDS);
 

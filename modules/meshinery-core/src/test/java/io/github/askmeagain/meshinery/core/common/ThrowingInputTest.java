@@ -32,8 +32,9 @@ class ThrowingInputTest extends LogTestBase {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .gracePeriod(0)
         .buildAndStart();
-    var batchJobFinished = executor.awaitTermination(500, TimeUnit.MILLISECONDS);
+    var batchJobFinished = executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();

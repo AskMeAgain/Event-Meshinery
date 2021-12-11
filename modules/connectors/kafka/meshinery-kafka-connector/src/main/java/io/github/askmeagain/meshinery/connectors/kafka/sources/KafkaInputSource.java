@@ -5,7 +5,6 @@ import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaConsumerFa
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSource;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -30,10 +29,9 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
   @Override
   @SneakyThrows
   public List<C> getInputs(String topic) {
-    var result = kafkaConsumerFactory.get(topic)
-        .poll(Duration.ofMillis(0));
+    var result = kafkaConsumerFactory.get(topic).poll(0);
 
-    var resultList = StreamSupport.stream(result.spliterator(), false)
+    return StreamSupport.stream(result.spliterator(), false)
         .map(ConsumerRecord::value)
         .map(x -> {
           try {
@@ -45,8 +43,6 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
         })
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
-
-    return resultList;
   }
 
   @Override

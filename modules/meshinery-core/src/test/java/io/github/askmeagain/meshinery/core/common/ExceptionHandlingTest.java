@@ -49,16 +49,18 @@ class ExceptionHandlingTest {
         .build();
 
     //Act ------------------------------------------------------------------------------------
-    RoundRobinScheduler.<String, TestContext>builder()
+    RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .gracePeriod(0)
         .buildAndStart();
+
     var batchJobFinished = executor.awaitTermination(1, TimeUnit.SECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
 
-    Mockito.verify(mockInputSource, Mockito.times(ITERATIONS)).getInputs(eq(KEY));
+    Mockito.verify(mockInputSource, Mockito.atLeast(ITERATIONS)).getInputs(eq(KEY));
     Mockito.verify(mockOutputSource, Mockito.never()).writeOutput(any(), any());
   }
 
@@ -91,6 +93,7 @@ class ExceptionHandlingTest {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
+        .gracePeriod(0)
         .buildAndStart();
 
     var batchJobFinished = executor.awaitTermination(1, TimeUnit.SECONDS);
@@ -98,7 +101,7 @@ class ExceptionHandlingTest {
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
 
-    Mockito.verify(mockInputSource, Mockito.times(ITERATIONS)).getInputs(eq(KEY));
+    Mockito.verify(mockInputSource, Mockito.atLeast(ITERATIONS)).getInputs(eq(KEY));
     Mockito.verify(mockOutputSource).writeOutput(any(), eq(EXPECTED));
   }
 }

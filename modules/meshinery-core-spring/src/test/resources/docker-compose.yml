@@ -32,9 +32,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
   prometheus:
     image: prom/prometheus:v2.1.0
-      #volumes:
-      #  - ./prometheus/:/etc/prometheus/
-    # - prometheus_data:/prometheus
     ports:
       - 9090:9090
   grafana:
@@ -43,6 +40,3 @@ services:
       - prometheus
     ports:
       - 3000:3000
-    #volumes:
-    #  - grafana_data:/var/lib/grafana
-    #  - ./grafana/provisioning/:/etc/grafana/provisioning/
