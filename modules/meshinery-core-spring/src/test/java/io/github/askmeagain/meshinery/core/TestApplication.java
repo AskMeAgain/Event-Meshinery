@@ -10,7 +10,6 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import io.github.askmeagain.meshinery.monitoring.EnableMeshineryMonitoring;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -42,14 +41,14 @@ public class TestApplication {
         TestContext context, Executor executor
     ) {
       return CompletableFuture.supplyAsync(() -> {
-        wait3Sec();
+        wait1Sec();
         return context;
-      });
+      }, executor);
     }
 
     @SneakyThrows
-    private void wait3Sec() {
-      Thread.sleep(1000);
+    private void wait1Sec() {
+      Thread.sleep(3000);
     }
   }
 
@@ -73,7 +72,7 @@ public class TestApplication {
 
     @Bean
     public ExecutorService executorService() {
-      return Executors.newFixedThreadPool(40);
+      return Executors.newFixedThreadPool(20);
     }
 
     @Bean
@@ -82,17 +81,23 @@ public class TestApplication {
         KafkaConnector<TestContext> kafkaConnector,
         ExecutorService executorService
     ) {
-      var inputSource =
-          new TestInputSource(List.of(TestContext.builder().build()), 1, 0, 0);
+      var inputSource = TestInputSource.builder()
+          .todo(TestContext.builder().build())
+          .iterations(20)
+          .build();
 
       return MeshineryTaskFactory.<String, TestContext>builder()
           .defaultOutputSource(kafkaConnector)
           .inputSource(inputSource)
           .taskName("InputSpawner")
           .read("Doesnt matter", executorService)
+          .process(((context, executor) -> {
+            log.info("------ First Processor START------");
+            return CompletableFuture.completedFuture(context);
+          }))
           .process(processor)
           .process(((context, executor) -> {
-            log.info("------ First Processor ------");
+            log.info("------ First Processor END ------");
             return CompletableFuture.completedFuture(context);
           }))
           .write(PREFIX + "b")
@@ -110,9 +115,13 @@ public class TestApplication {
           .inputSource(kafkaConnector)
           .taskName("Cool task 2")
           .read(PREFIX + "b", executorService)
+          .process(((context, executor) -> {
+            log.info("------ Second Processor START ------");
+            return CompletableFuture.completedFuture(context);
+          }))
           .process(processor)
           .process(((context, executor) -> {
-            log.info("------ Second Processor ------");
+            log.info("------ Second Processor END ------");
             return CompletableFuture.completedFuture(context);
           }))
           .write(PREFIX + "c")
@@ -130,9 +139,13 @@ public class TestApplication {
           .inputSource(kafkaConnector)
           .taskName("Cool task 3")
           .read(PREFIX + "c", executorService)
+          .process(((context, executor) -> {
+            log.info("------ THIRD PROCESSOR START ------");
+            return CompletableFuture.completedFuture(context);
+          }))
           .process(processor)
           .process(((context, executor) -> {
-            log.info("------ THIRD PROCESSOR ------");
+            log.info("------ THIRD PROCESSOR END ------");
             return CompletableFuture.completedFuture(context);
           }))
           .write(PREFIX + "finished")

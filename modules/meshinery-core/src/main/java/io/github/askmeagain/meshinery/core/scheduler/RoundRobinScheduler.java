@@ -12,6 +12,8 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskVerifier;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.task.TaskDataProperties;
 import io.github.askmeagain.meshinery.core.task.TaskRun;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,6 +39,7 @@ import org.slf4j.MDC;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinScheduler {
 
+  public static final int GRACE_PERIOD = 2000;
   private final List<MeshineryTask<?, ?>> tasks;
 
   private final ConcurrentLinkedQueue<TaskRun> outputQueue = new ConcurrentLinkedQueue<>();
@@ -123,7 +126,7 @@ public class RoundRobinScheduler {
 
       if (outputQueue.isEmpty() && isBatchJob) {
         log.info("Grace period for input thread");
-        Thread.sleep(5000);
+        Thread.sleep(GRACE_PERIOD);
         if (outputQueue.isEmpty()) {
           log.info("One iteration with no work and outputqueue is not working on anything (is empty)");
           break;
@@ -162,7 +165,7 @@ public class RoundRobinScheduler {
 
   @SneakyThrows
   private void runWorker(ExecutorService executor) {
-
+    var begin = Instant.now();
     log.info("Starting processing worker thread");
 
     //we use this label to break out of the task in case we dont want to work on it
@@ -173,7 +176,7 @@ public class RoundRobinScheduler {
       var currentTask = outputQueue.peek();
 
       if (currentTask == null && inputQueue.isEmpty() && isBatchJob) {
-        Thread.sleep(2000);
+        Thread.sleep(GRACE_PERIOD);
         if (inputQueue.isEmpty()) {
           break;
         }
@@ -185,7 +188,6 @@ public class RoundRobinScheduler {
 
       MDC.put(TaskDataProperties.TASK_NAME, currentTask.getTaskName());
       MDC.put(TaskDataProperties.UID, currentTask.getId());
-
       while (currentTask.getFuture().isDone()) {
         var queue = currentTask.getQueue();
 
@@ -225,11 +227,17 @@ public class RoundRobinScheduler {
 
     log.info("Reached end of Queue. Shutting down now");
 
+
     for (var executorService : executorServices) {
       if (!executorService.isShutdown()) {
         executorService.shutdown();
       }
     }
+
+    var diff = Duration.between(begin, Instant.now());
+    log.info("Seconds: " + diff.minusMillis(GRACE_PERIOD).getSeconds());
+    log.info("Grace period: " + GRACE_PERIOD);
+
 
     shutdownHook.forEach(hook -> hook.accept(this));
   }

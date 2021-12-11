@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
@@ -27,8 +28,8 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
   private final KafkaConsumerFactory kafkaConsumerFactory;
 
   @Override
+  @SneakyThrows
   public List<C> getInputs(String topic) {
-
     var result = kafkaConsumerFactory.get(topic)
         .poll(Duration.ofMillis(0));
 

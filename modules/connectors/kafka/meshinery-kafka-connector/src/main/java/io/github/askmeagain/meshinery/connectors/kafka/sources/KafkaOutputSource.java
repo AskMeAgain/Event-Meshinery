@@ -31,7 +31,7 @@ public class KafkaOutputSource<C extends DataContext> implements OutputSource<St
     var record = new ProducerRecord<>(topic, key, value);
     var stringKafkaProducer = kafkaProducerFactory.get(topic);
     stringKafkaProducer.send(record).get();
-    stringKafkaProducer.flush();
+    //stringKafkaProducer.flush();
   }
 
   @Override
