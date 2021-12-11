@@ -26,6 +26,8 @@ an OutputSource.
       connectors:
         kafka:
           bootstrap-servers: abc
+          producer-properties:
+            fetch.min.bytes: abc1234
 
 ## Properties
 
@@ -33,3 +35,5 @@ an OutputSource.
 |---|---|---|
 | bootstrap-servers  | -  | connection url to a kafka broker  |
 | group-id  | - | group id of the memory connector |
+| producer-properties  | - | this takes a property map and passes them to the kafka producer |
+| consumer-properties  | - | this takes a property map and passes them to the kafka consumer |

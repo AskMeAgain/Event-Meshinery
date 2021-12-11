@@ -3,3 +3,9 @@ meshinery:
     kafka:
       bootstrap-servers: "abc"
       group-id: "groupid"
+      consumer-properties:
+        test.test1: abc1
+        test.test2: abc2
+      producer-properties:
+        test.test3: abc3
+        test.test4: abc4

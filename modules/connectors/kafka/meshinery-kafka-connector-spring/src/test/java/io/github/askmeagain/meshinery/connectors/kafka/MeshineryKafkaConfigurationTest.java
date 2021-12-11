@@ -25,11 +25,23 @@ class MeshineryKafkaConfigurationTest {
         .extracting(
             MeshineryKafkaProperties::getBootstrapServers,
             MeshineryKafkaProperties::getGroupId
-        )
-        .containsExactly(
+        ).containsExactly(
             "abc",
             "groupid"
         );
+    assertThat(meshineryKafkaProperties)
+        .extracting(MeshineryKafkaProperties::getConsumerProperties)
+        .extracting(
+            x -> x.getProperty("test.test1"),
+            x -> x.getProperty("test.test2")
+        ).containsExactly("abc1", "abc2");
+    assertThat(meshineryKafkaProperties)
+        .extracting(MeshineryKafkaProperties::getProducerProperties)
+        .extracting(
+            x -> x.getProperty("test.test3"),
+            x -> x.getProperty("test.test4")
+        ).containsExactly("abc3", "abc4");
+
   }
 
 

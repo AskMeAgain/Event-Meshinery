@@ -18,6 +18,7 @@ public class KafkaConsumerFactory implements AutoCloseable {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public KafkaConsumerFactory(MeshineryKafkaProperties meshineryKafkaProperties) {
     properties = new Properties();
+    properties.putAll(meshineryKafkaProperties.getConsumerProperties());
     properties.setProperty("bootstrap.servers", meshineryKafkaProperties.getBootstrapServers());
     properties.setProperty("group.id", meshineryKafkaProperties.getGroupId());
     properties.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");

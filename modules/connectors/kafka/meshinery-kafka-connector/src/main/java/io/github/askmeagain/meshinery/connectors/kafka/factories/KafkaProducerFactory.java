@@ -17,6 +17,7 @@ public class KafkaProducerFactory implements AutoCloseable {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public KafkaProducerFactory(MeshineryKafkaProperties meshineryKafkaProperties) {
     properties = new Properties();
+    properties.putAll(meshineryKafkaProperties.getProducerProperties());
     properties.setProperty("bootstrap.servers", meshineryKafkaProperties.getBootstrapServers());
     properties.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     properties.setProperty("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
