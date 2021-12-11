@@ -29,6 +29,20 @@ plugins.withType(JavaPlugin).whenPluginAdded {
 
         //logging
         implementation 'org.slf4j:slf4j-api:1.7.28'
+
+        //fixing log4shell 0day exploit
+        implementation ("org.apache.logging.log4j:log4j-api") {
+            version {
+                strictly "2.15.0"
+            }
+            because "whatever reason why it doesn't work on other versions"
+        }
+        implementation ("org.apache.logging.log4j:log4j-to-slf4j") {
+            version {
+                strictly "2.15.0"
+            }
+            because "whatever reason why it doesn't work on other versions"
+        }
     }
 
     java {
