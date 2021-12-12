@@ -54,7 +54,7 @@ public class E2eApplicationTest extends AbstractKafkaTest {
         .toArray(String[]::new);
 
     //Act ------------------------------------------------------------------------------------
-    Thread.sleep(resultTime + 3000);
+    Thread.sleep(resultTime + 20000);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(RESULT_MAP)
