@@ -16,18 +16,20 @@ import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 
 @Slf4j
+@Disabled
 @RequiredArgsConstructor
 @TestConfiguration
 public class E2eTestConfiguration {
 
   public static final int NUMBER_OF_TOPICS = 6;
-  public static final int ITEMS = 20;
-  public static final int THREADS = 20;
+  public static final int ITEMS = 2;
+  public static final int THREADS = 2;
   public static final int SLEEP_IN_PROCESSOR = 100;
   public static final HashMap<Integer, HashSet<String>> RESULT_MAP = new HashMap<>();
   public static final String PREFIX = RandomStringUtils.random(10, true, false);
