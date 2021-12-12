@@ -29,7 +29,7 @@ class KafkaSourceTest extends AbstractKafkaTest {
 
     List<TestContext> result = Collections.emptyList();
     //this is to wait for metadata updates
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 30; i++) {
       result = connector.getInputs(TOPIC);
       if (!result.isEmpty()) {
         break;

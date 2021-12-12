@@ -2,7 +2,7 @@ package io.github.askmeagain.meshinery.core.common;
 
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
-import io.github.askmeagain.meshinery.core.utils.LogTestBase;
+import io.github.askmeagain.meshinery.core.utils.AbstractLogTestBase;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ThrowingInputTest extends LogTestBase {
+class ThrowingInputTest extends AbstractLogTestBase {
 
   private static final String KEY = "Test";
 
@@ -39,6 +39,11 @@ class ThrowingInputTest extends LogTestBase {
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
     assertThatLogContainsMessage("Error while requesting new input data. Shutting down scheduler");
+  }
+
+  @Override
+  protected Class<?> loggerToUse() {
+    return RoundRobinScheduler.class;
   }
 
   static class ThrowingInputSource implements MeshineryConnector<String, TestContext> {

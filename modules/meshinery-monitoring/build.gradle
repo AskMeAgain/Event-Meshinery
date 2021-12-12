@@ -1,8 +1,6 @@
 import com.vanniktech.maven.publish.*
 
 plugins {
-    id 'java'
-    id 'java-library'
     id "com.vanniktech.maven.publish.base"
 }
 

@@ -32,8 +32,8 @@ public class MeshineryAutoConfiguration {
 
   @Bean
   @ConditionalOnProperty(prefix = "meshinery.core", name = "batch-job", havingValue = "true")
-  public ApplicationTimeHook batchJobTiming() {
-    return new ApplicationTimeHook();
+  public BatchJobTimingHooks batchJobTiming() {
+    return new BatchJobTimingHooks();
   }
 
   @Bean

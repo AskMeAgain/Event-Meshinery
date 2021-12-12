@@ -1,6 +1,5 @@
 package io.github.askmeagain.meshinery.core.utils;
 
-import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -12,17 +11,18 @@ import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LogTestBase {
+public abstract class AbstractLogTestBase {
 
   protected ListAppender<ILoggingEvent> listAppender;
+
+  abstract protected Class<?> loggerToUse();
 
   @BeforeEach
     //https://stackoverflow.com/a/52229629/5563263
   void setup() {
-    // get Logback Logger
-    Logger fooLogger = (Logger) LoggerFactory.getLogger(RoundRobinScheduler.class);
-
     // create and start a ListAppender
+    Logger fooLogger = (Logger) LoggerFactory.getLogger(loggerToUse());
+
     listAppender = new ListAppender<>();
     listAppender.start();
 
@@ -30,10 +30,15 @@ public class LogTestBase {
     fooLogger.addAppender(listAppender);
   }
 
-  protected void assertThatLogContainsMessage(String message) {
-    assertThat(getLogs())
-        .extracting(ILoggingEvent::getFormattedMessage)
-        .contains(message);
+  protected void assertThatLogContainsMessage(String... regexes) {
+    assertThat(regexes)
+        .allSatisfy(regex -> {
+          assertThat(getLogs())
+              .extracting(ILoggingEvent::getFormattedMessage)
+              .anySatisfy(log -> {
+                assertThat(log.contains(regex)).isTrue();
+              });
+        });
   }
 
   protected void assertThatNoErrorThrown() {

@@ -1,8 +1,6 @@
 import com.vanniktech.maven.publish.*
 
 plugins {
-    id 'java'
-    id 'java-library'
     id 'org.springframework.boot' version "${spring_boot_version}"
     id "com.vanniktech.maven.publish.base"
 }
