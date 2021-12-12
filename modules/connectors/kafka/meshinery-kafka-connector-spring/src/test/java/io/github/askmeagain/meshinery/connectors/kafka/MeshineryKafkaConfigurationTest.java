@@ -2,19 +2,20 @@ package io.github.askmeagain.meshinery.connectors.kafka;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("base")
-@SpringJUnitConfig(
-    classes = MeshineryKafkaConfiguration.class,
-    initializers = ConfigDataApplicationContextInitializer.class
-)
-@TestPropertySource(properties = "")
+@SpringJUnitConfig(MeshineryKafkaConfiguration.class)
+@TestPropertySource(properties = {
+    "meshinery.connectors.kafka.bootstrap-servers=abc",
+    "meshinery.connectors.kafka.group-id=groupid",
+    "meshinery.connectors.kafka.consumer-properties.test.test1=abc1",
+    "meshinery.connectors.kafka.consumer-properties.test.test2=abc2",
+    "meshinery.connectors.kafka.producer-properties.test.test3=abc3",
+    "meshinery.connectors.kafka.producer-properties.test.test4=abc4",
+})
 class MeshineryKafkaConfigurationTest {
 
   @Autowired
@@ -45,8 +46,5 @@ class MeshineryKafkaConfigurationTest {
             x -> x.getProperty("test.test3"),
             x -> x.getProperty("test.test4")
         ).containsExactly("abc3", "abc4");
-
   }
-
-
 }

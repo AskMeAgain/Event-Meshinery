@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @MockBean(DataContextInjectApiController.class)
 @SpringBootTest(classes = MeshineryAutoConfiguration.class)
-@TestPropertySource(properties = "meshinery.core.inject=abc")
+@TestPropertySource(properties = {"meshinery.core.inject=abc", "meshinery.core.shutdown-on-finished=false"})
 class AutoConfigurationTest {
 
   @Test
