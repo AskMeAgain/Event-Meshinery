@@ -1,6 +1,7 @@
 meshinery:
   core:
-    batch-job: true
+    shutdown-on-finished: false
+    batch-job: false
     grace-period-milliseconds: 10000
   connectors:
     kafka:
@@ -20,10 +21,13 @@ logging:
             utils:
               AppInfoParser: WARN
           clients:
+            admin:
+              AdminClientConfig: WARN
             producer:
               ProducerConfig: WARN
             consumer:
               ConsumerConfig: WARN
               KafkaConsumer: WARN
               internals:
+                SubscriptionState: WARN
                 ConsumerCoordinator: WARN

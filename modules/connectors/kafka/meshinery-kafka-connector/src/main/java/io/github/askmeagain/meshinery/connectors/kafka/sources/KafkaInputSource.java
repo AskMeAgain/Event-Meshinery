@@ -30,10 +30,11 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
 
   @Override
   public List<C> getInputs(List<String> keys) {
-    return keys.stream()
+    var cs = keys.stream()
         .map(this::getInputs)
         .flatMap(Collection::stream)
         .toList();
+    return cs;
   }
 
   @SneakyThrows

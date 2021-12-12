@@ -9,7 +9,7 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,11 +26,11 @@ import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 @TestConfiguration
 public class E2eTestConfiguration {
 
-  public static final int NUMBER_OF_TOPICS = 6;
-  public static final int ITEMS = 2;
-  public static final int THREADS = 2;
+  public static final int NUMBER_OF_TOPICS = 60;
+  public static final int ITEMS = 20;
+  public static final int THREADS = 22;
   public static final int SLEEP_IN_PROCESSOR = 100;
-  public static final HashMap<Integer, HashSet<String>> RESULT_MAP = new HashMap<>();
+  public static final HashMap<Integer, List<String>> RESULT_MAP = new HashMap<>();
   public static final String PREFIX = RandomStringUtils.random(10, true, false);
 
   @Bean
@@ -73,13 +73,17 @@ public class E2eTestConfiguration {
         .read(executorService, arr)
         .process(processor)
         .process(((context, e) -> CompletableFuture.completedFuture(context.withIndex(context.getIndex() + 1))))
+        .process(((context, e) -> {
+          RESULT_MAP.get(context.getIndex()).add(context.getId());
+          if (context.getIndex() >= NUMBER_OF_TOPICS) {
+            log.warn("------ FINISHED %s ------".formatted(context.getId()));
+          }
+          return CompletableFuture.completedFuture(context);
+        }))
         .write(context -> {
           if (context.getIndex() >= NUMBER_OF_TOPICS) {
-            log.info("------ FINISHED %s ------".formatted(context.getId()));
-            RESULT_MAP.get(NUMBER_OF_TOPICS).add(context.getId());
             return "Finished";
           }
-          RESULT_MAP.get(context.getIndex()).add(context.getId());
           return PREFIX + context.getIndex();
         })
         .build();

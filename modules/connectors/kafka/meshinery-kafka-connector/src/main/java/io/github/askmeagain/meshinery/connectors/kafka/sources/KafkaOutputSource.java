@@ -23,12 +23,11 @@ public class KafkaOutputSource<C extends DataContext> implements OutputSource<St
   @Override
   @SneakyThrows
   public void writeOutput(String topic, C output) {
-
     var key = output.getId();
     var value = objectMapper.writeValueAsBytes(output);
 
     var record = new ProducerRecord<>(topic, key, value);
-    var stringKafkaProducer = kafkaProducerFactory.get(topic);
+    var stringKafkaProducer = kafkaProducerFactory.get();
     stringKafkaProducer.send(record).get();
     stringKafkaProducer.flush();
   }
