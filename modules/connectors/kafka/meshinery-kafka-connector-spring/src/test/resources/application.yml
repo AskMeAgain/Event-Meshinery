@@ -1,11 +1,11 @@
 meshinery:
   core:
-    batch-job: false
-    grace-period-milliseconds: 20000
+    batch-job: true
+    grace-period-milliseconds: 10000
   connectors:
     kafka:
       bootstrap-servers: 'localhost:9092'
-      group-id: 'asdztu1'
+      group-id: "${random.int}"
 
 spring:
   main:

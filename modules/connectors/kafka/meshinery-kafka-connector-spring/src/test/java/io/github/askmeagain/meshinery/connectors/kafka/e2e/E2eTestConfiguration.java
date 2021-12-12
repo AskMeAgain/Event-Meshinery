@@ -16,13 +16,12 @@ import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 
 @Slf4j
-@Disabled
+//@Disabled
 @RequiredArgsConstructor
 @TestConfiguration
 public class E2eTestConfiguration {

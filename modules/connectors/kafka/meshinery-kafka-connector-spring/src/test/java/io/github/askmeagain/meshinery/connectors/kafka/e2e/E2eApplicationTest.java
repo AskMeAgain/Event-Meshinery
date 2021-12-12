@@ -4,6 +4,8 @@ import io.github.askmeagain.meshinery.connectors.kafka.AbstractKafkaTest;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     classes = E2eTestApplication.class,
     initializers = ConfigDataApplicationContextInitializer.class
 )
-@TestPropertySource(properties = {"meshinery.core.shutdown-on-finished=false", "meshinery.core.batch-job=true"})
+@TestPropertySource(properties = {
+    "meshinery.core.shutdown-on-finished=false"
+})
 public class E2eApplicationTest extends AbstractKafkaTest {
 
   @Autowired
@@ -44,17 +48,20 @@ public class E2eApplicationTest extends AbstractKafkaTest {
     createTopics(topics);
   }
 
+  @Autowired
+  ExecutorService executorService;
+
   @Test
   @SneakyThrows
   void test() {
     //Arrange --------------------------------------------------------------------------------
-    var resultTime = (int) (NUMBER_OF_TOPICS * Math.max(1, ITEMS / (double) THREADS) * SLEEP_IN_PROCESSOR);
+    var resultTime = (long) (NUMBER_OF_TOPICS * Math.max(1, ITEMS / (double) THREADS) * SLEEP_IN_PROCESSOR);
     var resultSet = IntStream.range(1, ITEMS + 1)
         .mapToObj(i -> "" + i)
         .toArray(String[]::new);
 
     //Act ------------------------------------------------------------------------------------
-    Thread.sleep(resultTime + 20000);
+    executorService.awaitTermination(12_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(RESULT_MAP)

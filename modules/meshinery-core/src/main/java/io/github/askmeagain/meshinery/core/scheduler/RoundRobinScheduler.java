@@ -127,6 +127,7 @@ public class RoundRobinScheduler {
           Thread.sleep(gracePeriodMilliseconds);
         } else {
           log.info("Grace period is done");
+          gracefulShutdown();
           break;
         }
       } else {
@@ -177,6 +178,7 @@ public class RoundRobinScheduler {
       if (currentTask == null && inputQueue.isEmpty() && isBatchJob) {
         Thread.sleep(gracePeriodMilliseconds);
         if (inputQueue.isEmpty() && outputQueue.isEmpty()) {
+          gracefulShutdown();
           break;
         }
       }

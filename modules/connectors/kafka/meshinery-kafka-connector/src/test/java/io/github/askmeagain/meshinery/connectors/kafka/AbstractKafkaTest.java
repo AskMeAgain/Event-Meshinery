@@ -21,6 +21,7 @@ import static org.apache.kafka.clients.admin.AdminClientConfig.BOOTSTRAP_SERVERS
 public class AbstractKafkaTest {
 
   public static KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.2.1"))
+      .withEnv("KAFKA_TOPIC_METADATA_REFRESH_INTERVAL_MS", "10000")
       .waitingFor(Wait.forLogMessage(".*Kafka startTimeMs:.*", 1));
 
   @BeforeAll
