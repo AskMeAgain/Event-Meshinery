@@ -1,7 +1,7 @@
 meshinery:
   core:
     batch-job: false
-    grace-period-milliseconds: 2000
+    grace-period-milliseconds: 20000
   connectors:
     kafka:
       bootstrap-servers: 'localhost:9092'
