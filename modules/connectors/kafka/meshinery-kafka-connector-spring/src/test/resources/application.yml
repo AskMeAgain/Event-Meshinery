@@ -1,6 +1,6 @@
 meshinery:
   core:
-    shutdown-on-finished: false
+    shutdown-on-error: false
     batch-job: false
     grace-period-milliseconds: 10000
   connectors:
