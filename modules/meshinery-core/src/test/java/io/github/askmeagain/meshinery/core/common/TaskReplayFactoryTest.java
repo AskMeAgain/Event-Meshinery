@@ -33,7 +33,7 @@ class TaskReplayFactoryTest {
         MeshineryTaskFactory.<String, TestContext>builder()
             .defaultOutputSource(outputSource)
             .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
-            .read("", Executors.newSingleThreadExecutor())
+            .read(Executors.newSingleThreadExecutor(), "")
             .taskName("test")
             .process(processorA)
             .process(processorB)
@@ -44,7 +44,7 @@ class TaskReplayFactoryTest {
         MeshineryTaskFactory.<String, TestContext>builder()
             .taskName("test2")
             .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
-            .read("", Executors.newSingleThreadExecutor())
+            .read(Executors.newSingleThreadExecutor(), "")
             .build()
     );
     var executor = Executors.newSingleThreadExecutor();

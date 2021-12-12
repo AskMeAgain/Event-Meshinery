@@ -8,7 +8,7 @@ public interface InputSource<K, I extends DataContext> {
 
   String getName();
 
-  List<I> getInputs(K key);
+  List<I> getInputs(List<K> key);
 
   default TaskData addToTaskData(TaskData taskData) {
     return taskData;

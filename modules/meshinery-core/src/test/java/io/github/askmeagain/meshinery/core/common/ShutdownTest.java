@@ -30,7 +30,7 @@ class ShutdownTest extends AbstractTestBase {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .defaultOutputSource(new TestOutputSource())
-        .read("", executor)
+        .read(executor, "")
         .process(new TestContextProcessor(1))
         .write("")
         .build();

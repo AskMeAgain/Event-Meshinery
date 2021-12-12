@@ -5,7 +5,6 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.AbstractLogTestBase;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,7 @@ class ThrowingInputTest extends AbstractLogTestBase {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .defaultOutputSource(new TestOutputSource())
-        .read(KEY, executor)
+        .read(executor, KEY)
         .build();
 
     //Act ------------------------------------------------------------------------------------
@@ -46,21 +45,4 @@ class ThrowingInputTest extends AbstractLogTestBase {
     return RoundRobinScheduler.class;
   }
 
-  static class ThrowingInputSource implements MeshineryConnector<String, TestContext> {
-
-    @Override
-    public String getName() {
-      return "default";
-    }
-
-    @Override
-    public void writeOutput(String key, TestContext output) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<TestContext> getInputs(String key) {
-      throw new RuntimeException("Error!");
-    }
-  }
 }

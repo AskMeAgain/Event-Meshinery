@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.connectors.mysql;
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
@@ -37,7 +38,10 @@ public class MysqlConnector<C extends DataContext> implements AccessingInputSour
   }
 
   @Override
-  public List<C> getInputs(String key) {
-    return mysqlInputSource.getInputs(key);
+  public List<C> getInputs(List<String> keys) {
+    return keys.stream()
+        .map(x -> mysqlInputSource.getInputs(keys))
+        .flatMap(Collection::stream)
+        .toList();
   }
 }

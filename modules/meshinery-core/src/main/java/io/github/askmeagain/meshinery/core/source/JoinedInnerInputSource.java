@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.core.source;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,17 +32,24 @@ public class JoinedInnerInputSource<K, C extends DataContext> implements Meshine
   private final Map<K, Map<String, C>> leftJoinResultsMap = new HashMap<>();
   private final Map<K, Map<String, C>> rightJoinResultsMap = new HashMap<>();
 
-  @SneakyThrows
   @Override
-  public List<C> getInputs(K key) {
+  public List<C> getInputs(List<K> keys) {
+    return keys.stream()
+        .map(this::getInputs)
+        .flatMap(Collection::stream)
+        .toList();
+  }
+
+  @SneakyThrows
+  private List<C> getInputs(K key) {
 
     setup(key, rightKey);
 
     var leftMap = this.leftJoinResultsMap.get(key);
     var rightMap = this.rightJoinResultsMap.get(rightKey);
 
-    var left = leftInputSource.getInputs(key);
-    var right = rightInputSource.getInputs(rightKey);
+    var left = leftInputSource.getInputs(List.of(key));
+    var right = rightInputSource.getInputs(List.of(rightKey));
 
     var results = new ArrayList<C>();
 

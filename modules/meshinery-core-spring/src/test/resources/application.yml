@@ -1,11 +1,15 @@
 meshinery:
   core:
-    batch-job: true
+    batch-job: false
     grace-period-milliseconds: 20000
   connectors:
     kafka:
       bootstrap-servers: 'localhost:9092'
       group-id: 'asdztu1'
+
+spring:
+  main:
+    web-application-type: none
 
 logging:
   level:

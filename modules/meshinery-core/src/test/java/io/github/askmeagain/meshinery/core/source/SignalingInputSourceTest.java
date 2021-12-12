@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.core.source;
 
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,16 +22,16 @@ class SignalingInputSourceTest {
     resultSource.writeOutput("1", new TestContext(0));
 
     //Act ------------------------------------------------------------------------------------
-    var empty1 = signalSource.getInputs(KEY);
+    var empty1 = signalSource.getInputs(List.of(KEY));
 
     signal.writeOutput(KEY, new TestContext(1234));
 
-    var result = signalSource.getInputs(KEY);
-    var empty2 = signalSource.getInputs(KEY);
+    var result = signalSource.getInputs(List.of(KEY));
+    var empty2 = signalSource.getInputs(List.of(KEY));
 
     signal.writeOutput(KEY, new TestContext(1234));
 
-    var empty3 = signalSource.getInputs(KEY);
+    var empty3 = signalSource.getInputs(List.of(KEY));
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(result).contains(new TestContext(1));
@@ -52,26 +53,26 @@ class SignalingInputSourceTest {
 
 
     //Act ------------------------------------------------------------------------------------
-    var empty1 = signalSource.getInputs(KEY);
+    var empty1 = signalSource.getInputs(List.of(KEY));
     signal.writeOutput(KEY, new TestContext(1234));
 
-    var result1 = signalSource.getInputs(KEY);
+    var result1 = signalSource.getInputs(List.of(KEY));
 
     resultSource.writeOutput(KEY, new TestContext(2));
-    var result2 = signalSource.getInputs(KEY);
+    var result2 = signalSource.getInputs(List.of(KEY));
 
     resultSource.writeOutput(KEY, new TestContext(3));
-    var result3 = signalSource.getInputs(KEY);
+    var result3 = signalSource.getInputs(List.of(KEY));
 
     resultSource.writeOutput(KEY, new TestContext(4));
-    var result4 = signalSource.getInputs(KEY);
+    var result4 = signalSource.getInputs(List.of(KEY));
 
     resultSource.writeOutput("1", new TestContext(0));
-    var empty2 = signalSource.getInputs(KEY);
+    var empty2 = signalSource.getInputs(List.of(KEY));
 
     signal.writeOutput(KEY, new TestContext(1234));
 
-    var empty3 = signalSource.getInputs(KEY);
+    var empty3 = signalSource.getInputs(List.of(KEY));
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(result1).contains(new TestContext(1));

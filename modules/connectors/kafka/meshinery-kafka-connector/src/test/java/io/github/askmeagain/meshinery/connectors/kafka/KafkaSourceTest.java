@@ -6,6 +6,7 @@ import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.Collections;
 import java.util.List;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 
@@ -14,6 +15,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class KafkaSourceTest extends AbstractKafkaTest {
 
   private static final String TOPIC = RandomStringUtils.random(10, true, false);
+
+  @BeforeAll
+  static void creatingTopics() {
+    createTopics(TOPIC);
+  }
 
   @Test
   @SneakyThrows
@@ -30,7 +36,7 @@ class KafkaSourceTest extends AbstractKafkaTest {
     List<TestContext> result = Collections.emptyList();
     //this is to wait for metadata updates
     for (int i = 0; i < 30; i++) {
-      result = connector.getInputs(TOPIC);
+      result = connector.getInputs(List.of(TOPIC));
       if (!result.isEmpty()) {
         break;
       }

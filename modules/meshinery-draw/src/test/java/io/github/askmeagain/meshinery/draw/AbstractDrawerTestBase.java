@@ -54,7 +54,7 @@ public abstract class AbstractDrawerTestBase {
     return MeshineryTaskFactory.<String, TestContext>builder()
         .defaultOutputSource(outputSource)
         .inputSource(inputSource)
-        .read(from, null)
+        .read(null, from)
         .taskName(from)
         .write(to)
         .build();
@@ -64,7 +64,7 @@ public abstract class AbstractDrawerTestBase {
     return MeshineryTaskFactory.<String, TestContext>builder()
         .defaultOutputSource(outputSource)
         .inputSource(inputSource)
-        .read(from1, null)
+        .read(null, from1)
         .taskName(from1 + "_" + from2)
         .write(to)
         .putData(GRAPH_INPUT_KEY, from2)
@@ -82,7 +82,7 @@ public abstract class AbstractDrawerTestBase {
     return MeshineryTaskFactory.<String, TestContext>builder()
         .defaultOutputSource(outputSource)
         .inputSource(signalingInputSource)
-        .read(from1, null)
+        .read(null, from1)
         .taskName(from1 + "_" + from2)
         .write(to)
         .build();

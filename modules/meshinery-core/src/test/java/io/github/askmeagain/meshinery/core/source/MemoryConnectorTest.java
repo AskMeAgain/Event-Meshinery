@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.core.source;
 
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,9 +18,9 @@ class MemoryConnectorTest {
 
     //Act -------------------------------------------------------------------------------------
     inputOutput.writeOutput(TEST_KEY, input);
-    var resultEmpty = inputOutput.getInputs("TestKey2");
-    var result = inputOutput.getInputs(TEST_KEY);
-    var resultEmpty2 = inputOutput.getInputs(TEST_KEY);
+    var resultEmpty = inputOutput.getInputs(List.of("TestKey2"));
+    var result = inputOutput.getInputs(List.of(TEST_KEY));
+    var resultEmpty2 = inputOutput.getInputs(List.of(TEST_KEY));
 
     //Assert ----------------------------------------------------------------------------------
     assertThat(result).first().isEqualTo(input);

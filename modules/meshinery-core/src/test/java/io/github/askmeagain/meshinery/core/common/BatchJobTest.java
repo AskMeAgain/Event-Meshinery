@@ -32,7 +32,7 @@ class BatchJobTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .defaultOutputSource(mockOutputSource)
-        .read(KEY, executor)
+        .read(executor, KEY)
         .write("")
         .build();
 

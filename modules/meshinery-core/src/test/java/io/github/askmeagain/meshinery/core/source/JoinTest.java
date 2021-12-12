@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.core.source;
 
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
+import java.util.List;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,7 +28,7 @@ class JoinTest {
     rightSource.writeOutput(KEY, new TestContext(2));
     rightSource.writeOutput(KEY, new TestContext(3));
 
-    var result = joinedSource.getInputs(KEY);
+    var result = joinedSource.getInputs(List.of(KEY));
 
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(result).hasSize(2)
@@ -49,14 +50,14 @@ class JoinTest {
 
     rightSource.writeOutput(KEY, new TestContext(1));
 
-    var result = joinedSource.getInputs(KEY);
+    var result = joinedSource.getInputs(List.of(KEY));
 
     Thread.sleep(waitTime);
 
     rightSource.writeOutput(KEY, new TestContext(2));
     rightSource.writeOutput(KEY, new TestContext(3));
 
-    var resultEmpty = joinedSource.getInputs(KEY);
+    var resultEmpty = joinedSource.getInputs(List.of(KEY));
 
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(result).contains(new TestContext(1));

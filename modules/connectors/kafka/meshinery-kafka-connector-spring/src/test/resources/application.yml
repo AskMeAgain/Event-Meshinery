@@ -1,11 +1,29 @@
 meshinery:
+  core:
+    batch-job: false
+    grace-period-milliseconds: 2000
   connectors:
     kafka:
-      bootstrap-servers: "abc"
-      group-id: "groupid"
-      consumer-properties:
-        test.test1: abc1
-        test.test2: abc2
-      producer-properties:
-        test.test3: abc3
-        test.test4: abc4
+      bootstrap-servers: 'localhost:9092'
+      group-id: 'asdztu1'
+
+spring:
+  main:
+    web-application-type: none
+
+logging:
+  level:
+    org:
+      apache:
+        kafka:
+          common:
+            utils:
+              AppInfoParser: WARN
+          clients:
+            producer:
+              ProducerConfig: WARN
+            consumer:
+              ConsumerConfig: WARN
+              KafkaConsumer: WARN
+              internals:
+                ConsumerCoordinator: WARN

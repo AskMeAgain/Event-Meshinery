@@ -6,9 +6,11 @@ plugins {
 
 dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${spring_boot_version}"
-    api project(':modules:meshinery-core')
+    api project(':modules:meshinery-core-spring')
     api project(':modules:connectors:kafka:meshinery-kafka-connector')
     implementation "org.springframework.boot:spring-boot-starter-web:${spring_boot_version}"
+    testImplementation project(':modules:meshinery-core').sourceSets.test.output
+    testImplementation project(':modules:connectors:kafka:meshinery-kafka-connector').sourceSets.test.output
 }
 
 mavenPublishing {

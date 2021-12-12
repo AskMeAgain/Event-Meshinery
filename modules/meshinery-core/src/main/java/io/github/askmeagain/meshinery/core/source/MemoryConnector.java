@@ -4,6 +4,7 @@ import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,14 @@ public class MemoryConnector<K, C extends DataContext> implements AccessingInput
   }
 
   @Override
-  public List<C> getInputs(K key) {
+  public List<C> getInputs(List<K> keys) {
+    return keys.stream()
+        .map(this::getInputs)
+        .flatMap(Collection::stream)
+        .toList();
+  }
+
+  private List<C> getInputs(K key) {
     var list = new ArrayList<C>();
 
     if (map.containsKey(key)) {

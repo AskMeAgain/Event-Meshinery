@@ -39,8 +39,8 @@ public class KafkaConnector<C extends DataContext> implements MeshineryConnector
   }
 
   @Override
-  public List<C> getInputs(String key) {
-    return inputSource.getInputs(key);
+  public List<C> getInputs(List<String> keys) {
+    return inputSource.getInputs(keys);
   }
 
   @Override

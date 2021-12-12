@@ -36,7 +36,7 @@ class BranchTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .defaultOutputSource(defaultOutputSource)
-        .read(KEY, executor)
+        .read(executor, KEY)
         .process(BranchProcessor.<TestContext>builder()
             .branch(new TestContextProcessor(1), x -> firstCondition)
             .branch(spyProcessor, x -> secondCondition))

@@ -14,7 +14,7 @@ public class TestOutputSource implements MeshineryConnector<String, TestContext>
   }
 
   @Override
-  public List<TestContext> getInputs(String key) {
+  public List<TestContext> getInputs(List<String> key) {
     throw new UnsupportedOperationException();
   }
 }

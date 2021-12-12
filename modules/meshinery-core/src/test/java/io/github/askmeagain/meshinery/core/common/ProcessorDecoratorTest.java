@@ -46,7 +46,7 @@ class ProcessorDecoratorTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .defaultOutputSource(mockOutputSource)
-        .read("", executor)
+        .read(executor, "")
         .process(new TestContextProcessor(1))
         .write("")
         .build();
@@ -93,7 +93,7 @@ class ProcessorDecoratorTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .defaultOutputSource(mockOutputSource)
-        .read("", executor)
+        .read(executor, "")
         .registerDecorator(decorator)
         .process(new TestContextProcessor(1))
         .write("")

@@ -25,13 +25,15 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 
+import static io.github.askmeagain.meshinery.core.other.MeshineryUtils.joinEventKeys;
+
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Builder(toBuilder = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MeshineryTaskFactory<K, C extends DataContext> {
 
-  private K inputKey;
+  private List<K> inputKeys;
   private String taskName = "default";
   private long backoffTime;
   private MeshineryConnector<K, C> inputConnector;
@@ -50,7 +52,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
       MeshineryConnector inputConnector,
       MeshineryConnector outputConnector,
       DataInjectingExecutorService executorService,
-      K eventKey,
+      List<K> eventKeys,
       TaskData taskData,
       Function<Throwable, DataContext> handleException,
       long backoffTime
@@ -62,7 +64,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
     this.inputConnector = inputConnector;
     this.outputConnector = outputConnector;
     this.executorService = executorService;
-    this.inputKey = eventKey;
+    this.inputKeys = eventKeys;
     this.taskData = taskData;
     this.handleException = handleException;
   }
@@ -101,15 +103,15 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
   /**
    * Reads from the inputsource with the provided key. Uses the executorService to query the inputData.
    *
-   * @param inputKey        The Key to be used in the Inputsource
    * @param executorService The executorService to be used in the Inputsource
+   * @param inputKeys       The Key to be used in the Inputsource
    * @return returns itself for builder pattern
    */
-  public MeshineryTaskFactory<K, C> read(K inputKey, ExecutorService executorService) {
+  public MeshineryTaskFactory<K, C> read(ExecutorService executorService, K... inputKeys) {
     return toBuilder()
-        .inputKey(inputKey)
-        .executorService(new DataInjectingExecutorService(inputKey.toString() + "-executor", executorService))
-        .taskData(taskData.put(TaskDataProperties.GRAPH_INPUT_KEY, inputKey.toString()))
+        .inputKeys(List.of(inputKeys))
+        .executorService(new DataInjectingExecutorService(joinEventKeys(inputKeys) + "-executor", executorService))
+        .taskData(taskData.put(TaskDataProperties.GRAPH_INPUT_KEY, joinEventKeys(inputKeys)))
         .build();
   }
 
@@ -138,7 +140,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
       int timeToLiveSeconds,
       BiFunction<C, C, C> combine
   ) {
-    var name = "%s->%s__%s->%s".formatted(inputConnector.getName(), inputKey, rightInputSource.getName(), rightKey);
+    var name = "%s->%s__%s->%s".formatted(inputConnector.getName(), inputKeys, rightInputSource.getName(), rightKey);
 
     return toBuilder()
         .inputConnector(
@@ -351,7 +353,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
         inputConnector,
         outputConnector,
         executorService,
-        inputKey,
+        inputKeys,
         taskData,
         handleException,
         backoffTime
@@ -363,12 +365,14 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<K, C> build() {
-    Objects.requireNonNull(inputKey, "No input key specified");
+    if (inputKeys.isEmpty()) {
+      throw new RuntimeException("Input Keys not defined for task %s".formatted(taskName));
+    }
     Objects.requireNonNull(inputConnector, "Input source not specified");
 
     return new MeshineryTask<>(
         backoffTime,
-        inputKey,
+        inputKeys,
         taskName,
         inputConnector.addToTaskData(taskData),
         inputConnector,

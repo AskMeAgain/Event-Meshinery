@@ -5,6 +5,7 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.ErrorProcessor;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +42,7 @@ class ExceptionHandlingTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
         .defaultOutputSource(mockOutputSource)
-        .read(KEY, executor)
+        .read(executor, KEY)
         .process((context, e) -> CompletableFuture.supplyAsync(() -> {
           throw new RuntimeException("arg");
         }))
@@ -60,7 +61,7 @@ class ExceptionHandlingTest {
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
 
-    Mockito.verify(mockInputSource, Mockito.atLeast(ITERATIONS)).getInputs(eq(KEY));
+    Mockito.verify(mockInputSource, Mockito.atLeast(ITERATIONS)).getInputs(eq(List.of(KEY)));
     Mockito.verify(mockOutputSource, Mockito.never()).writeOutput(any(), any());
   }
 
@@ -80,7 +81,7 @@ class ExceptionHandlingTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
         .defaultOutputSource(mockOutputSource)
-        .read(KEY, executor)
+        .read(executor, KEY)
         .process(new ErrorProcessor())
         .exceptionHandler(exception -> {
           log.info("Error Handling");
@@ -101,7 +102,7 @@ class ExceptionHandlingTest {
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
 
-    Mockito.verify(mockInputSource, Mockito.atLeast(ITERATIONS)).getInputs(eq(KEY));
+    Mockito.verify(mockInputSource, Mockito.atLeast(ITERATIONS)).getInputs(eq(List.of(KEY)));
     Mockito.verify(mockOutputSource).writeOutput(any(), eq(EXPECTED));
   }
 }

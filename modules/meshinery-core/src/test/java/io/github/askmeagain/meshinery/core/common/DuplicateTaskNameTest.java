@@ -19,7 +19,7 @@ class DuplicateTaskNameTest {
     var duplicateTask = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("duplicateTask")
         .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
-        .read("", Executors.newSingleThreadExecutor())
+        .read(Executors.newSingleThreadExecutor(), "")
         .build();
 
     //Act --------------------------------------------------------------------------------------------------------------
@@ -40,14 +40,14 @@ class DuplicateTaskNameTest {
     var duplicateTask1 = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("task1")
         .inputSource(inputSource)
-        .read("abc", null)
+        .read(null, "abc")
         .defaultOutputSource(outputSource)
         .build();
     var duplicateTask2 = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("task2")
         .inputSource(inputSource)
         .defaultOutputSource(outputSource)
-        .read("abc", null)
+        .read(null, "abc")
         .build();
 
     //Act --------------------------------------------------------------------------------------------------------------

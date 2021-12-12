@@ -1,12 +1,8 @@
 package io.github.askmeagain.meshinery.connectors.mysql;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,8 +28,8 @@ class InputsTest extends AbstractMysqlTest {
     output.writeOutput(STATE, value1);
     output.writeOutput(STATE, value2);
 
-    var result1 = input.getInputs(STATE);
-    var result2 = input.getInputs(STATE);
+    var result1 = input.getInputs(List.of(STATE));
+    var result2 = input.getInputs(List.of(STATE));
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(result1)
@@ -58,11 +54,11 @@ class InputsTest extends AbstractMysqlTest {
 
     //Act ------------------------------------------------------------------------------------
     output.writeOutput(STATE, value1);
-    var result1 = input.getInputs(STATE);
+    var result1 = input.getInputs(List.of(STATE));
 
     TaskData.setTaskData(new TaskData().put(MysqlProperties.MYSQL_OVERRIDE_EXISTING, ""));
     output.writeOutput(STATE, value2);
-    var result2 = input.getInputs(STATE);
+    var result2 = input.getInputs(List.of(STATE));
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(result1)

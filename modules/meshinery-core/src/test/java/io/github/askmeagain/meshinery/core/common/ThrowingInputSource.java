@@ -1,10 +1,9 @@
-package io.github.askmeagain.meshinery.core.utils.sources;
+package io.github.askmeagain.meshinery.core.common;
 
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
 
-public class ThrowingOutputSource implements MeshineryConnector<String, TestContext> {
+class ThrowingInputSource implements MeshineryConnector<String, TestContext> {
 
   @Override
   public String getName() {
@@ -13,12 +12,11 @@ public class ThrowingOutputSource implements MeshineryConnector<String, TestCont
 
   @Override
   public void writeOutput(String key, TestContext output) {
-    throw new RuntimeException("Errror!");
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public List<TestContext> getInputs(List<String> key) {
-    throw new UnsupportedOperationException();
+    throw new RuntimeException("Error!");
   }
-
 }

@@ -7,6 +7,7 @@ import com.cronutils.parser.CronParser;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSource;
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,6 +45,13 @@ public class CronInputSource<C extends DataContext> implements InputSource<Strin
   }
 
   @Override
+  public List<C> getInputs(List<String> keys) {
+    return keys.stream()
+        .map(this::getInputs)
+        .flatMap(Collection::stream)
+        .toList();
+  }
+
   @SneakyThrows
   public List<C> getInputs(String cron) {
     var now = ZonedDateTime.now();

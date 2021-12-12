@@ -35,7 +35,7 @@ public class KafkaConsumerFactory implements AutoCloseable {
     var stringKafkaConsumer = new KafkaConsumer<String, byte[]>(properties);
 
     stringKafkaConsumer.subscribe(List.of(topic));
-
+    //stringKafkaConsumer.poll(0);
     return stringKafkaConsumer;
   }
 

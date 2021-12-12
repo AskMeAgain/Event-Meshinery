@@ -40,6 +40,7 @@ public class MeshineryTaskVerifier {
   private static void verifyReadKey(List<MeshineryTask<?, ?>> tasks) {
     var result = tasks.stream()
         .map(MeshineryTask::getInputKey)
+        .flatMap(Collection::stream)
         .map(Object::toString)
         .toList();
 

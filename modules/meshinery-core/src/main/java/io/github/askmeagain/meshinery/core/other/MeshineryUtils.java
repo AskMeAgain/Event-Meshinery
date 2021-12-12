@@ -4,10 +4,12 @@ import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.task.TaskData;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import org.slf4j.MDC;
 
@@ -47,5 +49,11 @@ public class MeshineryUtils {
     }
 
     return innerProcessor;
+  }
+
+  public static <K> String joinEventKeys(K... inputKeys) {
+    return Arrays.stream(inputKeys)
+        .map(Object::toString)
+        .collect(Collectors.joining("-"));
   }
 }
