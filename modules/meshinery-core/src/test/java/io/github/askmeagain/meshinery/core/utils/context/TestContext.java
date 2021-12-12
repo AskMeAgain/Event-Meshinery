@@ -15,6 +15,7 @@ public class TestContext implements DataContext {
 
   @With
   String id;
+  @With
   int index;
 
   public TestContext(int index) {

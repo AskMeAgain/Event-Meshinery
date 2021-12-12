@@ -55,7 +55,7 @@ public class TestApplication {
   @Configuration(proxyBeanMethods = false)
   public static class TestApplicationConfiguration {
 
-    private static final String PREFIX = "TEST-13-";
+    private static final String PREFIX = "stress-test-1-";
 
     @Bean
     public KafkaConnector<TestContext> kafkaConnector(
@@ -72,6 +72,31 @@ public class TestApplication {
     @Bean
     public ExecutorService executorService() {
       return Executors.newFixedThreadPool(20);
+    }
+
+    @Bean
+    public MeshineryTask<String, TestContext> Task100Loop(
+        MeshineryProcessor<TestContext, TestContext> processor,
+        KafkaConnector<TestContext> kafkaConnector,
+        ExecutorService executorService
+    ) {
+      return MeshineryTaskFactory.<String, TestContext>builder()
+          .defaultOutputSource(kafkaConnector)
+          .inputSource(kafkaConnector)
+          .taskName("Task100Loop")
+          .read(PREFIX + "b", executorService)
+          .process(processor)
+          .process(((context, executor) -> {
+            log.info("------ %s ------".formatted(context.getIndex()));
+            return CompletableFuture.completedFuture(context.withIndex(context.getIndex() + 1));
+          }))
+          .write(c -> {
+            if (c.getIndex() > 10) {
+              return "Finished";
+            }
+            return PREFIX + c.getIndex();
+          })
+          .build();
     }
 
     @Bean
