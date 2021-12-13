@@ -42,10 +42,7 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
 
   @SneakyThrows
   private List<C> getInputs(String topic) {
-    var semaphore = locks.computeIfAbsent(topic, t -> new Semaphore(1));
-    semaphore.acquire();
     var result = kafkaConsumerFactory.get(topic).poll(Duration.ofMillis(0));
-    semaphore.release();
 
     return StreamSupport.stream(result.spliterator(), false)
         .map(ConsumerRecord::value)
