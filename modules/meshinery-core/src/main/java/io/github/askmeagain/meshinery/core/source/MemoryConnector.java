@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 @NoArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
@@ -35,7 +36,9 @@ public class MemoryConnector<K, C extends DataContext> implements AccessingInput
         .toList();
   }
 
+  @SneakyThrows
   private List<C> getInputs(K key) {
+
     var list = new ArrayList<C>();
 
     if (map.containsKey(key)) {

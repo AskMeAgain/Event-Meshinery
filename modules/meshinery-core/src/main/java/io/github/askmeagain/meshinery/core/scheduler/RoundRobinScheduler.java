@@ -46,18 +46,20 @@ public class RoundRobinScheduler {
   private final boolean gracefulShutdownOnError;
   private final int gracePeriodMilliseconds;
 
-  private boolean internalShutdown = false;
   private final Queue<TaskRun> outputQueue;
   private final Queue<ConnectorKey> inputQueue;
+
   private final Map<ConnectorKey, MeshineryTask<?, ?>> taskRunLookupMap = new HashMap<>();
   private final Set<ExecutorService> executorServices = new HashSet<>();
+  private boolean internalShutdown = false;
+  private Instant lastInputEntry;
+  private Instant lastOutputEntry;
+
 
   public static SchedulerBuilder builder() {
     return new SchedulerBuilder();
   }
 
-  private Instant lastInputEntry;
-  private Instant lastOutputEntry;
 
   @SneakyThrows
   RoundRobinScheduler start() {

@@ -9,6 +9,8 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import lombok.Getter;
@@ -28,18 +30,22 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
   private final ObjectMapper objectMapper;
   private final KafkaConsumerFactory kafkaConsumerFactory;
 
+  private final ConcurrentHashMap<String, Semaphore> locks = new ConcurrentHashMap<>();
+
   @Override
   public List<C> getInputs(List<String> keys) {
-    var cs = keys.stream()
+    return keys.stream()
         .map(this::getInputs)
         .flatMap(Collection::stream)
         .toList();
-    return cs;
   }
 
   @SneakyThrows
   private List<C> getInputs(String topic) {
+    var semaphore = locks.computeIfAbsent(topic, t -> new Semaphore(1));
+    semaphore.acquire();
     var result = kafkaConsumerFactory.get(topic).poll(Duration.ofMillis(0));
+    semaphore.release();
 
     return StreamSupport.stream(result.spliterator(), false)
         .map(ConsumerRecord::value)

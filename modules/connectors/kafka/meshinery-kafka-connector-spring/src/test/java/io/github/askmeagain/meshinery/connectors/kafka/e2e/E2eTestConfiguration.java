@@ -27,8 +27,8 @@ import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 public class E2eTestConfiguration {
 
   public static final int NUMBER_OF_TOPICS = 60;
-  public static final int ITEMS = 3;
-  public static final int THREADS = 4;
+  public static final int ITEMS = 30;
+  public static final int THREADS = 31;
   public static final int SLEEP_IN_PROCESSOR = 100;
   public static final HashMap<Integer, List<String>> RESULT_MAP = new HashMap<>();
   public static final String PREFIX = RandomStringUtils.random(10, true, false);
