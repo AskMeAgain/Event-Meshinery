@@ -7,9 +7,9 @@
 3. [Advantages](#Advantages)
 4. [ModuleStructure](#Module-Structure)
 5. [Architecture](#Architecture)
-    1. [Meshinery Tasks](#Task)
-    2. [Data Context](#Context)
-    3. [Meshinery Processors](#Processor)
+    1. [Meshinery Processors](#Processor)
+    2. [Meshinery Tasks](#Task)
+    3. [Data Context](#Context)
     4. [RoundRobinScheduler](#Scheduler)
     5. [Sources](#Sources)
 6. [On Failure](#Failure)
@@ -25,23 +25,19 @@
 ## Description
 
 This framework is a state store independent event framework and designed to easily structure **long running**,
-**multi step** or **long delay heavy** processing tasks in a transparent and safe way. The underlying state stores can
-be exchanged and combined to suit your needs:
+**multi step** or **long delay heavy** processing tasks in a transparent and safe way.
 
-* Read from a mysql db, and write to kafka and vice versa.
-* Join Kafka messages from a Kafka topic with mysql db tables.
-* Define a multistep processing pipeline and be able to (re)start the processing from any 'checkpoint'.
-* Wait multiple days between two processing steps
-* Checkout the [cook book](modules/meshinery-core/cookbook.md) for more ideas
+It is used as a way to **signal** the next processing step in your application, without untransparent code and hidden
+behaviour. You describe the event and the resulting processing task, the framework will make sure that the work gets
+done.
+
+It can connect any event with any processing task and any state store, all with an **asynchronous** api to make sure
+that your events are processed the moment they happen.
+
+## Motivation <a name="Motivation"></a>
 
 This framework was originally written to replace KafkaStreams in a specific usecase, but you can use this framework
 without Kafka. Currently supported are the following state stores, but you can easily provide your own:
-
-* Apache Kafka
-* MySql
-* Memory
-
-## Motivation <a name="Motivation"></a>
 
 Doing long running (blocking) procedures, like rest calls
 via [Kafka Streams](https://kafka.apache.org/documentation/streams/) represents a challenge:
@@ -65,13 +61,14 @@ topic/partition is not important.
 * Structure your code in a really transparent way by providing a **state store independent api**, by separating the
   business layer from the underlying implementation layer. One look at a task definition tells you exactly WHAT happens
   WHEN.
-* You can resume a process in case of error and you will start exactly where you left off (within bounds).
-* Fine granular configs for your thread management if needed.
+* You have complete **asynchronous processing** via Java Futures without the annoying thread handling
+* This framework can be integrate into any existing state store and even connect different ones: Kafka, Mysql etc.
+* A simple api you are already familiar with: Consume-Process-Produce
 * Fast time-to-market: switching between state stores is super easy: Start with memory for fast iteration cycles, then
   enable Kafka and/or Mysql in an agil way.
-* Easily integrated, using Spring or by constructing everything by hand.
 * Create a complete [event diagram](modules/meshinery-draw/draw.md) to display your events and how they interact with
   each other
+* You can resume a process in case of error and you will start exactly where you left off (within bounds).
 * Automatic Prometheus Monitoring integration
 * Complete Spring integration. 1 Annotation starts everything, you only need to define the business logic and wire it
   together.
@@ -104,11 +101,32 @@ topic/partition is not important.
 
 The general building blocks of this framework consist of 5 ideas:
 
+* [MeshineryProcessor](#Processor)
 * [MeshineryTask](#Task)
 * [DataContext](#Context)
-* [MeshineryProcessor](#Processor)
 * [RoundRobinScheduler](#Scheduler)
 * [Input/OutputSources](#Sources)
+
+### Meshinery Processors <a name="Processor"></a>
+
+[Detailed Documentation](modules/meshinery-core/processors.md)
+
+Meshinery Processors define the actual business work, like doing restcalls, calculating user information etc. They take
+in a DataContext and an Thread Executor and return a **CompletableFuture**.
+
+    public class LongRunningRestcallProcessor implements MeshineryProcessor<TestContext, TestContext> {
+    
+        @Override
+        public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
+            return CompletableFuture.supplyAsync(() -> {
+            
+                  thisIsASuperLongRestCall();
+                  log.info("Finished Request");
+            
+                  return context;
+                }, executor); //running on this thread executor
+        }
+    }
 
 ### MeshineryTasks <a name="Task"></a>
 
@@ -133,8 +151,6 @@ A task can have any amount of processors and sub processing (via processors). Th
 how the pipeline should react. **The goal is that each tasks describes exactly WHAT processor and WHEN a processor is
 executed.** This allows for super transparent code which allows you to argue about the execution on a higher level.
 
-For example you can have a branching logic here, or a parallel processing of different processors at the same time.
-
 ### DataContext <a name="Context"></a>
 
 [Detailed Documentation](modules/meshinery-core/datacontext.md)
@@ -145,39 +161,15 @@ output.
     var task = MeshineryTaskFactory.<String, TestContext>builder() //here the DataContext is TestContext
         .inputSource(inputSource) //this source can serialize TestContext
         .defaultOutputSource(defaultOutput) //this source can deserialize TestContext
-        .read(INPUT_KEY, executor) //we read "INPUT_KEY" from the store
+        .read(INPUT_KEY, executor)
         .process(testContextProcessor) //this processor works on TestContext and adds data to it
-        .write(OUTPUT_KEY); //writing event
+        .write(OUTPUT_KEY); //writing the TestContext to the state store, which triggers other events
 
 The idea here is that multiple Tasks all use the same dataContext, but enrich the data by putting their result
 additively to the context. You dont need to handle millions of dtos, just 1 for each Business Case and if you add
 another task at the end, you just have access to all the data which got processed in all the tasks before.
 
 **Your state stores will have a log on how the processing went from step to step.**
-
-### Meshinery Processors <a name="Processor"></a>
-
-[Detailed Documentation](modules/meshinery-core/processors.md)
-
-Meshinery Processors define the actual business work, like doing restcalls, calculating user information etc. They take
-in a DataContext and an Thread Executor and return a completable future.
-
-This framework forces you to use a "thread based" processing, but you can just wrap something in an already completed
-future if you dont need any async processing.
-
-    public class ProcessorFinished implements MeshineryProcessor<TestContext, TestContext> {
-    
-        @Override
-        public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
-            return CompletableFuture.supplyAsync(() -> {
-            
-                  thisIsASuperLongRestCall();
-                  log.info("Finished Request");
-            
-                  return context;
-                }, executor); //running on this thread executor
-        }
-    }
 
 ### Round Robin Scheduler <a name="Scheduler"></a>
 

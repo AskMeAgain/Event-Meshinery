@@ -38,6 +38,18 @@ public class KafkaConnector<C extends DataContext> implements MeshineryConnector
     this.outputSource = new KafkaOutputSource<>(name + "-output", kafkaProducerFactory, objectMapper);
   }
 
+  public KafkaConnector(
+      String name,
+      Class<C> clazz,
+      ObjectMapper objectMapper,
+      KafkaConsumerFactory consumerFactory,
+      KafkaProducerFactory producerFactory
+  ) {
+    this.name = name;
+    this.inputSource = new KafkaInputSource<>(name + "-input", clazz, objectMapper, consumerFactory);
+    this.outputSource = new KafkaOutputSource<>(name + "-output", producerFactory, objectMapper);
+  }
+
   @Override
   public List<C> getInputs(List<String> keys) {
     return inputSource.getInputs(keys);

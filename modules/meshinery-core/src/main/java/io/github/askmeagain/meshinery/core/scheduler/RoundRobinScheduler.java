@@ -12,6 +12,7 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskVerifier;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.task.TaskDataProperties;
 import io.github.askmeagain.meshinery.core.task.TaskRun;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,6 +56,9 @@ public class RoundRobinScheduler {
     return new SchedulerBuilder();
   }
 
+  private Instant lastInputEntry;
+  private Instant lastOutputEntry;
+
   @SneakyThrows
   RoundRobinScheduler start() {
 
@@ -92,21 +96,20 @@ public class RoundRobinScheduler {
   }
 
   public void gracefulShutdown() {
-    log.info("Graceful shutdown");
+    log.info("Graceful shutdown triggered. Shutting down all threads");
     internalShutdown = true;
   }
-
-  private boolean inputGracePeriod = false;
 
   @SneakyThrows
   private void createInputScheduler(ExecutorService executor) {
     log.info("Starting input worker thread");
 
     inputQueue.addAll(fillQueueFromTasks());
+    lastInputEntry = Instant.now();
 
     while (!executor.isShutdown() && !internalShutdown && (!outputQueue.isEmpty() || !inputQueue.isEmpty())) {
       if (backpressureLimit <= outputQueue.size()) {
-        log.warn("Waiting because of backpressure");
+        log.info("Waiting because of backpressure");
         Thread.sleep(500);
         continue;
       }
@@ -120,18 +123,16 @@ public class RoundRobinScheduler {
         inputQueue.remove();
       }
 
-      if (outputQueue.isEmpty() && isBatchJob) {
-        if (!inputGracePeriod) {
-          log.info("Grace period for input thread");
-          inputGracePeriod = true;
-          Thread.sleep(gracePeriodMilliseconds);
+      if (isBatchJob) {
+        if (outputQueue.isEmpty()) {
+          if (lastInputEntry.plusMillis(gracePeriodMilliseconds).isBefore(Instant.now())) {
+            log.info("Grace period in input thread done.");
+            gracefulShutdown();
+            break;
+          }
         } else {
-          log.info("Grace period is done");
-          gracefulShutdown();
-          break;
+          lastInputEntry = Instant.now();
         }
-      } else {
-        inputGracePeriod = false;
       }
 
       inputQueue.addAll(fillQueueFromTasks());
@@ -168,6 +169,8 @@ public class RoundRobinScheduler {
   private void runWorker(ExecutorService executor) {
     log.info("Starting processing worker thread");
 
+    lastOutputEntry = Instant.now();
+
     //we use this label to break out of the task in case we cant work on it (not done or returns null)
     newTask:
     while (!executor.isShutdown() && !internalShutdown) {
@@ -175,11 +178,14 @@ public class RoundRobinScheduler {
 
       var currentTask = outputQueue.peek();
 
-      if (currentTask == null && inputQueue.isEmpty() && isBatchJob) {
-        Thread.sleep(gracePeriodMilliseconds);
-        if (inputQueue.isEmpty() && outputQueue.isEmpty()) {
-          gracefulShutdown();
-          break;
+      if (isBatchJob) {
+        if (currentTask == null && inputQueue.isEmpty()) {
+
+          if (lastOutputEntry.plusMillis(gracePeriodMilliseconds).isBefore(Instant.now())) {
+            gracefulShutdown();
+          }
+        } else {
+          lastOutputEntry = Instant.now();
         }
       }
 
@@ -225,7 +231,6 @@ public class RoundRobinScheduler {
       outputQueue.add(currentTask); //this way, so we have always atleast 1 item in queue to signal we have work todo
       outputQueue.remove();
     }
-
 
     for (var executorService : executorServices) {
       if (!executorService.isShutdown()) {

@@ -54,7 +54,7 @@ public class E2eApplicationTest extends AbstractKafkaTest {
         .toArray(String[]::new);
 
     //Act ------------------------------------------------------------------------------------
-    executorService.awaitTermination(12_000, TimeUnit.MILLISECONDS);
+    executorService.awaitTermination(35_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(RESULT_MAP)

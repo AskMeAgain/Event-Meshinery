@@ -26,7 +26,7 @@ processing. TaskRuns are created/scheduled on the same thread, but the execution
 happen on different threads (using the Java Executor class). TaskRuns run therefore in parallel when needed and
 completely independent of each other.
 
-**All processors of a TaskRun are not necessary run on the same thread.**
+**All processors of a specific TaskRun are not necessary run on the same thread.**
 
 The Scheduler itself uses 1 Thread for queuing the input sources and building the TaskRuns, and 1 Thread for TaskRun
 iterations. The rest of the available threads is used for processing.

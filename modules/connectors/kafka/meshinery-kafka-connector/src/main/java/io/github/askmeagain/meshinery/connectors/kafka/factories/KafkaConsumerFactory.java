@@ -14,6 +14,7 @@ public class KafkaConsumerFactory implements AutoCloseable {
 
   private final Map<String, KafkaConsumer<String, byte[]>> consumers = new ConcurrentHashMap<>();
   private final Properties properties;
+  private boolean disposed;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public KafkaConsumerFactory(MeshineryKafkaProperties meshineryKafkaProperties) {
@@ -44,6 +45,10 @@ public class KafkaConsumerFactory implements AutoCloseable {
 
   @Override
   public void close() {
+    if (disposed) {
+      return;
+    }
     consumers.forEach((k, v) -> v.close());
+    disposed = true;
   }
 }

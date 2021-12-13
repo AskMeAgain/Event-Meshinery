@@ -1,7 +1,8 @@
 package io.github.askmeagain.meshinery.connectors.kafka.e2e;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.askmeagain.meshinery.connectors.kafka.MeshineryKafkaProperties;
+import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
+import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaProducerFactory;
 import io.github.askmeagain.meshinery.connectors.kafka.sources.KafkaConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
@@ -21,7 +22,6 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 
 @Slf4j
-//@Disabled
 @RequiredArgsConstructor
 @TestConfiguration
 public class E2eTestConfiguration {
@@ -41,9 +41,10 @@ public class E2eTestConfiguration {
   @Bean
   public KafkaConnector<TestContext> kafkaConnector(
       ObjectMapper objectMapper,
-      MeshineryKafkaProperties meshineryKafkaProperties
+      KafkaProducerFactory producerFactory,
+      KafkaConsumerFactory consumerFactory
   ) {
-    return new KafkaConnector<>(TestContext.class, objectMapper, meshineryKafkaProperties);
+    return new KafkaConnector<>("name", TestContext.class, objectMapper, consumerFactory, producerFactory);
   }
 
   @Bean

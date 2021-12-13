@@ -2,7 +2,6 @@
 
 Below are some usecases and a possible solution. Iam open to new usecases and will add these accordingly.
 
-
 ### I need to wait for days between Tasks
 
 Create a MeshineryTask with a high backoffTime (1 Hour) and in the first processor make a check on your state store if
@@ -53,3 +52,8 @@ Combine a CronInputSource with the needed InputSource
   a processor via .write(), then this event will be written to the statestores.
     * If you use the Meshinery-Core-Spring integration, then an endpoint is added which provides the replay
       functionality out of the box
+
+### I want to trigger a docker container when a specific thing happens
+
+_Soon_
+There is a docker input/output source planned which will stream docker logs into your application.

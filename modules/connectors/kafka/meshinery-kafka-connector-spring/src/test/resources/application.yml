@@ -1,8 +1,9 @@
 meshinery:
   core:
     shutdown-on-error: false
-    batch-job: false
-    grace-period-milliseconds: 10000
+    shutdown-on-finished: false
+    batch-job: true
+    grace-period-milliseconds: 20000
   connectors:
     kafka:
       bootstrap-servers: 'localhost:9092'
