@@ -9,8 +9,6 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import lombok.Getter;
@@ -29,8 +27,6 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
   private final Class<C> serdeClazz;
   private final ObjectMapper objectMapper;
   private final KafkaConsumerFactory kafkaConsumerFactory;
-
-  private final ConcurrentHashMap<String, Semaphore> locks = new ConcurrentHashMap<>();
 
   @Override
   public List<C> getInputs(List<String> keys) {
