@@ -1,9 +1,7 @@
-package io.github.askmeagain.meshinery.connectors.kafka.e2e;
+package io.github.askmeagain.meshinery.core.e2e.base;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
-import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaProducerFactory;
-import io.github.askmeagain.meshinery.connectors.kafka.sources.KafkaConnector;
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
@@ -15,14 +13,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 
 @Slf4j
-@RequiredArgsConstructor
 @TestConfiguration
 public class E2eTestConfiguration {
 
@@ -39,15 +35,6 @@ public class E2eTestConfiguration {
   }
 
   @Bean
-  public KafkaConnector<TestContext> kafkaConnector(
-      ObjectMapper objectMapper,
-      KafkaProducerFactory producerFactory,
-      KafkaConsumerFactory consumerFactory
-  ) {
-    return new KafkaConnector<>("name", TestContext.class, objectMapper, consumerFactory, producerFactory);
-  }
-
-  @Bean
   public MeshineryProcessor<TestContext, TestContext> testProcessor() {
     return new E2eTestProcessor();
   }
@@ -60,7 +47,7 @@ public class E2eTestConfiguration {
   @Bean
   public MeshineryTask<String, TestContext> Task100Loop(
       MeshineryProcessor<TestContext, TestContext> processor,
-      KafkaConnector<TestContext> kafkaConnector,
+      MeshineryConnector<String, TestContext> connector,
       ExecutorService executorService
   ) {
     var arr = IntStream.range(0, NUMBER_OF_TOPICS)
@@ -68,8 +55,8 @@ public class E2eTestConfiguration {
         .toArray(String[]::new);
 
     return MeshineryTaskFactory.<String, TestContext>builder()
-        .defaultOutputSource(kafkaConnector)
-        .inputSource(kafkaConnector)
+        .defaultOutputSource(connector)
+        .inputSource(connector)
         .taskName("Task3Loop")
         .read(executorService, arr)
         .process(processor)
@@ -92,7 +79,7 @@ public class E2eTestConfiguration {
 
   @Bean
   public MeshineryTask<String, TestContext> task1(
-      KafkaConnector<TestContext> kafkaConnector,
+      MeshineryConnector<String, TestContext> connector,
       ExecutorService executorService
   ) {
     var inputSource = TestInputSource.builder()
@@ -101,7 +88,7 @@ public class E2eTestConfiguration {
         .build();
 
     return MeshineryTaskFactory.<String, TestContext>builder()
-        .defaultOutputSource(kafkaConnector)
+        .defaultOutputSource(connector)
         .inputSource(inputSource)
         .taskName("InputSpawner")
         .read(executorService, "Doesnt matter")

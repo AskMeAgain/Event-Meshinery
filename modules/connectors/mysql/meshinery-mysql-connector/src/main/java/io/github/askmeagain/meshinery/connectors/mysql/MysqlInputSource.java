@@ -2,6 +2,7 @@ package io.github.askmeagain.meshinery.connectors.mysql;
 
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.other.Blocking;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -46,12 +47,15 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
 
       var qualifiedType = QualifiedType.of(clazz).with(Json.class);
 
-      var firstResult = handle.createQuery(SPECIFIC_SELECT_QUERY)
-          .bind("state", key)
-          .define("TABLE", clazz.getSimpleName())
-          .bind("id", id)
-          .mapTo(qualifiedType)
-          .findFirst();
+      var firstResult = Blocking.byKey(
+          key,
+          () -> handle.createQuery(SPECIFIC_SELECT_QUERY)
+              .bind("state", key)
+              .define("TABLE", clazz.getSimpleName())
+              .bind("id", id)
+              .mapTo(qualifiedType)
+              .findFirst()
+      );
 
       if (firstResult.isEmpty()) {
         return Optional.empty();
@@ -81,12 +85,15 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
 
       var qualifiedType = QualifiedType.of(clazz).with(Json.class);
 
-      var firstResult = handle.createQuery(SELECT_QUERY)
-          .bind("state", key)
-          .define("TABLE", clazz.getSimpleName())
-          .bind("limit", mysqlProperties.getLimit())
-          .mapTo(qualifiedType)
-          .list();
+      var firstResult = Blocking.byKey(
+          key,
+          () -> handle.createQuery(SELECT_QUERY)
+              .bind("state", key)
+              .define("TABLE", clazz.getSimpleName())
+              .bind("limit", mysqlProperties.getLimit())
+              .mapTo(qualifiedType)
+              .list()
+      );
 
       if (firstResult.isEmpty()) {
         return Collections.emptyList();
@@ -95,7 +102,6 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
       var preparedIds = firstResult.stream()
           .map(DataContext::getId)
           .collect(Collectors.toList());
-
 
       handle.createUpdate("UPDATE <TABLE> SET processed = 1 WHERE context -> '$.id' IN (<LIST>)")
           .bindList("LIST", preparedIds)

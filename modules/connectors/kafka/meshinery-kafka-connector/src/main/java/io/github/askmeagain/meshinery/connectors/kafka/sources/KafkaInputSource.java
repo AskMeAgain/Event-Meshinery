@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSource;
+import io.github.askmeagain.meshinery.core.other.Blocking;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Collection;
@@ -38,13 +39,16 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
 
   @SneakyThrows
   private List<C> getInputs(String topic) {
-    var result = kafkaConsumerFactory.get(topic).poll(Duration.ofMillis(0));
+    var result = Blocking.byKey(
+        topic,
+        () -> kafkaConsumerFactory.get(topic).poll(Duration.ofMillis(0))
+    );
 
     return StreamSupport.stream(result.spliterator(), false)
         .map(ConsumerRecord::value)
-        .map(x -> {
+        .map(byteArr -> {
           try {
-            return objectMapper.readValue(x, serdeClazz);
+            return objectMapper.readValue(byteArr, serdeClazz);
           } catch (IOException e) {
             e.printStackTrace();
             return null;

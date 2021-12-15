@@ -15,6 +15,7 @@ public class MeshineryCoreProperties {
   private boolean batchJob = false;
 
   private boolean shutdownOnError = true;
+
   private boolean shutdownOnFinished = true;
 
   private int gracePeriodMilliseconds = 2000;

@@ -1,4 +1,4 @@
-package io.github.askmeagain.meshinery.connectors.kafka.e2e;
+package io.github.askmeagain.meshinery.core.e2e.base;
 
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import lombok.SneakyThrows;
 
-import static io.github.askmeagain.meshinery.connectors.kafka.e2e.E2eTestConfiguration.SLEEP_IN_PROCESSOR;
+import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestConfiguration.SLEEP_IN_PROCESSOR;
 
 public class E2eTestProcessor implements MeshineryProcessor<TestContext, TestContext> {
   @Override
