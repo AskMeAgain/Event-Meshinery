@@ -16,14 +16,14 @@ import org.jdbi.v3.json.Json;
 public class MysqlOutputSource<C extends DataContext> implements OutputSource<String, C> {
 
   private static final String INSERT = """
-      INSERT INTO <TABLE> (id,context,state,processed) 
+      INSERT INTO <TABLE> (id,context,state,processed)
       VALUES (:ID, :CONTEXT, :STATE, 0)
       """;
 
   private static final String OVERRIDE = """
-      INSERT INTO <TABLE> (id,context,state,processed) 
+      INSERT INTO <TABLE> (id,context,state,processed)
       VALUES (:ID, :CONTEXT, :STATE, 0)
-      ON DUPLICATE KEY UPDATE 
+      ON DUPLICATE KEY UPDATE
         context = :CONTEXT,
         processed = 0
       """;
@@ -37,7 +37,7 @@ public class MysqlOutputSource<C extends DataContext> implements OutputSource<St
   @SneakyThrows
   public void writeOutput(String key, C output) {
 
-    var insertOverride = getTaskData().has(MysqlProperties.MYSQL_OVERRIDE_EXISTING);
+    var insertOverride = getTaskData().has(MeshineryMysqlProperties.MYSQL_OVERRIDE_EXISTING);
     var insertStatement = insertOverride ? OVERRIDE : INSERT;
 
     var qualifiedType = QualifiedType.of(clazz).with(Json.class);

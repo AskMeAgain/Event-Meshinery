@@ -55,11 +55,9 @@ public class RoundRobinScheduler {
   private Instant lastInputEntry;
   private Instant lastOutputEntry;
 
-
   public static SchedulerBuilder builder() {
     return new SchedulerBuilder();
   }
-
 
   @SneakyThrows
   RoundRobinScheduler start() {

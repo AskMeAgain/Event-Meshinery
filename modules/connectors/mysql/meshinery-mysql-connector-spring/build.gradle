@@ -5,8 +5,13 @@ plugins {
 }
 
 dependencies {
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${spring_boot_version}"
     api project(':modules:connectors:mysql:meshinery-mysql-connector')
+    api project(':modules:meshinery-core-spring')
     implementation "org.springframework.boot:spring-boot-starter-web:${spring_boot_version}"
+    testImplementation project(':modules:meshinery-core-spring').sourceSets.test.output
+    testImplementation project(':modules:meshinery-core').sourceSets.test.output
+    testImplementation project(':modules:connectors:mysql:meshinery-mysql-connector').sourceSets.test.output
 }
 
 mavenPublishing {

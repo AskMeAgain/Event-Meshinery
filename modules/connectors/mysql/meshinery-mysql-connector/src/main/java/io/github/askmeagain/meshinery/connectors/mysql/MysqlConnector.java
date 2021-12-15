@@ -3,13 +3,14 @@ package io.github.askmeagain.meshinery.connectors.mysql;
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
 
+@Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
 public class MysqlConnector<C extends DataContext> implements AccessingInputSource<String, C>,
@@ -21,7 +22,7 @@ public class MysqlConnector<C extends DataContext> implements AccessingInputSour
   private final MysqlOutputSource<C> mysqlOutputSource;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MysqlConnector(String name, Class<C> clazz, Jdbi jdbi, MysqlProperties mysqlProperties) {
+  public MysqlConnector(String name, Class<C> clazz, Jdbi jdbi, MeshineryMysqlProperties mysqlProperties) {
     this.name = name;
     this.mysqlInputSource = new MysqlInputSource<>(name, jdbi, clazz, mysqlProperties);
     this.mysqlOutputSource = new MysqlOutputSource<>(name, jdbi, clazz);
@@ -39,9 +40,6 @@ public class MysqlConnector<C extends DataContext> implements AccessingInputSour
 
   @Override
   public List<C> getInputs(List<String> keys) {
-    return keys.stream()
-        .map(x -> mysqlInputSource.getInputs(keys))
-        .flatMap(Collection::stream)
-        .toList();
+    return mysqlInputSource.getInputs(keys);
   }
 }

@@ -2,6 +2,7 @@ package io.github.askmeagain.meshinery.connectors.mysql;
 
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -12,9 +13,10 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 public class MeshineryMysqlConfiguration {
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @Bean
-  public Jdbi jdbi(MysqlProperties mysqlProperties) {
+  @ConditionalOnMissingBean(Jdbi.class)
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  public Jdbi jdbi(MeshineryMysqlProperties mysqlProperties) {
     return Jdbi.create(
         mysqlProperties.getConnectionString(),
         mysqlProperties.getUser(),
@@ -24,7 +26,7 @@ public class MeshineryMysqlConfiguration {
 
   @Bean
   @ConfigurationProperties(prefix = "meshinery.connectors.mysql")
-  public MysqlProperties mysqlProperties() {
-    return new MysqlProperties();
+  public MeshineryMysqlProperties mysqlProperties() {
+    return new MeshineryMysqlProperties();
   }
 }

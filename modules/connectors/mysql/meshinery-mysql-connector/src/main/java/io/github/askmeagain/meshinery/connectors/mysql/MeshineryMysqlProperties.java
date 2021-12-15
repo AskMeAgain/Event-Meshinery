@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class MysqlProperties {
+public class MeshineryMysqlProperties {
 
   public static String MYSQL_OVERRIDE_EXISTING = "mysql.override-existing";
 

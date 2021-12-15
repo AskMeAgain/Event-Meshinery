@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class InputsTest extends AbstractMysqlTest {
+class InputsTest extends AbstractMysqlTestBase {
 
   public static final String STATE = "Test";
 
@@ -17,7 +17,7 @@ class InputsTest extends AbstractMysqlTest {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
 
-    var mysqlProperties = new MysqlProperties();
+    var mysqlProperties = new MeshineryMysqlProperties();
     mysqlProperties.setLimit(1);
     var input = new MysqlInputSource<>("default", jdbi, TestContext.class, mysqlProperties);
     var output = new MysqlOutputSource<>("default", jdbi, TestContext.class);
@@ -45,7 +45,7 @@ class InputsTest extends AbstractMysqlTest {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
 
-    var mysqlProperties = new MysqlProperties();
+    var mysqlProperties = new MeshineryMysqlProperties();
     mysqlProperties.setLimit(1);
     var input = new MysqlInputSource<>("default", jdbi, TestContext.class, mysqlProperties);
     var output = new MysqlOutputSource<>("default", jdbi, TestContext.class);
@@ -56,7 +56,7 @@ class InputsTest extends AbstractMysqlTest {
     output.writeOutput(STATE, value1);
     var result1 = input.getInputs(List.of(STATE));
 
-    TaskData.setTaskData(new TaskData().put(MysqlProperties.MYSQL_OVERRIDE_EXISTING, ""));
+    TaskData.setTaskData(new TaskData().put(MeshineryMysqlProperties.MYSQL_OVERRIDE_EXISTING, ""));
     output.writeOutput(STATE, value2);
     var result2 = input.getInputs(List.of(STATE));
 

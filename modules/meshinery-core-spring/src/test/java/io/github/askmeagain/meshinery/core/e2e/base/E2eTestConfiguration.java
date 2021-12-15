@@ -22,7 +22,7 @@ import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 @TestConfiguration
 public class E2eTestConfiguration {
 
-  public static final int NUMBER_OF_TOPICS = 60;
+  public static final int NUMBER_OF_TOPICS = 10;
   public static final int ITEMS = 30;
   public static final int THREADS = 31;
   public static final int SLEEP_IN_PROCESSOR = 100;

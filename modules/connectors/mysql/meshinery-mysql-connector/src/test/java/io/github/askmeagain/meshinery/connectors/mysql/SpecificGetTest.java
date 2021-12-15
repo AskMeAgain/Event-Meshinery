@@ -1,15 +1,11 @@
 package io.github.askmeagain.meshinery.connectors.mysql;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SpecificGetTest extends AbstractMysqlTest {
+class SpecificGetTest extends AbstractMysqlTestBase {
 
   public static final String STATE = "Test";
 
@@ -18,7 +14,7 @@ class SpecificGetTest extends AbstractMysqlTest {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
 
-    var mysqlProperties = new MysqlProperties();
+    var mysqlProperties = new MeshineryMysqlProperties();
     mysqlProperties.setLimit(1);
     var input = new MysqlInputSource<>("default", jdbi, TestContext.class, mysqlProperties);
     var output = new MysqlOutputSource<>("default", jdbi, TestContext.class);

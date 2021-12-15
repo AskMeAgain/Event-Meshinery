@@ -5,16 +5,16 @@ import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.testcontainers.containers.GenericContainer;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
-public class AbstractMysqlTest {
+public class AbstractMysqlTestBase {
 
+  protected static String DB_NAME = "db";
 
-  public static String DB_NAME = "db";
-
-  public static GenericContainer mySQLContainer = new MySQLContainer<>("mysql")
+  private static MySQLContainer mysqlContainer = new MySQLContainer<>("mysql")
       .withDatabaseName(DB_NAME)
       .withPassword("password")
       .withUsername("user")
@@ -22,18 +22,26 @@ public class AbstractMysqlTest {
       .waitingFor(Wait.forLogMessage(".*ready for connections.*", 1));
 
   @BeforeAll
-  public static void setup() {
-    mySQLContainer.start();
+  protected static void setup() {
+    mysqlContainer.start();
+  }
+
+  @DynamicPropertySource
+  static void dynamicPropertySource(DynamicPropertyRegistry registry) {
+    registry.add(
+        "meshinery.connectors.mysql.connection-string",
+        () -> mysqlContainer.getJdbcUrl() + "?useSSL=false"
+    );
   }
 
   @BeforeEach
   @AfterEach
-  public void truncate(){
+  protected void truncate() {
     jdbi().useHandle(handle -> handle.createCall("TRUNCATE db.TestContext").invoke());
   }
 
-  public Jdbi jdbi() {
-    var container = (MySQLContainer) mySQLContainer;
+  protected Jdbi jdbi() {
+    var container = (MySQLContainer) mysqlContainer;
 
     var jdbi = Jdbi.create(container.getJdbcUrl() + "?useSSL=false", container.getUsername(), container.getPassword());
     jdbi.installPlugin(new Jackson2Plugin());

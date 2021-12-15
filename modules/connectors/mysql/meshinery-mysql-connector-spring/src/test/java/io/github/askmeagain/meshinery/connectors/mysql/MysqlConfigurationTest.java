@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MysqlConfigurationTest {
 
   @Autowired
-  MysqlProperties mysqlProperties;
+  MeshineryMysqlProperties mysqlProperties;
 
   @Test
   void smokeTest() {
@@ -23,10 +23,10 @@ class MysqlConfigurationTest {
     //Assert ---------------------------------------------------------------------------------
     assertThat(mysqlProperties)
         .extracting(
-            MysqlProperties::getConnectionString,
-            MysqlProperties::getLimit,
-            MysqlProperties::getPassword,
-            MysqlProperties::getUser
+            MeshineryMysqlProperties::getConnectionString,
+            MeshineryMysqlProperties::getLimit,
+            MeshineryMysqlProperties::getPassword,
+            MeshineryMysqlProperties::getUser
         )
         .containsExactly(
             "jdbc:mysql://localhost:3306/db",

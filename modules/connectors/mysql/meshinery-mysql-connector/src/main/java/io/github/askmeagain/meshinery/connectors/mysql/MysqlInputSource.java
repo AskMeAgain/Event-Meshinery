@@ -3,33 +3,34 @@ package io.github.askmeagain.meshinery.connectors.mysql;
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.other.Blocking;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
 
+@Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
 public class MysqlInputSource<C extends DataContext> implements AccessingInputSource<String, C> {
 
   public static final String SELECT_QUERY = """
-      SELECT context 
-      FROM <TABLE> 
-      WHERE processed = 0 AND state = :state 
-      ORDER BY eid 
+      SELECT eid,context
+      FROM <TABLE>
+      WHERE processed = 0 AND state IN (<STATES>)
+      ORDER BY eid
       LIMIT :limit
       """;
 
   private static final String SPECIFIC_SELECT_QUERY = """
-      SELECT context
+      SELECT eid,context
       FROM <TABLE>
-      WHERE processed = 0 and state = :state and id = :id
+      WHERE processed = 0 and id = :id and state = :state
       LIMIT 1
       """;
 
@@ -37,7 +38,7 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
   private final String name;
   private final Jdbi jdbi;
   private final Class<C> clazz;
-  private final MysqlProperties mysqlProperties;
+  private final MeshineryMysqlProperties mysqlProperties;
 
   @Override
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
@@ -73,42 +74,38 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
 
   @Override
   public List<C> getInputs(List<String> keys) {
-    return keys.stream()
-        .map(this::getInputs)
-        .flatMap(Collection::stream)
-        .toList();
-  }
-
-  private List<C> getInputs(String key) {
-
+    var simpleKey = String.join("-", keys);
     return jdbi.inTransaction(handle -> {
 
       var qualifiedType = QualifiedType.of(clazz).with(Json.class);
 
-      var firstResult = Blocking.byKey(
-          key,
-          () -> handle.createQuery(SELECT_QUERY)
-              .bind("state", key)
-              .define("TABLE", clazz.getSimpleName())
-              .bind("limit", mysqlProperties.getLimit())
-              .mapTo(qualifiedType)
-              .list()
+      //TODO
+      return Blocking.byKey(
+          simpleKey,
+          () -> {
+            var result = handle.createQuery(SELECT_QUERY)
+                .define("TABLE", clazz.getSimpleName())
+                .bindList("STATES", keys)
+                .bind("limit", mysqlProperties.getLimit())
+                .mapTo(qualifiedType)
+                .list();
+
+            if (result.isEmpty()) {
+              return Collections.emptyList();
+            }
+
+            var preparedIds = result.stream()
+                .map(DataContext::getId)
+                .collect(Collectors.toList());
+
+            handle.createUpdate("UPDATE <TABLE> SET processed = 1 WHERE context -> '$.id' IN (<LIST>)")
+                .bindList("LIST", preparedIds)
+                .define("TABLE", clazz.getSimpleName())
+                .execute();
+
+            return result;
+          }
       );
-
-      if (firstResult.isEmpty()) {
-        return Collections.emptyList();
-      }
-
-      var preparedIds = firstResult.stream()
-          .map(DataContext::getId)
-          .collect(Collectors.toList());
-
-      handle.createUpdate("UPDATE <TABLE> SET processed = 1 WHERE context -> '$.id' IN (<LIST>)")
-          .bindList("LIST", preparedIds)
-          .define("TABLE", clazz.getSimpleName())
-          .execute();
-
-      return firstResult;
     });
   }
 }

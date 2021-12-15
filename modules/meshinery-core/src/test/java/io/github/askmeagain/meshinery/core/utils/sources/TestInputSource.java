@@ -48,7 +48,7 @@ public class TestInputSource implements MeshineryConnector<String, TestContext> 
     }
 
     if (delayMilliseconds > 0) {
-      Thread.sleep(1000);
+      Thread.sleep(delayMilliseconds);
     }
 
     iterations--;
