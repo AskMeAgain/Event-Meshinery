@@ -41,6 +41,7 @@ public class MysqlOutputSource<C extends DataContext> implements OutputSource<St
     var insertStatement = insertOverride ? OVERRIDE : INSERT;
 
     var qualifiedType = QualifiedType.of(clazz).with(Json.class);
+
     jdbi.useHandle(h -> h.createUpdate(insertStatement)
         .define("TABLE", clazz.getSimpleName())
         .bindByType("CONTEXT", output, qualifiedType)

@@ -10,13 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@SpringJUnitConfig(
-    classes = {E2eTestApplication.class, E2eMysqlTestConfiguration.class},
-    initializers = ConfigDataApplicationContextInitializer.class
+@SpringBootTest(
+    classes = {E2eTestApplication.class, E2eMysqlTestConfiguration.class}
 )
 public class E2eMysqlTest extends AbstractMysqlTestBase {
 
@@ -30,12 +30,13 @@ public class E2eMysqlTest extends AbstractMysqlTestBase {
 
   @Test
   @SneakyThrows
-  void test() {
+  void testE2eMysql() {
     //Arrange --------------------------------------------------------------------------------
     //Act ------------------------------------------------------------------------------------
-    executorService.awaitTermination(5_000, TimeUnit.MILLISECONDS);
+    var batchJobFinished = executorService.awaitTermination(15_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
+    assertThat(batchJobFinished).isTrue();
     E2eTestBaseUtils.assertResultMap();
   }
 }

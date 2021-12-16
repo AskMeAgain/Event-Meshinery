@@ -1,16 +1,18 @@
 package io.github.askmeagain.meshinery.connectors.mysql;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class InputsTest extends AbstractMysqlTestBase {
+class InputTest extends AbstractMysqlTestBase {
 
-  public static final String STATE = "Test";
+  private static final String STATE = "Test";
 
   @Test
   void testInputOutput() {
@@ -19,7 +21,7 @@ class InputsTest extends AbstractMysqlTestBase {
 
     var mysqlProperties = new MeshineryMysqlProperties();
     mysqlProperties.setLimit(1);
-    var input = new MysqlInputSource<>("default", jdbi, TestContext.class, mysqlProperties);
+    var input = new MysqlInputSource<>("default", new ObjectMapper(), jdbi, TestContext.class, mysqlProperties);
     var output = new MysqlOutputSource<>("default", jdbi, TestContext.class);
     var value1 = new TestContext(1);
     var value2 = new TestContext(2);
@@ -47,7 +49,7 @@ class InputsTest extends AbstractMysqlTestBase {
 
     var mysqlProperties = new MeshineryMysqlProperties();
     mysqlProperties.setLimit(1);
-    var input = new MysqlInputSource<>("default", jdbi, TestContext.class, mysqlProperties);
+    var input = new MysqlInputSource<>("default", new ObjectMapper(), jdbi, TestContext.class, mysqlProperties);
     var output = new MysqlOutputSource<>("default", jdbi, TestContext.class);
     var value1 = new TestContext(1);
     var value2 = new TestContext(2);
@@ -83,6 +85,6 @@ class InputsTest extends AbstractMysqlTestBase {
 
     //Assert ---------------------------------------------------------------------------------
     assertThatThrownBy(() -> output.writeOutput(STATE, value1))
-        .isInstanceOf(RuntimeException.class);
+        .isInstanceOf(UnableToExecuteStatementException.class);
   }
 }

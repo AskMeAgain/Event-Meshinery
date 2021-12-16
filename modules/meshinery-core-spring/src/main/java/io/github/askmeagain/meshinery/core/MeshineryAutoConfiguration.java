@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @RequiredArgsConstructor
-@Import(DataContextInjectApiController.class)
+@Import({DataContextInjectApiController.class, ApplicationStartHookConfiguration.class})
 @EnableConfigurationProperties(MeshineryCoreProperties.class)
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryAutoConfiguration {
@@ -62,6 +62,6 @@ public class MeshineryAutoConfiguration {
         .gracefulShutdownOnError(meshineryCoreProperties.isShutdownOnError())
         .gracePeriodMilliseconds(meshineryCoreProperties.getGracePeriodMilliseconds())
         .tasks(tasks)
-        .buildAndStart();
+        .build();
   }
 }

@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.connectors.mysql;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
@@ -22,9 +23,11 @@ public class MysqlConnector<C extends DataContext> implements AccessingInputSour
   private final MysqlOutputSource<C> mysqlOutputSource;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MysqlConnector(String name, Class<C> clazz, Jdbi jdbi, MeshineryMysqlProperties mysqlProperties) {
+  public MysqlConnector(
+      String name, Class<C> clazz, Jdbi jdbi, ObjectMapper objectMapper, MeshineryMysqlProperties mysqlProperties
+  ) {
     this.name = name;
-    this.mysqlInputSource = new MysqlInputSource<>(name, jdbi, clazz, mysqlProperties);
+    this.mysqlInputSource = new MysqlInputSource<>(name, objectMapper, jdbi, clazz, mysqlProperties);
     this.mysqlOutputSource = new MysqlOutputSource<>(name, jdbi, clazz);
   }
 

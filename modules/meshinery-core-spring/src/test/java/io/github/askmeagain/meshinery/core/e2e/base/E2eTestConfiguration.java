@@ -7,8 +7,6 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,18 +14,16 @@ import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
+
+import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.ITEMS;
+import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.NUMBER_OF_TOPICS;
+import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.RESULT_MAP;
+import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.THREADS;
+import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.TOPIC_PREFIX;
 
 @Slf4j
 @TestConfiguration
 public class E2eTestConfiguration {
-
-  public static final int NUMBER_OF_TOPICS = 10;
-  public static final int ITEMS = 30;
-  public static final int THREADS = 31;
-  public static final int SLEEP_IN_PROCESSOR = 100;
-  public static final HashMap<Integer, List<String>> RESULT_MAP = new HashMap<>();
-  public static final String PREFIX = RandomStringUtils.random(10, true, false);
 
   @Bean
   public ObjectMapper objectMapper() {
@@ -51,7 +47,7 @@ public class E2eTestConfiguration {
       ExecutorService executorService
   ) {
     var arr = IntStream.range(0, NUMBER_OF_TOPICS)
-        .mapToObj(i -> PREFIX + i)
+        .mapToObj(i -> TOPIC_PREFIX + i)
         .toArray(String[]::new);
 
     return MeshineryTaskFactory.<String, TestContext>builder()
@@ -72,7 +68,7 @@ public class E2eTestConfiguration {
           if (context.getIndex() >= NUMBER_OF_TOPICS) {
             return "Finished";
           }
-          return PREFIX + context.getIndex();
+          return TOPIC_PREFIX + context.getIndex();
         })
         .build();
   }
@@ -92,7 +88,7 @@ public class E2eTestConfiguration {
         .inputSource(inputSource)
         .taskName("InputSpawner")
         .read(executorService, "Doesnt matter")
-        .write(PREFIX + "0")
+        .write(TOPIC_PREFIX + "0")
         .build();
   }
 }

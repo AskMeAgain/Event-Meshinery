@@ -6,9 +6,9 @@ import java.util.stream.IntStream;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
-import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestConfiguration.ITEMS;
-import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestConfiguration.NUMBER_OF_TOPICS;
-import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestConfiguration.RESULT_MAP;
+import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.ITEMS;
+import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.NUMBER_OF_TOPICS;
+import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.RESULT_MAP;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -22,10 +22,13 @@ public class E2eTestBaseUtils {
   }
 
   public void assertResultMap() {
+    var resultSet = getResultSet();
     assertThat(RESULT_MAP)
         .extracting(Map::values)
-        .satisfies(x -> assertThat(x)
-            .allSatisfy(y -> assertThat(y).containsExactlyInAnyOrder(getResultSet())));
+        .satisfies(x -> {
+          assertThat(x)
+              .allSatisfy(y -> assertThat(y).containsExactlyInAnyOrder(resultSet));
+        });
   }
 
   private String[] getResultSet() {

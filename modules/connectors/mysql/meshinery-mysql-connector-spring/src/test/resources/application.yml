@@ -3,7 +3,7 @@ meshinery:
     shutdown-on-error: false
     shutdown-on-finished: false
     batch-job: true
-    grace-period-milliseconds: 20000
+    grace-period-milliseconds: 1000
   connectors:
     mysql:
       connection-string: jdbc:mysql://localhost:3306/db

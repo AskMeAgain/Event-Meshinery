@@ -60,26 +60,26 @@ public class RoundRobinScheduler {
   }
 
   @SneakyThrows
-  RoundRobinScheduler start() {
+  public RoundRobinScheduler start() {
 
     //setup
     MeshineryTaskVerifier.verifyTasks(tasks);
     tasks.forEach(task -> executorServices.add(task.getExecutorService()));
     createLookupMap();
 
+
     //the producer
     var inputExecutor = new DataInjectingExecutorService("input-executor", Executors.newSingleThreadExecutor());
     executorServices.add(inputExecutor);
-    inputExecutor.execute(() -> createInputScheduler(inputExecutor));
-
-    Thread.sleep(100);
-
     //the worker
     var taskExecutor = new DataInjectingExecutorService("output-executor", Executors.newSingleThreadExecutor());
     executorServices.add(taskExecutor);
-    taskExecutor.execute(() -> runWorker(taskExecutor));
 
     startupHook.forEach(hook -> hook.accept(this));
+
+    inputExecutor.execute(() -> createInputScheduler(inputExecutor));
+    Thread.sleep(100);
+    taskExecutor.execute(() -> runWorker(taskExecutor));
 
     return this;
   }

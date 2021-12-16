@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.connectors.mysql.e2e;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.connectors.mysql.EnableMeshineryMysqlConnector;
 import io.github.askmeagain.meshinery.connectors.mysql.MeshineryMysqlProperties;
 import io.github.askmeagain.meshinery.connectors.mysql.MysqlConnector;
@@ -13,7 +14,9 @@ import org.springframework.context.annotation.Bean;
 public class E2eMysqlTestConfiguration {
 
   @Bean
-  public MysqlConnector<TestContext> kafkaConnector(Jdbi jdbi, MeshineryMysqlProperties mysqlProperties) {
-    return new MysqlConnector<>("name", TestContext.class, jdbi, mysqlProperties);
+  public MysqlConnector<TestContext> kafkaConnector(
+      Jdbi jdbi, ObjectMapper objectMapper, MeshineryMysqlProperties mysqlProperties
+  ) {
+    return new MysqlConnector<>("name", TestContext.class, jdbi, objectMapper, mysqlProperties);
   }
 }

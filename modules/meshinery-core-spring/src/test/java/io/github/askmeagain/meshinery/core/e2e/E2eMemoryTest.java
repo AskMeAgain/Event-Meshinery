@@ -9,14 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@SpringJUnitConfig(
-    classes = {E2eTestApplication.class, MemoryTestConfiguration.class},
-    initializers = ConfigDataApplicationContextInitializer.class
-)
+@SpringBootTest(classes = {E2eTestApplication.class, MemoryTestConfiguration.class})
+@TestPropertySource(properties = "meshinery.core.batch-job=true")
 class E2eMemoryTest {
 
   @Autowired
@@ -32,9 +32,10 @@ class E2eMemoryTest {
   void test() {
     //Arrange --------------------------------------------------------------------------------
     //Act ------------------------------------------------------------------------------------
-    executorService.awaitTermination(10_000, TimeUnit.MILLISECONDS);
+    var batchJobFinished = executorService.awaitTermination(10_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
+    assertThat(batchJobFinished).isTrue();
     E2eTestBaseUtils.assertResultMap();
   }
 }

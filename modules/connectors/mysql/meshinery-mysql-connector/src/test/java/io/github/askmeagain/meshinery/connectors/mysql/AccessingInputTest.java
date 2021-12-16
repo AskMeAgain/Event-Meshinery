@@ -1,22 +1,23 @@
 package io.github.askmeagain.meshinery.connectors.mysql;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SpecificGetTest extends AbstractMysqlTestBase {
+class AccessingInputTest extends AbstractMysqlTestBase {
 
-  public static final String STATE = "Test";
+  private static final String STATE = "Test";
 
   @Test
-  void testSpecificInput() {
+  void testAccessingInput() {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
 
     var mysqlProperties = new MeshineryMysqlProperties();
     mysqlProperties.setLimit(1);
-    var input = new MysqlInputSource<>("default", jdbi, TestContext.class, mysqlProperties);
+    var input = new MysqlInputSource<>("default", new ObjectMapper(), jdbi, TestContext.class, mysqlProperties);
     var output = new MysqlOutputSource<>("default", jdbi, TestContext.class);
 
     var value1 = new TestContext(1);

@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 
 @TestConfiguration
 @EnableMeshineryKafkaConnector
-public class KafkaTestConfiguration {
+public class E2eKafkaTestConfiguration {
 
   @Bean
   public KafkaConnector<TestContext> kafkaConnector(
