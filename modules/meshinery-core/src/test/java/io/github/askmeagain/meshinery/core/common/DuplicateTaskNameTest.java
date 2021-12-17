@@ -41,12 +41,12 @@ class DuplicateTaskNameTest {
         .taskName("task1")
         .inputSource(inputSource)
         .read(null, "abc")
-        .defaultOutputSource(outputSource)
+        .outputSource(outputSource)
         .build();
     var duplicateTask2 = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("task2")
         .inputSource(inputSource)
-        .defaultOutputSource(outputSource)
+        .outputSource(outputSource)
         .read(null, "abc")
         .build();
 

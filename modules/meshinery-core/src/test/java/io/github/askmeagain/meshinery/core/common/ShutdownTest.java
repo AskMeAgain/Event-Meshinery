@@ -29,7 +29,7 @@ class ShutdownTest extends AbstractTestBase {
     var flag = new AtomicBoolean(false);
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
-        .defaultOutputSource(new TestOutputSource())
+        .outputSource(new TestOutputSource())
         .read(executor, "")
         .process(new TestContextProcessor(1))
         .write("")

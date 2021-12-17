@@ -31,7 +31,7 @@ class StopIfTest {
     var executor = Executors.newSingleThreadExecutor();
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
-        .defaultOutputSource(outputSource)
+        .outputSource(outputSource)
         .read(executor, KEY)
         .stopIf(x -> x.getIndex() == 0)
         .write(KEY)

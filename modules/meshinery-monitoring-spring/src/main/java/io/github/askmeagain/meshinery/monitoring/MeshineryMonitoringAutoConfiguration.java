@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringUtils.getNameByExecutorAndTasks;
+
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Configuration
 @ConditionalOnMissingBean(MeshineryMonitoringAutoConfiguration.class)
@@ -23,40 +25,23 @@ public class MeshineryMonitoringAutoConfiguration {
   CustomizeStartupHook executorRegistration() {
     return roundRobinScheduler -> {
 
-      var gauge = Gauge.build()
-          .name("executor_active_threads")
-          .help("abc test")
-          .labelNames("executor")
+      var executorPerTaskMap = MeshineryMonitoringUtils.createExecutorPerTaskMap(roundRobinScheduler.getTasks());
+
+      var executorAssignmentGauge = Gauge.build()
+          .name("executor")
+          .help("Executors and their registered tasks")
+          .labelNames("executor", "task_name")
           .register(MeshineryMonitoringService.registry);
 
-      roundRobinScheduler.getExecutorServices()
-          .forEach(executorService -> {
-            var dataInjectingExecutorService = (DataInjectingExecutorService) executorService;
-
-            Gauge.Child child;
-            var executorService1 = dataInjectingExecutorService.getExecutorService();
-            if (executorService1 instanceof ThreadPoolExecutor castedAgain) {
-              child = new Gauge.Child() {
-                @Override
-                public double get() {
-                  return castedAgain.getActiveCount();
-                }
-              };
-            } else {
-              child = new Gauge.Child() {
-                @Override
-                public double get() {
-                  return 1;
-                }
-              };
-            }
-
-            gauge.setChild(child, dataInjectingExecutorService.getName());
-          });
+      executorPerTaskMap.forEach((executor, tasks) -> {
+        tasks.forEach(task -> {
+          executorAssignmentGauge.labels(String.valueOf(executor.hashCode()), task.getTaskName());
+        });
+      });
 
       var maxThreadGauge = Gauge.build()
           .name("executor_max_threads")
-          .help("abc test")
+          .help("Max number of threads on each executor")
           .labelNames("executor")
           .register(MeshineryMonitoringService.registry);
 
@@ -82,11 +67,46 @@ public class MeshineryMonitoringAutoConfiguration {
               };
             }
 
-            maxThreadGauge.setChild(child, dataInjectingExecutorService.getName());
+            var name = getNameByExecutorAndTasks(executorPerTaskMap, dataInjectingExecutorService);
+
+            maxThreadGauge.setChild(child, name);
+          });
+
+      var gauge = Gauge.build()
+          .name("executor_active_threads")
+          .help("Available Threads on each executor")
+          .labelNames("executor")
+          .register(MeshineryMonitoringService.registry);
+
+      roundRobinScheduler.getExecutorServices()
+          .forEach(executorService -> {
+            Gauge.Child child;
+
+            var dataInjectingExecutorService = (DataInjectingExecutorService) executorService;
+            var innerExecutorService = dataInjectingExecutorService.getExecutorService();
+
+            if (innerExecutorService instanceof ThreadPoolExecutor castedAgain) {
+              child = new Gauge.Child() {
+                @Override
+                public double get() {
+                  return castedAgain.getActiveCount();
+                }
+              };
+            } else {
+              child = new Gauge.Child() {
+                @Override
+                public double get() {
+                  return 1;
+                }
+              };
+            }
+
+            var name = getNameByExecutorAndTasks(executorPerTaskMap, dataInjectingExecutorService);
+
+            gauge.setChild(child, name);
           });
     };
   }
-
 
   @Bean
   CustomizeStartupHook taskMonitoringInformation() {

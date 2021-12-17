@@ -32,7 +32,7 @@ class WriteTest {
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
-        .defaultOutputSource(defaultOutputSource)
+        .outputSource(defaultOutputSource)
         .read(executor, KEY)
         .write(KEY, mockOutputSource)
         .write(KEY, KEY)

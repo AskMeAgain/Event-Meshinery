@@ -35,7 +35,7 @@ class SignalingProcessorTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .read(executor, "")
-        .defaultOutputSource(outputSource)
+        .outputSource(outputSource)
         .readNewInput("Test", memoryInputSource)
         .write("")
         .build();

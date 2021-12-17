@@ -23,7 +23,7 @@ class ThrowingInputTest extends AbstractLogTestBase {
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
-        .defaultOutputSource(new TestOutputSource())
+        .outputSource(new TestOutputSource())
         .read(executor, KEY)
         .build();
 

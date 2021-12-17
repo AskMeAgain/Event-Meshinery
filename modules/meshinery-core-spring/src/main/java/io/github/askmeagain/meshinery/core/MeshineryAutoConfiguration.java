@@ -15,6 +15,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 
 @Configuration
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class MeshineryAutoConfiguration {
 
   private final MeshineryCoreProperties meshineryCoreProperties;
 
+  @Lazy
   @Bean
   public TaskReplayFactory taskReplayFactory(List<MeshineryTask<?, ?>> tasks) {
     return new TaskReplayFactory(tasks, Executors.newSingleThreadExecutor());

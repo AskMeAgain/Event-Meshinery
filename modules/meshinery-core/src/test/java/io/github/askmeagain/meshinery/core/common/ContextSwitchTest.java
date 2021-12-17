@@ -44,7 +44,7 @@ class ContextSwitchTest extends AbstractTestBase {
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
-        .defaultOutputSource(defaultOutput)
+        .outputSource(defaultOutput)
         .read(executor, INPUT_KEY)
         .process(processorA)
         .write(INPUT_KEY + "asd")

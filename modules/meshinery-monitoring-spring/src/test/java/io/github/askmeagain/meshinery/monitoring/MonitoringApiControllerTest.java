@@ -62,7 +62,7 @@ class MonitoringApiControllerTest {
               wait3Sec();
               return c;
             }, e))
-            .defaultOutputSource(new TestOutputSource())
+            .outputSource(new TestOutputSource())
             .build())
         .task(MeshineryTaskFactory.<String, TestContext>builder()
             .taskName("cool-task-name-2")
@@ -72,7 +72,7 @@ class MonitoringApiControllerTest {
               wait3Sec();
               return c;
             }, e))
-            .defaultOutputSource(new TestOutputSource())
+            .outputSource(new TestOutputSource())
             .build())
         .isBatchJob(false)
         .buildAndStart();

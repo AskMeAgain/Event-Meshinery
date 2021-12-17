@@ -30,7 +30,7 @@ class BackpressureTest {
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
-        .defaultOutputSource(new TestOutputSource())
+        .outputSource(new TestOutputSource())
         .read(executor, "")
         .process(processor)
         .build();

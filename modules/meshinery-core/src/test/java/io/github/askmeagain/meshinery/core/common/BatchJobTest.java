@@ -31,7 +31,7 @@ class BatchJobTest {
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
-        .defaultOutputSource(mockOutputSource)
+        .outputSource(mockOutputSource)
         .read(executor, KEY)
         .write("")
         .build();

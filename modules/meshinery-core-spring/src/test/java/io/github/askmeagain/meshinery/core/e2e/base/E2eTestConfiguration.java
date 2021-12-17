@@ -51,7 +51,7 @@ public class E2eTestConfiguration {
         .toArray(String[]::new);
 
     return MeshineryTaskFactory.<String, TestContext>builder()
-        .defaultOutputSource(connector)
+        .outputSource(connector)
         .inputSource(connector)
         .taskName("Task3Loop")
         .read(executorService, arr)
@@ -84,7 +84,7 @@ public class E2eTestConfiguration {
         .build();
 
     return MeshineryTaskFactory.<String, TestContext>builder()
-        .defaultOutputSource(connector)
+        .outputSource(connector)
         .inputSource(inputSource)
         .taskName("InputSpawner")
         .read(executorService, "Doesnt matter")

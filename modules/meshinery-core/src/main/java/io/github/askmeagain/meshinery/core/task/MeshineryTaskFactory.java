@@ -80,7 +80,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
    * @param outputSource The source
    * @return returns itself for builder pattern
    */
-  public MeshineryTaskFactory<K, C> defaultOutputSource(MeshineryConnector<K, C> outputSource) {
+  public MeshineryTaskFactory<K, C> outputSource(MeshineryConnector<K, C> outputSource) {
     return toBuilder()
         .outputConnector(outputSource)
         .taskData(taskData.put(TaskDataProperties.GRAPH_OUTPUT_SOURCE, outputSource.getName()))

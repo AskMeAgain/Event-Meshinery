@@ -41,7 +41,7 @@ class ExceptionHandlingTest {
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
-        .defaultOutputSource(mockOutputSource)
+        .outputSource(mockOutputSource)
         .read(executor, KEY)
         .process((context, e) -> CompletableFuture.supplyAsync(() -> {
           throw new RuntimeException("arg");
@@ -80,7 +80,7 @@ class ExceptionHandlingTest {
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
-        .defaultOutputSource(mockOutputSource)
+        .outputSource(mockOutputSource)
         .read(executor, KEY)
         .process(new ErrorProcessor())
         .exceptionHandler(exception -> {

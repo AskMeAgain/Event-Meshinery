@@ -35,7 +35,7 @@ class SimpleParallelizationTest extends AbstractTestBase {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .read(executor, KEY)
         .inputSource(inputSource)
-        .defaultOutputSource(outputSource)
+        .outputSource(outputSource)
         .process(ParallelProcessor.<TestContext>builder()
             .parallel(new TestContextProcessor(3))
             .parallel(new TestContextProcessor(3))

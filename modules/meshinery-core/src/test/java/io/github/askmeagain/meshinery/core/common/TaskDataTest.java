@@ -34,7 +34,7 @@ class TaskDataTest extends AbstractTestBase {
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
-        .defaultOutputSource(defaultOutput)
+        .outputSource(defaultOutput)
         .read(executor, INPUT_KEY)
         .process(new TaskDataTestProcessor())
         .write(INPUT_KEY)

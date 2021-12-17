@@ -31,7 +31,7 @@ class TaskReplayFactoryTest {
 
     List<MeshineryTask<?, ? extends DataContext>> tasks = List.of(
         MeshineryTaskFactory.<String, TestContext>builder()
-            .defaultOutputSource(outputSource)
+            .outputSource(outputSource)
             .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
             .read(Executors.newSingleThreadExecutor(), "")
             .taskName("test")

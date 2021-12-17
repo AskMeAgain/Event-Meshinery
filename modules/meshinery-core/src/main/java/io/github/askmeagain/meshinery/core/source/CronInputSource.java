@@ -5,7 +5,7 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,23 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class CronInputSource<C extends DataContext> implements InputSource<String, C> {
+public class CronInputSource<C extends DataContext> implements MeshineryConnector<String, C> {
 
   @Getter
-  private final String name;
+  private String name = "default-cron-input-source";
   private final CronParser parser;
   private final Supplier<C> supplier;
   private final ConcurrentHashMap<String, ZonedDateTime> nextExecutions = new ConcurrentHashMap<>();
-
-  public CronInputSource(CronParser parser, Supplier<C> supplier) {
-    this("cron-input-source", parser, supplier);
-  }
-
-  public CronInputSource(String name, CronParser parser, Supplier<C> supplier) {
-    this.name = name;
-    this.parser = parser;
-    this.supplier = supplier;
-  }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public CronInputSource(String name, CronType cronType, Supplier<C> supplier) {
@@ -42,6 +32,13 @@ public class CronInputSource<C extends DataContext> implements InputSource<Strin
     parser = new CronParser(cronDefinition);
     this.supplier = supplier;
     this.name = name;
+  }
+
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  public CronInputSource(CronType cronType, Supplier<C> supplier) {
+    var cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(cronType);
+    parser = new CronParser(cronDefinition);
+    this.supplier = supplier;
   }
 
   @Override
@@ -80,5 +77,10 @@ public class CronInputSource<C extends DataContext> implements InputSource<Strin
     var nextExecution = executionTime.nextExecution(now);
 
     nextExecutions.put(cron, nextExecution.get());
+  }
+
+  @Override
+  public void writeOutput(String key, C output) {
+    throw new UnsupportedOperationException();
   }
 }

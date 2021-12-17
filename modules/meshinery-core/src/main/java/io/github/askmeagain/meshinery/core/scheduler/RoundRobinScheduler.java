@@ -8,7 +8,6 @@ import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.processors.DynamicOutputProcessor;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskVerifier;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.task.TaskDataProperties;
 import io.github.askmeagain.meshinery.core.task.TaskRun;
@@ -63,7 +62,6 @@ public class RoundRobinScheduler {
   public RoundRobinScheduler start() {
 
     //setup
-    MeshineryTaskVerifier.verifyTasks(tasks);
     tasks.forEach(task -> executorServices.add(task.getExecutorService()));
     createLookupMap();
 

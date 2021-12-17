@@ -23,7 +23,7 @@ class E2eMemoryTest {
   ExecutorService executorService;
 
   @BeforeAll
-  static void createTopics() {
+  static void setupTest() {
     E2eTestBaseUtils.setupTest();
   }
 
