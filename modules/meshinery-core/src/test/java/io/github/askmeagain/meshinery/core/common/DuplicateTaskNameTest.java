@@ -1,11 +1,12 @@
 package io.github.askmeagain.meshinery.core.common;
 
-import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.MeshineryTaskVerifier;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 
@@ -24,11 +25,8 @@ class DuplicateTaskNameTest {
 
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
-    assertThatThrownBy(() -> RoundRobinScheduler.builder()
-        .task(duplicateTask)
-        .task(duplicateTask)
-        .buildAndStart()
-    ).isInstanceOf(RuntimeException.class)
+    assertThatThrownBy(() -> MeshineryTaskVerifier.verifyTasks(List.of(duplicateTask, duplicateTask)))
+        .isInstanceOf(RuntimeException.class)
         .hasMessage("Found duplicate job names: [duplicateTask]");
   }
 
@@ -52,11 +50,8 @@ class DuplicateTaskNameTest {
 
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
-    assertThatThrownBy(() -> RoundRobinScheduler.builder()
-        .task(duplicateTask1)
-        .task(duplicateTask2)
-        .buildAndStart()
-    ).isInstanceOf(RuntimeException.class)
+    assertThatThrownBy(() -> MeshineryTaskVerifier.verifyTasks(List.of(duplicateTask1, duplicateTask2)))
+        .isInstanceOf(RuntimeException.class)
         .hasMessage("Found duplicate Read keys: [abc]");
   }
 

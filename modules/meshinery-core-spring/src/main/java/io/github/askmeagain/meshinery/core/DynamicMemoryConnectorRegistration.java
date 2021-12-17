@@ -22,7 +22,7 @@ public class DynamicMemoryConnectorRegistration implements BeanDefinitionRegistr
   }
 
   private static String getBeanName(Class<? extends DataContext> clazz) {
-    return clazz.getSimpleName() + "-auto-generated-kafka-connector-bean";
+    return clazz.getSimpleName() + "-auto-generated-memory-connector-bean";
   }
 
   @Override
