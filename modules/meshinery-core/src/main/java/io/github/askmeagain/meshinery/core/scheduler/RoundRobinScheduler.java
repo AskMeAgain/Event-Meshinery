@@ -65,7 +65,6 @@ public class RoundRobinScheduler {
     tasks.forEach(task -> executorServices.add(task.getExecutorService()));
     createLookupMap();
 
-
     //the producer
     var inputExecutor = new DataInjectingExecutorService("input-executor", Executors.newSingleThreadExecutor());
     executorServices.add(inputExecutor);

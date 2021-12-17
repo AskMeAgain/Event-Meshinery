@@ -100,6 +100,11 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
         .build();
   }
 
+  public MeshineryTaskFactory<K, C> connector(MeshineryConnector<K, C> connector) {
+    return inputSource(connector)
+        .outputSource(connector);
+  }
+
   /**
    * Reads from the inputsource with the provided key. Uses the executorService to query the inputData.
    *

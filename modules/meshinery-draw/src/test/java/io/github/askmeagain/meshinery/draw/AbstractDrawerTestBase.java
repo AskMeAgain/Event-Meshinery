@@ -52,7 +52,7 @@ public abstract class AbstractDrawerTestBase {
 
   private MeshineryTask<String, TestContext> createTask(String from, String to) {
     return MeshineryTaskFactory.<String, TestContext>builder()
-        .defaultOutputSource(outputSource)
+        .outputSource(outputSource)
         .inputSource(inputSource)
         .read(null, from)
         .taskName(from)
@@ -62,7 +62,7 @@ public abstract class AbstractDrawerTestBase {
 
   private MeshineryTask<String, TestContext> createDoubleInputTask(String from1, String from2, String to) {
     return MeshineryTaskFactory.<String, TestContext>builder()
-        .defaultOutputSource(outputSource)
+        .outputSource(outputSource)
         .inputSource(inputSource)
         .read(null, from1)
         .taskName(from1 + "_" + from2)
@@ -80,7 +80,7 @@ public abstract class AbstractDrawerTestBase {
         .build();
 
     return MeshineryTaskFactory.<String, TestContext>builder()
-        .defaultOutputSource(outputSource)
+        .outputSource(outputSource)
         .inputSource(signalingInputSource)
         .read(null, from1)
         .taskName(from1 + "_" + from2)
