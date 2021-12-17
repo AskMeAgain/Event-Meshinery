@@ -1,25 +1,17 @@
 package io.github.askmeagain.meshinery.connectors.kafka.e2e;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.askmeagain.meshinery.connectors.kafka.EnableMeshineryKafkaConnector;
-import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
-import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaProducerFactory;
+import io.github.askmeagain.meshinery.connectors.kafka.EnableMeshineryKafka;
 import io.github.askmeagain.meshinery.connectors.kafka.sources.KafkaConnector;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
-import org.springframework.boot.test.context.TestConfiguration;
+import io.github.askmeagain.meshinery.core.utils.context.TestContext2;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@TestConfiguration
-@EnableMeshineryKafkaConnector
+@Configuration
+@EnableMeshineryKafka(context = {TestContext.class, TestContext2.class})
 public class E2eKafkaTestConfiguration {
-
   @Bean
-  public KafkaConnector<TestContext> kafkaConnector(
-      ObjectMapper objectMapper,
-      KafkaProducerFactory producerFactory,
-      KafkaConsumerFactory consumerFactory
-  ) {
-    return new KafkaConnector<>("name", TestContext.class, objectMapper, consumerFactory, producerFactory);
+  public TestContext2 testContext2(KafkaConnector<TestContext> k1, KafkaConnector<TestContext2> k2) {
+    return null;
   }
-
 }

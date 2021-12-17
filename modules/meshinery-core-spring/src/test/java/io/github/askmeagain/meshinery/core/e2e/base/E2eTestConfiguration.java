@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
@@ -26,6 +27,7 @@ import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.TO
 public class E2eTestConfiguration {
 
   @Bean
+  @ConditionalOnMissingBean(ObjectMapper.class)
   public ObjectMapper objectMapper() {
     return new ObjectMapper();
   }

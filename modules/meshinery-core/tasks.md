@@ -75,3 +75,4 @@ always just exchange the state stores in code without a problem.**
 | readNewInput| yes | Requests a new dataContext from a completely different source depending on the id of the dataContext and the new event-key |
 | putData | no | Adds properties to the MeshineryTask which is accessible from processors and sources. Is used to provide "special" settings to processors and inputsources |
 | exceptionHandler | no | Adds an exceptionHandler for processors which throw an exception in completableFutureThread executions  |
+| connector | no | Shortcut which registers the connector to both input and output source  |

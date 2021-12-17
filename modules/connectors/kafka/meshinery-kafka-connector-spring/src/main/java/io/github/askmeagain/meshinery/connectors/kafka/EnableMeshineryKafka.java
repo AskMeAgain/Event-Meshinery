@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.connectors.kafka;
 
 import io.github.askmeagain.meshinery.core.MeshineryAutoConfiguration;
+import io.github.askmeagain.meshinery.core.common.DataContext;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -13,5 +14,8 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @AutoConfigureBefore(MeshineryAutoConfiguration.class)
 @Import({MeshineryKafkaConfiguration.class})
-public @interface EnableMeshineryKafkaConnector {
+public @interface EnableMeshineryKafka {
+
+  Class<? extends DataContext>[] context() default {};
+
 }
