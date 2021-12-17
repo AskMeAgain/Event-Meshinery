@@ -13,8 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.ITEMS;
 import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.NUMBER_OF_TOPICS;
@@ -23,7 +23,7 @@ import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.TH
 import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.TOPIC_PREFIX;
 
 @Slf4j
-@TestConfiguration
+@Configuration
 public class E2eTestConfiguration {
 
   @Bean

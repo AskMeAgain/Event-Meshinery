@@ -12,5 +12,9 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Import(MeshineryAutoConfiguration.class)
 public @interface EnableMeshinery {
+
   Class<? extends DataContext>[] injection() default {};
+
+  Class<? extends DataContext>[] context() default {};
+
 }

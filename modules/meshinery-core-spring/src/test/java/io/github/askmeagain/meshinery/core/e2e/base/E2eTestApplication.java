@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.core.e2e.base;
 
 import io.github.askmeagain.meshinery.core.EnableMeshinery;
+import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.HashMap;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +10,8 @@ import org.springframework.context.annotation.Import;
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 
 @Slf4j
-@EnableMeshinery
 @SpringBootApplication
+@EnableMeshinery(context = TestContext.class)
 @Import({E2eTestConfiguration.class})
 public class E2eTestApplication {
 

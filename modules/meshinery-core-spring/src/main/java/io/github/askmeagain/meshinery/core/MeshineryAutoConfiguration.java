@@ -7,7 +7,6 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import java.util.List;
 import java.util.concurrent.Executors;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -18,18 +17,20 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 
 @Configuration
-@RequiredArgsConstructor
 @Import({DataContextInjectApiController.class, ApplicationStartHookConfiguration.class})
 @EnableConfigurationProperties(MeshineryCoreProperties.class)
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryAutoConfiguration {
 
-  private final MeshineryCoreProperties meshineryCoreProperties;
-
   @Lazy
   @Bean
   public TaskReplayFactory taskReplayFactory(List<MeshineryTask<?, ?>> tasks) {
     return new TaskReplayFactory(tasks, Executors.newSingleThreadExecutor());
+  }
+
+  @Bean
+  public DynamicMemoryConnectorRegistration dynamicMemoryConnectorRegistration(ApplicationContext applicationContext) {
+    return new DynamicMemoryConnectorRegistration(applicationContext);
   }
 
   @Bean
@@ -54,7 +55,8 @@ public class MeshineryAutoConfiguration {
       List<MeshineryTask<?, ?>> tasks,
       List<CustomizeShutdownHook> shutdownHook,
       List<CustomizeStartupHook> startupHook,
-      List<ProcessorDecorator<DataContext, DataContext>> processorDecorators
+      List<ProcessorDecorator<DataContext, DataContext>> processorDecorators,
+      MeshineryCoreProperties meshineryCoreProperties
   ) {
     return RoundRobinScheduler.builder()
         .isBatchJob(meshineryCoreProperties.isBatchJob())

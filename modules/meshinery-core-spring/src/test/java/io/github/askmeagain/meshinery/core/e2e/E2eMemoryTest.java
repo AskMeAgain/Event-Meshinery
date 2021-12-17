@@ -15,8 +15,8 @@ import org.springframework.test.context.TestPropertySource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@SpringBootTest(classes = {E2eTestApplication.class, MemoryTestConfiguration.class})
-@TestPropertySource(properties = "meshinery.core.batch-job=true")
+@SpringBootTest(classes = {E2eTestApplication.class})
+@TestPropertySource(properties = {"meshinery.core.batch-job=true", "meshinery.core.shutdown-on-finished=false"})
 class E2eMemoryTest {
 
   @Autowired
