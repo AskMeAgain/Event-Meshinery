@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-class InternalWrapper {
+public class InternalWrapper {
 
   String context;
 

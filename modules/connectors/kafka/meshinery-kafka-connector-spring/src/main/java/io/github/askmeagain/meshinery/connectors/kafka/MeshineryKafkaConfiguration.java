@@ -13,9 +13,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
+@Validated
 @Configuration
 @EnableConfigurationProperties
-@Validated
 public class MeshineryKafkaConfiguration {
 
   @Bean

@@ -15,9 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@SpringBootTest(
-    classes = {E2eTestApplication.class, E2eMysqlTestConfiguration.class}
-)
+@SpringBootTest(classes = {E2eTestApplication.class, E2eMysqlTestConfiguration.class})
 public class E2eMysqlTest extends AbstractMysqlTestBase {
 
   @Autowired
