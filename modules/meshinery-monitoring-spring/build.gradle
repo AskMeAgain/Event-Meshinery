@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${spring_boot_version}"
     api project(':modules:meshinery-monitoring')
     api project(':modules:meshinery-core-spring')
     testImplementation project(':modules:meshinery-core').sourceSets.test.output

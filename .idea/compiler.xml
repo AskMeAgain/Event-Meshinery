@@ -11,28 +11,27 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.22/9c08ea24c6eb714e2d6170e8122c069a0ba9aacf/lombok-1.18.22.jar" />
         </processorPath>
         <module name="EventMeshinery.modules.connectors.test" />
+        <module name="EventMeshinery.modules.meshinery-core.main" />
         <module name="EventMeshinery.modules.connectors.mysql.meshinery-mysql-connector-spring.test" />
         <module name="EventMeshinery.modules.connectors.mysql.meshinery-mysql-connector.main" />
         <module name="EventMeshinery.modules.meshinery-monitoring-spring.test" />
+        <module name="EventMeshinery.modules.meshinery-draw-spring.main" />
         <module name="EventMeshinery.modules.connectors.mysql.test" />
+        <module name="EventMeshinery.modules.connectors.mysql.meshinery-mysql-connector.test" />
         <module name="EventMeshinery.modules.connectors.kafka.main" />
         <module name="EventMeshinery.modules.connectors.kafka.meshinery-kafka-connector.test" />
+        <module name="EventMeshinery.modules.meshinery-monitoring.test" />
+        <module name="EventMeshinery.modules.connectors.mysql.main" />
         <module name="EventMeshinery.modules.meshinery-draw.main" />
         <module name="EventMeshinery.modules.meshinery-draw-spring.test" />
         <module name="EventMeshinery.modules.connectors.kafka.meshinery-kafka-connector-spring.test" />
-        <module name="EventMeshinery.modules.meshinery-monitoring.main" />
-        <module name="EventMeshinery.modules.meshinery-core-spring.test" />
-        <module name="EventMeshinery.modules.main" />
-        <module name="EventMeshinery.modules.meshinery-core.main" />
-        <module name="EventMeshinery.modules.meshinery-draw-spring.main" />
-        <module name="EventMeshinery.modules.connectors.mysql.meshinery-mysql-connector.test" />
-        <module name="EventMeshinery.modules.meshinery-monitoring.test" />
-        <module name="EventMeshinery.modules.connectors.mysql.main" />
         <module name="EventMeshinery.modules.connectors.main" />
-        <module name="EventMeshinery.modules.meshinery-monitoring-spring.main" />
         <module name="EventMeshinery.modules.meshinery-draw.test" />
+        <module name="EventMeshinery.modules.meshinery-monitoring.main" />
         <module name="EventMeshinery.modules.connectors.kafka.meshinery-kafka-connector.main" />
+        <module name="EventMeshinery.modules.meshinery-core-spring.test" />
         <module name="EventMeshinery.modules.connectors.kafka.test" />
+        <module name="EventMeshinery.modules.main" />
         <module name="EventMeshinery.modules.test" />
         <module name="EventMeshinery.modules.meshinery-core.test" />
       </profile>
@@ -43,8 +42,9 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/2.6.1/f379722cd76cc426b76392f61e1bacedf175e13d/spring-boot-configuration-processor-2.6.1.jar" />
         </processorPath>
         <module name="EventMeshinery.modules.meshinery-core-spring.main" />
-        <module name="EventMeshinery.modules.connectors.mysql.meshinery-mysql-connector-spring.main" />
         <module name="EventMeshinery.modules.connectors.kafka.meshinery-kafka-connector-spring.main" />
+        <module name="EventMeshinery.modules.connectors.mysql.meshinery-mysql-connector-spring.main" />
+        <module name="EventMeshinery.modules.meshinery-monitoring-spring.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17" />

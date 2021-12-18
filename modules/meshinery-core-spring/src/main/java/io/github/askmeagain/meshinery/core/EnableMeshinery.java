@@ -15,6 +15,11 @@ public @interface EnableMeshinery {
 
   Class<? extends DataContext>[] injection() default {};
 
-  Class<? extends DataContext>[] context() default {};
+  KeyDataContext[] connector() default {};
 
+  @interface KeyDataContext {
+    Class<? extends DataContext> context();
+
+    Class<?> key();
+  }
 }

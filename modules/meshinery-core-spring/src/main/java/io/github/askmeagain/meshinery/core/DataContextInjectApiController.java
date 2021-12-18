@@ -49,8 +49,16 @@ public class DataContextInjectApiController {
     }
 
     for (var fqn : meshineryCoreProperties.getInject()) {
-      Class<?> clazz = Class.forName(fqn);
+      Class<?> clazz = getClazzFromFullyQualifiedName(fqn);
       classMap.put(clazz.getSimpleName(), clazz);
+    }
+  }
+
+  private Class<?> getClazzFromFullyQualifiedName(String fqn) throws ClassNotFoundException {
+    try {
+      return Class.forName(fqn);
+    } catch (ClassNotFoundException e) {
+      throw new ClassNotFoundException("Cannot find class {} for injecting preparation.");
     }
   }
 

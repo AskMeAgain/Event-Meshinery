@@ -1,6 +1,5 @@
 package io.github.askmeagain.meshinery.core;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +16,12 @@ public class DynamicMemoryConnectorRegistration implements BeanDefinitionRegistr
 
   private final ApplicationContext applicationContext;
 
-  private static ResolvableType getTargetType(Class<? extends DataContext> clazz) {
-    return ResolvableType.forClassWithGenerics(MemoryConnector.class, String.class, clazz);
+  private static ResolvableType getTargetType(EnableMeshinery.KeyDataContext keyDataContext) {
+    return ResolvableType.forClassWithGenerics(MemoryConnector.class, keyDataContext.key(), keyDataContext.context());
   }
 
-  private static String getBeanName(Class<? extends DataContext> clazz) {
-    return clazz.getSimpleName() + "-auto-generated-memory-connector-bean";
+  private static String getBeanName(EnableMeshinery.KeyDataContext keyDataContext) {
+    return "%s-%s-auto-generated-memory-connector-bean".formatted(keyDataContext.context(), keyDataContext.key());
   }
 
   @Override
@@ -31,14 +30,14 @@ public class DynamicMemoryConnectorRegistration implements BeanDefinitionRegistr
 
     for (var tuple : beanNamesForAnnotation.entrySet()) {
       var result = applicationContext.findAnnotationOnBean(tuple.getKey(), EnableMeshinery.class);
-      Arrays.stream(result.context())
-          .forEach(clazz -> {
+      Arrays.stream(result.connector())
+          .forEach(container -> {
             var beanDefinition = new RootBeanDefinition(
                 MemoryConnector.class,
-                () -> new MemoryConnector<>(getBeanName(clazz))
+                () -> new MemoryConnector<>(getBeanName(container))
             );
-            beanDefinition.setTargetType(getTargetType(clazz));
-            registry.registerBeanDefinition(getBeanName(clazz), beanDefinition);
+            beanDefinition.setTargetType(getTargetType(container));
+            registry.registerBeanDefinition(getBeanName(container), beanDefinition);
           });
     }
   }
