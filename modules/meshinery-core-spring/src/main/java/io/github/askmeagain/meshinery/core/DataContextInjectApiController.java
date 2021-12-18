@@ -10,7 +10,7 @@ import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +18,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Order(1)
 @RequiredArgsConstructor
-@RequestMapping("/inject")
 @RestController
-@Lazy
 public class DataContextInjectApiController {
 
   private final TaskReplayFactory taskReplayFactory;
@@ -57,7 +55,7 @@ public class DataContextInjectApiController {
   }
 
   @SneakyThrows
-  @PostMapping("/{contextType}/{taskName}")
+  @PostMapping("/inject/{contextType}/{taskName}")
   public ResponseEntity<String> injectContext(
       @PathVariable("taskName") String taskName,
       @PathVariable("contextType") String contextType,
@@ -75,7 +73,7 @@ public class DataContextInjectApiController {
   }
 
   @SneakyThrows
-  @PostMapping("/{contextType}/{taskName}/async")
+  @PostMapping("/inject/{contextType}/{taskName}/async")
   public ResponseEntity<String> injectContextAsync(
       @PathVariable("taskName") String taskName,
       @PathVariable("contextType") String contextType,
@@ -84,6 +82,42 @@ public class DataContextInjectApiController {
     try {
       var entity = (DataContext) objectMapper.readValue(context, classMap.get(contextType));
       taskReplayFactory.injectDataAsync(taskName, entity);
+
+      return ResponseEntity.accepted().body("Accepted");
+    } catch (Exception ex) {
+      return ResponseEntity.internalServerError()
+          .body(ex.getMessage());
+    }
+  }
+
+  @SneakyThrows
+  @PostMapping("/replay/{contextType}/{taskName}/async")
+  public ResponseEntity<String> replayContextAsync(
+      @PathVariable("taskName") String taskName,
+      @PathVariable("contextType") String contextType,
+      @RequestBody String context
+  ) {
+    try {
+      var entity = (DataContext) objectMapper.readValue(context, classMap.get(contextType));
+      taskReplayFactory.replayDataAsync(taskName, entity);
+
+      return ResponseEntity.accepted().body("Accepted");
+    } catch (Exception ex) {
+      return ResponseEntity.internalServerError()
+          .body(ex.getMessage());
+    }
+  }
+
+  @SneakyThrows
+  @PostMapping("/replay/{contextType}/{taskName}")
+  public ResponseEntity<String> replayContext(
+      @PathVariable("taskName") String taskName,
+      @PathVariable("contextType") String contextType,
+      @RequestBody String context
+  ) {
+    try {
+      var entity = (DataContext) objectMapper.readValue(context, classMap.get(contextType));
+      taskReplayFactory.replayData(taskName, entity);
 
       return ResponseEntity.accepted().body("Accepted");
     } catch (Exception ex) {

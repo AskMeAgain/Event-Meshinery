@@ -85,7 +85,7 @@ public class RoundRobinScheduler {
     for (var task : tasks) {
       var connectorKey = ConnectorKey.builder()
           .connector((MeshineryConnector<Object, DataContext>) task.getInputConnector())
-          .key(task.getInputKey())
+          .key(task.getInputKeys())
           .build();
 
       taskRunLookupMap.put(connectorKey, task);

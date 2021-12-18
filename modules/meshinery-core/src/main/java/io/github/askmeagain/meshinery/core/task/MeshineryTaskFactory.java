@@ -34,7 +34,7 @@ import static io.github.askmeagain.meshinery.core.other.MeshineryUtils.joinEvent
 public class MeshineryTaskFactory<K, C extends DataContext> {
 
   private List<K> inputKeys;
-  private String taskName = "default";
+  private String taskName = "default-task-" + hashCode();
   private long backoffTime;
   private MeshineryConnector<K, C> inputConnector;
   private MeshineryConnector<K, C> outputConnector;

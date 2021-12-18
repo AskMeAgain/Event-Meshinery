@@ -74,6 +74,31 @@ public class TaskReplayFactory {
     return result;
   }
 
+  public <C extends DataContext> void replayData(String taskName, C context) throws MeshineryTaskNotFoundException {
+    var replacedTaskName = taskName.replace('_', ' ');
+
+    MDC.put(TASK_NAME, replacedTaskName);
+    MDC.put(UID, context.getId());
+    log.info("Replaying a new context");
+
+    MeshineryTask<Object, C> task = getMeshineryTask(replacedTaskName);
+
+    var inputKeys = task.getInputKeys();
+    task.getInputConnector().writeOutput(inputKeys.get(0), context);
+
+    MDC.clear();
+  }
+
+  private <C extends DataContext> MeshineryTask<Object, C> getMeshineryTask(String replacedTaskName)
+      throws MeshineryTaskNotFoundException {
+    if (!taskMap.containsKey(replacedTaskName)) {
+      throw new MeshineryTaskNotFoundException("Could not find Task with name '%s' in [%s]"
+          .formatted(replacedTaskName, String.join(", ", taskMap.keySet())));
+    }
+
+    return (MeshineryTask<Object, C>) taskMap.get(replacedTaskName);
+  }
+
   private <C extends DataContext> CompletableFuture<C> createTaskInjection(String taskName, C context)
       throws MeshineryTaskNotFoundException {
 
@@ -82,7 +107,7 @@ public class TaskReplayFactory {
     MDC.put(TASK_NAME, replacedTaskName);
     MDC.put(UID, context.getId());
 
-    log.info("Replaying a new Context synchronous");
+    log.info("Injecting a new Context synchronous");
 
     if (!taskMap.containsKey(replacedTaskName)) {
       throw new MeshineryTaskNotFoundException("Could not find Task with name '%s' in [%s]"

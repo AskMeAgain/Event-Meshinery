@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MeshineryTask<K, C extends DataContext> {
 
   private final long backoffTimeMilli;
-  @Getter private final List<K> inputKey;
+  @Getter private final List<K> inputKeys;
   @Getter private final String taskName;
   @Getter private final TaskData taskData;
   @Getter private final MeshineryConnector<K, C> inputConnector;
@@ -36,7 +36,7 @@ public class MeshineryTask<K, C extends DataContext> {
   public ConnectorKey getConnectorKey() {
     return ConnectorKey.builder()
         .connector((MeshineryConnector<Object, DataContext>) inputConnector)
-        .key(inputKey)
+        .key(inputKeys)
         .build();
   }
 
@@ -54,7 +54,7 @@ public class MeshineryTask<K, C extends DataContext> {
     }
 
     nextExecution = now.plusMillis(backoffTimeMilli);
-    return inputConnector.getInputs(inputKey)
+    return inputConnector.getInputs(inputKeys)
         .stream()
         .map(input -> TaskRun.builder()
             .taskName(getTaskName())

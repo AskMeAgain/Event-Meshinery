@@ -1,9 +1,8 @@
-package io.github.askmeagain.meshinery.core.common;
+package io.github.askmeagain.meshinery.core.task;
 
-import io.github.askmeagain.meshinery.core.task.MeshineryTask;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskNotFoundException;
-import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
+import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.TaskDataTestProcessor;
 import io.github.askmeagain.meshinery.core.utils.processor.TestContextProcessor;
@@ -12,13 +11,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 class TaskReplayFactoryTest {
+
+  public static final String KEY = "key";
+  public static final String TASK_2 = "task2";
 
   @Test
   void testInputFactory() throws ExecutionException, InterruptedException, MeshineryTaskNotFoundException {
@@ -58,5 +62,35 @@ class TaskReplayFactoryTest {
     Mockito.verify(processorB).processAsync(any(), any());
     Mockito.verify(outputSource).writeOutput(eq("OutputKey"), eq(new TestContext(61234)));
 
+  }
+
+  @Test
+  @SneakyThrows
+  void replayData() {
+    //Arrange --------------------------------------------------------------------------------
+    var memoryConnector = new MemoryConnector<String, TestContext>();
+    var task1 = MeshineryTaskFactory.<String, TestContext>builder()
+        .connector(memoryConnector)
+        .read(null, KEY)
+        .build();
+    var task2 = MeshineryTaskFactory.<String, TestContext>builder()
+        .connector(memoryConnector)
+        .read(null, KEY)
+        .taskName(TASK_2)
+        .build();
+
+    var taskReplayFactory = new TaskReplayFactory(List.of(task1, task2), Executors.newSingleThreadExecutor());
+    var context = TestContext.builder()
+        .id("123")
+        .build();
+
+    //Act ------------------------------------------------------------------------------------
+    taskReplayFactory.replayData(TASK_2, context);
+
+    var result = memoryConnector.getInputs(List.of(KEY));
+
+    //Assert ---------------------------------------------------------------------------------
+    assertThat(result).first()
+        .isEqualTo(context);
   }
 }
