@@ -128,7 +128,13 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
   }
 
   public MeshineryTaskFactory<K, C> readNewInput(K key, AccessingInputSource<K, C> newInputSource) {
-    return addNewProcessor(new SignalingProcessor<>(newInputSource, key));
+    return addNewProcessor(new SignalingProcessor<>(newInputSource, key, (left, newContext) -> newContext));
+  }
+
+  public MeshineryTaskFactory<K, C> readNewInput(
+      K key, AccessingInputSource<K, C> newInputSource, BiFunction<C, C, C> join
+  ) {
+    return addNewProcessor(new SignalingProcessor<>(newInputSource, key, join));
   }
 
   /**

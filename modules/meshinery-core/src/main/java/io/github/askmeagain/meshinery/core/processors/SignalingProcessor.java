@@ -6,6 +6,7 @@ import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +19,7 @@ public class SignalingProcessor<K, C extends DataContext> implements MeshineryPr
 
   private final AccessingInputSource<K, C> inputSource;
   private final K key;
+  private final BiFunction<C, C, C> join;
 
   @Override
   public TaskData addToTaskData(TaskData taskData) {
@@ -32,6 +34,6 @@ public class SignalingProcessor<K, C extends DataContext> implements MeshineryPr
       return CompletableFuture.completedFuture(null);
     }
 
-    return CompletableFuture.completedFuture(result.get());
+    return CompletableFuture.completedFuture(join.apply(context, result.get()));
   }
 }

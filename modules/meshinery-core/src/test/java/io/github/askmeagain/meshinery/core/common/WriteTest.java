@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.core.common;
 
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
+import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
@@ -11,11 +12,39 @@ import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 class WriteTest {
 
-  public static final String KEY = "Test";
-  public static final int ITERATIONS = 2;
+  private static final String KEY = "Test";
+
+  @Test
+  void writeIfTest() {
+    //Arrange --------------------------------------------------------------------------------
+    var memoryConnector = Mockito.spy(new MemoryConnector<String, TestContext>());
+    var context = new TestContext(0);
+
+    var task = MeshineryTaskFactory.<String, TestContext>builder()
+        .connector(memoryConnector)
+        .read(Executors.newSingleThreadExecutor(), "input")
+        .write("abc", c -> c.getId().equals("1"))
+        .write("abc2", c -> c.getId().equals("0"))
+        .build();
+
+
+    //Act ------------------------------------------------------------------------------------
+    memoryConnector.writeOutput("input", context);
+
+    RoundRobinScheduler.builder()
+        .gracePeriodMilliseconds(100)
+        .task(task)
+        .isBatchJob(true)
+        .buildAndStart();
+
+    //Assert ---------------------------------------------------------------------------------
+    Mockito.verify(memoryConnector).writeOutput(eq("abc2"), eq(context));
+    Mockito.verify(memoryConnector, Mockito.never()).writeOutput(eq("abc"), eq(context));
+  }
 
   @Test
   @SuppressWarnings("unchecked")
