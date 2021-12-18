@@ -91,24 +91,6 @@ public class DataContextInjectApiController {
   }
 
   @SneakyThrows
-  @PostMapping("/replay/{contextType}/{taskName}/async")
-  public ResponseEntity<String> replayContextAsync(
-      @PathVariable("taskName") String taskName,
-      @PathVariable("contextType") String contextType,
-      @RequestBody String context
-  ) {
-    try {
-      var entity = (DataContext) objectMapper.readValue(context, classMap.get(contextType));
-      taskReplayFactory.replayDataAsync(taskName, entity);
-
-      return ResponseEntity.accepted().body("Accepted");
-    } catch (Exception ex) {
-      return ResponseEntity.internalServerError()
-          .body(ex.getMessage());
-    }
-  }
-
-  @SneakyThrows
   @PostMapping("/replay/{contextType}/{taskName}")
   public ResponseEntity<String> replayContext(
       @PathVariable("taskName") String taskName,
