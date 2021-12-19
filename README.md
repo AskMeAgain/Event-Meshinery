@@ -2,25 +2,29 @@
 
 ## Table of contents
 
-1. [Description](#Description)
-2. [Motivation](#Motivation)
-3. [Advantages](#Advantages)
-4. [ModuleStructure](#Module-Structure)
-5. [Architecture](#Architecture)
-    1. [Meshinery Processors](#Processor)
-    2. [Meshinery Tasks](#Task)
-    3. [Data Context](#Context)
-    4. [RoundRobinScheduler](#Scheduler)
-    5. [Sources](#Sources)
-6. [On Failure](#Failure)
-    1. [Replays](#Replays)
-    2. [Exception Handling](#ExceptionHandling)
-7. [Logging](#Logging)
-8. [Monitoring](#Monitoring)
-9. [Drawing Graphs](#Draw)
-    1. [Pictures](#Pictures)
-    2. [Mermaid](#Mermaid)
-10. [RoadMap](#RoadMap)
+<!-- toc -->
+
+1. [Description](#description)
+2. [Motivation ](#motivation-)
+3. [Advantages of Event-Meshinery ](#advantages-of-event-meshinery-)
+4. [Module Structure ](#module-structure-)
+5. [Architecture ](#architecture-)
+1. [Meshinery Processors ](#meshinery-processors-)
+2. [MeshineryTasks ](#meshinerytasks-)
+3. [DataContext ](#datacontext-)
+4. [Round Robin Scheduler ](#round-robin-scheduler-)
+5. [Sources](#sources)
+6. [On Failure ](#on-failure-)
+1. [Replays of a DataContext](#replays-of-a-datacontext)
+2. [Exception Handling ](#exception-handling-)
+7. [Logging](#logging)
+8. [Monitoring](#monitoring)
+9. [Drawing Graphs](#drawing-graphs)
+1. [Pictures](#pictures)
+2. [Mermaid.js](#mermaidjs)
+10. [Roadmap](#roadmap)
+
+<!-- /toc -->
 
 ## Description
 
