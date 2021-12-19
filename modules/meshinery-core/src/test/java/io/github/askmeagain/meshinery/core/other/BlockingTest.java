@@ -27,7 +27,7 @@ class BlockingTest {
       update(flag);
       return null;
     }));
-    Blocking.byKey(KEY + "aassss", () -> {
+    Blocking.byKey(KEY + "doesnt matter this key here", () -> {
       flag2.set(1);
       return null;
     });
@@ -41,7 +41,7 @@ class BlockingTest {
       flag.set(2);
       return null;
     });
-    Thread.sleep(MILLIS + 100);
+    Thread.sleep(MILLIS + 500);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(flag.get()).isEqualTo(expected);
