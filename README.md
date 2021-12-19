@@ -3,27 +3,25 @@
 ## Table of contents
 
 <!-- toc -->
-
-1. [Description](#description)
-2. [Motivation ](#motivation-)
-3. [Advantages of Event-Meshinery ](#advantages-of-event-meshinery-)
-4. [Module Structure ](#module-structure-)
-5. [Architecture ](#architecture-)
-1. [Meshinery Processors ](#meshinery-processors-)
-2. [MeshineryTasks ](#meshinerytasks-)
-3. [DataContext ](#datacontext-)
-4. [Round Robin Scheduler ](#round-robin-scheduler-)
-5. [Sources](#sources)
-6. [On Failure ](#on-failure-)
-1. [Replays of a DataContext](#replays-of-a-datacontext)
-2. [Exception Handling ](#exception-handling-)
-7. [Logging](#logging)
-8. [Monitoring](#monitoring)
-9. [Drawing Graphs](#drawing-graphs)
-1. [Pictures](#pictures)
-2. [Mermaid.js](#mermaidjs)
-10. [Roadmap](#roadmap)
-
+- [Description](#description)
+- [Motivation ](#motivation-)
+- [Advantages of Event-Meshinery ](#advantages-of-event-meshinery-)
+- [Module Structure ](#module-structure-)
+- [Architecture ](#architecture-)
+  - [Meshinery Processors ](#meshinery-processors-)
+  - [MeshineryTasks ](#meshinerytasks-)
+  - [DataContext ](#datacontext-)
+  - [Round Robin Scheduler ](#round-robin-scheduler-)
+  - [Sources](#sources)
+- [On Failure ](#on-failure-)
+  - [Replays of a DataContext](#replays-of-a-datacontext)
+  - [Exception Handling ](#exception-handling-)
+- [Logging](#logging)
+- [Monitoring](#monitoring)
+- [Drawing Graphs](#drawing-graphs)
+  - [Pictures](#pictures)
+  - [Mermaid.js](#mermaidjs)
+- [Roadmap](#roadmap)
 <!-- /toc -->
 
 ## Description
