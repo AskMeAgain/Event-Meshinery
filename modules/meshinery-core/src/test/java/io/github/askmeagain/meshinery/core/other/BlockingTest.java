@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BlockingTest {
 
   private static final int MILLIS = 300;
-  private static final String KEY = "abasdasdasdasdc";
+  private static final String KEY = "123yvsdö3454ö5";
 
   @SneakyThrows
   @ParameterizedTest
@@ -28,6 +28,7 @@ class BlockingTest {
       update(flag);
       return null;
     }));
+    Thread.sleep(100);
     Blocking.byKey(KEY + "doesnt matter this key here", () -> {
       flag2.set(1);
       return null;
