@@ -191,7 +191,7 @@ public class RoundRobinScheduler {
       }
 
       MDC.put(TaskDataProperties.TASK_NAME, currentTask.getTaskName());
-      MDC.put(TaskDataProperties.UID, currentTask.getId());
+      MDC.put(TaskDataProperties.TASK_ID, currentTask.getId());
       while (currentTask.getFuture().isDone()) {
         var queue = currentTask.getQueue();
 

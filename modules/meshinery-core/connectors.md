@@ -1,15 +1,23 @@
-# Sources
+# Sources/Connectors
 
 Here is a general overview over all state store sources and utility sources.
 
 ## InputSource & OutputSource & Connectors
 
-TBD
+An InputSource gets a list of Keys and searches in the state store for new signals/contexts. It then marks these signals
+as processed and passes them to the processors.
+
+Outputsources take data and an eventkey and write them to the state store.
+
+**It is always assumed that when you write data D with key X and read from the same state store with key X that you
+receive Data D.**
+
+A Connector is just a combination of an input source, the output source and the same underlying state store.
 
 ### AccessingInputSource
 
 An accessing input source, provides more utility then a normal InputSource. A normal input source is just an abstraction
-of a Queue. You just provide an event key, and call "getData()" as often as you can to request new data. This data is
+of a Queue. You just provide an event key, and call "getData(key)" as often as you can to request new data. This data is
 not ordered and is not accessible by Id.
 
 The AccessingInputSource has a _getContext(key, id)_ method which returns **only** the specific context. Not all sources
@@ -47,18 +55,16 @@ A Key provided to a kafka source correspondes to a different kafka topic A sourc
 
 ## Utility Sources
 
-These Sources do provide you with some utilities which come in handy
-in solving business problems.
+These Sources do provide you with some utilities which come in handy in solving business problems.
 
 ### Cron Source  <a name="Cron"></a>
 
 This source emits a "constant" datacontext based on a cron schedule. The underlying cron library
 is [cron-utils](https://github.com/jmrozanec/cron-utils)
-by [jmrozanec](https://github.com/jmrozanec). 
-**You can reuse the cron input source** and provide different crons via the
-read method in MeshineryTasks. 
-If you want to schedule other input sources based on a cron, combine the SignalingInputsource with the
-cron (see [SignalingInputSource](#SignalingInputSource)).
+by [jmrozanec](https://github.com/jmrozanec).
+**You can reuse the cron input source** and provide different crons via the read method in MeshineryTasks. If you want
+to schedule other input sources based on a cron, combine the SignalingInputsource with the cron (
+see [SignalingInputSource](#SignalingInputSource)).
 
     var atomicInt = new AtomicInteger(); //we do this so we have incrementing values in our context
     //create input source
@@ -71,15 +77,13 @@ cron (see [SignalingInputSource](#SignalingInputSource)).
         .read("0/3 * * * * *", executorService) //this cron will be executed.
         .write("start"); //the "constant" datacontext will be written when the cron is true
 
-
 ### Signaling Input Source <a name="SignalingInputSource"></a>
 
-This source combines two inputsources. It will ask the signal inputsource for input
-and if a result is returned, it will run
-the other input source and run the task with this new input instead.  
+This source combines two inputsources. It will ask the signal inputsource for input and if a result is returned, it will
+run the other input source and run the task with this new input instead.
 
-You can use this for example to run a task (with input sources) based on cron schedule,
-or by executing a flow from a Webhook by other applications.
+You can use this for example to run a task (with input sources) based on cron schedule, or by executing a flow from a
+Webhook by other applications.
 
     var cronSignal = new CronInputSource<String, TestContext>();
     var realValueSource = new MemoryConnector<String, TestContext>();
@@ -101,9 +105,9 @@ or by executing a flow from a Webhook by other applications.
 
 #### Lock
 
-You can enable a locking mechanism in the SignalingInputSource. This means that
-when the signal comes, it will not ask for the signal again until the
-innerSource is exhausted. 
+You can enable a locking mechanism in the SignalingInputSource. This means that when the signal comes, it will not ask
+for the signal again until the innerSource is exhausted. This can be specifically used to trigger the start of an input
+source by a cron.
 
 ### Joins
 
@@ -116,7 +120,7 @@ and unused keys, **as the source keeps everything in memory.**
 
 The key on which the join happens is the Id field of the DataContext.
 
-    var TIME_TO_LIVE = 5;
+    var TIME_TO_LIVE = 5000;
     var joinedSource = new JoinedInputSource<>(leftSource, rightSource, KEY, this::combine, TIME_TO_LIVE);
     var task = MeshineryTaskFactory<String, TestContext>()
       .taskName("Join")
@@ -125,8 +129,10 @@ The key on which the join happens is the Id field of the DataContext.
       .write("after-join");
 
 Or you can use the provided builder method .joinOn(), which lets you specify the new source, join key of the right side
-of the join and the combine method. **This will also set the correct data so the Drawer can correctly draw joined methods
-in the graph**
+of the join and the combine method. This is the **recommended** way of doing a join.
+
+**The joinOn() method also sets the correct data so the MeshineryDrawer can correctly draw joined methods in the
+graphs.**
 
     var task = MeshineryTaskFactory<String, TestContext>()
       .taskName("Join")

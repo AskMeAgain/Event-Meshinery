@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 
+import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_ID;
 import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_NAME;
-import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.UID;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
@@ -64,7 +64,7 @@ public class TaskReplayFactory {
       throws MeshineryTaskNotFoundException {
 
     MDC.put(TASK_NAME, taskName);
-    MDC.put(UID, context.getId());
+    MDC.put(TASK_ID, context.getId());
     log.info("Replaying a new Context asynchronous");
 
     var result = createTaskInjection(taskName, context);
@@ -78,7 +78,7 @@ public class TaskReplayFactory {
     var replacedTaskName = taskName.replace('_', ' ');
 
     MDC.put(TASK_NAME, replacedTaskName);
-    MDC.put(UID, context.getId());
+    MDC.put(TASK_ID, context.getId());
     log.info("Replaying a new context");
 
     MeshineryTask<Object, C> task = getMeshineryTask(replacedTaskName);
@@ -105,7 +105,7 @@ public class TaskReplayFactory {
     var replacedTaskName = taskName.replace('_', ' ');
 
     MDC.put(TASK_NAME, replacedTaskName);
-    MDC.put(UID, context.getId());
+    MDC.put(TASK_ID, context.getId());
 
     log.info("Injecting a new Context synchronous");
 

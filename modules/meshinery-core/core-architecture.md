@@ -1,14 +1,14 @@
-# Core Architecture
+# Meshinery-Core Architecture
 
-This page will give you a general understanding of the inner workings of the framework.
+This page gives you a general understanding of the inner workings of the framework.
 
 ## Architecture
 
 **MeshineryTasks** define a unit of work: Read data from X using an
 **input source** and then feed it to Y **processors**.
 
-**TaskData** is a KeyValue config map of a task (readonly), which is filled by the framework and by the user and is
-accessible from the inputSources, OutputSources and processors. This is used to easily provide higher level data to
+**TaskData** is a KeyValue config map of a task (readonly), which is filled by the framework/user and is accessible from
+every InputSources, OutputSources and MeshineryProcessors. This is used to easily provide higher level data to
 processors, like the TaskName.
 
 A **DataContext** is an object, which is passed from Task to Task and processor to processor and is consecutively filled
@@ -45,5 +45,5 @@ framework. Do all your "heavy" work via CompletableFuture.runAsync(..., executor
 * [DataContext](datacontext.md)
 * [TaskData](tasks.md#taskproperties)
 * [MeshineryProcessors](processors.md)
-* [Sources](sources.md)
+* [Sources](connectors.md)
 * [Scheduler](scheduler.md)

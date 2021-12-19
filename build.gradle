@@ -22,7 +22,7 @@ allprojects {
 tocme {
 
     doc(file("README.md"))
-    numbered false
+    numbered true
     bold false
     style Hierarchy
     variant GitHub

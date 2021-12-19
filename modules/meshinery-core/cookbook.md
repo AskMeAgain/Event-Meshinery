@@ -53,7 +53,6 @@ Combine a CronInputSource with the needed InputSource
     * If you use the Meshinery-Core-Spring integration, then an endpoint is added which provides the replay
       functionality out of the box
 
-### I want to trigger a docker container when a specific thing happens
+### I want to trigger a docker container when a specific thing happens _Soon_
 
-_Soon_
 There is a docker input/output source planned which will stream docker logs into your application.

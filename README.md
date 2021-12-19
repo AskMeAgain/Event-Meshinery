@@ -3,45 +3,48 @@
 ## Table of contents
 
 <!-- toc -->
-- [Description](#description)
-- [Motivation ](#motivation-)
-- [Advantages of Event-Meshinery ](#advantages-of-event-meshinery-)
-- [Module Structure ](#module-structure-)
-- [Architecture ](#architecture-)
-  - [Meshinery Processors ](#meshinery-processors-)
-  - [MeshineryTasks ](#meshinerytasks-)
-  - [DataContext ](#datacontext-)
-  - [Round Robin Scheduler ](#round-robin-scheduler-)
-  - [Sources](#sources)
-- [On Failure ](#on-failure-)
-  - [Replays of a DataContext](#replays-of-a-datacontext)
-  - [Exception Handling ](#exception-handling-)
-- [Logging](#logging)
-- [Monitoring](#monitoring)
-- [Drawing Graphs](#drawing-graphs)
-  - [Pictures](#pictures)
-  - [Mermaid.js](#mermaidjs)
-- [Roadmap](#roadmap)
+1. [Description](#description)
+2. [Motivation ](#motivation-)
+3. [Advantages of Event-Meshinery ](#advantages-of-event-meshinery-)
+4. [Module Structure ](#module-structure-)
+5. [Architecture ](#architecture-)
+1. [Meshinery Processors ](#meshinery-processors-)
+2. [MeshineryTasks ](#meshinerytasks-)
+3. [DataContext ](#datacontext-)
+4. [Round Robin Scheduler ](#round-robin-scheduler-)
+5. [Connectors](#connectors)
+6. [On Failure ](#on-failure-)
+1. [Replays of a DataContext](#replays-of-a-datacontext)
+2. [Exception Handling ](#exception-handling-)
+7. [Logging](#logging)
+8. [Monitoring](#monitoring)
+9. [Drawing Graphs](#drawing-graphs)
+1. [Pictures](#pictures)
+2. [Mermaid.js](#mermaidjs)
+10. [Getting started](#getting-started)
+11. [Roadmap](#roadmap)
 <!-- /toc -->
 
 ## Description
 
-This framework is a state store independent event framework and designed to easily structure **long running**,
+This framework is a state store independent **signaling** framework and designed to easily structure **long running**,
 **multi step** or **long delay heavy** processing tasks in a transparent and safe way.
 
-It is used as a way to **signal** the next processing step in your application, without untransparent code and hidden
+It is used as a way to **signal** the next processing step in your application, with transparent code and without hidden
 behaviour. You describe the event and the resulting processing task, the framework will make sure that the work gets
 done.
 
-It can connect any event with any processing task and any state store, all with an **asynchronous** api to make sure
-that your events are processed the moment they happen.
+It can connect any event/signal imaginable with any processing task and any state store, all with an **asynchronous**
+api to make sure that your events are processed the moment they happen.
+
+Event-Meshinery assumes that the restricting resource is time/network io and **not** processing power or throughput.
 
 ## Motivation <a name="Motivation"></a>
 
 This framework was originally written to replace KafkaStreams in a specific usecase, but you can use this framework
 without Kafka. Currently supported are the following state stores, but you can easily provide your own:
 
-Doing long running (blocking) procedures, like rest calls
+Doing long running (blocking) procedures (rest calls for example)
 via [Kafka Streams](https://kafka.apache.org/documentation/streams/) represents a challenge:
 
 **If you block a partition with a long running call, then you cannot process any other messages from this partition
@@ -58,27 +61,34 @@ To solve this problem, the Event-Meshinery framework removes a guarantee:
 This is possible if your events are completely independent of each other and the order of events in a single
 topic/partition is not important.
 
+Confluent recognized this need and created
+the [parallel consumer](https://www.confluent.io/blog/introducing-confluent-parallel-message-processing-client/), but
+this one only works in a Kafka only environment. The moment you need to bridge your signals out of Kafka (using a
+different state store), you are on your own. This framework is exactly for this usecase: signaling, but in a state store
+independent way.
+
 ## Advantages of Event-Meshinery <a name="Advantages"></a>
 
-* Structure your code in a really transparent way by providing a **state store independent api**, by separating the
+* Structure your code in a really transparent way by having a **state store independent api** and separating the
   business layer from the underlying implementation layer. One look at a task definition tells you exactly WHAT happens
   WHEN.
 * You have complete **asynchronous processing** via Java Futures without the annoying thread handling
 * This framework can be integrate into any existing state store and even connect different ones: Kafka, Mysql etc.
 * A simple api you are already familiar with: Consume-Process-Produce
-* Fast time-to-market: switching between state stores is super easy: Start with memory for fast iteration cycles, then
-  enable Kafka and/or Mysql in an agil way.
+* Easily integrated in your existing development environment, by utilizing the existing state store: You have a MysqlDb?
+  Use the mysql connector. You other team uses Kafka and you need to bridge a little bit of data? Add the existing
+  KafkaConnector.
 * Create a complete [event diagram](modules/meshinery-draw/draw.md) to display your events and how they interact with
-  each other
+  each other, completely automated.
 * You can resume a process in case of error and you will start exactly where you left off (within bounds).
-* Automatic Prometheus Monitoring integration
-* Complete Spring integration. 1 Annotation starts everything, you only need to define the business logic and wire it
-  together.
+* Automatic Prometheus Monitoring integration or all your tasks and their respective task queues.
+* Complete **Spring** integration: 1-3 Annotations start everything, you only need to define the business logic and wire
+  it together.
 
 ## Module Structure <a name="Module-Structure"></a>
 
 * [meshinery-core](modules/meshinery-core/core.md) contains, the scheduler and everything basic you need. You only need
-  this to start
+  this to start. This library exposes the basic api on which the other packages depend on.
     * [meshinery-core-spring](modules/meshinery-core-spring/core-spring.md) contains the **Spring** AutoConfiguration
       for the core library, like starting the Scheduler automatically and providing some utility hooks
 * [meshinery-monitoring](modules/meshinery-monitoring/monitoring.md) contains a prometheus monitoring solution
@@ -114,7 +124,7 @@ The general building blocks of this framework consist of 5 ideas:
 [Detailed Documentation](modules/meshinery-core/processors.md)
 
 Meshinery Processors define the actual business work, like doing restcalls, calculating user information etc. They take
-in a DataContext and an Thread Executor and return a **CompletableFuture**.
+in a DataContext and a thread Executor and return a **CompletableFuture**.
 
     public class LongRunningRestcallProcessor implements MeshineryProcessor<TestContext, TestContext> {
     
@@ -122,6 +132,7 @@ in a DataContext and an Thread Executor and return a **CompletableFuture**.
         public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
             return CompletableFuture.supplyAsync(() -> {
             
+                  log.info("Starting Request");
                   thisIsASuperLongRestCall();
                   log.info("Finished Request");
             
@@ -137,8 +148,8 @@ in a DataContext and an Thread Executor and return a **CompletableFuture**.
 A MeshineryTask describes a single **business** unit of work, which consists of an input source, a list of processors to
 solve a part of the business logic and one or multiple output calls, which trigger itself other events.
 
-An input source takes an eventkey, which gets fed to the inputsource to produce data. This data is fed to the processors
-and multiple output sources, which spawn more events.
+An input source takes an eventkey, which gets fed to the inputsource to produce data. This data is then given to the
+processors and multiple output sources, which spawn more events.
 
     var meshineryTask = MeshineryTask.<String, TestContext>builder()
         .read("state-a", executorService) //Input state & thread config
@@ -151,27 +162,31 @@ and multiple output sources, which spawn more events.
 
 A task can have any amount of processors and sub processing (via processors). This allows you to include some logic on
 how the pipeline should react. **The goal is that each tasks describes exactly WHAT processor and WHEN a processor is
-executed.** This allows for super transparent code which allows you to argue about the execution on a higher level.
+executed.** This allows for super transparent code which allows you to argue about the execution on a higher level. The
+specific implementation of the processors and the underlying state store is not important when arguing about the
+business case.
 
 ### DataContext <a name="Context"></a>
 
 [Detailed Documentation](modules/meshinery-core/datacontext.md)
 
-A MeshineryTask defines a dataContext, which is basically just the class type in sources/processors for input and
-output.
+A MeshineryTask has a dataContext assigned, which is basically just the input and output class type in
+sources/processors.
 
     var task = MeshineryTaskFactory.<String, TestContext>builder() //here the DataContext is TestContext
-        .inputSource(inputSource) //this source can serialize TestContext
-        .defaultOutputSource(defaultOutput) //this source can deserialize TestContext
+        .inputSource(inputSource) //this source can read all TestContext from the state store
+        .outputSource(defaultOutput) //this output source writes TestContext back to the state store
         .read(INPUT_KEY, executor)
-        .process(testContextProcessor) //this processor works on TestContext and adds data to it
+        .process(testContextProcessor) //this processor gets a TestContext as input and returns a TestContext as output
         .write(OUTPUT_KEY); //writing the TestContext to the state store, which triggers other events
 
 The idea here is that multiple Tasks all use the same dataContext, but enrich the data by putting their result
-additively to the context. You dont need to handle millions of dtos, just 1 for each Business Case and if you add
-another task at the end, you just have access to all the data which got processed in all the tasks before.
+additively to the context. You dont need to handle millions of dtos, just 1 for each Business Case.
 
-**Your state stores will have a log on how the processing went from step to step.**
+If you add another task at the end of the processing pipeline, you just have access to all the data which got processed
+before.
+
+**Your state stores contain a log on how the processing went from step to step.**
 
 ### Round Robin Scheduler <a name="Scheduler"></a>
 
@@ -185,22 +200,31 @@ a continuous way or stop processing when all inputsources are exhausted.
         .task(task)
         [..]
         .backpressureLimit(100)
+        .batchJob(true)
         .buildAndStart();
 
-### Sources
+### Connectors
 
-[Detailed Documentation](modules/meshinery-core/sources.md)
+[Detailed Documentation](modules/meshinery-core/connectors.md)
 
-There are Input and OutputSources. InputSources provide the data which gets passed to processors. OutputSources write
-the data to state stores and trigger one or more new events (by the respective InputSource).
+There are Input and OutputSources and both form a MeshineryConnector. InputSources provide the data which gets passed to
+processors. OutputSources write the data to state stores and trigger one or more new events (by the respective
+InputSource). A MeshineryConnector implements both interfaces to connect a single event with input and outputs.
+
+Most of the time a signaling source can implement both Input and Output, like in mysql you can write data and read this
+exact data back again in different parts of your application. But sometimes this is not the case, for example if you
+receive data from a rest api, you can read this data, but you cannot write this data back to the original source.
+Example is
+the [CronInputSource](modules/meshinery-core/src/main/java/io/github/askmeagain/meshinery/core/source/CronInputSource.java)
+, which triggers based on a cron.
+
+A Source describes a connection to a state store and takes an event-key as input/output, which is passed to the state
+store to read/write data to specific logically separated parts of the store. For example in Kafka an event-key would
+result in a new topic, in mysql just a different column in a table. Each State Store implements the event-key lookup
+differently, but you can imagine these as different states of the data/processing.
 
 Technically there can only be a single InputSource definition on a MeshineryTask, but you can combine multiple input
 sources to a single InputSource for joins for example. There can be any amount of OutputSources.
-
-A Source describes a connection to a statestore and takes an event-key as input/output, which is passed to the state
-store to read/write data to specific logically separated parts of the store. For example in Kafka an event-key would
-result in a new topic, in mysql just a different column in a table. Each State Store implements the event-key lookup
-differently, but you can imagine these as different states of the data.
 
 Here "result_topic" and "input_topic" are event-keys and passed to the Source:
 
@@ -215,13 +239,13 @@ Obviously, you can mix and match these sources and even write your own. They onl
 
 Currently supported are the following state sources:
 
-* [Cron](modules/meshinery-core/sources.md#utility-sources)
 * [Mysql](modules/connectors/mysql/meshinery-mysql-connector/mysql.md)
 * [Kafka](modules/connectors/kafka/meshinery-kafka-connector/kafka.md)
 * [Memory](modules/meshinery-core/sources.md#utility-sources)
 
 And the following Utility Source:
 
+* [Cron](modules/meshinery-core/sources.md#utility-sources)
 * [Signaling Source](modules/meshinery-core/sources.md#utility-sources)
 * [InnerJoin Source](modules/meshinery-core/sources.md#utility-sources)
 
@@ -230,7 +254,8 @@ And the following Utility Source:
 This framework works with the at-most-once guarantee, which means that a state transition is only looked at once, since
 it assumes that in case of a failure a use case specific error correction procedure needs to be called. If a processing
 request results in an error and you want to resume this process, you just need to replay the message, which triggers the
-processing again.
+processing again, via the
+provided [TaskReplayFactory](modules/meshinery-core/src/main/java/io/github/askmeagain/meshinery/core/task/TaskReplayFactory.java)
 
 Each InputSource gives you an easy way of replaying a single event, which feeds the event back into the scheduler to
 work on.
@@ -267,8 +292,8 @@ This Framework already does the hard work with logging: Setting up the MDC for e
 in **each** processor, **even in threads created by CompletableFuture.runAsync()**, you will have a correct MDC value **
 automatically** of:
 
-* "taskid" -> taskName
-* "uid" -> ContextId
+* "task.name" -> taskName
+* "task.id" -> ContextId
 
 ## Monitoring
 
@@ -277,8 +302,9 @@ automatically** of:
 
 The Monitoring package adds a basic monitoring solution. It
 uses [prometheus/client_java](https://github.com/prometheus/client_java)
-package to expose metrics in a format compatible with prometheus. It exposes a registry which can be used via rest (
-already done in the [meshinery-monitoring-spring](modules/meshinery-monitoring-spring/monitoring-spring.md) package)
+package to expose metrics in a format compatible with prometheus. All metrics are written to an internal Prometheus
+registry which can be shown via rest (already done in
+the [meshinery-monitoring-spring](modules/meshinery-monitoring-spring/monitoring-spring.md) package)
 and easily expanded by your needs.
 
 ## Drawing Graphs
@@ -289,13 +315,11 @@ and easily expanded by your needs.
 Since this framework provides a single way of defining tasks, we can use this to draw diagrams
 via [GraphStream](https://graphstream-project.org/). These diagrams are rendered based on the actual
 implementation/connection of tasks and can be styled as you wish. Such a diagram can give you an easy way to argue about
-the actual topology of the application.
-
-You can assign each task a key identifier which lets you filter and render only parts of the complete graph.
+the actual topology of the application and is generated completely **automatically**.
 
 ### Pictures
 
-A picture is generated of the actual implementation.
+A picture can be generated of the actual topology layer.
 
 ![example-png-graph](modules/meshinery-draw/example-graph.png)
 
@@ -304,16 +328,21 @@ A picture is generated of the actual implementation.
 There is also a [Mermaid](https://mermaid-js.github.io/mermaid/#/) implementation which can be hooked
 into [Jeremy Branhams Diagram panel](https://grafana.com/grafana/plugins/jdbranham-diagram-panel/)
 plugin to provide a real time overview of the system and all its metrics in [Grafana](https://grafana.com/).
-The [meshinery-draw-spring](modules/meshinery-draw-spring/draw-spring.md) package provides an endpoint for this, but you
-can easily implement this by yourself.
+The [meshinery-draw-spring](modules/meshinery-draw-spring/draw-spring.md) package provides an endpoint which can be
+passed into the plugin to display the topology directly, but you can easily implement this by yourself.
 
 ![example-mermaid-diagram](modules/meshinery-draw/grafana-graph.png)
+
+## Getting started
+
+Checkout the [core integration](modules/meshinery-core/core.md) for your basic app or checkout
+the [spring core](modules/meshinery-core-spring/core-spring.md)
+integration for an even easier setup.
 
 ## Roadmap
 
 The following things are planned (not in order)
 
 * Quarkus/Micronaut integration
-* More Sources (Process, Sftp (Maybe), Docker)
-* More efficient RoundRobinScheduler (Circular Queue)
+* More Sources (Process, Docker, Sftp (Maybe))
 * Sharding Possibilities in InputSources

@@ -13,5 +13,5 @@ public class TaskDataProperties {
   public static final String GRAPH_INPUT_SOURCE = "graph.inputSource";
   public static final String GRAPH_PROCESSOR = "graph.processor";
   public static final String TASK_NAME = "task.name";
-  public static final String UID = "uid";
+  public static final String TASK_ID = "task.id";
 }
