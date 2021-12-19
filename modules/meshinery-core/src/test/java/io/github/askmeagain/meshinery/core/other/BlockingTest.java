@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.core.other;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.SneakyThrows;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class BlockingTest {
 
-  private static final int MILLIS = 500;
+  private static final int MILLIS = 300;
   private static final String KEY = "abasdasdasdasdc";
 
   @SneakyThrows
@@ -41,11 +42,11 @@ class BlockingTest {
       flag.set(2);
       return null;
     });
-    Thread.sleep(MILLIS + 500);
+    Thread.sleep(MILLIS + 2000);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(flag.get()).isEqualTo(expected);
-    executor.shutdown();
+    executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
   }
 
   @SneakyThrows
