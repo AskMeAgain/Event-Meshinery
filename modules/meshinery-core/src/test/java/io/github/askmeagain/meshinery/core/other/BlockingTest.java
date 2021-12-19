@@ -18,7 +18,7 @@ class BlockingTest {
   @CsvSource({KEY + ",2", KEY + "d,1"})
   void blockByKey(String secondKey, int expected) {
     //Arrange --------------------------------------------------------------------------------
-    var executor = Executors.newSingleThreadExecutor();
+    var executor = Executors.newFixedThreadPool(3);
     var flag = new AtomicInteger();
     var flag2 = new AtomicInteger();
 
