@@ -25,14 +25,17 @@ class AccessingInputTest extends AbstractMysqlTestBase {
 
     //Act ------------------------------------------------------------------------------------
     output.writeOutput(STATE, value1);
+    output.writeOutput(STATE + "2", value1);
     output.writeOutput(STATE, value2);
 
-    var specificResult = input.getContext(STATE, "1");
-    var specificResultEmpty = input.getContext(STATE, "1");
+    var specificResult1 = input.getContext(STATE, value1.getId());
+    var specificResultEmpty = input.getContext(STATE, value1.getId());
     var specificResultEmpty2 = input.getContext(STATE, "3");
+    var specificResult2 = input.getContext(STATE + "2", value1.getId());
 
     //Assert ---------------------------------------------------------------------------------
-    assertThat(specificResult).contains(value1);
+    assertThat(specificResult1).contains(value1);
+    assertThat(specificResult2).contains(value1);
     assertThat(specificResultEmpty).isEmpty();
     assertThat(specificResultEmpty2).isEmpty();
   }

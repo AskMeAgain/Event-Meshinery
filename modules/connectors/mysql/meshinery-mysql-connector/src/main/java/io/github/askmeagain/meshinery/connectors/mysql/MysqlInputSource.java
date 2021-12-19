@@ -21,7 +21,7 @@ import org.jdbi.v3.core.Jdbi;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MysqlInputSource<C extends DataContext> implements AccessingInputSource<String, C> {
 
-  public static final String SELECT_QUERY = """
+  private static final String SELECT_QUERY = """
       SELECT eid,context
       FROM <TABLE>
       WHERE processed = 0 AND state IN (<STATES>)
@@ -56,14 +56,13 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
               .mapToBean(InternalWrapper.class)
               .findFirst();
 
-
           if (firstResult.isEmpty()) {
             return Optional.empty();
           }
 
-          handle.createUpdate("UPDATE <TABLE> SET processed = 1 WHERE context -> '$.id' = :id")
+          handle.createUpdate("UPDATE <TABLE> SET processed = 1 WHERE eid = :eid")
               .define("TABLE", clazz.getSimpleName())
-              .bind("id", firstResult.get().getEid())
+              .bind("eid", firstResult.get().getEid())
               .execute();
 
           return firstResult.map(x -> {
