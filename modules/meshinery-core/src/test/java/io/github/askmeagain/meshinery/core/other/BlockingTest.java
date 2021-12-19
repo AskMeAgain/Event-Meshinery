@@ -15,7 +15,7 @@ class BlockingTest {
 
   @SneakyThrows
   @ParameterizedTest
-  @CsvSource({KEY + ",2", "abcd,1"})
+  @CsvSource({KEY + ",2", KEY + "d,1"})
   void blockByKey(String secondKey, int expected) {
     //Arrange --------------------------------------------------------------------------------
     var executor = Executors.newSingleThreadExecutor();
@@ -45,6 +45,7 @@ class BlockingTest {
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(flag.get()).isEqualTo(expected);
+    executor.shutdown();
   }
 
   @SneakyThrows
