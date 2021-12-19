@@ -7,6 +7,7 @@ import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -19,14 +20,16 @@ class WriteTest {
   private static final String KEY = "Test";
 
   @Test
+  @SneakyThrows
   void writeIfTest() {
     //Arrange --------------------------------------------------------------------------------
     var memoryConnector = Mockito.spy(new MemoryConnector<String, TestContext>());
     var context = new TestContext(0);
 
+    var executor = Executors.newSingleThreadExecutor();
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .connector(memoryConnector)
-        .read(Executors.newSingleThreadExecutor(), "input")
+        .read(executor, "input")
         .write("abc", c -> c.getId().equals("1"))
         .write("abc2", c -> c.getId().equals("0"))
         .build();
@@ -41,7 +44,10 @@ class WriteTest {
         .isBatchJob(true)
         .buildAndStart();
 
+    var batchJobFinished = executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
+
     //Assert ---------------------------------------------------------------------------------
+    assertThat(batchJobFinished).isTrue();
     Mockito.verify(memoryConnector).writeOutput(eq("abc2"), eq(context));
     Mockito.verify(memoryConnector, Mockito.never()).writeOutput(eq("abc"), eq(context));
   }
@@ -68,12 +74,12 @@ class WriteTest {
         .build();
 
     //Act ------------------------------------------------------------------------------------
-    RoundRobinScheduler.<String, TestContext>builder()
+    RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
-    var batchJobFinished = executor.awaitTermination(1, TimeUnit.SECONDS);
+    var batchJobFinished = executor.awaitTermination(100, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();

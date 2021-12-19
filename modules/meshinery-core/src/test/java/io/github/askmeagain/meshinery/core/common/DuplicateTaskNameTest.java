@@ -27,7 +27,7 @@ class DuplicateTaskNameTest {
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThatThrownBy(() -> MeshineryTaskVerifier.verifyTasks(List.of(duplicateTask, duplicateTask)))
         .isInstanceOf(RuntimeException.class)
-        .hasMessage("Found duplicate job names: [duplicateTask]");
+        .hasMessage("Found duplicate task names: [duplicateTask]");
   }
 
   @Test
