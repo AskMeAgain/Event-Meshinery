@@ -10,11 +10,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class BlockingTest {
 
-  public static final int MILLIS = 500;
+  private static final int MILLIS = 500;
+  private static final String KEY = "abasdasdasdasdc";
 
   @SneakyThrows
   @ParameterizedTest
-  @CsvSource({"abc,2", "abcd,1"})
+  @CsvSource({KEY + ",2", "abcd,1"})
   void blockByKey(String secondKey, int expected) {
     //Arrange --------------------------------------------------------------------------------
     var executor = Executors.newSingleThreadExecutor();
@@ -22,11 +23,11 @@ class BlockingTest {
     var flag2 = new AtomicInteger();
 
     //Act ------------------------------------------------------------------------------------
-    executor.execute(() -> Blocking.byKey("abc", () -> {
+    executor.execute(() -> Blocking.byKey(KEY, () -> {
       update(flag);
       return null;
     }));
-    Blocking.byKey("def", () -> {
+    Blocking.byKey(KEY + "aassss", () -> {
       flag2.set(1);
       return null;
     });
