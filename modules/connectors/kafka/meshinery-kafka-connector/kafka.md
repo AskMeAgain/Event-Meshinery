@@ -15,3 +15,7 @@ This package adds the Kafka state store sources.
 
 1. Create a complete KafkaProperties data object, with all informations.
 2. Create a KafkaConnector object by using one of the two constructors.
+
+### Passing configuration to KafkaConsumer/Producer
+
+The property map inside the MeshineryKafkaProperties is directly passed to the consumer/producer.

@@ -1,10 +1,5 @@
 # Kafka Connector Spring Integration
 
-This package provides you with an auto configuration to jumpstart the development of MeshineryTasks which read/write
-from Kafka.
-
-## Installation
-
     <dependency>
         <groupId>io.github.askmeagain</groupId>
         <artifactId>meshinery-kafka-connector-spring</artifactId>
@@ -12,15 +7,32 @@ from Kafka.
         <type>module</type>
     </dependency>
 
+
+This package provides you with an auto configuration to jumpstart the development of MeshineryTasks which read/write
+from Kafka.
+
+## Installation
+
 1. Add Package
 2. Add @EnableKafkaConnector Annotation to your SpringApplication
-3. Fill out the application properties
+3. Fill out the application properties listed below
 
 ## Getting started
 
 The spring integration gets all its information from the KafkaProperties and creates the KafkaProducerFactory &
 KafkaConsumerFactory as a bean. It will then provide these to the KafkaConnector, which acts both as an InputSource and
 an OutputSource.
+
+Add the DataContext class to the context variable in the @EnableMeshineryKafka annotation
+to automatically create a KafkaConnector bean
+
+    @EnableMeshineryKafka(context = {TestContext.class})
+
+## Properties
+
+Properties are read from spring config to automatically configure the Kafkasource.
+
+You can also pass Kafka configuration directly to each consumer/producer:
 
     meshinery:
       connectors:
@@ -29,7 +41,7 @@ an OutputSource.
           producer-properties:
             fetch.min.bytes: abc1234
 
-## Properties
+### Provided properties
 
 | Property  |  default  | description  |
 |---|---|---|

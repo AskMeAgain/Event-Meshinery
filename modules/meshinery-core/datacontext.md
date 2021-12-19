@@ -9,10 +9,10 @@ id.
 Each id should be completely unique and represent a single business object. Like a request for a user creation (which is
 done via multiple restcalls/db inserts etc).
 
-## Change log
+## Changelog
 
 In the beginning a dataContext is completely empty and is getting filled with data while stepping through the
-application. Your processing pipeline is getting bigger over time and you have complete access to all data written
+application. If your processing pipeline is getting bigger over time, you have complete access to all data written
 inside.
 
 ## Example

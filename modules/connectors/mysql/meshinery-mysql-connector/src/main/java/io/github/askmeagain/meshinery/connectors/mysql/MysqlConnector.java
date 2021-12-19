@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.jackson2.Jackson2Plugin;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
@@ -22,10 +23,20 @@ public class MysqlConnector<C extends DataContext> implements AccessingInputSour
   private final MysqlInputSource<C> mysqlInputSource;
   private final MysqlOutputSource<C> mysqlOutputSource;
 
+  public MysqlConnector(Class<C> clazz, ObjectMapper objectMapper, MeshineryMysqlProperties mysqlProperties) {
+    this("default-mysql-connector", clazz, objectMapper, mysqlProperties);
+  }
+
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MysqlConnector(
-      String name, Class<C> clazz, Jdbi jdbi, ObjectMapper objectMapper, MeshineryMysqlProperties mysqlProperties
+      String name, Class<C> clazz, ObjectMapper objectMapper, MeshineryMysqlProperties mysqlProperties
   ) {
+    var jdbi = Jdbi.create(
+        mysqlProperties.getConnectionString(),
+        mysqlProperties.getUser(),
+        mysqlProperties.getPassword()
+    ).installPlugin(new Jackson2Plugin());
+
     this.name = name;
     this.mysqlInputSource = new MysqlInputSource<>(name, objectMapper, jdbi, clazz, mysqlProperties);
     this.mysqlOutputSource = new MysqlOutputSource<>(name, jdbi, clazz);

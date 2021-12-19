@@ -11,8 +11,8 @@ This package provides an AutoConfiguration class which you can use to bootstrap 
 
 ## Setup
 
-Add @EnableMeshinery to your spring configuration and provide MeshineryTask Beans. The autoconfiguration will pickup the
-MeshineryTasks and run the Tasks automatically.
+Add _@EnableMeshinery_ to your spring configuration and provide MeshineryTask Beans. The autoconfiguration will pickup
+the MeshineryTasks and run the Tasks automatically.
 
 ## Injecting DataContext Endpoint
 
@@ -26,8 +26,16 @@ EnableMeshinery annotation or by adding a spring property.
 
 You then have access to the following endpoints. Async just returns instantly instead of waiting for the end.
 
-    host:port/inject/{ContextType}/{TaskName}
-    host:port/injectAsync/{ContextType}/{TaskName}
+    {host:port}/inject/{ContextType}/{TaskName}
+    {host:port}/injectAsync/{ContextType}/{TaskName}
+    {host:port}/replay/{ContextType}/{TaskName}
+
+## Automatic MemoryConnector creation
+
+You can provide a dataContext.class + key.class to the @EnableMeshinery connector variable to automatically create a
+MemorySource.
+
+    @EnableMeshinery(connector = @KeyDataContext(key = String.class, context = TestContext.class))
 
 ## Properties
 
@@ -35,18 +43,18 @@ You then have access to the following endpoints. Async just returns instantly in
 |---|---|---|
 | meshinery.core.batch-job | false  | Enables Batchprocessing |
 | meshinery.core.inject | -  | This is a list where you add a fully qualified name to make it eligible for injecting via rest endpoint|
-| meshinery.core.shutdown-on-error | true | shutdowns the scheduler on error | 
+| meshinery.core.shutdown-on-error | false | shutdowns the scheduler on error | 
 | meshinery.core.shutdown-on-finished | true | shutdowns the spring app context when finished | 
 
 ## Hooks
 
 ### Startup
 
-Provide one or multiple beans which implement CustomizeStartupHook to execute code
+Provide one or multiple beans which implement _CustomizeStartupHook_ to execute code
 **before** the Scheduler starts.
 
 ### Shutdown
 
-Provide one or multiple beans which implement CustomizeShutdownHook to execute code
+Provide one or multiple beans which implement _CustomizeShutdownHook_ to execute code
 **after** the Scheduler shutdowns.
 

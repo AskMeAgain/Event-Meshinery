@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
-import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -20,7 +19,6 @@ public class DynamicMysqlConnectorRegistration implements BeanDefinitionRegistry
   private final ApplicationContext applicationContext;
   private final ObjectProvider<ObjectMapper> objectMapper;
   private final ObjectProvider<MeshineryMysqlProperties> meshineryMysqlProperties;
-  private final ObjectProvider<Jdbi> jdbi;
 
   private static ResolvableType getTargetType(Class<? extends DataContext> clazz) {
     return ResolvableType.forClassWithGenerics(MysqlConnector.class, clazz);
@@ -43,7 +41,6 @@ public class DynamicMysqlConnectorRegistration implements BeanDefinitionRegistry
                 () -> new MysqlConnector<>(
                     getBeanName(clazz),
                     clazz,
-                    jdbi.getObject(),
                     objectMapper.getObject(),
                     meshineryMysqlProperties.getObject()
                 )

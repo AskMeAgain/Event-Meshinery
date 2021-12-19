@@ -10,14 +10,19 @@
 ## Installation
 
 1. Add package
-2. Add _@EnableMeshineryMysqlConnector_ to the Application.
+2. Add _@EnableMeshineryMysql_ to the Application.
 
 ## Provided Beans
 
-Using @EnableMeshineryMysqlConnector will enable multiple beans:
+Using @EnableMeshineryMysql will enable multiple beans:
 
 * MysqlProperties
 * MysqlConnector (using MysqlProperties)
+
+Optional: you can provide a .class  to the context variable in the @EnableMeshineryMysql annotation
+to automatically create a MysqlConnector from configurations provided to the application:
+
+    @EnableMeshineryMysql(context = TestContext.class)
 
 ## Properties
 

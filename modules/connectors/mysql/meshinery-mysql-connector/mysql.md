@@ -9,15 +9,15 @@
 
 ## Installation
 
-1. Install package
-2. Add @EnableMysqlConnector annotation
+1. Install package via Maven/Gradle
+2. fill a MeshineryMysqlProperties class
+4. Feed properties and objectMapper to MysqlConnector
+5. Use connector in your MeshineryTasks
 
 ## Mysql Source
 
 An event-key provided to a mysql source corresponds to a different value in a column. The mysqlSource will act on a
 single table for a single dataContext.
-
-**Example:**
 
 a MeshineryTask reads with event-key "InputKey" and dataContext "TestContext". This results in a sql query:
 
@@ -52,16 +52,17 @@ providing an id. This is used for different utility Sources.
 
 ## SqlScript
 
-The following Script is needed for **each** dataContext as the source distinguishes the tables by the provided
+The following Script is needed for **each** dataContext as the source 
+distinguishes the tables via the provided
 dataContext.
 
-    CREATE TABLE `XXX_CONTEXT_JAVA_TYPE_NAME_XXX`
+    CREATE TABLE `XXX_CONTEXT_JAVA_SIMPLE_CLASS_NAME_XXX`
     (
-    `context`   json         NOT NULL,
-    `id`        varchar(100) NOT NULL,
-    `processed` tinyint(1)   NOT NULL,
     `eid`       bigint       NOT NULL AUTO_INCREMENT,
+    `id`        varchar(100) NOT NULL,
     `state`     varchar(100) NOT NULL,
+    `processed` tinyint(1)   NOT NULL,
+    `context`   json         NOT NULL,
     PRIMARY KEY (`eid`),
     UNIQUE KEY(id, state, processed)
     ) ENGINE=InnoDB;

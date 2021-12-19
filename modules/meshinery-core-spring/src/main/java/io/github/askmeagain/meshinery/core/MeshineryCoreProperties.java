@@ -14,7 +14,7 @@ public class MeshineryCoreProperties {
 
   private boolean batchJob = false;
 
-  private boolean shutdownOnError = true;
+  private boolean shutdownOnError = false;
 
   private boolean shutdownOnFinished = true;
 
