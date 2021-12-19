@@ -57,10 +57,12 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
       Function<Throwable, DataContext> handleException,
       long backoffTime
   ) {
+    var newProcessorList = new ArrayList<>(oldProcessorList);
+    newProcessorList.add((MeshineryProcessor<DataContext, DataContext>) newProcessor);
+
     taskName = name;
     this.backoffTime = backoffTime;
-    oldProcessorList.add((MeshineryProcessor<DataContext, DataContext>) newProcessor);
-    this.processorList = oldProcessorList;
+    this.processorList = newProcessorList;
     this.inputConnector = inputConnector;
     this.outputConnector = outputConnector;
     this.executorService = executorService;
@@ -101,7 +103,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
   }
 
   public MeshineryTaskFactory<K, C> connector(MeshineryConnector<K, C> connector) {
-    return inputSource(connector)
+    return this.inputSource(connector)
         .outputSource(connector);
   }
 
@@ -128,7 +130,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
   }
 
   public MeshineryTaskFactory<K, C> readNewInput(K key, AccessingInputSource<K, C> newInputSource) {
-    return addNewProcessor(new SignalingProcessor<>(newInputSource, key, (left, newContext) -> newContext));
+    return addNewProcessor(new SignalingProcessor<>(newInputSource, key, (context, signal) -> signal));
   }
 
   public MeshineryTaskFactory<K, C> readNewInput(

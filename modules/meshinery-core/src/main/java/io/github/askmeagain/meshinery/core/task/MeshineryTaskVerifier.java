@@ -2,6 +2,8 @@ package io.github.askmeagain.meshinery.core.task;
 
 import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.exceptions.DuplicateReadKeyException;
+import io.github.askmeagain.meshinery.core.exceptions.DuplicateTaskNameException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -47,7 +49,7 @@ public class MeshineryTaskVerifier {
     var duplicates = findDuplicates(result);
 
     if (!duplicates.isEmpty()) {
-      throw new RuntimeException("Found duplicate Read keys: [" + String.join(", ", duplicates) + "]");
+      throw new DuplicateReadKeyException("Found duplicate Read keys: [" + String.join(", ", duplicates) + "]");
     }
   }
 
@@ -59,7 +61,7 @@ public class MeshineryTaskVerifier {
     var duplicates = findDuplicates(result);
 
     if (!duplicates.isEmpty()) {
-      throw new RuntimeException("Found duplicate job names: [" + String.join(", ", duplicates) + "]");
+      throw new DuplicateTaskNameException("Found duplicate task names: [" + String.join(", ", duplicates) + "]");
     }
 
     return result;
