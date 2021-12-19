@@ -41,6 +41,8 @@ class MonitoringApiControllerTest {
         .andExpect(content()
             .string(containsString("processing_counter")))
         .andExpect(content()
+            .string(containsString("\n")))
+        .andExpect(content()
             .string(containsString("processing_counter")));
   }
 

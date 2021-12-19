@@ -31,7 +31,7 @@ Returns a complete image
 Returns a txt file with a mermaid.js description of the graph. 
 
 **This file can be provided via url to the following Grafana Plugin which can displays the graph and apply metrics on
-them.**
+them. Url needs to be something like this (if run via docker-compose) http://10.0.2.15:8080/draw/mermaid**
 
 ## Customization beans
 

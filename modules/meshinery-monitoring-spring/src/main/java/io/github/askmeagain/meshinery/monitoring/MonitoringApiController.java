@@ -21,6 +21,6 @@ public class MonitoringApiController {
     var headers = new HttpHeaders();
     headers.setCacheControl(CacheControl.noCache().getHeaderValue());
     headers.setContentType(MediaType.TEXT_PLAIN);
-    return result.replace("\n", "<br />\n");
+    return result;
   }
 }
