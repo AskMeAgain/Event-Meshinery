@@ -16,9 +16,9 @@ The [spring core integration](../meshinery-core-spring/core-spring.md) provides 
 
 1. Install package _meshinery-core_
 2. Create some [MeshineryTasks](tasks.md)
-   1. Choose a [state store](connectors.md)
-   2. create [processors](processors.md)
-   3. Optional: add write(s)
+    1. Choose a [state store](connectors.md)
+    2. create [processors](processors.md)
+    3. Optional: add write(s)
 3. Pass everything into a [RoundRobinScheduler](scheduler.md)
 4. start() the scheduler
 

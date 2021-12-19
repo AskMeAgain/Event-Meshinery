@@ -131,8 +131,8 @@ The key on which the join happens is the Id field of the DataContext.
 Or you can use the provided builder method .joinOn(), which lets you specify the new source, join key of the right side
 of the join and the combine method. This is the **recommended** way of doing a join.
 
-**The joinOn() method also sets the correct data so the MeshineryDrawer can correctly draw joined methods in the
-graphs.**
+**The joinOn() method also sets the correct data so the MeshineryDrawer can correctly draw
+joined methods in the graphs.**
 
     var task = MeshineryTaskFactory<String, TestContext>()
       .taskName("Join")
