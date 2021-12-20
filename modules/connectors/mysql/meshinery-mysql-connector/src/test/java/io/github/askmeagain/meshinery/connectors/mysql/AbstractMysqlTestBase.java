@@ -13,7 +13,7 @@ public abstract class AbstractMysqlTestBase {
 
   private static final String DB_NAME = "db";
 
-  private static final MySQLContainer mysqlContainer = new MySQLContainer<>("mysql")
+  private static final MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql")
       .withDatabaseName(DB_NAME)
       .withPassword("password")
       .withUsername("user")
@@ -29,7 +29,7 @@ public abstract class AbstractMysqlTestBase {
   static void dynamicPropertySource(DynamicPropertyRegistry registry) {
     registry.add(
         "meshinery.connectors.mysql.connection-string",
-        () -> mysqlContainer.getJdbcUrl() + "?useSSL=false"
+        AbstractMysqlTestBase::getConnectingString
     );
   }
 
@@ -39,11 +39,29 @@ public abstract class AbstractMysqlTestBase {
   }
 
   protected Jdbi jdbi() {
-    var container = (MySQLContainer) mysqlContainer;
 
-    var jdbi = Jdbi.create(container.getJdbcUrl() + "?useSSL=false", container.getUsername(), container.getPassword());
+    var jdbi = Jdbi.create(
+        getConnectingString(),
+        mysqlContainer.getUsername(),
+        mysqlContainer.getPassword()
+    );
     jdbi.installPlugin(new Jackson2Plugin());
 
     return jdbi;
+  }
+
+  private static String getConnectingString() {
+    return mysqlContainer.getJdbcUrl() + "?useSSL=false";
+  }
+
+  protected MeshineryMysqlProperties meshineryMysqlProperties() {
+    var meshineryMysqlProperties = new MeshineryMysqlProperties();
+
+    meshineryMysqlProperties.setLimit(1);
+    meshineryMysqlProperties.setPassword(mysqlContainer.getPassword());
+    meshineryMysqlProperties.setUser(mysqlContainer.getUsername());
+    meshineryMysqlProperties.setConnectionString(getConnectingString());
+
+    return meshineryMysqlProperties;
   }
 }
