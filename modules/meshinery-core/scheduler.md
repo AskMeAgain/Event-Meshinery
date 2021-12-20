@@ -17,7 +17,7 @@ overwhelmed.
 ### Execution Mode: BatchJob
 
 There are 2 execution modes: BatchJob and Continuous. The BatchJob will run all tasks. If a single iteration of an
-inputsource doesnt yield **any** new result, the application will shutdown itself gracefully.
+inputsource doesnt yield **any** new result in the gracePeriod provided, the application will shutdown itself gracefully.
 
 ### Execution Mode: Continuous
 

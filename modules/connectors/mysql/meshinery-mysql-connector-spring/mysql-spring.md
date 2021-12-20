@@ -7,7 +7,7 @@
         <type>module</type>
     </dependency>
 
-## Installation
+## Getting started
 
 1. Add package
 2. Add _@EnableMeshineryMysql_ to the Application.
@@ -17,18 +17,13 @@
 Using @EnableMeshineryMysql will enable multiple beans:
 
 * MysqlProperties
-* MysqlConnector (using MysqlProperties)
-
-Optional: you can provide a .class  to the context variable in the @EnableMeshineryMysql annotation
-to automatically create a MysqlConnector from configurations provided to the application:
-
-    @EnableMeshineryMysql(context = TestContext.class)
+* MysqlConnector (using MysqlProperties as configuration) if you provide a .class  
+  to the context variable in the @EnableMeshineryMysql annotation
 
 ## Properties
 
 The provided AutoConfiguration maps configs from properties to 
-the MysqlProperties bean. This bean is automatically registered in the
-MysqlConnector
+the MysqlProperties bean.
 
 Example:
 
