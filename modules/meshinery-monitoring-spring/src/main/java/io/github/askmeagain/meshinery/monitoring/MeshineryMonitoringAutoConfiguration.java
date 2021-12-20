@@ -31,7 +31,7 @@ public class MeshineryMonitoringAutoConfiguration {
           .name("executor")
           .help("Executors and their registered tasks")
           .labelNames("executor", "task_name")
-          .register(MeshineryMonitoringService.registry);
+          .register(MeshineryMonitoringService.REGISTRY);
 
       executorPerTaskMap.forEach((executor, tasks) -> {
         tasks.forEach(task -> {
@@ -43,7 +43,7 @@ public class MeshineryMonitoringAutoConfiguration {
           .name("executor_max_threads")
           .help("Max number of threads on each executor")
           .labelNames("executor")
-          .register(MeshineryMonitoringService.registry);
+          .register(MeshineryMonitoringService.REGISTRY);
 
       roundRobinScheduler.getExecutorServices()
           .forEach(executorService -> {
@@ -76,7 +76,7 @@ public class MeshineryMonitoringAutoConfiguration {
           .name("executor_active_threads")
           .help("Available Threads on each executor")
           .labelNames("executor")
-          .register(MeshineryMonitoringService.registry);
+          .register(MeshineryMonitoringService.REGISTRY);
 
       roundRobinScheduler.getExecutorServices()
           .forEach(executorService -> {

@@ -15,18 +15,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MeshineryMonitoringService {
 
-  public static final CollectorRegistry registry = new CollectorRegistry();
-  public static final Summary requestTimeSummary = Summary.build()
+  public static final CollectorRegistry REGISTRY = new CollectorRegistry();
+  public static final Summary REQUEST_TIME_SUMMARY = Summary.build()
       .name("request_time")
       .help("Time of all requests")
       .labelNames("task_name", "processor_name")
-      .register(registry);
+      .register(REGISTRY);
 
   public static final Gauge inProcessingGauge = Gauge.build()
       .name("processing_counter")
       .help("Number of all currently in work processors")
       .labelNames("task_name")
-      .register(registry);
+      .register(REGISTRY);
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static Gauge createGauge(String name, String helpText, String labelNames) {
@@ -34,7 +34,7 @@ public class MeshineryMonitoringService {
         .name(name)
         .help(helpText)
         .labelNames(labelNames)
-        .register(registry);
+        .register(REGISTRY);
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
@@ -43,7 +43,7 @@ public class MeshineryMonitoringService {
     var gauge = Gauge.build()
         .name(name)
         .help(helpText)
-        .register(registry);
+        .register(REGISTRY);
 
     var child = new Gauge.Child() {
       @Override
@@ -61,7 +61,7 @@ public class MeshineryMonitoringService {
     ByteArrayOutputStream response = new ByteArrayOutputStream();
     OutputStreamWriter osw = new OutputStreamWriter(response, StandardCharsets.UTF_8);
 
-    TextFormat.writeFormat(TextFormat.CONTENT_TYPE_004, osw, registry.metricFamilySamples());
+    TextFormat.writeFormat(TextFormat.CONTENT_TYPE_004, osw, REGISTRY.metricFamilySamples());
 
     osw.close();
 
