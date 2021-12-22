@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringUtils.getNameByExecutorAndTasks;
+import static io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringSpringUtils.getNameByExecutorAndTasks;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Configuration
@@ -25,7 +25,7 @@ public class MeshineryMonitoringAutoConfiguration {
   CustomizeStartupHook executorRegistration() {
     return roundRobinScheduler -> {
 
-      var executorPerTaskMap = MeshineryMonitoringUtils.createExecutorPerTaskMap(roundRobinScheduler.getTasks());
+      var executorPerTaskMap = MeshineryMonitoringSpringUtils.createExecutorPerTaskMap(roundRobinScheduler.getTasks());
 
       var executorAssignmentGauge = Gauge.build()
           .name("executor")

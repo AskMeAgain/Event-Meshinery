@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class MeshineryMonitoringUtils {
+public class MeshineryMonitoringSpringUtils {
 
   public static String getNameByExecutorAndTasks(
       Map<ExecutorService, List<MeshineryTask<?, ?>>> executorPerTaskMap,

@@ -30,7 +30,7 @@ class MonitoringTest {
     decoratedProcessor.processAsync(context, executor);
 
     //Assert -----------------------------------------------------------------------------------------------------------
-    assertThat(MeshineryMonitoringService.inProcessingGauge.labels(TASK_NAME_VALUE).get()).isEqualTo(1);
+    assertThat(MeshineryMonitoringService.IN_PROCESSING_COUNTER.labels(TASK_NAME_VALUE).get()).isEqualTo(1);
   }
 
 }

@@ -22,7 +22,7 @@ public class MeshineryMonitoringService {
       .labelNames("task_name", "processor_name")
       .register(REGISTRY);
 
-  public static final Gauge inProcessingGauge = Gauge.build()
+  public static final Gauge IN_PROCESSING_COUNTER = Gauge.build()
       .name("processing_counter")
       .help("Number of all currently in work processors")
       .labelNames("task_name")
