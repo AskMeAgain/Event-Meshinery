@@ -1,6 +1,9 @@
 package io.github.askmeagain.meshinery.draw;
 
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
+import io.github.askmeagain.meshinery.draw.customizer.EdgeCustomizer;
+import io.github.askmeagain.meshinery.draw.customizer.GraphCustomizer;
+import io.github.askmeagain.meshinery.draw.customizer.NodeCustomizer;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -15,25 +18,13 @@ public class MeshineryDrawerConfiguration {
 
   @Bean
   @ConfigurationProperties("meshinery.draw")
-  public DrawerProperties drawerProperties() {
-    return new DrawerProperties();
+  public MeshineryDrawProperties drawerProperties() {
+    return new MeshineryDrawProperties();
   }
 
   @Bean
-  MeshineryDrawer setupMeshineryDrawer(
-      NodeCustomizer nodeCustomizer,
-      EdgeCustomizer edgeCustomizer,
-      List<MeshineryTask<?, ?>> tasks,
-      GraphCustomizer graphCustomizer,
-      DrawerProperties drawerProperties
-  ) {
-    return MeshineryDrawer.builder()
-        .tasks(tasks)
-        .properties(drawerProperties)
-        .edgeAssignment(edgeCustomizer)
-        .nodeAssignment(nodeCustomizer)
-        .graphAssignment(graphCustomizer)
-        .build();
+  MeshineryDrawer setupMeshineryDrawer(List<MeshineryTask<?, ?>> tasks) {
+    return new MeshineryDrawer(tasks);
   }
 
   @Bean

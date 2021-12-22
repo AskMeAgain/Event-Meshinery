@@ -1,4 +1,4 @@
-package io.github.askmeagain.meshinery.draw;
+package io.github.askmeagain.meshinery.draw.customizer;
 
 import org.graphstream.graph.implementations.DefaultGraph;
 

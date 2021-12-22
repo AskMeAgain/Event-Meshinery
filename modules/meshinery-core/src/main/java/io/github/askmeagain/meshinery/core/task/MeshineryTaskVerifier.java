@@ -4,6 +4,8 @@ import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.OutputSource;
 import io.github.askmeagain.meshinery.core.exceptions.DuplicateReadKeyException;
 import io.github.askmeagain.meshinery.core.exceptions.DuplicateTaskNameException;
+import io.github.askmeagain.meshinery.core.exceptions.InputKeyInvalidException;
+import io.github.askmeagain.meshinery.core.exceptions.TaskNameInvalidException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +24,7 @@ public class MeshineryTaskVerifier {
     log.info("Starting Scheduler with following Tasks: {}", getAndVerifyTaskList(tasks));
     log.info("Starting Scheduler with following Input Source: {}", getInputSources(tasks));
     log.info("Starting Scheduler with following Output Source: {}", getOutputSources(tasks));
+
     verifyReadKey(tasks);
   }
 
@@ -44,6 +47,7 @@ public class MeshineryTaskVerifier {
         .map(MeshineryTask::getInputKeys)
         .flatMap(Collection::stream)
         .map(Object::toString)
+        .map(MeshineryTaskVerifier::verifyInputKey)
         .toList();
 
     var duplicates = findDuplicates(result);
@@ -56,6 +60,7 @@ public class MeshineryTaskVerifier {
   private static List<String> getAndVerifyTaskList(List<MeshineryTask<?, ?>> tasks) {
     var result = tasks.stream()
         .map(MeshineryTask::getTaskName)
+        .map(MeshineryTaskVerifier::verifyTaskName)
         .toList();
 
     var duplicates = findDuplicates(result);
@@ -75,4 +80,23 @@ public class MeshineryTaskVerifier {
         .collect(Collectors.toSet());
   }
 
+  private static String verifyTaskName(String name) {
+    for (var letter : name.toCharArray()) {
+      if (!VALID_LETTERS.contains(String.valueOf(letter).toLowerCase())) {
+        throw new TaskNameInvalidException("Task '%s' contains '%s'".formatted(name, letter));
+      }
+    }
+    return name;
+  }
+
+  private static String verifyInputKey(String key) {
+    for (var letter : key.toCharArray()) {
+      if (!VALID_LETTERS.contains(String.valueOf(letter).toLowerCase())) {
+        throw new InputKeyInvalidException("InputKey '%s' contains '%s'".formatted(key, letter));
+      }
+    }
+    return key;
+  }
+
+  private static final String VALID_LETTERS = "abcdefghijklmnopqrstuvwxyz_-";
 }

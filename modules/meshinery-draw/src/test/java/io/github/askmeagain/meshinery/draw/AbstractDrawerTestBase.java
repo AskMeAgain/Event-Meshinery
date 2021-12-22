@@ -18,64 +18,64 @@ public abstract class AbstractDrawerTestBase {
 
   protected List<MeshineryTask<?, ?>> getSplit() {
     return List.of(
-        createTask("A", "B"),
-        createTask("C", "B"),
-        createTask("B", "D"),
-        createTask("B", "E"),
-        createTask("E", "F"),
-        createTask("D", "F")
+        createTask("Heartbeat","A", "B"),
+        createTask("left","C", "B"),
+        createTask("right","B", "D"),
+        createTask("after-right","B", "E"),
+        createTask("after-after-right","E", "F"),
+        createTask("finish","D", "F")
 
     );
   }
 
   protected List<MeshineryTask<?, ?>> getABCB() {
     return List.of(
-        createTask("A", "B"),
-        createTask("B", "C"),
-        createTask("C", "B")
+        createTask("Doing_X","A", "B"),
+        createTask("Doing_Y","B", "C"),
+        createTask("Doing_Z","C", "B")
     );
   }
 
   protected List<MeshineryTask<?, ?>> getMultipleInputSources() {
     return List.of(
-        createDoubleInputTask("A", "B", "C"),
-        createTask("C", "D")
+        createDoubleInputTask("RestApi","A", "B", "C"),
+        createTask("Application","C", "D")
     );
   }
 
   protected List<MeshineryTask<?, ?>> getInputSignalingSourceTestCase() {
     return List.of(
-        createInputSignalTask("A", "B", "C"),
-        createTask("C", "D")
+        createInputSignalTask("RestApi","A", "B", "C"),
+        createTask("CombineStuff", "C", "D")
     );
   }
 
-  private MeshineryTask<String, TestContext> createTask(String from, String to) {
+  private MeshineryTask<String, TestContext> createTask(String name, String from, String to) {
     return MeshineryTaskFactory.<String, TestContext>builder()
         .outputSource(outputSource)
         .inputSource(inputSource)
         .read(null, from)
-        .taskName(from)
+        .taskName(name)
         .write(to)
         .build();
   }
 
-  private MeshineryTask<String, TestContext> createDoubleInputTask(String from1, String from2, String to) {
+  private MeshineryTask<String, TestContext> createDoubleInputTask(String name, String from1, String from2, String to) {
     return MeshineryTaskFactory.<String, TestContext>builder()
         .outputSource(outputSource)
         .inputSource(inputSource)
         .read(null, from1)
-        .taskName(from1 + "_" + from2)
+        .taskName(name)
         .write(to)
         .putData(GRAPH_INPUT_KEY, from2)
         .build();
   }
 
-  private MeshineryTask<String, TestContext> createInputSignalTask(String from1, String from2, String to) {
+  private MeshineryTask<String, TestContext> createInputSignalTask(String name, String from1, String from2, String to) {
     var signalingInputSource = SignalingInputSource.<String, TestContext>builder()
         .innerInputSource(inputSource)
         .innerKey(from2)
-        .name(from1 + "_" + from2 + "_source")
+        .name(name + "input-source")
         .signalingInputSource(inputSource)
         .build();
 
@@ -83,7 +83,7 @@ public abstract class AbstractDrawerTestBase {
         .outputSource(outputSource)
         .inputSource(signalingInputSource)
         .read(null, from1)
-        .taskName(from1 + "_" + from2)
+        .taskName(name)
         .write(to)
         .build();
   }

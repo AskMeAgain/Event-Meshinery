@@ -1,7 +1,13 @@
 package io.github.askmeagain.meshinery.draw;
 
-import java.io.IOException;
+import io.github.askmeagain.meshinery.draw.customizer.EdgeCustomizer;
+import io.github.askmeagain.meshinery.draw.customizer.GraphCustomizer;
+import io.github.askmeagain.meshinery.draw.customizer.NodeCustomizer;
+import io.github.askmeagain.meshinery.draw.generators.MermaidGenerator;
+import io.github.askmeagain.meshinery.draw.generators.PictureGenerator;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.CacheControl;
@@ -10,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,59 +27,36 @@ import org.springframework.web.bind.annotation.RestController;
 public class DrawerApiController {
 
   private final MeshineryDrawer meshineryDrawer;
+  private final MeshineryDrawProperties meshineryDrawProperties;
 
+  private final GraphCustomizer graphCustomizer;
+  private final NodeCustomizer nodeCustomizer;
+  private final EdgeCustomizer edgeCustomizer;
+
+  @SneakyThrows
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @GetMapping("/mermaid")
   @CrossOrigin(origins = "*")
-  public ResponseEntity<ByteArrayResource> mermaid() {
-    var result = meshineryDrawer.drawMermaidDiagram();
+  public void mermaid(HttpServletResponse response) {
+    response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"mermaid.txt\"");
+    var outputStream = response.getOutputStream();
 
-    var headers = new HttpHeaders();
-    headers.setCacheControl(CacheControl.noCache().getHeaderValue());
+    var graph = meshineryDrawer.createGraph(graphCustomizer, nodeCustomizer, edgeCustomizer);
+    var mermaidList = MermaidGenerator.createMermaidDiagram(graph);
 
-    return ResponseEntity.ok()
-        .contentType(MediaType.TEXT_PLAIN)
-        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"mermaid.txt\"")
-        .contentLength(result.length)
-        .body(new ByteArrayResource(result));
-  }
+    outputStream.println("graph LR");
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  @GetMapping("/mermaid/{subgraph}")
-  @CrossOrigin(origins = "*")
-  public ResponseEntity<ByteArrayResource> mermaid(@PathVariable("subgraph") String subgraphs) {
-    var result = meshineryDrawer.drawMermaidDiagram(subgraphs);
-
-    var headers = new HttpHeaders();
-    headers.setCacheControl(CacheControl.noCache().getHeaderValue());
-
-    return ResponseEntity.ok()
-        .contentType(MediaType.TEXT_PLAIN)
-        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"mermaid.txt\"")
-        .contentLength(result.length)
-        .body(new ByteArrayResource(result));
-  }
-
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  @GetMapping("/png/{subgraph}")
-  public ResponseEntity<ByteArrayResource> png(@PathVariable("subgraph") String subgraphs) throws IOException {
-
-    var result = meshineryDrawer.drawPng(subgraphs);
-
-    var headers = new HttpHeaders();
-    headers.setCacheControl(CacheControl.noCache().getHeaderValue());
-
-    return ResponseEntity.ok()
-        .contentType(MediaType.IMAGE_PNG)
-        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"graph.png\"")
-        .contentLength(result.length)
-        .body(new ByteArrayResource(result));
+    for (String line : mermaidList) {
+      outputStream.println(line);
+    }
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @GetMapping("/png")
-  public ResponseEntity<ByteArrayResource> png() throws IOException {
-    var result = meshineryDrawer.drawPng();
+  public ResponseEntity<ByteArrayResource> png() {
+    var graph = meshineryDrawer.createGraph(graphCustomizer, nodeCustomizer, edgeCustomizer);
+
+    var result = PictureGenerator.createImage(meshineryDrawProperties, graph);
 
     var headers = new HttpHeaders();
     headers.setCacheControl(CacheControl.noCache().getHeaderValue());

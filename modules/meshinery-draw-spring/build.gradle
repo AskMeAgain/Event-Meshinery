@@ -5,9 +5,10 @@ plugins {
 }
 
 dependencies {
-    api project(':modules:meshinery-core')
+    api project(':modules:meshinery-core-spring')
     api project(':modules:meshinery-draw')
     api "org.springframework.boot:spring-boot-starter-web:${spring_boot_version}"
+    testImplementation project(':modules:meshinery-core').sourceSets.test.output
 }
 
 mavenPublishing {
