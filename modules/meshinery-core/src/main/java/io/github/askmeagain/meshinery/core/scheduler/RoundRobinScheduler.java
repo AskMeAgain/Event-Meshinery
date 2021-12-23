@@ -6,7 +6,6 @@ import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
-import io.github.askmeagain.meshinery.core.processors.DynamicOutputProcessor;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.task.TaskDataProperties;
@@ -52,7 +51,6 @@ public class RoundRobinScheduler {
   private final Set<ExecutorService> executorServices = new HashSet<>();
   private boolean internalShutdown = false;
   private Instant lastInputEntry;
-  private Instant lastOutputEntry;
 
   public static SchedulerBuilder builder() {
     return new SchedulerBuilder();
@@ -166,25 +164,12 @@ public class RoundRobinScheduler {
   private void runWorker(ExecutorService executor) {
     log.info("Starting processing worker thread");
 
-    lastOutputEntry = Instant.now();
-
     //we use this label to break out of the task in case we cant work on it (not done or returns null)
     newTask:
     while (!executor.isShutdown() && !internalShutdown) {
       MDC.clear();
 
       var currentTask = outputQueue.peek();
-
-      if (isBatchJob) {
-        if (currentTask == null && inputQueue.isEmpty()) {
-
-          if (lastOutputEntry.plusMillis(gracePeriodMilliseconds).isBefore(Instant.now())) {
-            gracefulShutdown();
-          }
-        } else {
-          lastOutputEntry = Instant.now();
-        }
-      }
 
       if (currentTask == null) {
         continue;
@@ -248,16 +233,7 @@ public class RoundRobinScheduler {
     try {
       TaskData.setTaskData(taskRun.getTaskData());
       var decoratedProcessor = MeshineryUtils.applyDecorators(nextProcessor, processorDecorator);
-      return decoratedProcessor.processAsync(context, taskRun.getExecutorService())
-          .thenApply(c -> {
-            if (nextProcessor instanceof DynamicOutputProcessor dynamicOutputProcessor) {
-              inputQueue.add(ConnectorKey.builder()
-                  .connector(dynamicOutputProcessor.outputSource())
-                  .key(dynamicOutputProcessor.keyMethod().apply(context))
-                  .build());
-            }
-            return c;
-          });
+      return decoratedProcessor.processAsync(context, taskRun.getExecutorService());
     } catch (Exception e) {
       if (gracefulShutdownOnError) {
         log.error(

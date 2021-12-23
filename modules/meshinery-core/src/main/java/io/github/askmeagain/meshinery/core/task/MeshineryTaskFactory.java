@@ -171,9 +171,6 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
    * @return returns itself for builder pattern
    */
   public MeshineryTaskFactory<K, C> taskName(String name) {
-
-
-
     return toBuilder()
         .taskName(name)
         .taskData(taskData.replace(TaskDataProperties.TASK_NAME, name))

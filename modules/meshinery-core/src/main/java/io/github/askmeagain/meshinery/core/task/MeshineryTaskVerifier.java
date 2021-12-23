@@ -98,5 +98,5 @@ public class MeshineryTaskVerifier {
     return key;
   }
 
-  private static final String VALID_LETTERS = "abcdefghijklmnopqrstuvwxyz_-";
+  private static final String VALID_LETTERS = "abcdefghijklmnopqrstuvwxyz_-1234567890";
 }

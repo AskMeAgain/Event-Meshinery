@@ -89,7 +89,7 @@ public class E2eTestConfiguration {
         .outputSource(connector)
         .inputSource(inputSource)
         .taskName("InputSpawner")
-        .read(executorService, "Doesnt matter")
+        .read(executorService, "Doesnt_matter")
         .write(TOPIC_PREFIX + "0")
         .build();
   }

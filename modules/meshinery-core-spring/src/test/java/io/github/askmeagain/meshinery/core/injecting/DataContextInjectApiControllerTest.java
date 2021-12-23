@@ -4,7 +4,6 @@ import io.github.askmeagain.meshinery.core.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,10 +11,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,6 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(DataContextInjectApiController.class)
 @ContextConfiguration(classes = {DataContextInjectApiController.class})
+@EnableConfigurationProperties(MeshineryCoreProperties.class)
+@TestPropertySource(properties = "meshinery.core.inject=io.github.askmeagain.meshinery.core.utils.context.TestContext")
 class DataContextInjectApiControllerTest {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -42,11 +45,9 @@ class DataContextInjectApiControllerTest {
   @Autowired private MockMvc mockMvc;
 
   @MockBean private TaskReplayFactory taskReplayFactory;
-  @MockBean private MeshineryCoreProperties meshineryCoreProperties;
 
   @BeforeEach
   void fillingPostConstructMethod() {
-    Mockito.when(meshineryCoreProperties.getInject()).thenReturn(List.of(TestContext.class.getCanonicalName()));
     controller.setup();
   }
 
