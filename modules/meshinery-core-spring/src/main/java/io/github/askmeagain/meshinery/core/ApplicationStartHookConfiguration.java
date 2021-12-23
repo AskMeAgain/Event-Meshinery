@@ -17,8 +17,8 @@ public class ApplicationStartHookConfiguration {
   private final RoundRobinScheduler roundRobinScheduler;
   private final List<MeshineryTask<?, ?>> tasks;
 
+  @Order
   @EventListener
-  @Order(1000)
   public void startScheduler(ApplicationReadyEvent e) {
     roundRobinScheduler.start();
   }
