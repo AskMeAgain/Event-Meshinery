@@ -26,7 +26,9 @@ public class TimingDecorator<I extends DataContext, O extends DataContext> imple
    */
   public MeshineryProcessor<I, O> wrap(MeshineryProcessor<I, O> processor) {
     var taskName = getTaskData().getSingle(TASK_NAME);
-    var summary = MeshineryMonitoringService.REQUEST_TIME_SUMMARY.labels(taskName, processor.getClass().getSimpleName());
+    var processorName = MeshineryMonitoringUtils.convertLambdaProcessorName(processor.getClass());
+
+    var summary = MeshineryMonitoringService.REQUEST_TIME_SUMMARY.labels(taskName, processorName);
     var inProcessingCounter = MeshineryMonitoringService.IN_PROCESSING_COUNTER.labels(taskName);
 
     return (context, executor) -> {

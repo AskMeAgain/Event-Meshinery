@@ -1,4 +1,4 @@
-package io.github.askmeagain.meshinery.core;
+package io.github.askmeagain.meshinery.core.hooks;
 
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import java.time.Duration;

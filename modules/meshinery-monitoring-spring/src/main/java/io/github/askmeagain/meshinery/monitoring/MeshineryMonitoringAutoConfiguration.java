@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.monitoring;
 
-import io.github.askmeagain.meshinery.core.CustomizeStartupHook;
+import io.github.askmeagain.meshinery.core.hooks.CustomizeStartupHook;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.prometheus.client.Gauge;

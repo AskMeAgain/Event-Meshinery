@@ -1,6 +1,8 @@
-package io.github.askmeagain.meshinery.core;
+package io.github.askmeagain.meshinery.core.injecting;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.askmeagain.meshinery.core.EnableMeshinery;
+import io.github.askmeagain.meshinery.core.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import java.util.Arrays;
@@ -10,6 +12,7 @@ import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Order(1)
 @RequiredArgsConstructor
 @RestController
+@Conditional(ActivateOnInjection.class)
 public class DataContextInjectApiController {
 
   private final TaskReplayFactory taskReplayFactory;
@@ -39,7 +43,7 @@ public class DataContextInjectApiController {
 
   @SneakyThrows
   @PostConstruct
-  void setup() {
+  public void setup() {
     var beanNamesForAnnotation = applicationContext.getBeansWithAnnotation(EnableMeshinery.class);
 
     for (var tuple : beanNamesForAnnotation.entrySet()) {
@@ -51,14 +55,6 @@ public class DataContextInjectApiController {
     for (var fqn : meshineryCoreProperties.getInject()) {
       Class<?> clazz = getClazzFromFullyQualifiedName(fqn);
       classMap.put(clazz.getSimpleName(), clazz);
-    }
-  }
-
-  private Class<?> getClazzFromFullyQualifiedName(String fqn) throws ClassNotFoundException {
-    try {
-      return Class.forName(fqn);
-    } catch (ClassNotFoundException e) {
-      throw new ClassNotFoundException("Cannot find class {} for injecting preparation.");
     }
   }
 
@@ -75,8 +71,7 @@ public class DataContextInjectApiController {
 
       return ResponseEntity.ok(objectMapper.writeValueAsString(resultBody));
     } catch (Exception ex) {
-      return ResponseEntity.internalServerError()
-          .body(ex.getMessage());
+      return ResponseEntity.internalServerError().body(ex.getMessage());
     }
   }
 
@@ -93,8 +88,7 @@ public class DataContextInjectApiController {
 
       return ResponseEntity.accepted().body("Accepted");
     } catch (Exception ex) {
-      return ResponseEntity.internalServerError()
-          .body(ex.getMessage());
+      return ResponseEntity.internalServerError().body(ex.getMessage());
     }
   }
 
@@ -111,8 +105,15 @@ public class DataContextInjectApiController {
 
       return ResponseEntity.accepted().body("Accepted");
     } catch (Exception ex) {
-      return ResponseEntity.internalServerError()
-          .body(ex.getMessage());
+      return ResponseEntity.internalServerError().body(ex.getMessage());
+    }
+  }
+
+  private Class<?> getClazzFromFullyQualifiedName(String fqn) throws ClassNotFoundException {
+    try {
+      return Class.forName(fqn);
+    } catch (ClassNotFoundException e) {
+      throw new ClassNotFoundException("Cannot find class {} for injecting preparation.");
     }
   }
 }

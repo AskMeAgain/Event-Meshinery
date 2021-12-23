@@ -1,5 +1,6 @@
-package io.github.askmeagain.meshinery.core;
+package io.github.askmeagain.meshinery.core.injecting;
 
+import io.github.askmeagain.meshinery.core.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.nio.charset.StandardCharsets;
