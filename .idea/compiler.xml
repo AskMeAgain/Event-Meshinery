@@ -14,7 +14,6 @@
         <module name="EventMeshinery.modules.meshinery-core.main" />
         <module name="EventMeshinery.modules.connectors.mysql.meshinery-mysql-connector-spring.test" />
         <module name="EventMeshinery.modules.connectors.mysql.meshinery-mysql-connector.main" />
-        <module name="EventMeshinery.modules.meshinery-draw-spring.main" />
         <module name="EventMeshinery.modules.meshinery-monitoring-spring.test" />
         <module name="EventMeshinery.modules.connectors.mysql.test" />
         <module name="EventMeshinery.modules.connectors.mysql.meshinery-mysql-connector.test" />
@@ -44,6 +43,7 @@
         <module name="EventMeshinery.modules.meshinery-core-spring.main" />
         <module name="EventMeshinery.modules.connectors.kafka.meshinery-kafka-connector-spring.main" />
         <module name="EventMeshinery.modules.connectors.mysql.meshinery-mysql-connector-spring.main" />
+        <module name="EventMeshinery.modules.meshinery-draw-spring.main" />
         <module name="EventMeshinery.modules.meshinery-monitoring-spring.main" />
       </profile>
     </annotationProcessing>

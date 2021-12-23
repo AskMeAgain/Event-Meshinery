@@ -1,0 +1,151 @@
+{
+  "dashboard": {
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "valueName": "last"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 23,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "authPassword": "",
+        "authUsername": "",
+        "composites": [],
+        "content": "graph LR\n      A --> B\n    ",
+        "contentUrl": "${CONTENT_URL}",
+    "legend": {
+      "asTable": true,
+      "displayMode": "table",
+      "gradient": {
+        "enabled": true,
+        "show": true
+      },
+      "hideEmpty": false,
+      "hideZero": false,
+      "placement": "bottom",
+      "show": true,
+      "sortBy": "last",
+      "sortDesc": true,
+      "stats": [
+        "mean",
+        "last",
+        "min",
+        "max",
+        "sum"
+      ]
+    },
+    "maxWidth": true,
+    "mermaidServiceUrl": "",
+    "mermaidThemeVariablesDark": {
+      "classDiagram": {},
+      "common": {
+        "fontFamily": "Roboto,Helvetica Neue,Arial,sans-serif"
+      },
+      "flowChart": {},
+      "sequenceDiagram": {},
+      "stateDiagram": {},
+      "userJourneyDiagram": {}
+    },
+    "mermaidThemeVariablesLight": {
+      "classDiagram": {},
+      "common": {
+        "fontFamily": "Roboto,Helvetica Neue,Arial,sans-serif"
+      },
+      "flowChart": {},
+      "sequenceDiagram": {},
+      "stateDiagram": {},
+      "userJourneyDiagram": {}
+    },
+    "metricCharacterReplacements": [],
+    "moddedSeriesVal": 0,
+    "mode": "content",
+    "nodeSize": {
+      "minHeight": 40,
+      "minWidth": 30
+    },
+    "pluginVersion": "8.3.3",
+    "style": "",
+    "useBackground": false,
+    "useBasicAuth": false,
+    "valueName": "last"
+    },
+    "pluginVersion": "1.7.3",
+    "targets": [
+      ${METRICS}
+    ],
+    "title": "Panel Title",
+    "type": "jdbranham-diagram-panel"
+    }
+  ],
+  "schemaVersion": 34,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "TestBoard",
+  "uid": "hJczRpo72",
+  "version": 5,
+  "weekStart": ""
+}  ,
+  "message": "Made changes to xyasdasdz",
+  "overwrite": true
+}

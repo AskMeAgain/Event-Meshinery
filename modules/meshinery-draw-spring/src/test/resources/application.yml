@@ -1,0 +1,6 @@
+meshinery:
+  draw:
+    grafana-dashboard-push:
+      username: ''
+      password: ''
+      url: properties
