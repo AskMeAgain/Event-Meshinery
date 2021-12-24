@@ -1,29 +1,40 @@
 package io.github.askmeagain.meshinery.draw;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
+import static io.github.askmeagain.meshinery.draw.MeshineryDrawProperties.DashboardPushProperties;
+
 @RequiredArgsConstructor
 public class MermaidJsonTemplatingEngine {
 
-  private final List<String> mermaidTemplate;
-  private final MeshineryDrawProperties properties;
+  private final InputStream mermaidTemplate;
+  private final DashboardPushProperties properties;
+  private final ObjectMapper objectMapper;
+  private final List<MeshineryTask<?, ?>> tasks;
 
   public void send() {
     var body = fillTemplate();
 
     var restTemplate = new RestTemplate();
-    HttpHeaders headers = createHeaders("admin", "admin");
+
+    HttpHeaders headers = createHeaders(properties.getUsername(), properties.getPassword());
 
     var entity = new HttpEntity<>(body, headers);
 
-    restTemplate.postForEntity("http://localhost:3000/api/dashboards/db", entity, String.class);
+    restTemplate.postForEntity(properties.getGrafanaUrl(), entity, String.class);
   }
 
   //https://www.baeldung.com/how-to-use-resttemplate-with-basic-authentication-in-spring
@@ -38,39 +49,38 @@ public class MermaidJsonTemplatingEngine {
     }};
   }
 
+  @SneakyThrows
   private String fillTemplate() {
-    var builder = new StringBuilder();
-    for (var line : mermaidTemplate) {
-      builder.append(fillLine(line));
-    }
+    var tree = objectMapper.readTree(mermaidTemplate);
 
-    return builder.toString();
+    var dashboard = tree.path("dashboard");
+    ((ObjectNode) dashboard).put("title", properties.getDashboardName());
+
+    var panelsNode = dashboard.path("panels").get(0);
+    var contentUrl = panelsNode.path("options");
+
+    ((ObjectNode) contentUrl).put("contentUrl", properties.getMermaidDiagramUrl());
+
+    var targets = (ArrayNode) panelsNode.path("targets");
+
+    tasks.forEach(task -> addMetric(targets, task.getTaskName()));
+
+    return tree.toPrettyString();
   }
 
-  private String fillLine(String line) {
-    var metrics = createMetric("task1") + "," + createMetric("task2") + "," + createMetric("task3");
+  private void addMetric(ArrayNode targets, String taskName) {
+    var obj = targets.addObject();
 
-    return line.replaceAll("\\$\\{CONTENT_URL\\}", "http://10.0.2.15:8080/draw/mermaid")
-        .replaceAll("\\$\\{METRICS\\}", metrics);
+    var datasource = obj.putObject("datasource");
+    datasource.put("type", "prometheus");
+    datasource.put("uid", "PBFA97CFB590B2093");
+
+    obj.put("exemplar", false);
+    obj.put("expr", "processing_counter{task_name='" + taskName + "'}");
+    obj.put("instant", true);
+    obj.put("internal", "");
+    obj.put("legendFormat", taskName);
+    obj.put("refId", taskName);
   }
 
-  private String createMetric(String taskName) {
-    return metricTemplate.replaceAll("\\$\\{TASK_NAME\\}", taskName);
-  }
-
-  private static final String metricTemplate = """
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
-        },
-        "exemplar": false,
-        "expr": "processing_counter{task_name='${TASK_NAME}'}",
-        "hide": false,
-        "instant": true,
-        "interval": "",
-        "legendFormat": "${TASK_NAME}",
-        "refId": "${TASK_NAME}"
-      }
-      """;
 }

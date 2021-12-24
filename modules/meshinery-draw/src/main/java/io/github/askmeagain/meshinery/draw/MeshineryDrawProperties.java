@@ -13,5 +13,8 @@ public class MeshineryDrawProperties {
   public static class DashboardPushProperties {
     private String username;
     private String password;
+    private String mermaidDiagramUrl;
+    private String grafanaUrl;
+    private String dashboardName;
   }
 }
