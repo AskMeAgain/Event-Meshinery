@@ -34,7 +34,7 @@ class DrawTestApplication {
       return MeshineryTaskFactory.<String, TestContext>builder()
           .connector(memoryConnector)
           .taskName("task1")
-          .read(null, "Input1")
+          .read(null, "0/10 * * * * *")
           .write("Output1")
           .build();
     }

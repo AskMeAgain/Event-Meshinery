@@ -11,6 +11,7 @@ public class MeshineryDrawProperties {
 
   @Data
   public static class DashboardPushProperties {
+    private boolean enabled;
     private String username;
     private String password;
     private String mermaidDiagramUrl;

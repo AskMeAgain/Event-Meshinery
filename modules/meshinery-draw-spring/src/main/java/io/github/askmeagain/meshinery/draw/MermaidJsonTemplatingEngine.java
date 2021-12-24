@@ -76,7 +76,7 @@ public class MermaidJsonTemplatingEngine {
     datasource.put("uid", "PBFA97CFB590B2093");
 
     obj.put("exemplar", false);
-    obj.put("expr", "processing_counter{task_name='" + taskName + "'}");
+    obj.put("expr", "processing_counter{task_name='" + taskName + "'} OR on() vector(0)");
     obj.put("instant", true);
     obj.put("internal", "");
     obj.put("legendFormat", taskName);

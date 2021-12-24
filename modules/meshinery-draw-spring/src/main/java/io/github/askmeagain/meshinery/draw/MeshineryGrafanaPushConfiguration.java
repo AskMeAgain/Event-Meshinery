@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @RequiredArgsConstructor
+@ConditionalOnProperty(prefix = "meshinery.draw.grafana-dashboard-push", name = "enabled")
 public class MeshineryGrafanaPushConfiguration {
 
   private final ObjectMapper objectMapper;

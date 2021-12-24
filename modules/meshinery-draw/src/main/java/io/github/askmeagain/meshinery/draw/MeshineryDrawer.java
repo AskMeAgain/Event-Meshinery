@@ -9,6 +9,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.graphstream.graph.implementations.DefaultGraph;
 
+import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_INPUT_KEY;
 import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_OUTPUT_KEY;
 
 @RequiredArgsConstructor
@@ -26,9 +27,10 @@ public class MeshineryDrawer {
 
     //map setup
     tasks.forEach(task -> {
-      task.getInputKeys().forEach(inputKey -> {
-        map.put(inputKey.toString(), task);
-      });
+      task.getTaskData().get(GRAPH_INPUT_KEY)
+          .forEach(inputKey -> {
+            map.put(inputKey, task);
+          });
     });
 
     //all nodes

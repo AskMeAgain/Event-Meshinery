@@ -4,7 +4,6 @@ import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.OutputSource;
 import io.github.askmeagain.meshinery.core.exceptions.DuplicateReadKeyException;
 import io.github.askmeagain.meshinery.core.exceptions.DuplicateTaskNameException;
-import io.github.askmeagain.meshinery.core.exceptions.InputKeyInvalidException;
 import io.github.askmeagain.meshinery.core.exceptions.TaskNameInvalidException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -47,7 +46,6 @@ public class MeshineryTaskVerifier {
         .map(MeshineryTask::getInputKeys)
         .flatMap(Collection::stream)
         .map(Object::toString)
-        .map(MeshineryTaskVerifier::verifyInputKey)
         .toList();
 
     var duplicates = findDuplicates(result);
@@ -87,15 +85,6 @@ public class MeshineryTaskVerifier {
       }
     }
     return name;
-  }
-
-  private static String verifyInputKey(String key) {
-    for (var letter : key.toCharArray()) {
-      if (!VALID_LETTERS.contains(String.valueOf(letter).toLowerCase())) {
-        throw new InputKeyInvalidException("InputKey '%s' contains '%s'".formatted(key, letter));
-      }
-    }
-    return key;
   }
 
   private static final String VALID_LETTERS = "abcdefghijklmnopqrstuvwxyz_-1234567890";
