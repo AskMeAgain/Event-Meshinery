@@ -20,12 +20,21 @@ allprojects {
 }
 
 tocme {
-
     doc(file("README.md"))
     numbered false
     bold false
     style Hierarchy
     variant GitHub
     levels '1-4'
-
 }
+
+def gitBranch() {
+    def branch = ""
+    def proc = "git rev-parse --abbrev-ref HEAD".execute()
+    proc.in.eachLine { line -> branch = line }
+    proc.err.eachLine { line -> println line }
+    proc.waitFor()
+    branch
+}
+
+rootProject.extensions.add("git-branch", gitBranch());

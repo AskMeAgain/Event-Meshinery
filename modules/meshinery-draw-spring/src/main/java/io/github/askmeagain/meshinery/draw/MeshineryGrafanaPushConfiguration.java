@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+
+import static java.util.Objects.requireNonNull;
 
 @Configuration
 @RequiredArgsConstructor
@@ -21,13 +22,18 @@ public class MeshineryGrafanaPushConfiguration {
 
   @PostConstruct
   void pushingDashboard() throws IOException {
+
+    var grafanaDashboardPush = meshineryDrawProperties.getGrafanaDashboardPush();
+
+    requireNonNull(grafanaDashboardPush.getDashboardName());
+    requireNonNull(grafanaDashboardPush.getGrafanaUrl());
+    requireNonNull(grafanaDashboardPush.getMermaidDiagramUrl());
+    requireNonNull(grafanaDashboardPush.getPassword());
+    requireNonNull(grafanaDashboardPush.getMetricQuery());
+    requireNonNull(grafanaDashboardPush.getUsername());
+
     try (var stream = this.getClass().getClassLoader().getResourceAsStream("mermaid-template.json")) {
-      new MermaidJsonTemplatingEngine(
-          Objects.requireNonNull(stream),
-          meshineryDrawProperties.getGrafanaDashboardPush(),
-          objectMapper,
-          tasks
-      ).send();
+      new MermaidJsonTemplatingEngine(requireNonNull(stream), grafanaDashboardPush, objectMapper, tasks).send();
     }
   }
 }
