@@ -7,3 +7,6 @@ meshinery:
       password: 'admin'
       mermaid-diagram-url: 'http://10.0.2.15:8080/draw/mermaid'
       grafana-url: 'http://localhost:3000/api/dashboards/db'
+spring:
+  application:
+    name: DrawTestApplication

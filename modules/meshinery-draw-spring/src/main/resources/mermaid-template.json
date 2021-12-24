@@ -75,7 +75,7 @@
             "hideEmpty": false,
             "hideZero": false,
             "placement": "bottom",
-            "show": true,
+            "show": false,
             "sortBy": "last",
             "sortDesc": true,
             "stats": [
