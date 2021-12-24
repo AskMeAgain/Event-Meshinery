@@ -1,6 +1,6 @@
 meshinery:
   draw:
-<    grafana-dashboard-push:
+    grafana-dashboard-push:
       enabled: true
       dashboard-name: 'SystemDiagram'
       username: 'admin'

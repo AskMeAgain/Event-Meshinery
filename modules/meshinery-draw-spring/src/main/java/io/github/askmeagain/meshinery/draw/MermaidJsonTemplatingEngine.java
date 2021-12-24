@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import static io.github.askmeagain.meshinery.draw.MeshineryDrawProperties.DashboardPushProperties;
 
+@Slf4j
 @RequiredArgsConstructor
 public class MermaidJsonTemplatingEngine {
 
@@ -30,19 +32,20 @@ public class MermaidJsonTemplatingEngine {
 
     var restTemplate = new RestTemplate();
 
-    HttpHeaders headers = createHeaders(properties.getUsername(), properties.getPassword());
+    var headers = createHeaders(properties.getUsername(), properties.getPassword());
 
     var entity = new HttpEntity<>(body, headers);
 
     restTemplate.postForEntity(properties.getGrafanaUrl(), entity, String.class);
+    log.info("Pushed new Dashboard '{}' to Grafana at '{}'", properties.getDashboardName(), properties.getGrafanaUrl());
   }
 
   //https://www.baeldung.com/how-to-use-resttemplate-with-basic-authentication-in-spring
   HttpHeaders createHeaders(String username, String password) {
     return new HttpHeaders() {{
-      String auth = username + ":" + password;
-      byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
-      String authHeader = "Basic " + new String(encodedAuth);
+      var auth = username + ":" + password;
+      var encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
+      var authHeader = "Basic " + new String(encodedAuth);
 
       set("Authorization", authHeader);
       setContentType(MediaType.APPLICATION_JSON);
