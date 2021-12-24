@@ -1,9 +1,7 @@
 plugins.withId("com.vanniktech.maven.publish.base") {
 
-    def isLocalExecution = gradle.startParameter.taskNames.contains('publishToMavenLocal')
-
     group = "io.github.askmeagain"
-    version = isLocalExecution ? rootProject.extensions.getByName("git-branch") + '-SNAPSHOT' : System.getenv("RELEASE_VERSION")
+    version = rootProject.extensions.getByName("release-version")
 
     mavenPublishing {
         publishToMavenCentral("S01")

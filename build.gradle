@@ -28,13 +28,16 @@ tocme {
     levels '1-4'
 }
 
-def gitBranch() {
+if (gradle.startParameter.taskNames.contains('publishMavenPublicationToMavenCentralRepository')) {
+    rootProject.extensions.add("release-version", System.getenv("RELEASE_VERSION"))
+} else if (gradle.startParameter.taskNames.contains('publishToMavenLocal')) {
     def branch = ""
     def proc = "git rev-parse --abbrev-ref HEAD".execute()
     proc.in.eachLine { line -> branch = line }
     proc.err.eachLine { line -> println line }
     proc.waitFor()
-    branch
-}
 
-rootProject.extensions.add("git-branch", gitBranch());
+    rootProject.extensions.add("release-version", "${branch}-SNAPSHOT")
+} else {
+    rootProject.extensions.add("release-version", "Default-SNAPSHOT")
+}
