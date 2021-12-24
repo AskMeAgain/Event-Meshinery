@@ -31,7 +31,7 @@ public class E2eMysqlTest extends AbstractMysqlTestBase {
   void testE2eMysql() {
     //Arrange --------------------------------------------------------------------------------
     //Act ------------------------------------------------------------------------------------
-    var batchJobFinished = executorService.awaitTermination(15_000, TimeUnit.MILLISECONDS);
+    var batchJobFinished = executorService.awaitTermination(25_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
