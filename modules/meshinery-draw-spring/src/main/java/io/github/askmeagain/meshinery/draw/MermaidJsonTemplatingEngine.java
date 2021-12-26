@@ -60,6 +60,10 @@ public class MermaidJsonTemplatingEngine {
     ((ObjectNode) dashboard).put("title", properties.getDashboardName());
 
     var panelsNode = dashboard.path("panels").get(0);
+    var dataSourceUidNode = (ObjectNode) panelsNode.path("datasource");
+    dataSourceUidNode.put("uid", properties.getDataSourceUid());
+
+    ((ObjectNode) panelsNode).put("title", properties.getDashboardName());
     var contentUrl = panelsNode.path("options");
 
     ((ObjectNode) contentUrl).put("contentUrl", properties.getMermaidDiagramUrl());
@@ -76,10 +80,10 @@ public class MermaidJsonTemplatingEngine {
 
     var datasource = obj.putObject("datasource");
     datasource.put("type", "prometheus");
-    datasource.put("uid", "PBFA97CFB590B2093");
+    datasource.put("uid", properties.getDataSourceUid());
 
     obj.put("exemplar", false);
-    obj.put("expr", properties.getMetricQuery().replace("$taskName",taskName) + " OR on() vector(0)");
+    obj.put("expr", properties.getMetricQuery().replace("$taskName", taskName) + " OR on() vector(0)");
     obj.put("instant", true);
     obj.put("internal", "");
     obj.put("legendFormat", taskName);

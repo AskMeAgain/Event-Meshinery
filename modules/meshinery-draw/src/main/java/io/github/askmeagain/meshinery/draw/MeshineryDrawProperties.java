@@ -15,6 +15,7 @@ public class MeshineryDrawProperties {
     private String username;
     private String password;
     private String mermaidDiagramUrl;
+    private String dataSourceUid;
     private String grafanaUrl;
     private String dashboardName = "SystemDiagram";
     private String metricQuery = "processing_counter{task_name='$taskName'}";
