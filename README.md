@@ -78,7 +78,7 @@ independent way.
 * Easily integrated in your existing development environment, by utilizing the existing state store: You have a MysqlDb?
   Use the mysql connector. You other team uses Kafka and you need to bridge a little bit of data? Add the existing
   KafkaConnector.
-* Create a complete [event diagram](modules/meshinery-draw/draw.md) to display your events and how they interact with
+* Create a complete [event diagram](https://github.com/AskMeAgain/Event-Meshinery/wiki/Draw) to display your events and how they interact with
   each other, completely automated.
 * You can resume a process in case of error and you will start exactly where you left off (within bounds).
 * Automatic Prometheus Monitoring integration or all your tasks and their respective task queues.
@@ -87,29 +87,29 @@ independent way.
 
 ## Module Structure <a name="Module-Structure"></a>
 
-* [meshinery-core](modules/meshinery-core/core.md) contains, the scheduler and everything basic you need. You only need
+* [meshinery-core](https://github.com/AskMeAgain/Event-Meshinery/wiki/Core) contains the scheduler and everything basic you need. You only need
   this to start. This library exposes the basic api on which the other packages depend on.
-    * [meshinery-core-spring](modules/meshinery-core-spring/core-spring.md) contains the **Spring** AutoConfiguration
+    * [meshinery-core-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Core-Spring) contains the **Spring** AutoConfiguration
       for the core library, like starting the Scheduler automatically and providing some utility hooks
-* [meshinery-monitoring](modules/meshinery-monitoring/monitoring.md) contains a prometheus monitoring solution
-    * [meshinery-monitoring-spring](modules/meshinery-monitoring-spring/monitoring-spring.md) contains the **Spring**
+* [meshinery-monitoring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Monitoring) contains a prometheus monitoring solution
+    * [meshinery-monitoring-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Monitoring-Spring) contains the **Spring**
       AutoConfiguration of the monitoring
-* [meshinery-draw](modules/meshinery-draw/draw.md) contains the MeshineryDrawer class, which takes MeshineryTasks and
+* [meshinery-draw](https://github.com/AskMeAgain/Event-Meshinery/wiki/Draw) contains the MeshineryDrawer class, which takes MeshineryTasks and
   draws system diagrams for multiple sources: Pictures (PNG,JPG) and Mermaid
-    * [meshinery-draw-spring](modules/meshinery-draw-spring/draw-spring.md) contains a **Spring** AutoConfiguration of
+    * [meshinery-draw-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Draw-Spring) contains a **Spring** AutoConfiguration of
       the Drawing with Endpoints
-* [meshinery-connectors-mysql](modules/connectors/mysql/meshinery-mysql-connector/mysql.md) has the Mysql state store
+* [meshinery-connectors-mysql](https://github.com/AskMeAgain/Event-Meshinery/wiki/Mysql) has the Mysql state store
   integration
     * [meshinery-connectors-mysql-spring](modules/connectors/mysql/meshinery-mysql-connector-spring/mysql-spring.md) has
       the Spring AutoConfiguration for Mysql
-* [meshinery-connectors-kafka](modules/connectors/kafka/meshinery-kafka-connector/kafka.md) has the Kafka state store
+* [meshinery-connectors-kafka](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka) has the Kafka state store
   integration
-    * [meshinery-connectors-kafka-spring](modules/connectors/kafka/meshinery-kafka-connector-spring/kafka-spring.md)
+    * [meshinery-connectors-kafka-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka-Spring)
       has the Spring AutoConfiguration for Kafka
 
 ## Architecture <a name="Architecture"></a>
 
-[Detailed architecture documentation](modules/meshinery-core/core-architecture.md)
+[Detailed architecture documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Core-Architecture)
 
 The general building blocks of this framework consist of 5 ideas:
 
@@ -121,7 +121,7 @@ The general building blocks of this framework consist of 5 ideas:
 
 ### Meshinery Processors <a name="Processor"></a>
 
-[Detailed Documentation](modules/meshinery-core/processors.md)
+[Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Processor)
 
 Meshinery Processors define the actual business work, like doing restcalls, calculating user information etc. They take
 in a DataContext and a thread Executor and return a **CompletableFuture**.
@@ -143,7 +143,7 @@ in a DataContext and a thread Executor and return a **CompletableFuture**.
 
 ### MeshineryTasks <a name="Task"></a>
 
-[Detailed Documentation](modules/meshinery-core/tasks.md)
+[Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Task)
 
 A MeshineryTask describes a single **business** unit of work, which consists of an input source, a list of processors to
 solve a part of the business logic and one or multiple output calls, which trigger itself other events.
@@ -168,7 +168,7 @@ business case.
 
 ### DataContext <a name="Context"></a>
 
-[Detailed Documentation](modules/meshinery-core/datacontext.md)
+[Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-DataContext)
 
 A MeshineryTask has a dataContext assigned, which is basically just the input and output class type in
 sources/processors.
@@ -190,7 +190,7 @@ before.
 
 ### Round Robin Scheduler <a name="Scheduler"></a>
 
-[Detailed Documentation](modules/meshinery-core/scheduler.md)
+[Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Scheduler)
 
 The RoundRobinScheduler takes a list of tasks, creates small "work packages" (called TaskRuns)
 based on each task, and executes them on all available threads. The scheduler has alot of configurations and can run in
@@ -205,7 +205,7 @@ a continuous way or stop processing when all inputsources are exhausted.
 
 ### Connectors
 
-[Detailed Documentation](modules/meshinery-core/connectors.md)
+[Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Connector)
 
 There are Input and OutputSources and both form a MeshineryConnector. InputSources provide the data which gets passed to
 processors. OutputSources write the data to state stores and trigger one or more new events (by the respective
@@ -239,15 +239,15 @@ Obviously, you can mix and match these sources and even write your own. They onl
 
 Currently supported are the following state sources:
 
-* [Mysql](modules/connectors/mysql/meshinery-mysql-connector/mysql.md)
-* [Kafka](modules/connectors/kafka/meshinery-kafka-connector/kafka.md)
-* [Memory](modules/meshinery-core/sources.md#utility-sources)
+* [Mysql](https://github.com/AskMeAgain/Event-Meshinery/wiki/Mysql)
+* [Kafka](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka)
+* [Memory](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Connector#utility-sources)
 
 And the following Utility Source:
 
-* [Cron](modules/meshinery-core/sources.md#utility-sources)
-* [Signaling Source](modules/meshinery-core/sources.md#utility-sources)
-* [InnerJoin Source](modules/meshinery-core/sources.md#utility-sources)
+* [Cron](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Connector#utility-sources)
+* [Signaling Source](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Connector#utility-sources)
+* [InnerJoin Source](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Connector#utility-sources)
 
 ## On Failure <a name="Failure"></a>
 
@@ -269,7 +269,7 @@ any concrete DataContext into any task, just by specifying a Taskname and provid
 for error correction or manual triggering of tasks (although a memory source would be more elegant here).
 
 This TaskReplayFactory can run (A)synchronous and is available as an endpoint in
-the [meshinery-core-spring](modules/meshinery-core-spring/core-spring.md) package.
+the [meshinery-core-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Core-Spring) package.
 
 ### Exception Handling <a name="ExceptionHandling"></a>
 
@@ -297,20 +297,19 @@ automatically** of:
 
 ## Monitoring
 
-* [Detailed Documentation](modules/meshinery-monitoring/monitoring.md)
-* [Spring Integration](modules/meshinery-monitoring-spring/monitoring-spring.md)
+* [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Monitoring)
+* [Spring Integration](https://github.com/AskMeAgain/Event-Meshinery/wiki/Monitoring-Spring)
 
 The Monitoring package adds a basic monitoring solution. It
 uses [prometheus/client_java](https://github.com/prometheus/client_java)
 package to expose metrics in a format compatible with prometheus. All metrics are written to an internal Prometheus
-registry which can be shown via rest (already done in
-the [meshinery-monitoring-spring](modules/meshinery-monitoring-spring/monitoring-spring.md) package)
+registry which can be shown via rest (already done in the meshinery-monitoring-spring package)
 and easily expanded by your needs.
 
 ## Drawing Graphs
 
-* [Detailed Documentation](modules/meshinery-draw/draw.md)
-* [Spring Integration](modules/meshinery-draw-spring/draw-spring.md)
+* [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Draw)
+* [Spring Integration](https://github.com/AskMeAgain/Event-Meshinery/wiki/Draw-Spring)
 
 Since this framework provides a single way of defining tasks, we can use this to draw diagrams
 via [GraphStream](https://graphstream-project.org/). These diagrams are rendered based on the actual
@@ -335,9 +334,7 @@ passed into the plugin to display the topology directly, but you can easily impl
 
 ## Getting started
 
-Checkout the [core integration](modules/meshinery-core/core.md) for your basic app or checkout
-the [spring core](modules/meshinery-core-spring/core-spring.md)
-integration for an even easier setup.
+Checkout the [Getting Started](https://github.com/AskMeAgain/Event-Meshinery/wiki/Getting-Started) wiki page
 
 ## Roadmap
 
