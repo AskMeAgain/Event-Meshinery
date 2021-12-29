@@ -121,7 +121,7 @@ The general building blocks of this framework consist of 5 ideas:
 
 ### Meshinery Processors <a name="Processor"></a>
 
-[Detailed Documentation](modules/meshinery-core/processors.md)
+[Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Processor)
 
 Meshinery Processors define the actual business work, like doing restcalls, calculating user information etc. They take
 in a DataContext and a thread Executor and return a **CompletableFuture**.
@@ -168,7 +168,7 @@ business case.
 
 ### DataContext <a name="Context"></a>
 
-[Detailed Documentation](modules/meshinery-core/datacontext.md)
+[Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-DataContext)
 
 A MeshineryTask has a dataContext assigned, which is basically just the input and output class type in
 sources/processors.
@@ -190,7 +190,7 @@ before.
 
 ### Round Robin Scheduler <a name="Scheduler"></a>
 
-[Detailed Documentation](modules/meshinery-core/scheduler.md)
+[Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Scheduler)
 
 The RoundRobinScheduler takes a list of tasks, creates small "work packages" (called TaskRuns)
 based on each task, and executes them on all available threads. The scheduler has alot of configurations and can run in
@@ -205,7 +205,7 @@ a continuous way or stop processing when all inputsources are exhausted.
 
 ### Connectors
 
-[Detailed Documentation](modules/meshinery-core/connectors.md)
+[Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Connector)
 
 There are Input and OutputSources and both form a MeshineryConnector. InputSources provide the data which gets passed to
 processors. OutputSources write the data to state stores and trigger one or more new events (by the respective
@@ -297,20 +297,19 @@ automatically** of:
 
 ## Monitoring
 
-* [Detailed Documentation](modules/meshinery-monitoring/monitoring.md)
-* [Spring Integration](modules/meshinery-monitoring-spring/monitoring-spring.md)
+* [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Monitoring)
+* [Spring Integration](https://github.com/AskMeAgain/Event-Meshinery/wiki/Monitoring-Spring)
 
 The Monitoring package adds a basic monitoring solution. It
 uses [prometheus/client_java](https://github.com/prometheus/client_java)
 package to expose metrics in a format compatible with prometheus. All metrics are written to an internal Prometheus
-registry which can be shown via rest (already done in
-the [meshinery-monitoring-spring](modules/meshinery-monitoring-spring/monitoring-spring.md) package)
+registry which can be shown via rest (already done in the meshinery-monitoring-spring package)
 and easily expanded by your needs.
 
 ## Drawing Graphs
 
-* [Detailed Documentation](modules/meshinery-draw/draw.md)
-* [Spring Integration](modules/meshinery-draw-spring/draw-spring.md)
+* [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Draw)
+* [Spring Integration](https://github.com/AskMeAgain/Event-Meshinery/wiki/Draw-Spring)
 
 Since this framework provides a single way of defining tasks, we can use this to draw diagrams
 via [GraphStream](https://graphstream-project.org/). These diagrams are rendered based on the actual
@@ -335,9 +334,7 @@ passed into the plugin to display the topology directly, but you can easily impl
 
 ## Getting started
 
-Checkout the [core integration](modules/meshinery-core/core.md) for your basic app or checkout
-the [spring core](modules/meshinery-core-spring/core-spring.md)
-integration for an even easier setup.
+Checkout the [Getting Started](https://github.com/AskMeAgain/Event-Meshinery/wiki/Getting-Started) wiki page
 
 ## Roadmap
 
