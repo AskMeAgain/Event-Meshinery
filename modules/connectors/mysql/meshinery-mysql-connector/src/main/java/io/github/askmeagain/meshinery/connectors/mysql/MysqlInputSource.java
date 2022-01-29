@@ -81,40 +81,43 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
   @Override
   @SneakyThrows
   public List<C> getInputs(List<String> keys) {
-    return jdbi.inTransaction(handle -> {
-      var result = handle.createQuery(SELECT_QUERY)
-          .define("TABLE", clazz.getSimpleName())
-          .bindList("STATES", keys)
-          .bind("limit", mysqlProperties.getLimit())
-          .mapToBean(InternalWrapper.class)
-          .list();
+    return jdbi.inTransaction(handle -> Blocking.byKey(
+        keys.toArray(String[]::new),
+        () -> {
+          var result = handle.createQuery(SELECT_QUERY)
+              .define("TABLE", clazz.getSimpleName())
+              .bindList("STATES", keys)
+              .bind("limit", mysqlProperties.getLimit())
+              .mapToBean(InternalWrapper.class)
+              .list();
 
-      if (result.isEmpty()) {
-        return Collections.emptyList();
-      }
+          if (result.isEmpty()) {
+            return Collections.emptyList();
+          }
 
-      var preparedIds = result.stream()
-          .map(InternalWrapper::getEid)
-          .collect(Collectors.toList());
+          var preparedIds = result.stream()
+              .map(InternalWrapper::getEid)
+              .collect(Collectors.toList());
 
-      handle.createUpdate("UPDATE <TABLE> SET processed = 1 WHERE eid IN (<LIST>)")
-          .bindList("LIST", preparedIds)
-          .define("TABLE", clazz.getSimpleName())
-          .execute();
+          handle.createUpdate("UPDATE <TABLE> SET processed = 1 WHERE eid IN (<LIST>)")
+              .bindList("LIST", preparedIds)
+              .define("TABLE", clazz.getSimpleName())
+              .execute();
 
-      return result.stream()
-          .map(InternalWrapper::getContext)
-          .map(x -> {
-            try {
-              return objectMapper.readValue(x, clazz);
-            } catch (JsonProcessingException e) {
-              e.printStackTrace();
-              return null;
-            }
-          })
-          .filter(Objects::nonNull)
-          .toList();
-    });
+          return result.stream()
+              .map(InternalWrapper::getContext)
+              .map(x -> {
+                try {
+                  return objectMapper.readValue(x, clazz);
+                } catch (JsonProcessingException e) {
+                  e.printStackTrace();
+                  return null;
+                }
+              })
+              .filter(Objects::nonNull)
+              .toList();
+        }
+    ));
   }
 }
 

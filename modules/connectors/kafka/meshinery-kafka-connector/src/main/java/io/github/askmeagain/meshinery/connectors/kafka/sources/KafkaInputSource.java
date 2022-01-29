@@ -31,6 +31,7 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
 
   @Override
   public List<C> getInputs(List<String> keys) {
+    //TODO can be made much more efficiently by subscribing to multiple topics
     return keys.stream()
         .map(this::getInputs)
         .flatMap(Collection::stream)

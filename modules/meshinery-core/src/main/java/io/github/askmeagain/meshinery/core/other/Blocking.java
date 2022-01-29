@@ -5,21 +5,34 @@ import java.util.concurrent.Semaphore;
 import java.util.function.Supplier;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @UtilityClass
 public class Blocking {
 
   private static final ConcurrentHashMap<String, Semaphore> internalMap = new ConcurrentHashMap<>();
 
-  @SneakyThrows
   public static <O> O byKey(String key, Supplier<O> action) {
-    var semaphore = internalMap.computeIfAbsent(key, k -> new Semaphore(1));
+    return byKey(new String[]{key}, action);
+  }
+
+  @SneakyThrows
+  public static <O> O byKey(String[] keys, Supplier<O> action) {
+
+    var semaphores = new Semaphore[keys.length];
     try {
-      semaphore.acquire();
+      for (int i = 0; i < keys.length; i++) {
+        semaphores[i] = internalMap.computeIfAbsent(keys[i], k -> new Semaphore(1));
+        semaphores[i].acquire();
+      }
       return action.get();
     } finally {
-      internalMap.remove(key);
-      semaphore.release();
+      for (int i = 0; i < semaphores.length; i++) {
+        internalMap.remove(keys[i]);
+        semaphores[i].release();
+      }
     }
   }
 }

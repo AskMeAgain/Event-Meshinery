@@ -1,0 +1,18 @@
+import com.vanniktech.maven.publish.*
+
+plugins {
+    id "com.vanniktech.maven.publish.base"
+}
+
+dependencies {
+    implementation "com.github.docker-java:docker-java-transport-httpclient5:${docker_java_version}"
+    implementation "com.github.docker-java:docker-java-core:${docker_java_version}"
+
+    implementation project(':modules:meshinery-core')
+    api "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
+    testImplementation project(':modules:meshinery-core').sourceSets.test.output
+}
+
+mavenPublishing {
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
+}
