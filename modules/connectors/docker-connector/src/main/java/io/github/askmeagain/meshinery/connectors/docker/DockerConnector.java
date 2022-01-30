@@ -1,21 +1,19 @@
 package io.github.askmeagain.meshinery.connectors.docker;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import javax.xml.crypto.Data;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -29,8 +27,9 @@ public class DockerConnector implements MeshineryConnector<String, DockerDataCon
   private final String name;
 
   private boolean isExecuted;
+  private DataContainer internalState;
 
-  private final ConcurrentHashMap<String, DataContainer> internalState = new ConcurrentHashMap<>();
+  private final Set<String> executedCommands = new HashSet<>();
 
   @Override
   @SneakyThrows
@@ -40,31 +39,42 @@ public class DockerConnector implements MeshineryConnector<String, DockerDataCon
       isExecuted = true;
       log.info("Starting docker container");
 
-      var container = new DataContainer();
-      internalState.put(getName(), container);
-
       var command = key.toArray(String[]::new);
-
-      MeshineryDockerUtils.createTty(dockerContainer, command, container);
+      internalState = MeshineryDockerUtils.runContainer(getName(), command);
       return Collections.emptyList();
     }
 
-    log.info("Returning STDOUT!");
-    var container = internalState.get(getName());
-
     var logs = new ArrayList<String>();
-    container.getLogs().drainTo(logs);
+    internalState.getLogs().drainTo(logs);
+
+    if(logs.isEmpty()){
+      return Collections.emptyList();
+    }
+
+    var stringBuilder = new StringBuilder();
+    logs.iterator().forEachRemaining(x -> {
+      log.info(x);
+      stringBuilder.append(x);
+    });
+
 
     return List.of(DockerDataContext.builder()
         .Id(UUID.randomUUID().toString())
-        .logs(logs)
+        .logs(Arrays.stream(stringBuilder.toString().split("\r\n")).toList())
         .build());
   }
 
   @Override
   @SneakyThrows
   public void writeOutput(String key, DockerDataContext output) {
-    internalState.get(getName()).getStdin2().write((key + "\n").getBytes(StandardCharsets.UTF_8));
+
+    if(executedCommands.contains(key) && internalState.getIsFinished().get()){
+      return;
+    }
+
+    executedCommands.add(key);
+
+    internalState.getStdin2().write((key + "\n").getBytes(StandardCharsets.UTF_8));
   }
 
   @Value
@@ -72,6 +82,7 @@ public class DockerConnector implements MeshineryConnector<String, DockerDataCon
     LinkedBlockingQueue<String> logs = new LinkedBlockingQueue<>();
     PipedInputStream stdin = new PipedInputStream();
     PipedOutputStream stdin2;
+    AtomicBoolean isFinished = new AtomicBoolean();
 
     @SneakyThrows
     public DataContainer() {
