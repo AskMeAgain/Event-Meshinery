@@ -43,7 +43,8 @@ public class DockerConnector implements MeshineryConnector<String, DockerDataCon
       log.info("Starting docker container");
 
       var command = key.toArray(String[]::new);
-      internalState = MeshineryDockerUtils.runContainer(getName(), command);
+      var enviVars = getTaskData().getAllWithPrefix("MESHINERY_CONNECTORS_DOCKER");
+      internalState = MeshineryDockerUtils.runContainer(getName(), command, enviVars);
       return Collections.emptyList();
     }
 
@@ -57,24 +58,28 @@ public class DockerConnector implements MeshineryConnector<String, DockerDataCon
     var stringBuilder = new StringBuilder();
     logs.iterator().forEachRemaining(stringBuilder::append);
 
-    return List.of(DockerDataContext.builder()
-        .Id(UUID.randomUUID().toString())
-        .logs(Arrays.stream(stringBuilder.toString().split("\r\n")).toList())
-        .build());
+    return Arrays.stream(stringBuilder.toString().split("\r\n"))
+        .map(DockerDataContext::new)
+        .toList();
   }
 
   @Override
   @SneakyThrows
   public void writeOutput(String key, DockerDataContext output) {
-    if (executedCommands.contains(key) && internalState.getIsFinished().get()) {
+    if (executedCommands.contains(key)) {
       return;
     }
 
     executedCommands.add(key);
 
     var bytes = (key + "\n").getBytes(StandardCharsets.UTF_8);
-    internalState.getStdin2().write(bytes);
-    internalState.getStdin2().flush();
+    var userIn = internalState.getUserIn();
+    userIn.write(bytes);
+    userIn.flush();
   }
 
+  @SneakyThrows
+  public void close() {
+    internalState.getShutdownContainer().run();
+  }
 }

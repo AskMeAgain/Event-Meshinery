@@ -53,18 +53,23 @@ public class MeshineryTask<K, C extends DataContext> {
       return Collections.emptyList();
     }
 
-    nextExecution = now.plusMillis(backoffTimeMilli);
-    return inputConnector.getInputs(inputKeys)
-        .stream()
-        .map(input -> TaskRun.builder()
-            .taskName(getTaskName())
-            .taskData(taskData)
-            .id(input.getId())
-            .future(CompletableFuture.completedFuture(input))
-            .executorService(getExecutorService())
-            .queue(new LinkedList<>(getProcessorList()))
-            .handleError(getHandleException())
-            .build())
-        .toList();
+    try {
+      TaskData.setTaskData(taskData);
+      nextExecution = now.plusMillis(backoffTimeMilli);
+      return inputConnector.getInputs(inputKeys)
+          .stream()
+          .map(input -> TaskRun.builder()
+              .taskName(getTaskName())
+              .taskData(taskData)
+              .id(input.getId())
+              .future(CompletableFuture.completedFuture(input))
+              .executorService(getExecutorService())
+              .queue(new LinkedList<>(getProcessorList()))
+              .handleError(getHandleException())
+              .build())
+          .toList();
+    } finally {
+      TaskData.clearTaskData();
+    }
   }
 }
