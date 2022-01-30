@@ -26,6 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.Singular;
 
 import static io.github.askmeagain.meshinery.core.other.MeshineryUtils.joinEventKeys;
+import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_IGNORE_NO_KEYS_WARNING;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Builder(toBuilder = true, access = AccessLevel.PRIVATE)
@@ -378,16 +379,20 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<K, C> build() {
-    if (inputKeys.isEmpty()) {
-      throw new RuntimeException("Input Keys not defined for task %s".formatted(taskName));
-    }
+
+    var taskData = inputConnector.addToTaskData(this.taskData);
     Objects.requireNonNull(inputConnector, "Input source not specified");
+
+    if (inputKeys.isEmpty() && !taskData.has(TASK_IGNORE_NO_KEYS_WARNING)) {
+      throw new RuntimeException("Input Keys not defined for task %s. ".formatted(taskName) +
+          "If this is intended add %s property to task to ignore this".formatted(TASK_IGNORE_NO_KEYS_WARNING));
+    }
 
     return new MeshineryTask<>(
         backoffTime,
         inputKeys,
         taskName,
-        inputConnector.addToTaskData(taskData),
+        taskData,
         inputConnector,
         outputConnector,
         executorService,

@@ -20,23 +20,23 @@ public class MeshineryDockerUtils {
     return DockerClientImpl.getInstance(config, httpClient);
   }
 
-  public static DockerConnector.DataContainer runContainer(
+  public static DataContainer runContainer(
       String imageName,
       String[] startCommand
   ) throws InterruptedException {
 
-    var dataContainer = new DockerConnector.DataContainer();
-
+    var dataContainer = new DataContainer();
     var dockerClient = getInstance();
-    var execCreateCmdResponse = dockerClient.createContainerCmd(imageName)
+    var container = dockerClient.createContainerCmd(imageName)
         .withCmd(startCommand)
         .withTty(true)
+        .withStdinOpen(true)
         .withAttachStdout(true)
         .withAttachStderr(true)
         .withAttachStdin(true)
         .exec();
 
-    dockerClient.attachContainerCmd(execCreateCmdResponse.getId())
+    dockerClient.attachContainerCmd(container.getId())
         .withStdIn(dataContainer.getStdin())
         .withStdErr(true)
         .withStdOut(true)
@@ -50,11 +50,14 @@ public class MeshineryDockerUtils {
           @Override
           public void onComplete() {
             dataContainer.getIsFinished().set(true);
+            dockerClient.removeContainerCmd(container.getId())
+                .withForce(true)
+                .exec();
           }
         }))
         .awaitStarted();
 
-    dockerClient.startContainerCmd(execCreateCmdResponse.getId())
+    dockerClient.startContainerCmd(container.getId())
         .exec();
 
     return dataContainer;

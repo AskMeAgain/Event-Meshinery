@@ -1,8 +1,6 @@
 package io.github.askmeagain.meshinery.connectors.docker;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
-import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
@@ -13,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 class DockerConnectorTest {
@@ -60,7 +57,7 @@ class DockerConnectorTest {
     var task = MeshineryTaskFactory.<String, DockerDataContext>builder()
         .backoffTime(100)
         .connector(new DockerConnector("alpine"))
-        .read(executor, "ash", "-c", "'read -p \"Username: \" uservar'")
+        .read(executor, "ash", "-c", "read -p \"Username: \" uservar && echo ${uservar}def")
         .process((ctx, e) -> {
           if (!ctx.getLogs().isEmpty()) {
             log.info("{}",ctx.getLogs());
@@ -68,21 +65,89 @@ class DockerConnectorTest {
           }
           return CompletableFuture.completedFuture(ctx);
         })
-        .write("asdasd222")
+        .write("abc")
         .build();
 
     RoundRobinScheduler.builder()
         .isBatchJob(true)
-        .gracePeriodMilliseconds(20_000)
+        .gracePeriodMilliseconds(5_000)
         .task(task)
         .build()
         .start();
 
     //Act ------------------------------------------------------------------------------------
-    executor.awaitTermination(30_000, TimeUnit.MILLISECONDS);
+    executor.awaitTermination(10_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
-    assertThat(list).contains("Username: asdasd222","asdasd222");
+    assertThat(list).contains("Username: ","abc","abcdef");
+  }
+
+  @Test
+  @SneakyThrows
+  void dockerContainerWithInputCommand2() {
+    //Arrange --------------------------------------------------------------------------------
+    var executor = Executors.newSingleThreadExecutor();
+    var list = new ArrayList<String>();
+
+    var task = MeshineryTaskFactory.<String, DockerDataContext>builder()
+        .backoffTime(2000)
+        .connector(new DockerConnector("alpine"))
+        .read(executor, "sh")
+        .process((ctx, e) -> {
+          if (!ctx.getLogs().isEmpty()) {
+            list.addAll(ctx.getLogs());
+          }
+          return CompletableFuture.completedFuture(ctx);
+        })
+        .write("echo test")
+        .write("exit")
+        .build();
+
+    RoundRobinScheduler.builder()
+        .isBatchJob(true)
+        .gracePeriodMilliseconds(5_000)
+        .task(task)
+        .build()
+        .start();
+
+    //Act ------------------------------------------------------------------------------------
+    executor.awaitTermination(10_000, TimeUnit.MILLISECONDS);
+
+    //Assert ---------------------------------------------------------------------------------
+    assertThat(list).containsSubsequence("echo test","test", "/ # exit");
+  }
+
+  @Test
+  @SneakyThrows
+  void dockerContainerIndefinitely() {
+    //Arrange --------------------------------------------------------------------------------
+    var executor = Executors.newSingleThreadExecutor();
+    var list = new ArrayList<String>();
+
+    var task = MeshineryTaskFactory.<String, DockerDataContext>builder()
+        .backoffTime(2000)
+        .connector(new DockerConnector("mysql"))
+        .read(executor)
+        .process((ctx, e) -> {
+          if (!ctx.getLogs().isEmpty()) {
+            list.addAll(ctx.getLogs());
+          }
+          return CompletableFuture.completedFuture(ctx);
+        })
+        .build();
+
+    RoundRobinScheduler.builder()
+        .isBatchJob(true)
+        .gracePeriodMilliseconds(5_000)
+        .task(task)
+        .build()
+        .start();
+
+    //Act ------------------------------------------------------------------------------------
+    executor.awaitTermination(20_000, TimeUnit.MILLISECONDS);
+
+    //Assert ---------------------------------------------------------------------------------
+    assertThat(list).containsSubsequence("echo test","test", "/ # exit");
   }
 
 }
