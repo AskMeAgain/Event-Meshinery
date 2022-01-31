@@ -43,8 +43,7 @@ public class DockerConnector implements MeshineryConnector<String, DockerDataCon
       log.info("Starting docker container");
 
       var command = key.toArray(String[]::new);
-      var enviVars = getTaskData().getAllWithPrefix("MESHINERY_CONNECTORS_DOCKER");
-      internalState = MeshineryDockerUtils.runContainer(getName(), command, enviVars);
+      internalState = MeshineryDockerUtils.runContainer(getName(), command, getTaskData());
       return Collections.emptyList();
     }
 

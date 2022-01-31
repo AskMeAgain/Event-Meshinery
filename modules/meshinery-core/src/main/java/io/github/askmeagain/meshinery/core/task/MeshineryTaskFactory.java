@@ -12,6 +12,7 @@ import io.github.askmeagain.meshinery.core.processors.SignalingProcessor;
 import io.github.askmeagain.meshinery.core.processors.StopProcessor;
 import io.github.askmeagain.meshinery.core.source.JoinedInnerInputSource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -176,6 +177,20 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
         .taskName(name)
         .taskData(taskData.replace(TaskDataProperties.TASK_NAME, name))
         .build();
+  }
+
+  /**
+   * Context switch in a task. Needs a mapping method and a new defaultOutputsource to write to.
+   *
+   * @param newOutputSource new Outputsource to be used further down in the processor list
+   * @param map             mapping function from one Context to another
+   * @return returns itself for builder pattern
+   */
+  public <N extends DataContext> MeshineryTaskFactory<K, N> contextSwitch(
+      MeshineryConnector<K, N> newOutputSource,
+      Function<C, N> map
+  ) {
+    return contextSwitch(newOutputSource, map, Collections.emptyList());
   }
 
   /**

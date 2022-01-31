@@ -2,11 +2,19 @@ package io.github.askmeagain.meshinery.connectors.docker;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallback;
+import com.github.dockerjava.api.command.AsyncDockerCmd;
+import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Frame;
+import com.github.dockerjava.api.model.HostConfig;
+import com.github.dockerjava.api.model.Volume;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import lombok.SneakyThrows;
@@ -14,6 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MeshineryDockerUtils {
+
+  public static final String ENVIRONMENT_PREFIX = "MESHINERY_CONNECTORS_DOCKER_ENVIRONMENT_";
+  public static final String VOLUME_PREFIX = "MESHINERY_CONNECTORS_DOCKER_VOLUME_";
 
   private static DockerClient getInstance() {
     var config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
@@ -25,25 +36,22 @@ public class MeshineryDockerUtils {
   }
 
   @SneakyThrows
-  public static DataContainer runContainer(String imageName, String[] startCommand, Map<String, Object> enviVars) {
-    var transformedEnviVars = enviVars.entrySet().stream()
-        .map(kv -> kv.getKey().replace("MESHINERY_CONNECTORS_DOCKER_", "") + "=" + getValue(kv))
-        .toList();
+  public static DataContainer runContainer(String imageName, String[] startCommand, TaskData taskData) {
 
     var dockerClient = getInstance();
-    var container = dockerClient.createContainerCmd(imageName)
+    var dataContainer = new DataContainer();
+    var createContainerCmd = dockerClient.createContainerCmd(imageName)
         .withCmd(startCommand)
-        .withEnv(transformedEnviVars)
+        .withEnv(getEnviVars(taskData))
         .withTty(true)
         .withStdinOpen(true)
         .withAttachStdout(true)
         .withAttachStderr(true)
-        .withAttachStdin(true)
-        .exec();
+        .withAttachStdin(true);
 
-    var dataContainer = new DataContainer();
+    var createdContainer = addVolumes(createContainerCmd, taskData).exec();
 
-    dockerClient.attachContainerCmd(container.getId())
+    dockerClient.attachContainerCmd(createdContainer.getId())
         .withStdIn(dataContainer.getStdin())
         .withStdErr(true)
         .withStdOut(true)
@@ -71,7 +79,7 @@ public class MeshineryDockerUtils {
               dataContainer.getUserIn().close();
               dataContainer.getStdin().close();
               try (dockerClient) {
-                dockerClient.removeContainerCmd(container.getId())
+                dockerClient.removeContainerCmd(createdContainer.getId())
                     .withForce(true)
                     .exec();
               }
@@ -80,11 +88,41 @@ public class MeshineryDockerUtils {
         }))
         .awaitStarted();
 
-    dockerClient.startContainerCmd(container.getId())
+    dockerClient.startContainerCmd(createdContainer.getId())
         .exec();
 
     return dataContainer;
 
+  }
+
+  private static CreateContainerCmd addVolumes(CreateContainerCmd containerBuilder, TaskData taskData) {
+
+    var volumes = taskData.getAllWithPrefix(VOLUME_PREFIX);
+
+    if (volumes.isEmpty()) {
+      return containerBuilder;
+    }
+
+    var binds = new ArrayList<Bind>();
+
+    for (var kv : volumes.entrySet()) {
+      var source = getValue(kv);
+      var destination = kv.getKey().replace(VOLUME_PREFIX, "");
+
+      var volume = new Volume(destination);
+      containerBuilder = containerBuilder.withVolumes(volume);
+      binds.add(new Bind(source, volume));
+    }
+
+    return containerBuilder.withHostConfig(HostConfig.newHostConfig().withBinds(binds));
+  }
+
+  private static List<String> getEnviVars(TaskData taskData) {
+    var enviVars = taskData.getAllWithPrefix(ENVIRONMENT_PREFIX);
+
+    return enviVars.entrySet().stream()
+        .map(kv -> kv.getKey().replace(ENVIRONMENT_PREFIX, "") + "=" + getValue(kv))
+        .toList();
   }
 
   private static String getValue(Map.Entry<String, Object> kv) {
