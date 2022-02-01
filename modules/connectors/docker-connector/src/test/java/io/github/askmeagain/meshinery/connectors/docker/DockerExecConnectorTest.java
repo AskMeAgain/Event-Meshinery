@@ -19,7 +19,7 @@ import static io.github.askmeagain.meshinery.connectors.docker.MeshineryDockerUt
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-class DockerConnectorTest {
+class DockerExecConnectorTest {
 
   @Test
   @SneakyThrows
@@ -30,7 +30,7 @@ class DockerConnectorTest {
 
     var task = MeshineryTaskFactory.<String, DockerDataContext>builder()
         .backoffTime(100)
-        .connector(new DockerConnector("alpine"))
+        .connector(new DockerExecConnector("alpine"))
         .read(executor, "ash", "-c", "sleep 1 && echo 12 && sleep 1 && echo 34")
         .process((ctx, e) -> {
           if (!Strings.isNullOrEmpty(ctx.getLog())) {
@@ -62,7 +62,7 @@ class DockerConnectorTest {
 
     var task = MeshineryTaskFactory.<String, DockerDataContext>builder()
         .backoffTime(100)
-        .connector(new DockerConnector("alpine"))
+        .connector(new DockerExecConnector("alpine"))
         .read(executor, "ash", "-c", "read -p \"Username: \" uservar && echo ${uservar}def")
         .process((ctx, e) -> {
           if (!Strings.isNullOrEmpty(ctx.getLog())) {
@@ -96,7 +96,7 @@ class DockerConnectorTest {
 
     var task = MeshineryTaskFactory.<String, DockerDataContext>builder()
         .backoffTime(2000)
-        .connector(new DockerConnector("alpine"))
+        .connector(new DockerExecConnector("alpine"))
         .read(executor, "sh")
         .process((ctx, e) -> {
           if (!Strings.isNullOrEmpty(ctx.getLog())) {
@@ -128,7 +128,7 @@ class DockerConnectorTest {
     //Arrange --------------------------------------------------------------------------------
     var executor = Executors.newSingleThreadExecutor();
     var flag = new AtomicBoolean();
-    var dockerConnector = new DockerConnector("mysql");
+    var dockerConnector = new DockerExecConnector("mysql");
     var memoryConnector = new MemoryConnector<String, DockerDataContext>();
 
     var task = MeshineryTaskFactory.<String, DockerDataContext>builder()
@@ -171,7 +171,7 @@ class DockerConnectorTest {
     //Arrange --------------------------------------------------------------------------------
     var executor = Executors.newSingleThreadExecutor();
     var flag = new AtomicBoolean();
-    var dockerConnector = new DockerConnector("alpine");
+    var dockerConnector = new DockerExecConnector("alpine");
     var path = System.getProperty("user.dir") + "/src/test/resources/volume.sh";
 
     var task = MeshineryTaskFactory.<String, DockerDataContext>builder()

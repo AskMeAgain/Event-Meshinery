@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -19,7 +18,7 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_I
 
 @Slf4j
 @RequiredArgsConstructor
-public class DockerConnector implements MeshineryConnector<String, DockerDataContext> {
+public class DockerExecConnector implements MeshineryConnector<String, DockerDataContext> {
 
   @Getter
   private final String name;
