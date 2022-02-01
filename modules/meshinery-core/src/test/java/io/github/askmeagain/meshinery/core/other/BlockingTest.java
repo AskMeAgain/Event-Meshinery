@@ -52,7 +52,7 @@ class BlockingTest {
     Blocking.byKey(new String[]{"KEY3", "KEY2"}, () -> waitAndApply(counter, 0, 11));
 
     //let the other thread write new value
-    Thread.sleep(200);
+    Thread.sleep(2000);
     //Assert ---------------------------------------------------------------------------------
     assertThat(counter).hasValue(1);
   }
