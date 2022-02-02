@@ -2,7 +2,6 @@ package io.github.askmeagain.meshinery.connectors.docker;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallback;
-import com.github.dockerjava.api.command.AsyncDockerCmd;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Frame;
@@ -14,7 +13,6 @@ import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.io.Closeable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import lombok.SneakyThrows;
@@ -22,9 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MeshineryDockerUtils {
-
-  public static final String ENVIRONMENT_PREFIX = "MESHINERY_CONNECTORS_DOCKER_ENVIRONMENT_";
-  public static final String VOLUME_PREFIX = "MESHINERY_CONNECTORS_DOCKER_VOLUME_";
 
   private static DockerClient getInstance() {
     var config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
@@ -36,10 +31,10 @@ public class MeshineryDockerUtils {
   }
 
   @SneakyThrows
-  public static DataContainer runContainer(String imageName, String[] startCommand, TaskData taskData) {
+  public static InternalDockerDataContainer runContainer(String imageName, String[] startCommand, TaskData taskData) {
 
     var dockerClient = getInstance();
-    var dataContainer = new DataContainer();
+    var dataContainer = new InternalDockerDataContainer();
     var createContainerCmd = dockerClient.createContainerCmd(imageName)
         .withCmd(startCommand)
         .withEnv(getEnviVars(taskData))
@@ -97,7 +92,7 @@ public class MeshineryDockerUtils {
 
   private static CreateContainerCmd addVolumes(CreateContainerCmd containerBuilder, TaskData taskData) {
 
-    var volumes = taskData.getAllWithPrefix(VOLUME_PREFIX);
+    var volumes = taskData.getAllWithPrefix(MeshineryDockerProperties.VOLUME_PREFIX);
 
     if (volumes.isEmpty()) {
       return containerBuilder;
@@ -107,7 +102,7 @@ public class MeshineryDockerUtils {
 
     for (var kv : volumes.entrySet()) {
       var source = getValue(kv);
-      var destination = kv.getKey().replace(VOLUME_PREFIX, "");
+      var destination = kv.getKey().replace(MeshineryDockerProperties.VOLUME_PREFIX, "");
 
       var volume = new Volume(destination);
       containerBuilder = containerBuilder.withVolumes(volume);
@@ -118,10 +113,10 @@ public class MeshineryDockerUtils {
   }
 
   private static List<String> getEnviVars(TaskData taskData) {
-    var enviVars = taskData.getAllWithPrefix(ENVIRONMENT_PREFIX);
+    var enviVars = taskData.getAllWithPrefix(MeshineryDockerProperties.ENVIRONMENT_PREFIX);
 
     return enviVars.entrySet().stream()
-        .map(kv -> kv.getKey().replace(ENVIRONMENT_PREFIX, "") + "=" + getValue(kv))
+        .map(kv -> kv.getKey().replace(MeshineryDockerProperties.ENVIRONMENT_PREFIX, "") + "=" + getValue(kv))
         .toList();
   }
 

@@ -1,5 +1,8 @@
-package io.github.askmeagain.meshinery.connectors.docker;
+package io.github.askmeagain.meshinery.connectors.docker.sources;
 
+import io.github.askmeagain.meshinery.connectors.docker.InternalDockerDataContainer;
+import io.github.askmeagain.meshinery.connectors.docker.DockerDataContext;
+import io.github.askmeagain.meshinery.connectors.docker.MeshineryDockerUtils;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.nio.charset.StandardCharsets;
@@ -24,7 +27,7 @@ public class DockerExecConnector implements MeshineryConnector<String, DockerDat
   private final String name;
 
   private boolean isExecuted;
-  private DataContainer internalState;
+  private InternalDockerDataContainer internalState;
 
   private final Set<String> executedCommands = new HashSet<>();
 

@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.connectors.docker;
 
+import io.github.askmeagain.meshinery.connectors.docker.sources.DockerExecConnector;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
@@ -14,8 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Strings;
 import org.junit.jupiter.api.Test;
 
-import static io.github.askmeagain.meshinery.connectors.docker.MeshineryDockerUtils.ENVIRONMENT_PREFIX;
-import static io.github.askmeagain.meshinery.connectors.docker.MeshineryDockerUtils.VOLUME_PREFIX;
+import static io.github.askmeagain.meshinery.connectors.docker.MeshineryDockerProperties.ENVIRONMENT_PREFIX;
+import static io.github.askmeagain.meshinery.connectors.docker.MeshineryDockerProperties.VOLUME_PREFIX;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j

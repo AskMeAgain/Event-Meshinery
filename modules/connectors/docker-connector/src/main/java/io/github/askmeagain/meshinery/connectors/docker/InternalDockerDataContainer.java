@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.SneakyThrows;
 
 @Data
-public class DataContainer {
+public class InternalDockerDataContainer {
   LinkedBlockingQueue<String> logs = new LinkedBlockingQueue<>();
   PipedInputStream stdin = new PipedInputStream();
   PipedOutputStream userIn;
@@ -15,7 +15,7 @@ public class DataContainer {
   Runnable shutdownContainer;
 
   @SneakyThrows
-  public DataContainer() {
+  public InternalDockerDataContainer() {
     userIn = new PipedOutputStream(stdin);
   }
 }
