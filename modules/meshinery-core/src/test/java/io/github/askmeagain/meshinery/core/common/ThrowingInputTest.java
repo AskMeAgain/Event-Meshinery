@@ -5,6 +5,7 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.AbstractLogTestBase;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
+import io.github.askmeagain.meshinery.core.utils.sources.ThrowingInputSource;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;

@@ -210,7 +210,7 @@ public class RoundRobinScheduler {
         currentTask = currentTask.withFuture(resultFuture);
       }
 
-      outputQueue.add(currentTask); //this way, so we have always atleast 1 item in queue to signal we have work todo
+      outputQueue.add(currentTask); //this way, so we have always atleast 1 item in queue to signal we have work to do
       outputQueue.remove();
     }
 
@@ -234,18 +234,18 @@ public class RoundRobinScheduler {
       TaskData.setTaskData(taskRun.getTaskData());
       var decoratedProcessor = MeshineryUtils.applyDecorators(nextProcessor, processorDecorator);
       return decoratedProcessor.processAsync(context, taskRun.getExecutorService());
-    } catch (Exception e) {
+    } catch (Exception exception) {
       if (gracefulShutdownOnError) {
         log.error(
             "Error while preparing/processing processor '{}'. Shutting down gracefully",
             nextProcessor.getClass().getSimpleName(),
-            e
+            exception
         );
         gracefulShutdown();
         return CompletableFuture.completedFuture(null);
       }
 
-      throw e;
+      throw exception;
     }
   }
 }

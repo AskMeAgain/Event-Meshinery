@@ -13,7 +13,6 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/modules" />
             <option value="$PROJECT_DIR$/modules/connectors" />
-            <option value="$PROJECT_DIR$/modules/connectors/docker-connector" />
             <option value="$PROJECT_DIR$/modules/connectors/kafka" />
             <option value="$PROJECT_DIR$/modules/connectors/kafka/meshinery-kafka-connector" />
             <option value="$PROJECT_DIR$/modules/connectors/kafka/meshinery-kafka-connector-spring" />

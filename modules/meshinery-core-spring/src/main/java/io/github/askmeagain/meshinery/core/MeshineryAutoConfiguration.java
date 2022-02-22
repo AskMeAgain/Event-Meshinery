@@ -62,6 +62,8 @@ public class MeshineryAutoConfiguration {
       List<ProcessorDecorator<DataContext, DataContext>> processorDecorators,
       MeshineryCoreProperties meshineryCoreProperties
   ) {
+    var appliedPropertyTasks = PropertyTaskInjection.injectProperties(tasks, meshineryCoreProperties);
+
     return RoundRobinScheduler.builder()
         .isBatchJob(meshineryCoreProperties.isBatchJob())
         .registerShutdownHook(shutdownHook)
@@ -69,7 +71,7 @@ public class MeshineryAutoConfiguration {
         .registerDecorators(processorDecorators)
         .gracefulShutdownOnError(meshineryCoreProperties.isShutdownOnError())
         .gracePeriodMilliseconds(meshineryCoreProperties.getGracePeriodMilliseconds())
-        .tasks(tasks)
+        .tasks(appliedPropertyTasks)
         .build();
   }
 }

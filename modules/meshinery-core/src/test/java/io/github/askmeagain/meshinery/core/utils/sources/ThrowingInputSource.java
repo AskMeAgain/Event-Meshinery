@@ -1,9 +1,10 @@
-package io.github.askmeagain.meshinery.core.common;
+package io.github.askmeagain.meshinery.core.utils.sources;
 
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
 
-class ThrowingInputSource implements MeshineryConnector<String, TestContext> {
+public class ThrowingInputSource implements MeshineryConnector<String, TestContext> {
 
   @Override
   public String getName() {

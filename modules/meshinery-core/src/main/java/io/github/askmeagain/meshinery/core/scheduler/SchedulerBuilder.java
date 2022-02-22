@@ -75,6 +75,10 @@ public class SchedulerBuilder {
   @SneakyThrows
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public RoundRobinScheduler build() {
+
+    //verifying tasks
+    tasks.forEach(MeshineryTask::verifyTask);
+
     return new RoundRobinScheduler(
         tasks,
         backpressureLimit,
