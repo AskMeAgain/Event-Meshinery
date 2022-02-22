@@ -27,7 +27,10 @@
 
 ## Description
 
-This framework is a state store independent **signaling** framework and designed to easily structure **long running**,
+This framework was originally written to replace KafkaStreams in a specific usecase, but you can use this framework
+without Kafka.
+
+The framework is a state store independent **signaling** framework and designed to easily structure **long running**,
 **multi step** or **long delay heavy** processing tasks in a transparent and safe way.
 
 It is used as a way to **signal** the next processing step in your application, with transparent code and without hidden
@@ -37,12 +40,9 @@ done.
 It can connect any event/signal imaginable with any processing task and any state store, all with an **asynchronous**
 api to make sure that your events are processed the moment they happen.
 
-Event-Meshinery assumes that the restricting resource is time/network io and **not** processing power or throughput.
+**Event-Meshinery assumes that the restricting resource is time/network io and **not** processing power or throughput.**
 
 ## Motivation <a name="Motivation"></a>
-
-This framework was originally written to replace KafkaStreams in a specific usecase, but you can use this framework
-without Kafka. Currently supported are the following state stores, but you can easily provide your own:
 
 Doing long running (blocking) procedures (rest calls for example)
 via [Kafka Streams](https://kafka.apache.org/documentation/streams/) represents a challenge:
@@ -81,7 +81,7 @@ independent way.
 * Create a complete [event diagram](https://github.com/AskMeAgain/Event-Meshinery/wiki/Draw) to display your events and how they interact with
   each other, completely automated.
 * You can resume a process in case of error and you will start exactly where you left off (within bounds).
-* Automatic Prometheus Monitoring integration or all your tasks and their respective task queues.
+* Automatic Prometheus Monitoring integration of all your tasks and their respective task queues.
 * Complete **Spring** integration: 1-3 Annotations start everything, you only need to define the business logic and wire
   it together.
 
@@ -341,5 +341,4 @@ Checkout the [Getting Started](https://github.com/AskMeAgain/Event-Meshinery/wik
 The following things are planned (not in order)
 
 * Quarkus/Micronaut integration
-* More Sources (Process, Docker, Sftp (Maybe))
 * Sharding Possibilities in InputSources
