@@ -9,9 +9,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+
+import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_IGNORE_DUPLICATE_READ_KEY;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j
@@ -43,6 +46,7 @@ public class MeshineryTaskVerifier {
 
   private static void verifyReadKey(List<MeshineryTask<?, ?>> tasks) {
     var result = tasks.stream()
+        .filter(task -> !task.getTaskData().has(TASK_IGNORE_DUPLICATE_READ_KEY))
         .map(MeshineryTask::getInputKeys)
         .flatMap(Collection::stream)
         .map(Object::toString)
@@ -81,7 +85,8 @@ public class MeshineryTaskVerifier {
   private static String verifyTaskName(String name) {
     for (var letter : name.toCharArray()) {
       if (!VALID_LETTERS.contains(String.valueOf(letter).toLowerCase())) {
-        throw new TaskNameInvalidException("Task '%s' contains '%s'".formatted(name, letter));
+        throw new TaskNameInvalidException(
+            "Task '%s' contains '%s', but only %s is allowed".formatted(name, letter, VALID_LETTERS));
       }
     }
     return name;

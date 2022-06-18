@@ -14,5 +14,6 @@ public class TaskDataProperties {
   public static final String GRAPH_PROCESSOR = "graph.processor";
   public static final String TASK_NAME = "task.name";
   public static final String TASK_ID = "task.id";
+  public static final String TASK_IGNORE_DUPLICATE_READ_KEY = "task.ignore_duplicate_read_key";
   public static final String TASK_IGNORE_NO_KEYS_WARNING = "task.ignore_no_keys_warning";
 }

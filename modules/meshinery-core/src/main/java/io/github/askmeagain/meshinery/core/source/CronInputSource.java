@@ -6,6 +6,7 @@ import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +16,8 @@ import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+
+import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_IGNORE_DUPLICATE_READ_KEY;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
@@ -47,6 +50,11 @@ public class CronInputSource<C extends DataContext> implements MeshineryConnecto
         .map(this::getInputs)
         .flatMap(Collection::stream)
         .toList();
+  }
+
+  @Override
+  public TaskData addToTaskData(TaskData taskData) {
+    return taskData.put(TASK_IGNORE_DUPLICATE_READ_KEY, "1");
   }
 
   @SneakyThrows

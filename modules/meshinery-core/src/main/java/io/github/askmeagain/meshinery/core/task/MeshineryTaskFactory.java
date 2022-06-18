@@ -132,6 +132,11 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
         .build();
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  public MeshineryTaskFactory<K, C> putData(String key) {
+    return putData(key, "1");
+  }
+
   public MeshineryTaskFactory<K, C> readNewInput(K key, AccessingInputSource<K, C> newInputSource) {
     return addNewProcessor(new SignalingProcessor<>(newInputSource, key, (context, signal) -> signal));
   }

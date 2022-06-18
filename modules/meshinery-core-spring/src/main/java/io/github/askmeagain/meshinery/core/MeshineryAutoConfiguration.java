@@ -11,6 +11,7 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import java.util.List;
 import java.util.concurrent.Executors;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -54,6 +55,7 @@ public class MeshineryAutoConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public RoundRobinScheduler roundRobinScheduler(
       List<MeshineryTask<?, ?>> tasks,
@@ -65,6 +67,7 @@ public class MeshineryAutoConfiguration {
     var appliedPropertyTasks = PropertyTaskInjection.injectProperties(tasks, meshineryCoreProperties);
 
     return RoundRobinScheduler.builder()
+        .backpressureLimit(meshineryCoreProperties.getBackpressureLimit())
         .isBatchJob(meshineryCoreProperties.isBatchJob())
         .registerShutdownHook(shutdownHook)
         .registerStartupHook(startupHook)

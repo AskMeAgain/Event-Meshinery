@@ -16,6 +16,8 @@ public class MeshineryCoreProperties {
 
   private boolean batchJob = false;
 
+  private int backpressureLimit = 200;
+
   private boolean shutdownOnError = false;
 
   private boolean shutdownOnFinished = true;
