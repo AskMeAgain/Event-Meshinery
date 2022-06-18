@@ -17,8 +17,8 @@ public abstract class AbstractLogTestBase {
 
   abstract protected Class<?> loggerToUse();
 
+  //https://stackoverflow.com/a/52229629/5563263
   @BeforeEach
-    //https://stackoverflow.com/a/52229629/5563263
   void setup() {
     // create and start a ListAppender
     Logger fooLogger = (Logger) LoggerFactory.getLogger(loggerToUse());

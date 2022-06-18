@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.jackson2.Jackson2Config;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 
 @Slf4j
@@ -36,6 +37,7 @@ public class MysqlConnector<C extends DataContext> implements AccessingInputSour
         mysqlProperties.getUser(),
         mysqlProperties.getPassword()
     ).installPlugin(new Jackson2Plugin());
+    jdbi.getConfig(Jackson2Config.class).setMapper(objectMapper);
 
     this.name = name;
     this.mysqlInputSource = new MysqlInputSource<>(name, objectMapper, jdbi, clazz, mysqlProperties);

@@ -7,8 +7,10 @@ import lombok.Data;
 @Data
 public class MeshineryKafkaProperties {
   String bootstrapServers;
+
   String groupId;
 
   Properties producerProperties = new Properties();
+
   Properties consumerProperties = new Properties();
 }

@@ -11,7 +11,7 @@ import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 @Slf4j
 @SpringBootApplication
 @EnableMeshinery
-@Import({E2eTestConfiguration.class})
+@Import(E2eTestConfiguration.class)
 public class E2eTestApplication {
 
   public static final int NUMBER_OF_TOPICS = 20;

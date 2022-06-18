@@ -18,7 +18,7 @@ import org.testcontainers.utility.DockerImageName;
 import static org.apache.kafka.clients.admin.AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG;
 
 @Slf4j
-public class AbstractKafkaTest {
+public abstract class AbstractKafkaTest {
 
   public static KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.2.1"))
       .waitingFor(Wait.forLogMessage(".*Kafka startTimeMs:.*", 1));

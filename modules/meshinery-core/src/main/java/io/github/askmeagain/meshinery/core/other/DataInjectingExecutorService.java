@@ -75,7 +75,9 @@ public class DataInjectingExecutorService implements ExecutorService {
 
   @Override
   public <T> List<Future<T>> invokeAll(
-      Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit
+      Collection<? extends Callable<T>> tasks,
+      long timeout,
+      TimeUnit unit
   ) throws InterruptedException {
     return executorService.invokeAll(tasks, timeout, unit);
   }
@@ -95,7 +97,6 @@ public class DataInjectingExecutorService implements ExecutorService {
   public void execute(Runnable command) {
     var mdc = MDC.getCopyOfContextMap();
     var taskData = TaskData.getTaskData();
-    var name2 = this.getName();
     executorService.execute(() -> {
       if (mdc != null) {
         MDC.setContextMap(mdc);
