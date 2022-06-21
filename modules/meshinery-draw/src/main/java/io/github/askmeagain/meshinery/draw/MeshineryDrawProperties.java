@@ -1,6 +1,5 @@
 package io.github.askmeagain.meshinery.draw;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -11,7 +10,6 @@ public class MeshineryDrawProperties {
   @NotBlank
   private String resolution = "HD720";
 
-  @Valid
   private final DashboardPushProperties grafanaDashboardPush = new DashboardPushProperties();
 
   @Data

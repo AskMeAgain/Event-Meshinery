@@ -17,12 +17,16 @@ class MeshineryDrawerPropertyValidationTest extends AbstractLogTestBase {
     //Act ------------------------------------------------------------------------------------
     assertThrows(
         RuntimeException.class,
-        () -> application.run("--meshinery.draw.outputFormat=")
+        () -> application.run(
+            "--meshinery.draw.output-format=",
+            "--spring.main.web-application-type=none",
+            "--meshinery.draw.grafana-dashboard-push.enabled=false"
+        )
     );
 
     //Assert ---------------------------------------------------------------------------------
     assertThatLogContainsMessage(
-        output, "Property: meshinery.connectors.mysql.connectionString", "Reason: must not be blank");
+        output, "Property: meshinery.draw.outputFormat", "Reason: must not be blank");
   }
 
 }
