@@ -8,8 +8,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
+@Validated
 @Configuration
 @EnableConfigurationProperties
 public class MeshineryMysqlConfiguration {
@@ -30,6 +32,7 @@ public class MeshineryMysqlConfiguration {
   }
 
   @Bean
+  @Validated
   @ConfigurationProperties(prefix = "meshinery.connectors.mysql")
   public MeshineryMysqlProperties mysqlProperties() {
     return new MeshineryMysqlProperties();

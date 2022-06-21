@@ -1,4 +1,5 @@
-import com.vanniktech.maven.publish.*
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
 
 plugins {
     id 'org.springframework.boot' version "${spring_boot_version}"
@@ -9,7 +10,6 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${spring_boot_version}"
     api project(':modules:meshinery-core')
     api "org.springframework.boot:spring-boot-starter-web:${spring_boot_version}"
-    implementation "org.springframework.boot:spring-boot-starter-validation:${spring_boot_version}"
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
     testImplementation project(':modules:meshinery-monitoring-spring')
     testImplementation project(':modules:connectors:kafka:meshinery-kafka-connector-spring')

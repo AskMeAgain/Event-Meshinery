@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
 @Data
+@Validated
 @ConfigurationProperties("meshinery.core")
 public class MeshineryCoreProperties {
 
-  private final List<@NotNull String> inject = new ArrayList<>();
+  private final List<@NotBlank String> inject = new ArrayList<>();
 
   private boolean batchJob = false;
 
@@ -24,6 +26,6 @@ public class MeshineryCoreProperties {
 
   private int gracePeriodMilliseconds = 2000;
 
-  private final Map<String, Map<String,String>> taskProperties = new HashMap<>();
+  private final Map<String, Map<String, @NotBlank String>> taskProperties = new HashMap<>();
 
 }

@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.hooks.BatchJobTimingHooks;
@@ -31,6 +32,12 @@ public class MeshineryAutoConfiguration {
   @Bean
   public TaskReplayFactory taskReplayFactory(List<MeshineryTask<?, ?>> tasks) {
     return new TaskReplayFactory(tasks, Executors.newSingleThreadExecutor());
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ObjectMapper objectMapper(){
+    return new ObjectMapper();
   }
 
   @Bean

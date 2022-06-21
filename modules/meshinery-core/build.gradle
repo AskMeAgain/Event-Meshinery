@@ -1,11 +1,10 @@
-import com.vanniktech.maven.publish.*
-
 plugins {
     id "com.vanniktech.maven.publish.base"
 }
 
 dependencies {
     api "com.cronutils:cron-utils:${cronutils_version}"
+    api "org.hibernate.validator:hibernate-validator:6.0.21.Final"
     implementation "org.apache.commons:commons-collections4:${commons_collections4_version}"
     testImplementation "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
 }

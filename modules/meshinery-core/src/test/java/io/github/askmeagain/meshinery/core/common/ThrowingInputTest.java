@@ -9,6 +9,7 @@ import io.github.askmeagain.meshinery.core.utils.sources.ThrowingInputSource;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.system.CapturedOutput;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +18,7 @@ class ThrowingInputTest extends AbstractLogTestBase {
   private static final String KEY = "Test";
 
   @Test
-  void testBatchJobFlag() throws InterruptedException {
+  void testBatchJobFlag(CapturedOutput output) throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
     var executor = Executors.newSingleThreadExecutor();
     var inputSource = new ThrowingInputSource();
@@ -38,12 +39,6 @@ class ThrowingInputTest extends AbstractLogTestBase {
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
-    assertThatLogContainsMessage("Error while requesting new input data. Shutting down scheduler");
+    assertThatLogContainsMessage(output, "Error while requesting new input data. Shutting down scheduler");
   }
-
-  @Override
-  protected Class<?> loggerToUse() {
-    return RoundRobinScheduler.class;
-  }
-
 }

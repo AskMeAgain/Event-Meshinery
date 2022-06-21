@@ -44,6 +44,7 @@ public class MeshineryKafkaConfiguration {
   }
 
   @Bean
+  @Validated
   @ConfigurationProperties("meshinery.connectors.kafka")
   public MeshineryKafkaProperties kafkaProperties() {
     return new MeshineryKafkaProperties();

@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.validation.annotation.Validated;
 
 @Configuration
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Import;
 public class MeshineryDrawerConfiguration {
 
   @Bean
+  @Validated
   @ConfigurationProperties("meshinery.draw")
   public MeshineryDrawProperties drawerProperties() {
     return new MeshineryDrawProperties();

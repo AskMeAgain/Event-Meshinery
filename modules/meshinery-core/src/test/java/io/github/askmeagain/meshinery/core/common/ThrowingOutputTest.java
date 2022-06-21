@@ -9,6 +9,7 @@ import io.github.askmeagain.meshinery.core.utils.sources.ThrowingOutputSource;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.system.CapturedOutput;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,10 +18,10 @@ class ThrowingOutputTest extends AbstractLogTestBase {
   private static final String KEY = "Test";
 
   @Test
-  void testBatchJobFlag() throws InterruptedException {
+  void testBatchJobFlag(CapturedOutput output) throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
     var executor = Executors.newSingleThreadExecutor();
-    var inputSource = TestInputSource.<TestContext>builder()
+    var inputSource = TestInputSource.builder()
         .todo(new TestContext(0))
         .iterations(1)
         .build();
@@ -43,11 +44,8 @@ class ThrowingOutputTest extends AbstractLogTestBase {
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
     assertThatLogContainsMessage(
-        "Error while preparing/processing processor 'DynamicOutputProcessor'. Shutting down gracefully");
-  }
-
-  @Override
-  protected Class<?> loggerToUse() {
-    return RoundRobinScheduler.class;
+        output,
+        "Error while preparing/processing processor 'DynamicOutputProcessor'. Shutting down gracefully"
+    );
   }
 }

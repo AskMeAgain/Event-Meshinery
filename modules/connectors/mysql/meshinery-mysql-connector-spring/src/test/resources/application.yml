@@ -10,3 +10,7 @@ meshinery:
       user: user
       password: password
       limit: 1
+
+spring:
+  main:
+    web-application-type: none
