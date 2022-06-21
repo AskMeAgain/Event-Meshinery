@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -66,6 +67,7 @@ public class RoundRobinScheduler {
     //the producer
     var inputExecutor = new DataInjectingExecutorService("input-executor", Executors.newSingleThreadExecutor());
     executorServices.add(inputExecutor);
+
     //the worker
     var taskExecutor = new DataInjectingExecutorService("output-executor", Executors.newSingleThreadExecutor());
     executorServices.add(taskExecutor);
@@ -97,6 +99,7 @@ public class RoundRobinScheduler {
 
   @SneakyThrows
   private void createInputScheduler(ExecutorService executor) {
+    Thread.currentThread().setName("meshinery-input");
     log.info("Starting input worker thread");
 
     inputQueue.addAll(fillQueueFromTasks());
@@ -162,12 +165,12 @@ public class RoundRobinScheduler {
 
   @SneakyThrows
   private void runWorker(ExecutorService executor) {
+    Thread.currentThread().setName("meshinery-output");
     log.info("Starting processing worker thread");
 
     //we use this label to break out of the task in case we cant work on it (not done or returns null)
     newTask:
     while (!executor.isShutdown() && !internalShutdown) {
-      MDC.clear();
 
       var currentTask = outputQueue.peek();
 
@@ -175,9 +178,8 @@ public class RoundRobinScheduler {
         continue;
       }
 
-      MDC.put(TaskDataProperties.TASK_NAME, currentTask.getTaskName());
-      MDC.put(TaskDataProperties.TASK_ID, currentTask.getId());
       while (currentTask.getFuture().isDone()) {
+
         var queue = currentTask.getQueue();
 
         //we stop if we reached the end of the queue
@@ -202,15 +204,19 @@ public class RoundRobinScheduler {
         //we stop if the context is null
         if (context == null) {
           outputQueue.remove();
-          MDC.clear();
           continue newTask;
         }
+
+        MDC.clear();
+        MDC.put(TaskDataProperties.TASK_NAME, currentTask.getTaskName());
+        MDC.put(TaskDataProperties.TASK_ID, currentTask.getId());
+
         var resultFuture = getResultFuture(currentTask, nextProcessor, context);
 
         currentTask = currentTask.withFuture(resultFuture);
       }
 
-      outputQueue.add(currentTask); //this way, so we have always atleast 1 item in queue to signal we have work to do
+      outputQueue.add(currentTask); //this order, so we have always atleast 1 item in queue to signal we have work to do
       outputQueue.remove();
     }
 

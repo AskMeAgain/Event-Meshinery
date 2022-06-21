@@ -88,7 +88,7 @@ public class MeshineryTask<K, C extends DataContext> {
    * Pulls the next batch of data from the input source. Keeps the backoff period in mind, which in this case returns
    * empty list and doesnt poll the source
    *
-   * @return returns Taskruns
+   * @return returns TaskRuns
    */
   public List<TaskRun> getNewTaskRuns() {
     var now = Instant.now();

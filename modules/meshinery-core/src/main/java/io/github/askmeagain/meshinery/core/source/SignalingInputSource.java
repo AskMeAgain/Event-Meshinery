@@ -19,7 +19,6 @@ public class SignalingInputSource<K extends Comparable<K>, C extends DataContext
   @Builder.Default
   private final boolean lockIn = false;
 
-
   private final Set<K> locked = new ConcurrentSkipListSet<>();
 
   @Getter

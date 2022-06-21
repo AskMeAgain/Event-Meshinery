@@ -5,19 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.other.Blocking;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.transaction.TransactionIsolationLevel;
 
 @Slf4j
-@RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MysqlInputSource<C extends DataContext> implements AccessingInputSource<String, C> {
 
@@ -42,6 +42,22 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
   private final Jdbi jdbi;
   private final Class<C> clazz;
   private final MeshineryMysqlProperties mysqlProperties;
+  private final String simpleName;
+
+  public MysqlInputSource(
+      String name,
+      ObjectMapper objectMapper,
+      Jdbi jdbi,
+      Class<C> clazz,
+      MeshineryMysqlProperties mysqlProperties
+  ) {
+    this.name = name;
+    this.objectMapper = objectMapper;
+    this.jdbi = jdbi;
+    this.clazz = clazz;
+    this.mysqlProperties = mysqlProperties;
+    this.simpleName = clazz.getSimpleName();
+  }
 
   @Override
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
@@ -81,7 +97,7 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
   @Override
   @SneakyThrows
   public List<C> getInputs(List<String> keys) {
-    return jdbi.inTransaction(handle -> Blocking.byKey(
+    return jdbi.withHandle(handle -> Blocking.byKey(
         keys.toArray(String[]::new),
         () -> {
           var result = handle.createQuery(SELECT_QUERY)
@@ -97,14 +113,9 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
 
           var preparedIds = result.stream()
               .map(InternalWrapper::getEid)
-              .collect(Collectors.toList());
+              .toList();
 
-          handle.createUpdate("UPDATE <TABLE> SET processed = 1 WHERE eid IN (<LIST>)")
-              .bindList("LIST", preparedIds)
-              .define("TABLE", clazz.getSimpleName())
-              .execute();
-
-          return result.stream()
+          var finalResult = result.stream()
               .map(InternalWrapper::getContext)
               .map(x -> {
                 try {
@@ -116,6 +127,13 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
               })
               .filter(Objects::nonNull)
               .toList();
+
+          handle.createUpdate("UPDATE <TABLE> SET processed = 1 WHERE eid IN (<LIST>)")
+              .bindList("LIST", preparedIds)
+              .define("TABLE", clazz.getSimpleName())
+              .execute();
+
+          return finalResult;
         }
     ));
   }

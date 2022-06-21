@@ -1,6 +1,8 @@
 package io.github.askmeagain.meshinery.connectors.mysql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
@@ -32,11 +34,28 @@ public class MysqlConnector<C extends DataContext> implements AccessingInputSour
   public MysqlConnector(
       String name, Class<C> clazz, ObjectMapper objectMapper, MeshineryMysqlProperties mysqlProperties
   ) {
-    var jdbi = Jdbi.create(
-        mysqlProperties.getConnectionString(),
-        mysqlProperties.getUser(),
-        mysqlProperties.getPassword()
-    ).installPlugin(new Jackson2Plugin());
+    HikariConfig config = new HikariConfig();
+
+    config.setJdbcUrl(mysqlProperties.getConnectionString());
+    config.setUsername(mysqlProperties.getUser());
+    config.setPassword(mysqlProperties.getPassword());
+
+    config.addDataSourceProperty("cachePrepStmts","true");
+    config.addDataSourceProperty("prepStmtCacheSize","250");
+    config.addDataSourceProperty("prepStmtCacheSqlLimit","2048");
+    config.addDataSourceProperty("useServerPrepStmts","true");
+    config.addDataSourceProperty("useLocalSessionState","true");
+    config.addDataSourceProperty("useLocalTransactionState","true");
+    config.addDataSourceProperty("rewriteBatchedStatements","true");
+    config.addDataSourceProperty("cacheResultSetMetadata","true");
+    config.addDataSourceProperty("cacheServerConfiguration","true");
+    config.addDataSourceProperty("elideSetAutoCommits","true");
+    config.addDataSourceProperty("maintainTimeStats","false");
+    config.addDataSourceProperty("maximumPoolSize","30");
+
+    var ds = new HikariDataSource(config);
+
+    var jdbi = Jdbi.create(ds).installPlugin(new Jackson2Plugin());
     jdbi.getConfig(Jackson2Config.class).setMapper(objectMapper);
 
     this.name = name;

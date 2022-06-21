@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 public class MeshineryMysqlConfiguration {
 
   @Bean
-  public DynamicMysqlConnectorRegistration dynamicKafkaConnectorRegistration(
+  public DynamicMysqlConnectorRegistration dynamicMysqlConnectorRegistration(
       ApplicationContext applicationContext,
       ObjectProvider<ObjectMapper> objectMapper,
       ObjectProvider<MeshineryMysqlProperties> meshineryMysqlProperties
