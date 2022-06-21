@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StaticInputSource<K, C extends DataContext> implements MeshineryConnector<K, C> {
 
-
   @Getter
   private final String name;
   private final Function<List<K>, List<C>> staticInput;
