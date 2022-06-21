@@ -1,5 +1,4 @@
-import com.vanniktech.maven.publish.JavaLibrary
-import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.*
 
 plugins {
     id 'org.springframework.boot' version "${spring_boot_version}"

@@ -6,6 +6,7 @@ import io.github.askmeagain.meshinery.draw.customizer.EdgeCustomizer;
 import io.github.askmeagain.meshinery.draw.customizer.GraphCustomizer;
 import io.github.askmeagain.meshinery.draw.customizer.NodeCustomizer;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

@@ -2,10 +2,12 @@ package io.github.askmeagain.meshinery.connectors.mysql;
 
 import io.github.askmeagain.meshinery.core.utils.AbstractLogTestBase;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBindException;
 import org.springframework.boot.test.system.CapturedOutput;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class MeshineryMysqlPropertyValidationTest extends AbstractLogTestBase {
 

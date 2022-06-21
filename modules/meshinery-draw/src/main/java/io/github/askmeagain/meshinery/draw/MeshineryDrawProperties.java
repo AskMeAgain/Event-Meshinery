@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.draw;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
 

@@ -1,11 +1,12 @@
 package io.github.askmeagain.meshinery.core;
 
+import io.github.askmeagain.meshinery.connectors.kafka.MeshineryKafkaConfiguration;
 import io.github.askmeagain.meshinery.core.utils.AbstractLogTestBase;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.system.CapturedOutput;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class MeshineryCorePropertiesTest extends AbstractLogTestBase {
 
