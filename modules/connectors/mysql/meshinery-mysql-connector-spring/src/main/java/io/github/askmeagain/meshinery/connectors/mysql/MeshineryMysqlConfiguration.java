@@ -33,7 +33,7 @@ public class MeshineryMysqlConfiguration {
 
   @Bean
   @Validated
-  @ConfigurationProperties(prefix = "meshinery.connectors.mysql")
+  @ConfigurationProperties("meshinery.connectors.mysql")
   public MeshineryMysqlProperties mysqlProperties() {
     return new MeshineryMysqlProperties();
   }

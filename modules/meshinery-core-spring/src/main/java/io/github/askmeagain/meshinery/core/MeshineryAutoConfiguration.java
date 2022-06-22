@@ -7,6 +7,7 @@ import io.github.askmeagain.meshinery.core.hooks.BatchJobTimingHooks;
 import io.github.askmeagain.meshinery.core.hooks.CustomizeShutdownHook;
 import io.github.askmeagain.meshinery.core.hooks.CustomizeStartupHook;
 import io.github.askmeagain.meshinery.core.injecting.DataContextInjectApiController;
+import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -21,12 +23,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.validation.annotation.Validated;
 
 @Configuration
-@Import({DataContextInjectApiController.class, ApplicationStartHookConfiguration.class})
-@EnableConfigurationProperties(MeshineryCoreProperties.class)
+@EnableConfigurationProperties
 @SuppressWarnings("checkstyle:MissingJavadocType")
+@Import({DataContextInjectApiController.class, ApplicationStartHookConfiguration.class})
 public class MeshineryAutoConfiguration {
+
+  @Bean
+  @Validated
+  @ConfigurationProperties("meshinery.core")
+  public MeshineryCoreProperties meshineryCoreProperties() {
+    return new MeshineryCoreProperties();
+  }
 
   @Lazy
   @Bean
@@ -36,7 +46,7 @@ public class MeshineryAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public ObjectMapper objectMapper(){
+  public ObjectMapper objectMapper() {
     return new ObjectMapper();
   }
 

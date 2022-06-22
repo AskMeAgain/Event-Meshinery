@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.core.injecting;
 
-import io.github.askmeagain.meshinery.core.MeshineryCoreProperties;
+import io.github.askmeagain.meshinery.core.MeshineryAutoConfiguration;
+import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.nio.charset.StandardCharsets;
@@ -27,8 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(DataContextInjectApiController.class)
-@ContextConfiguration(classes = {DataContextInjectApiController.class})
-@EnableConfigurationProperties(MeshineryCoreProperties.class)
+@ContextConfiguration(classes = MeshineryAutoConfiguration.class)
 @TestPropertySource(properties = "meshinery.core.inject=io.github.askmeagain.meshinery.core.utils.context.TestContext")
 class DataContextInjectApiControllerTest {
 

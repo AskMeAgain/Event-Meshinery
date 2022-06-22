@@ -2,7 +2,7 @@ package io.github.askmeagain.meshinery.core.injecting;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.EnableMeshinery;
-import io.github.askmeagain.meshinery.core.MeshineryCoreProperties;
+import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import java.util.Arrays;

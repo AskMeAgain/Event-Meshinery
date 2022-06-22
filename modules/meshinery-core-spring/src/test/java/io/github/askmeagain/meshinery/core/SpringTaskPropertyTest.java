@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.core;
 
 import io.github.askmeagain.meshinery.core.injecting.DataContextInjectApiController;
+import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
