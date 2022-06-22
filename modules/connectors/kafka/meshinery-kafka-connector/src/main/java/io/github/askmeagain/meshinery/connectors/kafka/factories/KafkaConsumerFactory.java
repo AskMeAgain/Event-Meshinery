@@ -1,6 +1,8 @@
 package io.github.askmeagain.meshinery.connectors.kafka.factories;
 
 import io.github.askmeagain.meshinery.connectors.kafka.MeshineryKafkaProperties;
+import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -12,7 +14,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class KafkaConsumerFactory implements AutoCloseable {
 
-  private final Map<String, KafkaConsumer<String, byte[]>> consumers = new ConcurrentHashMap<>();
+  private final Map<List<String>, KafkaConsumer<String, byte[]>> consumers = new ConcurrentHashMap<>();
   private final Properties properties;
   private boolean disposed;
 
@@ -27,19 +29,20 @@ public class KafkaConsumerFactory implements AutoCloseable {
     properties.setProperty("auto.offset.reset", "earliest");
   }
 
-  public KafkaConsumer<String, byte[]> get(String key) {
-    return consumers.computeIfAbsent(key, this::createKafkaConsumer);
+  public KafkaConsumer<String, byte[]> get(List<String> keys) {
+    return consumers.computeIfAbsent(keys, this::createKafkaConsumer);
   }
 
-  private KafkaConsumer<String, byte[]> createKafkaConsumer(String topic) {
-    log.info("Creating kafka consumer for topic '{}'", topic);
+  private KafkaConsumer<String, byte[]> createKafkaConsumer(List<String> topics) {
+    log.info("Creating kafka consumer for topic '{}'", topics);
     var newProperties = new Properties();
     newProperties.putAll(properties);
-    newProperties.setProperty("group.id", properties.getProperty("group.id") + "-" + topic);
+    newProperties.setProperty("group.id", properties.getProperty("group.id") + "-" + topics);
     var stringKafkaConsumer = new KafkaConsumer<String, byte[]>(newProperties);
 
-    stringKafkaConsumer.subscribe(List.of(topic));
+    stringKafkaConsumer.subscribe(topics);
     stringKafkaConsumer.poll(0);
+
     return stringKafkaConsumer;
   }
 

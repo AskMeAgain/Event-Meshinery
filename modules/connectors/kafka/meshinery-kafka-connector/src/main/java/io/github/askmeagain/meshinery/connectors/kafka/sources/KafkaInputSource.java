@@ -5,6 +5,7 @@ import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaConsumerFa
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.other.Blocking;
+import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Collection;
@@ -30,33 +31,25 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
   private final KafkaConsumerFactory kafkaConsumerFactory;
 
   @Override
-  public List<C> getInputs(List<String> keys) {
-    //TODO can be made much more efficiently by subscribing to multiple topics
-    return keys.stream()
-        .map(this::getInputs)
-        .flatMap(Collection::stream)
-        .toList();
-  }
-
   @SneakyThrows
-  private List<C> getInputs(String topic) {
+  public List<C> getInputs(List<String> keys) {
     var result = Blocking.byKey(
-        topic,
-        () -> kafkaConsumerFactory.get(topic).poll(Duration.ofMillis(0))
+        keys,
+        () -> kafkaConsumerFactory.get(keys).poll(Duration.ofMillis(0))
     );
 
-    return StreamSupport.stream(result.spliterator(), false)
+    return StreamSupport.stream(result.spliterator(), true)
         .map(ConsumerRecord::value)
         .map(byteArr -> {
           try {
             return objectMapper.readValue(byteArr, serdeClazz);
           } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Cannot deserialize object", e);
             return null;
           }
         })
         .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Override

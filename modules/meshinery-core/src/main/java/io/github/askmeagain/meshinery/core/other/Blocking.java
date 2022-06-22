@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.core.other;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.function.Supplier;
@@ -16,6 +17,10 @@ public class Blocking {
 
   public static <O> O byKey(String key, Supplier<O> action) {
     return byKey(new String[]{key}, action);
+  }
+
+  public static <O> O byKey(List<String> keys, Supplier<O> action) {
+    return byKey(keys.toArray(String[]::new), action);
   }
 
   @SneakyThrows
