@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.core.common;
 
+import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
@@ -19,10 +20,14 @@ class BackpressureTest {
 
   @Test
   void testBackpressure() throws InterruptedException {
-
     //Arrange ----------------------------------------------------------------------------------------------------------
+    var properties = new MeshineryCoreProperties();
+    properties.setBatchJob(true);
+    properties.setBackpressureLimit(10);
+
     var executor = Executors.newFixedThreadPool(11);
     var processor = Mockito.spy(new TestContextProcessor(0));
+
     var inputSource = TestInputSource.<TestContext>builder()
         .todo(new TestContext(0))
         .iterations(100)
@@ -37,8 +42,7 @@ class BackpressureTest {
 
     //Act --------------------------------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()
-        .isBatchJob(true)
-        .backpressureLimit(10)
+        .properties(properties)
         .task(task)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(500, TimeUnit.MILLISECONDS);

@@ -22,6 +22,13 @@ public class SchedulerBuilder {
   List<MeshineryTask<? extends Object, ? extends DataContext>> tasks = new ArrayList<>();
   boolean gracefulShutdownOnError = true;
 
+  public SchedulerBuilder properties(MeshineryCoreProperties meshineryCoreProperties) {
+    return backpressureLimit(meshineryCoreProperties.getBackpressureLimit())
+        .gracefulShutdownOnError(meshineryCoreProperties.isShutdownOnError())
+        .gracePeriodMilliseconds(meshineryCoreProperties.getGracePeriodMilliseconds())
+        .isBatchJob(meshineryCoreProperties.isBatchJob());
+  }
+
   public SchedulerBuilder task(MeshineryTask<?, ? extends DataContext> task) {
     tasks.add(task);
     return this;
