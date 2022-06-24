@@ -38,6 +38,7 @@ public class KafkaConnector<C extends DataContext> implements MeshineryConnector
     this.outputSource = new KafkaOutputSource<>(name + "-output", kafkaProducerFactory, objectMapper);
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public KafkaConnector(
       String name,
       Class<C> clazz,

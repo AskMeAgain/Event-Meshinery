@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import static io.github.askmeagain.meshinery.draw.MeshineryDrawProperties.DashboardPushProperties;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j
 @RequiredArgsConstructor
 public class MermaidJsonTemplatingEngine {
@@ -27,6 +28,7 @@ public class MermaidJsonTemplatingEngine {
   private final ObjectMapper objectMapper;
   private final List<MeshineryTask<?, ?>> tasks;
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public void send() {
     var body = fillTemplate();
 
@@ -41,6 +43,7 @@ public class MermaidJsonTemplatingEngine {
   }
 
   //https://www.baeldung.com/how-to-use-resttemplate-with-basic-authentication-in-spring
+  @SuppressWarnings("checkstyle:Indentation")
   HttpHeaders createHeaders(String username, String password) {
     return new HttpHeaders() {{
       var auth = username + ":" + password;

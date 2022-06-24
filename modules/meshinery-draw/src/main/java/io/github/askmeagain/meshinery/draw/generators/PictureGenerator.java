@@ -7,9 +7,11 @@ import lombok.experimental.UtilityClass;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.stream.file.FileSinkImages;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @UtilityClass
 public class PictureGenerator {
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @SneakyThrows
   public static byte[] createImage(MeshineryDrawProperties properties, DefaultGraph graph) {
     var fileSinkImages = new FileSinkImages(

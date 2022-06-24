@@ -40,18 +40,18 @@ public class MysqlConnector<C extends DataContext> implements AccessingInputSour
     config.setUsername(mysqlProperties.getUser());
     config.setPassword(mysqlProperties.getPassword());
 
-    config.addDataSourceProperty("cachePrepStmts","true");
-    config.addDataSourceProperty("prepStmtCacheSize","250");
-    config.addDataSourceProperty("prepStmtCacheSqlLimit","2048");
-    config.addDataSourceProperty("useServerPrepStmts","true");
-    config.addDataSourceProperty("useLocalSessionState","true");
-    config.addDataSourceProperty("useLocalTransactionState","true");
-    config.addDataSourceProperty("rewriteBatchedStatements","true");
-    config.addDataSourceProperty("cacheResultSetMetadata","true");
-    config.addDataSourceProperty("cacheServerConfiguration","true");
-    config.addDataSourceProperty("elideSetAutoCommits","true");
-    config.addDataSourceProperty("maintainTimeStats","false");
-    config.addDataSourceProperty("maximumPoolSize","30");
+    config.addDataSourceProperty("cachePrepStmts", "true");
+    config.addDataSourceProperty("prepStmtCacheSize", "250");
+    config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+    config.addDataSourceProperty("useServerPrepStmts", "true");
+    config.addDataSourceProperty("useLocalSessionState", "true");
+    config.addDataSourceProperty("useLocalTransactionState", "true");
+    config.addDataSourceProperty("rewriteBatchedStatements", "true");
+    config.addDataSourceProperty("cacheResultSetMetadata", "true");
+    config.addDataSourceProperty("cacheServerConfiguration", "true");
+    config.addDataSourceProperty("elideSetAutoCommits", "true");
+    config.addDataSourceProperty("maintainTimeStats", "false");
+    config.addDataSourceProperty("maximumPoolSize", "30");
 
     var ds = new HikariDataSource(config);
 

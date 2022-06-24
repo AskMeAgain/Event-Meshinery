@@ -16,6 +16,6 @@ import org.springframework.context.annotation.Import;
 @Import({MeshineryMysqlConfiguration.class})
 public @interface EnableMeshineryMysql {
 
-  Class<? extends DataContext>[] context() default {};
+  @SuppressWarnings("checkstyle:MissingJavadocMethod") Class<? extends DataContext>[] context() default {};
 
 }

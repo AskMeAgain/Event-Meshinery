@@ -35,7 +35,7 @@ public class MeshineryDrawerConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public ObjectMapper objectMapper(){
+  public ObjectMapper objectMapper() {
     return new ObjectMapper();
   }
 

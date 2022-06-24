@@ -32,6 +32,7 @@ public class MysqlOutputSource<C extends DataContext> implements OutputSource<St
   private final String simpleName;
   private final QualifiedType<C> qualifiedType;
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MysqlOutputSource(String name, Jdbi jdbi, Class<C> clazz) {
     this.name = name;
     this.jdbi = jdbi;

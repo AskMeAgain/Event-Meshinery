@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Data
 public class MeshineryDrawProperties {
   @NotBlank
@@ -13,6 +14,7 @@ public class MeshineryDrawProperties {
 
   private final DashboardPushProperties grafanaDashboardPush = new DashboardPushProperties();
 
+  @SuppressWarnings("checkstyle:MissingJavadocType")
   @Data
   public static class DashboardPushProperties {
     private boolean enabled;

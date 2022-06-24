@@ -8,9 +8,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @UtilityClass
 public class MeshineryMonitoringSpringUtils {
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static String getNameByExecutorAndTasks(
       Map<ExecutorService, List<MeshineryTask<?, ?>>> executorPerTaskMap,
       DataInjectingExecutorService dataInjectingExecutorService

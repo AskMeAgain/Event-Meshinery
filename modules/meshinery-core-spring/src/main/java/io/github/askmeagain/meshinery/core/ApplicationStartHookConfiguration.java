@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationStartHookConfiguration {

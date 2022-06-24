@@ -57,6 +57,7 @@ public class RoundRobinScheduler {
     return new SchedulerBuilder();
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @SneakyThrows
   public RoundRobinScheduler start() {
     //setup
@@ -169,11 +170,14 @@ public class RoundRobinScheduler {
 
     //we use this label to break out of the task in case we cant work on it (not done or returns null)
     newTask:
-    while (!executor.isShutdown() && !internalShutdown) {
+    while (!executor.isShutdown()) {
 
       var currentTask = outputQueue.peek();
 
       if (currentTask == null) {
+        if (internalShutdown) {
+          break;
+        }
         continue;
       }
 
@@ -196,8 +200,6 @@ public class RoundRobinScheduler {
           currentTask = currentTask.withFuture(handledFuture);
         }
 
-        var nextProcessor = queue.remove();
-
         var context = currentTask.getFuture().get();
 
         //we stop if the context is null
@@ -210,7 +212,7 @@ public class RoundRobinScheduler {
         MDC.put(TaskDataProperties.TASK_NAME, currentTask.getTaskName());
         MDC.put(TaskDataProperties.TASK_ID, currentTask.getId());
 
-        var resultFuture = getResultFuture(currentTask, nextProcessor, context);
+        var resultFuture = getResultFuture(currentTask, queue.remove(), context);
 
         currentTask = currentTask.withFuture(resultFuture);
       }

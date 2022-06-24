@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Data
 public class MeshineryCoreProperties {
 

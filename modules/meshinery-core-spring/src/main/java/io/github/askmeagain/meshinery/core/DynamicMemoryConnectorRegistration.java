@@ -11,6 +11,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ResolvableType;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
 public class DynamicMemoryConnectorRegistration implements BeanDefinitionRegistryPostProcessor {
 

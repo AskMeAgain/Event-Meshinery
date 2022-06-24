@@ -7,6 +7,7 @@ import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
 public class StaticInputSource<K, C extends DataContext> implements MeshineryConnector<K, C> {
 

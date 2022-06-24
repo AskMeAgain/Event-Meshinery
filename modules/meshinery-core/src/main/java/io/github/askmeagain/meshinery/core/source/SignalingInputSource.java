@@ -13,6 +13,7 @@ import lombok.Getter;
 
 import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_INPUT_KEY;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Builder
 public class SignalingInputSource<K extends Comparable<K>, C extends DataContext> implements MeshineryConnector<K, C> {
 

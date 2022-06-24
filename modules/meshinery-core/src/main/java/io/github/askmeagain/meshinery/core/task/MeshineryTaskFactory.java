@@ -250,6 +250,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
     return addNewProcessor(decorated);
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTaskFactory<K, C> registerDecorator(ProcessorDecorator<C, C> decorator) {
     return toBuilder()
         .decorator(decorator)

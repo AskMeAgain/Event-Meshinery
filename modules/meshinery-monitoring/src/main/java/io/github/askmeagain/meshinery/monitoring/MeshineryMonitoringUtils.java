@@ -3,9 +3,11 @@ package io.github.askmeagain.meshinery.monitoring;
 import java.util.regex.Pattern;
 import lombok.experimental.UtilityClass;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @UtilityClass
 public class MeshineryMonitoringUtils {
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static String convertLambdaProcessorName(Class<?> processorName) {
     var simpleName = processorName.getSimpleName();
 

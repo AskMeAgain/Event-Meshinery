@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Value
 @Builder
 public class DynamicKeyConnector<K, C extends DataContext> implements MeshineryConnector<K, C> {

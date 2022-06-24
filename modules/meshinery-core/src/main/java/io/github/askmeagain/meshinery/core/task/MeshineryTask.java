@@ -36,6 +36,7 @@ public class MeshineryTask<K, C extends DataContext> {
   @Getter private final List<MeshineryProcessor<DataContext, DataContext>> processorList;
   Instant nextExecution = Instant.now();
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask(
       long backoffTimeMilli,
       List<K> inputKeys,
@@ -63,6 +64,7 @@ public class MeshineryTask<K, C extends DataContext> {
     this.processorList = processorList;
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public ConnectorKey getConnectorKey() {
     return ConnectorKey.builder()
         .connector((MeshineryConnector<Object, DataContext>) inputConnector)
@@ -75,12 +77,13 @@ public class MeshineryTask<K, C extends DataContext> {
     return this;
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public void verifyTask() {
     Objects.requireNonNull(inputConnector, "Input source not specified");
 
     if (inputKeys.isEmpty() && !taskData.has(TASK_IGNORE_NO_KEYS_WARNING)) {
-      throw new RuntimeException("Input Keys not defined for task %s. ".formatted(taskName) +
-          "If this is intended add %s property to task to ignore this".formatted(TASK_IGNORE_NO_KEYS_WARNING));
+      throw new RuntimeException("Input Keys not defined for task %s. ".formatted(taskName)
+          + "If this is intended add %s property to task to ignore this".formatted(TASK_IGNORE_NO_KEYS_WARNING));
     }
   }
 

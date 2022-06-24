@@ -46,6 +46,7 @@ public class TaskData {
     return this.withProperties(newProperties);
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public TaskData replace(String key, String value) {
     var newProperties = new Properties();
     newProperties.putAll(properties);
@@ -62,6 +63,7 @@ public class TaskData {
     return newProperties;
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public Map<String, Object> getAllWithPrefix(String prefix) {
     var map = new HashMap<String, Object>();
     properties.forEach((k, v) -> {

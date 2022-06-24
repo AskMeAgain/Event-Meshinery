@@ -52,11 +52,7 @@ public class CronInputSource<C extends DataContext> implements MeshineryConnecto
         .toList();
   }
 
-  @Override
-  public TaskData addToTaskData(TaskData taskData) {
-    return taskData.put(TASK_IGNORE_DUPLICATE_READ_KEY, "1");
-  }
-
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @SneakyThrows
   public List<C> getInputs(String cron) {
     var now = ZonedDateTime.now();
@@ -79,16 +75,21 @@ public class CronInputSource<C extends DataContext> implements MeshineryConnecto
     return Collections.emptyList();
   }
 
+  @Override
+  public TaskData addToTaskData(TaskData taskData) {
+    return taskData.put(TASK_IGNORE_DUPLICATE_READ_KEY, "1");
+  }
+
+  @Override
+  public void writeOutput(String key, C output) {
+    throw new UnsupportedOperationException();
+  }
+
   private void addNewCronEntry(String cron, ZonedDateTime now) {
     var result = parser.parse(cron);
     var executionTime = ExecutionTime.forCron(result);
     var nextExecution = executionTime.nextExecution(now);
 
     nextExecutions.put(cron, nextExecution.get());
-  }
-
-  @Override
-  public void writeOutput(String key, C output) {
-    throw new UnsupportedOperationException();
   }
 }

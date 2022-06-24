@@ -38,6 +38,7 @@ public class MeshineryUtils {
     return (CompletableFuture<O>) temp;
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static <I extends DataContext, O extends DataContext> MeshineryProcessor<I, O> applyDecorators(
       MeshineryProcessor<I, O> nextProcessor,
       List<ProcessorDecorator<I, O>> processorDecorator
@@ -51,6 +52,8 @@ public class MeshineryUtils {
     return innerProcessor;
   }
 
+  @SafeVarargs
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static <K> String joinEventKeys(K... inputKeys) {
     return Arrays.stream(inputKeys)
         .map(Object::toString)

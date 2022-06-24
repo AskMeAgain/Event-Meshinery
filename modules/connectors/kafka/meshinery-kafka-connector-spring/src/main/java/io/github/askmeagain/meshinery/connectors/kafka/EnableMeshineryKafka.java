@@ -16,6 +16,6 @@ import org.springframework.context.annotation.Import;
 @Import({MeshineryKafkaConfiguration.class})
 public @interface EnableMeshineryKafka {
 
-  Class<? extends DataContext>[] context() default {};
+  @SuppressWarnings("checkstyle:MissingJavadocMethod") Class<? extends DataContext>[] context() default {};
 
 }

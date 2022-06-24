@@ -5,9 +5,11 @@ import java.util.List;
 import lombok.experimental.UtilityClass;
 import org.graphstream.graph.implementations.DefaultGraph;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @UtilityClass
 public class MermaidGenerator {
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public List<String> createMermaidDiagram(DefaultGraph graph) {
 
     var list = new ArrayList<String>();

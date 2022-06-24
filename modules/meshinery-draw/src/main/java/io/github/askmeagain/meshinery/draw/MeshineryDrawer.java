@@ -12,10 +12,12 @@ import org.graphstream.graph.implementations.DefaultGraph;
 import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_INPUT_KEY;
 import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_OUTPUT_KEY;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
 public class MeshineryDrawer {
   private final List<MeshineryTask<?, ?>> tasks;
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public DefaultGraph createGraph(
       GraphCustomizer graphCustomizer,
       NodeCustomizer nodeCustomizer,

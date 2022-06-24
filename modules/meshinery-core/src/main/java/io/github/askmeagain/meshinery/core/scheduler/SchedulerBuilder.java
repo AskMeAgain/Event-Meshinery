@@ -22,6 +22,7 @@ public class SchedulerBuilder {
   List<MeshineryTask<? extends Object, ? extends DataContext>> tasks = new ArrayList<>();
   boolean gracefulShutdownOnError = true;
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public SchedulerBuilder properties(MeshineryCoreProperties meshineryCoreProperties) {
     return backpressureLimit(meshineryCoreProperties.getBackpressureLimit())
         .gracefulShutdownOnError(meshineryCoreProperties.isShutdownOnError())

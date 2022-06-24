@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Configuration
 @RequiredArgsConstructor
 @ConditionalOnProperty(prefix = "meshinery.draw.grafana-dashboard-push", name = "enabled")

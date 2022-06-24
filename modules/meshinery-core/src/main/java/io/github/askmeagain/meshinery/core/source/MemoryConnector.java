@@ -44,13 +44,13 @@ public class MemoryConnector<K, C extends DataContext> implements AccessingInput
           var list = new ArrayList<C>();
           if (map.containsKey(key)) {
             for (int i = 0; i < batchSize; i++) {
-              var stringCConcurrentNavigableMap = map.get(key);
-              if (stringCConcurrentNavigableMap.isEmpty()) {
+              var stringConcurrentNavigableMap = map.get(key);
+              if (stringConcurrentNavigableMap.isEmpty()) {
                 break;
               }
-              var stringCEntry = stringCConcurrentNavigableMap.firstEntry();
-              stringCConcurrentNavigableMap.remove(stringCEntry.getKey());
-              var item = stringCEntry.getValue();
+              var stringEntry = stringConcurrentNavigableMap.firstEntry();
+              stringConcurrentNavigableMap.remove(stringEntry.getKey());
+              var item = stringEntry.getValue();
               if (item == null) {
                 break;
               }
@@ -77,9 +77,9 @@ public class MemoryConnector<K, C extends DataContext> implements AccessingInput
   @Override
   public Optional<C> getContext(K key, String id) {
     return Blocking.byKey(key + "_" + id, () -> {
-      var stringCConcurrentNavigableMap = map.get(key);
-      if (stringCConcurrentNavigableMap.containsKey(id)) {
-        return Optional.of(stringCConcurrentNavigableMap.get(id));
+      var stringConcurrentNavigableMap = map.get(key);
+      if (stringConcurrentNavigableMap.containsKey(id)) {
+        return Optional.of(stringConcurrentNavigableMap.get(id));
       }
       return Optional.empty();
     });

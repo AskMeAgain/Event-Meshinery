@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Order(1)
 @RequiredArgsConstructor
 @RestController
@@ -41,6 +42,7 @@ public class DataContextInjectApiController {
     return new ResponseEntity<>(ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @SneakyThrows
   @PostConstruct
   public void setup() {
@@ -58,6 +60,7 @@ public class DataContextInjectApiController {
     }
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @SneakyThrows
   @PostMapping("/inject/{contextType}/{taskName}")
   public ResponseEntity<String> injectContext(
@@ -75,6 +78,7 @@ public class DataContextInjectApiController {
     }
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @SneakyThrows
   @PostMapping("/inject/{contextType}/{taskName}/async")
   public ResponseEntity<String> injectContextAsync(
@@ -92,6 +96,7 @@ public class DataContextInjectApiController {
     }
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @SneakyThrows
   @PostMapping("/replay/{contextType}/{taskName}")
   public ResponseEntity<String> replayContext(

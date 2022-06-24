@@ -13,13 +13,13 @@ import org.springframework.context.annotation.Import;
 @Import(MeshineryAutoConfiguration.class)
 public @interface EnableMeshinery {
 
-  Class<? extends DataContext>[] injection() default {};
+  @SuppressWarnings("checkstyle:MissingJavadocMethod") Class<? extends DataContext>[] injection() default {};
 
-  KeyDataContext[] connector() default {};
+  @SuppressWarnings("checkstyle:MissingJavadocMethod") KeyDataContext[] connector() default {};
 
   @interface KeyDataContext {
-    Class<? extends DataContext> context();
+    @SuppressWarnings("checkstyle:MissingJavadocMethod") Class<? extends DataContext> context();
 
-    Class<?> key();
+    @SuppressWarnings("checkstyle:MissingJavadocMethod") Class<?> key();
   }
 }

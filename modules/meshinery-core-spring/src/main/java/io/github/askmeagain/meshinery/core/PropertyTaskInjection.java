@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class PropertyTaskInjection {
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static List<MeshineryTask<?, ? extends DataContext>> injectProperties(
       List<MeshineryTask<?, ? extends DataContext>> tasks,
       MeshineryCoreProperties coreProperties

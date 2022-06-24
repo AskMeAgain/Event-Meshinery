@@ -44,6 +44,7 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
   private final MeshineryMysqlProperties mysqlProperties;
   private final String simpleName;
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MysqlInputSource(
       String name,
       ObjectMapper objectMapper,
@@ -67,7 +68,7 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
         () -> {
           var firstResult = handle.createQuery(SPECIFIC_SELECT_QUERY)
               .bind("state", key)
-              .define("TABLE", clazz.getSimpleName())
+              .define("TABLE", simpleName)
               .bind("id", id)
               .mapToBean(InternalWrapper.class)
               .findFirst();
@@ -77,7 +78,7 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
           }
 
           handle.createUpdate("UPDATE <TABLE> SET processed = 1 WHERE eid = :eid")
-              .define("TABLE", clazz.getSimpleName())
+              .define("TABLE", simpleName)
               .bind("eid", firstResult.get().getEid())
               .execute();
 

@@ -9,6 +9,7 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j
 @UtilityClass
 public class Blocking {
@@ -23,6 +24,7 @@ public class Blocking {
     return byKey(keys.toArray(String[]::new), action);
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @SneakyThrows
   public static <O> O byKey(String[] keys, Supplier<O> action) {
 
