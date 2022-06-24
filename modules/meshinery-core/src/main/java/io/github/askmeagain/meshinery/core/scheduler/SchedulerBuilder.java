@@ -95,9 +95,7 @@ public class SchedulerBuilder {
         startupHook,
         processorDecorator,
         gracefulShutdownOnError,
-        gracePeriodMilliseconds,
-        new ConcurrentLinkedQueue<>(),
-        new ConcurrentLinkedQueue<>()
+        gracePeriodMilliseconds
     );
   }
 }

@@ -1,6 +1,8 @@
 package io.github.askmeagain.meshinery.monitoring;
 
+import java.nio.charset.StandardCharsets;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,10 +19,6 @@ public class MonitoringApiController {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @GetMapping("/prometheus")
   public String prometheus() {
-    var result = MeshineryMonitoringService.getMetrics();
-    var headers = new HttpHeaders();
-    headers.setCacheControl(CacheControl.noCache().getHeaderValue());
-    headers.setContentType(MediaType.TEXT_PLAIN);
-    return result;
+    return MeshineryMonitoringService.getMetrics();
   }
 }

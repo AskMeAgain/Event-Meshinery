@@ -25,7 +25,7 @@ class BackpressureTest {
     properties.setBatchJob(true);
     properties.setBackpressureLimit(10);
 
-    var executor = Executors.newFixedThreadPool(11);
+    var executor = Executors.newFixedThreadPool(10);
     var processor = Mockito.spy(new TestContextProcessor(0));
 
     var inputSource = TestInputSource.<TestContext>builder()

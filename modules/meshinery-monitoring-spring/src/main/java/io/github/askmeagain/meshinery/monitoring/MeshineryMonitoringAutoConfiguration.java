@@ -112,14 +112,21 @@ public class MeshineryMonitoringAutoConfiguration {
   CustomizeStartupHook taskMonitoringInformation() {
     return scheduler -> {
       MeshineryMonitoringService.createGauge(
-          "todoqueue",
+          "priority_queue",
           "Number of currently waiting tasks in queue.",
-          () -> (double) scheduler.getOutputQueue().size()
+          () -> (double) scheduler.getPriorityQueue().size()
       );
       MeshineryMonitoringService.createGauge(
-          "todoqueue_open_capacity",
+          "todo_queue",
+          "Number of currently waiting tasks in queue.",
+          () -> (double) scheduler.getOutputQueue().size() + scheduler.getPriorityQueue().size()
+      );
+      MeshineryMonitoringService.createGauge(
+          "todo_queue_open_capacity",
           "Number of possible items in todo queue.",
-          () -> (double) scheduler.getBackpressureLimit() - scheduler.getOutputQueue().size()
+          () -> (double) scheduler.getBackpressureLimit()
+              - scheduler.getOutputQueue().size()
+              - scheduler.getPriorityQueue().size()
       );
       MeshineryMonitoringService.createGauge(
           "registered_tasks",

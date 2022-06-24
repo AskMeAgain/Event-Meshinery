@@ -19,9 +19,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -45,12 +45,14 @@ public class RoundRobinScheduler {
   private final boolean gracefulShutdownOnError;
   private final int gracePeriodMilliseconds;
 
-  private final Queue<TaskRun> outputQueue;
-  private final Queue<ConnectorKey> inputQueue;
+  private final Queue<TaskRun> outputQueue = new ConcurrentLinkedQueue<>();
+  private final Queue<TaskRun> priorityQueue = new ConcurrentLinkedQueue<>();
+
+  private final Queue<ConnectorKey> inputQueue = new ConcurrentLinkedQueue<>();
 
   private final Map<ConnectorKey, MeshineryTask<?, ?>> taskRunLookupMap = new HashMap<>();
   private final Set<ExecutorService> executorServices = new HashSet<>();
-  private boolean internalShutdown = false;
+  private boolean gracefulShutdownTriggered = false;
   private Instant lastInputEntry;
 
   public static SchedulerBuilder builder() {
@@ -94,7 +96,7 @@ public class RoundRobinScheduler {
 
   public void gracefulShutdown() {
     log.info("Graceful shutdown triggered. Shutting down all threads");
-    internalShutdown = true;
+    gracefulShutdownTriggered = true;
   }
 
   @SneakyThrows
@@ -105,8 +107,9 @@ public class RoundRobinScheduler {
     inputQueue.addAll(fillQueueFromTasks());
     lastInputEntry = Instant.now();
 
-    while (!executor.isShutdown() && !internalShutdown && (!outputQueue.isEmpty() || !inputQueue.isEmpty())) {
-      if (backpressureLimit <= outputQueue.size()) {
+    while (!executor.isShutdown() && !gracefulShutdownTriggered &&
+        ((!outputQueue.isEmpty() || !priorityQueue.isEmpty()) || !inputQueue.isEmpty())) {
+      if (backpressureLimit <= outputQueue.size() + priorityQueue.size()) {
         log.info("Waiting because of backpressure");
         Thread.sleep(500);
         continue;
@@ -122,7 +125,7 @@ public class RoundRobinScheduler {
       }
 
       if (isBatchJob) {
-        if (outputQueue.isEmpty()) {
+        if (outputQueue.isEmpty() && priorityQueue.isEmpty()) {
           if (lastInputEntry.plusMillis(gracePeriodMilliseconds).isBefore(Instant.now())) {
             log.info("Grace period in input thread done.");
             gracefulShutdown();
@@ -163,6 +166,8 @@ public class RoundRobinScheduler {
     }
   }
 
+  private boolean usePriorityQueue = false;
+
   @SneakyThrows
   private void runWorker(ExecutorService executor) {
     Thread.currentThread().setName("meshinery-output");
@@ -172,10 +177,17 @@ public class RoundRobinScheduler {
     newTask:
     while (!executor.isShutdown()) {
 
-      var currentTask = outputQueue.peek();
+      //toggle between queues, when priority queue is full
+      usePriorityQueue = !priorityQueue.isEmpty() && !usePriorityQueue;
+
+      var queueToUse = usePriorityQueue ? priorityQueue : outputQueue;
+
+      var currentTask = queueToUse.peek();
 
       if (currentTask == null) {
-        if (internalShutdown) {
+        var otherQueue = !usePriorityQueue ? priorityQueue : outputQueue;
+        if (otherQueue.isEmpty() && gracefulShutdownTriggered) {
+          //we shutdown in case we had a graceful shutdown
           break;
         }
         continue;
@@ -187,7 +199,7 @@ public class RoundRobinScheduler {
 
         //we stop if we reached the end of the queue
         if (queue.isEmpty()) {
-          outputQueue.remove();
+          queueToUse.remove();
           continue newTask;
         }
 
@@ -204,7 +216,7 @@ public class RoundRobinScheduler {
 
         //we stop if the context is null
         if (context == null) {
-          outputQueue.remove();
+          queueToUse.remove();
           continue newTask;
         }
 
@@ -217,8 +229,10 @@ public class RoundRobinScheduler {
         currentTask = currentTask.withFuture(resultFuture);
       }
 
-      outputQueue.add(currentTask); //this order, so we have always atleast 1 item in queue to signal we have work to do
-      outputQueue.remove();
+      //we add to priority queue, because this package got not processed
+      //this order, so we have always atleast 1 item in queue to signal we have work to do
+      priorityQueue.add(currentTask);
+      queueToUse.remove();
     }
 
     for (var executorService : executorServices) {
