@@ -11,8 +11,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("checkstyle:MissingJavadocType")
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class BranchProcessor<C extends DataContext> implements MeshineryProcessor<C, C> {
 
   private final List<MeshineryProcessor<C, C>> processorList;

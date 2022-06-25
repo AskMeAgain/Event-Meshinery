@@ -29,7 +29,7 @@ public class MermaidJsonTemplatingEngine {
   private final List<MeshineryTask<?, ?>> tasks;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public void send() {
+  public void sendDashboardToGrafana() {
     var body = fillTemplate();
 
     var restTemplate = new RestTemplate();

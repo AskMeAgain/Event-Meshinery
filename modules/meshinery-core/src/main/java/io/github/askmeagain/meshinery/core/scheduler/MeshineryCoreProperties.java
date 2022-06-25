@@ -21,6 +21,8 @@ public class MeshineryCoreProperties {
 
   private boolean shutdownOnFinished = true;
 
+  private boolean shutdownApi = true;
+
   private int gracePeriodMilliseconds = 2000;
 
   private final Map<String, Map<String, @NotBlank String>> taskProperties = new HashMap<>();

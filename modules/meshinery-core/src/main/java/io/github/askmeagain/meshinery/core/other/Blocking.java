@@ -24,7 +24,17 @@ public class Blocking {
     return byKey(keys.toArray(String[]::new), action);
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  /**
+   * Provide an array of keys and the supplied action will be executed thread safe and BLOCKING for all keys.
+   * if thread 1 enters keys: A,B,C and thread 2 uses keys C,D,E then this will block for thread 2 until thread 1 is
+   * done since the key C is blocking for all threads. This is used to make sure that accessing input sources are not
+   * interfering with the normal execution of input source, in case the input source is not thread safe.
+   *
+   * @param keys   the keys which will be used to determin if the supplieder is blocked or not
+   * @param action the action to be used
+   * @param <O>    the type of the supplier return value
+   * @return returns the value from the supplier
+   */
   @SneakyThrows
   public static <O> O byKey(String[] keys, Supplier<O> action) {
 

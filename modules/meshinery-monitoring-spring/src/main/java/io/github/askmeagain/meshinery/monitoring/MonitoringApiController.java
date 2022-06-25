@@ -20,7 +20,6 @@ public class MonitoringApiController {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @GetMapping("/prometheus")
   public ResponseEntity<String> prometheus() {
-
     return ResponseEntity.ok()
         .contentType(MediaType.TEXT_PLAIN)
         .body(MeshineryMonitoringService.getMetrics());
