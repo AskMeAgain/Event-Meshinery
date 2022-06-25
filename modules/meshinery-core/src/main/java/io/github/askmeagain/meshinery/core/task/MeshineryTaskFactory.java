@@ -117,7 +117,8 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
    * @param inputKeys       The Key to be used in the Inputsource
    * @return returns itself for builder pattern
    */
-  public MeshineryTaskFactory<K, C> read(ExecutorService executorService, K... inputKeys) {
+  @SafeVarargs
+  public final MeshineryTaskFactory<K, C> read(ExecutorService executorService, K... inputKeys) {
     return toBuilder()
         .inputKeys(List.of(inputKeys))
         .executorService(new DataInjectingExecutorService(joinEventKeys(inputKeys) + "-executor", executorService))

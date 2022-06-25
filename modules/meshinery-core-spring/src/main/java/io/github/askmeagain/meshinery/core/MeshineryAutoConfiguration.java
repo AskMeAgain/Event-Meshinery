@@ -9,6 +9,7 @@ import io.github.askmeagain.meshinery.core.hooks.CustomizeStartupHook;
 import io.github.askmeagain.meshinery.core.injecting.DataContextInjectApiController;
 import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
+import io.github.askmeagain.meshinery.core.shutdown.ShutdownApiController;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import java.util.List;
@@ -28,7 +29,7 @@ import org.springframework.validation.annotation.Validated;
 @Configuration
 @EnableConfigurationProperties
 @SuppressWarnings("checkstyle:MissingJavadocType")
-@Import({DataContextInjectApiController.class, ApplicationStartHookConfiguration.class})
+@Import({DataContextInjectApiController.class, ApplicationStartHookConfiguration.class, ShutdownApiController.class})
 public class MeshineryAutoConfiguration {
 
   @Bean
