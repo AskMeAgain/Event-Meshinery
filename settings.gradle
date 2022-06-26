@@ -2,8 +2,6 @@ rootProject.name = 'EventMeshinery'
 
 include('modules:meshinery-core')
 include('modules:meshinery-core-spring')
-include('modules:meshinery-draw')
-include('modules:meshinery-draw-spring')
 include('modules:meshinery-monitoring')
 include('modules:meshinery-monitoring-spring')
 include('modules:connectors:kafka:meshinery-kafka-connector')

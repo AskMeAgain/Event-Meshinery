@@ -21,8 +21,6 @@
             <option value="$PROJECT_DIR$/modules/connectors/mysql/meshinery-mysql-connector-spring" />
             <option value="$PROJECT_DIR$/modules/meshinery-core" />
             <option value="$PROJECT_DIR$/modules/meshinery-core-spring" />
-            <option value="$PROJECT_DIR$/modules/meshinery-draw" />
-            <option value="$PROJECT_DIR$/modules/meshinery-draw-spring" />
             <option value="$PROJECT_DIR$/modules/meshinery-monitoring" />
             <option value="$PROJECT_DIR$/modules/meshinery-monitoring-spring" />
           </set>

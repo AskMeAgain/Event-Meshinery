@@ -7,7 +7,7 @@ import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
-import io.github.askmeagain.meshinery.monitoring.EnableMeshineryMonitoring;
+import io.github.askmeagain.meshinery.monitoring.common.EnableMeshineryMonitoring;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
