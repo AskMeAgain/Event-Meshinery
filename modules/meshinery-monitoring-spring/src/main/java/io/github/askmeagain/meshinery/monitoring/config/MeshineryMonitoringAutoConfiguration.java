@@ -4,6 +4,8 @@ import io.github.askmeagain.meshinery.core.hooks.CustomizeStartupHook;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
+import io.github.askmeagain.meshinery.monitoring.apis.DrawerApiController;
+import io.github.askmeagain.meshinery.monitoring.apis.MonitoringApiController;
 import io.github.askmeagain.meshinery.monitoring.utils.MeshineryMonitoringSpringUtils;
 import io.github.askmeagain.meshinery.monitoring.TimingDecorator;
 import io.github.askmeagain.meshinery.monitoring.grafanapush.MeshineryPushProperties;
@@ -20,7 +22,12 @@ import static io.github.askmeagain.meshinery.monitoring.utils.MeshineryMonitorin
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Configuration
 @ConditionalOnMissingBean(MeshineryMonitoringAutoConfiguration.class)
-@Import(MeshineryGrafanaPushConfiguration.class)
+@Import({
+    MeshineryGrafanaPushConfiguration.class,
+    MeshineryDrawerConfiguration.class,
+    DrawerApiController.class,
+    MonitoringApiController.class,
+})
 @EnableConfigurationProperties(MeshineryPushProperties.class)
 public class MeshineryMonitoringAutoConfiguration {
 

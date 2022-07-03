@@ -16,7 +16,7 @@ import static java.util.Objects.requireNonNull;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Configuration
 @RequiredArgsConstructor
-@ConditionalOnProperty(prefix = "meshinery.draw.grafana-dashboard-push", name = "enabled")
+@ConditionalOnProperty(prefix = "meshinery.monitoring.grafana-push", name = "enabled")
 public class MeshineryGrafanaPushConfiguration {
 
   private final ObjectMapper objectMapper;
@@ -34,7 +34,8 @@ public class MeshineryGrafanaPushConfiguration {
     requireNonNull(grafanaDashboardPush.getUsername());
 
     try (var stream = this.getClass().getClassLoader().getResourceAsStream("mermaid-template.json")) {
-      new MermaidJsonTemplatingEngine(requireNonNull(stream), grafanaDashboardPush, objectMapper, tasks).sendDashboardToGrafana();
+      new MermaidJsonTemplatingEngine(
+          requireNonNull(stream), grafanaDashboardPush, objectMapper, tasks).sendDashboardToGrafana();
     }
   }
 }

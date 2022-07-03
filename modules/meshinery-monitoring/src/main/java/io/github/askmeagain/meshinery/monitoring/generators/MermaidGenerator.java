@@ -14,9 +14,7 @@ public class MermaidGenerator {
 
     var list = new ArrayList<String>();
 
-    graph.getEachEdge().forEach(edge -> {
-      list.add(edge.getNode0().getId() + " --> " + edge.getNode1().getId());
-    });
+    graph.getEachEdge().forEach(edge -> list.add(edge.getNode0().getId() + " --> " + edge.getNode1().getId()));
 
     return list;
   }

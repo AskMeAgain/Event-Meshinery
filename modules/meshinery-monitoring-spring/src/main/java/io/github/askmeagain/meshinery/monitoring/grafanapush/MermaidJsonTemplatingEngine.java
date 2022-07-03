@@ -71,24 +71,24 @@ public class MermaidJsonTemplatingEngine {
 
     var targets = (ArrayNode) panelsNode.path("targets");
 
-    tasks.forEach(task -> addMetric(targets, task.getTaskName()));
+    tasks.forEach(task -> addMetric(targets, task.getTaskName(), properties.getMetricQuery(), "currently_processed_"));
 
     return tree.toPrettyString();
   }
 
-  private void addMetric(ArrayNode targets, String taskName) {
+  private void addMetric(ArrayNode targets, String taskName, String metricQuery, String id) {
     var obj = targets.addObject();
 
     var datasource = obj.putObject("datasource");
     datasource.put("type", "prometheus");
     datasource.put("uid", properties.getDataSourceUid());
 
+    obj.put("editorMode", "builder");
     obj.put("exemplar", false);
-    obj.put("expr", properties.getMetricQuery().replace("$taskName", taskName) + " OR on() vector(0)");
-    obj.put("instant", true);
-    obj.put("internal", "");
+    obj.put("expr", metricQuery.replace("$taskName", taskName) + " OR on() vector(0)");
+    obj.put("instant", false);
     obj.put("legendFormat", taskName);
-    obj.put("refId", taskName);
+    obj.put("range", true);
+    obj.put("refId", id + taskName);
   }
-
 }

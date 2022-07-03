@@ -16,11 +16,6 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @AutoConfigureBefore(MeshineryAutoConfiguration.class)
-@Import({
-    MeshineryDrawerConfiguration.class,
-    DrawerApiController.class,
-    MonitoringApiController.class,
-    MeshineryMonitoringAutoConfiguration.class
-})
+@Import(MeshineryMonitoringAutoConfiguration.class)
 public @interface EnableMeshineryMonitoring {
 }
