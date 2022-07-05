@@ -64,12 +64,23 @@ public class MermaidJsonTemplatingEngine {
     var dataSourceUidNode = (ObjectNode) panelsNode.path("datasource");
     dataSourceUidNode.put("uid", properties.getDataSourceUid());
 
+    var panelsNode2 = dashboard.path("panels").get(1);
+    var dataSourceUidNode2 = (ObjectNode) panelsNode2.path("datasource");
+    dataSourceUidNode2.put("uid", properties.getDataSourceUid());
+
     ((ObjectNode) panelsNode).put("title", properties.getDashboardName());
     var contentUrl = panelsNode.path("options");
 
     ((ObjectNode) contentUrl).put("contentUrl", properties.getMermaidDiagramUrl());
 
     var targets = (ArrayNode) panelsNode.path("targets");
+    var targets2 = (ArrayNode) panelsNode2.path("targets");
+
+    var obj = targets2.addObject();
+
+    var datasource = obj.putObject("datasource");
+    datasource.put("type", "prometheus");
+    datasource.put("uid", properties.getDataSourceUid());
 
     tasks.forEach(task -> addMetric(targets, task.getTaskName(), properties.getMetricQuery(), "currently_processed_"));
 
