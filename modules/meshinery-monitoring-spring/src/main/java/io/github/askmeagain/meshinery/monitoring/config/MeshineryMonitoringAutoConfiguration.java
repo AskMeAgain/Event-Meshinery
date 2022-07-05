@@ -34,7 +34,7 @@ import static io.github.askmeagain.meshinery.monitoring.utils.MeshineryMonitorin
 public class MeshineryMonitoringAutoConfiguration {
 
   @Bean
-  ConnectorDecoratorFactory<?, DataContext> connectorTimingDecoratorFactory() {
+  ConnectorDecoratorFactory connectorTimingDecoratorFactory() {
     return new ConnectorTimingDecoratorFactory();
   }
 

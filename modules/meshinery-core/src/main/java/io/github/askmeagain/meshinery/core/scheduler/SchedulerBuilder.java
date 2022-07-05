@@ -17,7 +17,7 @@ public class SchedulerBuilder {
 
   List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
   List<ProcessorDecorator<DataContext, DataContext>> processorDecorators = Collections.emptyList();
-  List<ConnectorDecoratorFactory<?, DataContext>> connectorDecoratorFactories = Collections.emptyList();
+  List<ConnectorDecoratorFactory> connectorDecoratorFactories = Collections.emptyList();
   List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
   int backpressureLimit = 200;
   int gracePeriodMilliseconds = 2000;
@@ -56,7 +56,7 @@ public class SchedulerBuilder {
   }
 
   public SchedulerBuilder registerConnectorDecorators(
-      List<ConnectorDecoratorFactory<?, DataContext>> connectorDecoratorFactories
+      List<ConnectorDecoratorFactory> connectorDecoratorFactories
   ) {
     this.connectorDecoratorFactories = connectorDecoratorFactories;
     return this;

@@ -28,7 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 class DecoratorBeansTest {
 
   @Autowired
-  ConnectorDecoratorFactory<?, DataContext> decorator;
+  ConnectorDecoratorFactory decorator;
   @SpyBean
   MemoryConnector<String, TestContext> connector;
 
@@ -59,7 +59,7 @@ class DecoratorBeansTest {
     }
 
     @Bean
-    public ConnectorDecoratorFactory<?, DataContext> connectorDecoratorFactory() {
+    public ConnectorDecoratorFactory connectorDecoratorFactory() {
       return Mockito.spy(new TestConnectorDecoratorFactory());
     }
 

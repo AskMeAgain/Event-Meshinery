@@ -78,9 +78,9 @@ public class MeshineryUtils {
     return innerProcessor;
   }
 
-  public static MeshineryConnector<?, DataContext> applyDecorator(
-      MeshineryConnector<?, DataContext> connector,
-      List<ConnectorDecoratorFactory<?, DataContext>> connectorDecoratorFactories
+  public static MeshineryConnector<?, ? extends DataContext> applyDecorator(
+      MeshineryConnector<?, ? extends DataContext> connector,
+      List<ConnectorDecoratorFactory> connectorDecoratorFactories
   ) {
     var innerConnector = connector;
 

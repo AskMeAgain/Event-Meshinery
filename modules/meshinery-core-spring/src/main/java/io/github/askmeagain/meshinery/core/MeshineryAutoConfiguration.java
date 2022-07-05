@@ -81,7 +81,7 @@ public class MeshineryAutoConfiguration {
       List<CustomizeShutdownHook> shutdownHook,
       List<CustomizeStartupHook> startupHook,
       List<ProcessorDecorator<DataContext, DataContext>> processorDecorators,
-      List<ConnectorDecoratorFactory<?, DataContext>> connectorDecoratorFactories,
+      List<ConnectorDecoratorFactory> connectorDecoratorFactories,
       MeshineryCoreProperties meshineryCoreProperties
   ) {
     var appliedPropertyTasks = PropertyTaskInjection.injectProperties(tasks, meshineryCoreProperties);

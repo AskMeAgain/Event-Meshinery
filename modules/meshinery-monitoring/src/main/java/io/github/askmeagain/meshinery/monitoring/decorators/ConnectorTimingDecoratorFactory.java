@@ -9,10 +9,10 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-public class ConnectorTimingDecoratorFactory implements ConnectorDecoratorFactory<Object, DataContext> {
+public class ConnectorTimingDecoratorFactory implements ConnectorDecoratorFactory {
 
   @Override
-  public MeshineryConnector<Object, DataContext> wrap(MeshineryConnector<?, DataContext> innerConnector) {
+  public MeshineryConnector<?, DataContext> wrap(MeshineryConnector<?, ? extends DataContext> innerConnector) {
     return new ConnectorTimingDecorator((MeshineryConnector<Object, DataContext>) innerConnector);
   }
 
