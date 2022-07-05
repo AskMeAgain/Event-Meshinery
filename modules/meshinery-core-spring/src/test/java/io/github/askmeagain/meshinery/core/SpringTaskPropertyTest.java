@@ -2,11 +2,13 @@ package io.github.askmeagain.meshinery.core;
 
 import io.github.askmeagain.meshinery.core.injecting.DataContextInjectApiController;
 import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
+import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,9 +26,17 @@ import static org.assertj.core.api.Assertions.assertThat;
     "meshinery.core.task-properties.test-task." + TASK_IGNORE_NO_KEYS_WARNING + "=true",
     "meshinery.core.task-properties.test-task-2.def=def",
     "meshinery.core.task-properties.test-task-2.abc2=abc",
+    "meshinery.core.shutdown-on-finished=false",
     "meshinery.core.task-properties.test-task-2." + TASK_IGNORE_NO_KEYS_WARNING + "=true",
 })
 class SpringTaskPropertyTest {
+
+  @Autowired RoundRobinScheduler roundRobinScheduler;
+
+  @AfterEach
+  void shutdown(){
+    roundRobinScheduler.gracefulShutdown();
+  }
 
   @Test
   void springPropertyTest(@Autowired MeshineryCoreProperties properties) {

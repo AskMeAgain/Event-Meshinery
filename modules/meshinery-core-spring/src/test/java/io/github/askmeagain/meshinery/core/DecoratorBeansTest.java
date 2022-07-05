@@ -10,6 +10,7 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.decorators.TestConnectorDecoratorFactory;
 import java.util.concurrent.Executors;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +25,23 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.any;
 
 @MockBean(DataContextInjectApiController.class)
-@SpringBootTest(classes = {MeshineryAutoConfiguration.class, DecoratorBeansTest.TestDecoratorConfiguration.class})
+@SpringBootTest(
+    classes = {MeshineryAutoConfiguration.class, DecoratorBeansTest.TestDecoratorConfiguration.class},
+    properties = "meshinery.core.shutdown-on-finished=false")
 class DecoratorBeansTest {
 
   @Autowired
   ConnectorDecoratorFactory decorator;
   @SpyBean
   MemoryConnector<String, TestContext> connector;
+  @Autowired
+  RoundRobinScheduler scheduler;
 
   @Test
-  void autoConfigTest(@Autowired RoundRobinScheduler scheduler) throws InterruptedException {
+  void autoConfigTest() throws InterruptedException {
     //Arrange ----------------------------------------------------------------------------------------------------------
     connector.writeOutput("Abc", TestContext.builder()
-            .id("a")
+        .id("a")
         .build());
 
     //Act --------------------------------------------------------------------------------------------------------------
@@ -49,12 +54,16 @@ class DecoratorBeansTest {
     Mockito.verify(connector, Mockito.atLeastOnce()).getInputs(any());
   }
 
+  @AfterEach
+  void shutdown(){
+    scheduler.gracefulShutdown();
+  }
 
   @Configuration
   public static class TestDecoratorConfiguration {
 
     @Bean
-    public MemoryConnector<String, TestContext> memoryConnector(){
+    public MemoryConnector<String, TestContext> memoryConnector() {
       return new MemoryConnector<>();
     }
 

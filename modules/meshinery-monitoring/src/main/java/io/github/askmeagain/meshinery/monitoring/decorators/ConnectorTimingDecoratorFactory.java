@@ -7,6 +7,7 @@ import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 public class ConnectorTimingDecoratorFactory implements ConnectorDecoratorFactory {
@@ -20,6 +21,8 @@ public class ConnectorTimingDecoratorFactory implements ConnectorDecoratorFactor
   public static class ConnectorTimingDecorator implements MeshineryConnector<Object, DataContext> {
 
     private final MeshineryConnector<Object, DataContext> innerConnector;
+    @Getter(lazy = true)
+    private final String name = innerConnector.getName();
 
     @Override
     public List<DataContext> getInputs(List<Object> keys) {
@@ -34,11 +37,6 @@ public class ConnectorTimingDecoratorFactory implements ConnectorDecoratorFactor
           timer.observeDuration();
         }
       }
-    }
-
-    @Override
-    public String getName() {
-      return innerConnector.getName();
     }
 
     @Override

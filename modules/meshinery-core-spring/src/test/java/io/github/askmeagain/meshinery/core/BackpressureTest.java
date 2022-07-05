@@ -13,7 +13,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @MockBean(DataContextInjectApiController.class)
 @SpringJUnitConfig(MeshineryAutoConfiguration.class)
-@TestPropertySource(properties = {"meshinery.core.backpressure-limit=12345"})
+@TestPropertySource(properties = {
+    "meshinery.core.backpressure-limit=12345",
+    "meshinery.core.shutdown-on-finished=false"
+})
 class BackpressureTest {
 
   @Autowired

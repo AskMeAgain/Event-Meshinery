@@ -28,10 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-@MockBean(RoundRobinScheduler.class)
 @WebMvcTest(DataContextInjectApiController.class)
 @ContextConfiguration(classes = MeshineryAutoConfiguration.class)
-@TestPropertySource(properties = "meshinery.core.inject=io.github.askmeagain.meshinery.core.utils.context.TestContext")
+@TestPropertySource(properties = {
+    "meshinery.core.inject=io.github.askmeagain.meshinery.core.utils.context.TestContext",
+    "meshinery.core.shutdown-on-finished=false"
+})
 class DataContextInjectApiControllerTest {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -45,6 +47,7 @@ class DataContextInjectApiControllerTest {
 
   @Autowired private DataContextInjectApiController controller;
   @Autowired private MockMvc mockMvc;
+  @Autowired private RoundRobinScheduler roundRobinScheduler;
 
   @MockBean private TaskReplayFactory taskReplayFactory;
 
@@ -68,6 +71,8 @@ class DataContextInjectApiControllerTest {
         .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(RESULT_CONTEXT)))
         .andExpect(status()
             .isOk());
+
+    roundRobinScheduler.gracefulShutdown();
   }
 
   @Test
@@ -85,5 +90,7 @@ class DataContextInjectApiControllerTest {
         .andExpect(content().string("Accepted"))
         .andExpect(status()
             .isAccepted());
+
+    roundRobinScheduler.gracefulShutdown();
   }
 }

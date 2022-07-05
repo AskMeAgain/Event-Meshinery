@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.core;
 import io.github.askmeagain.meshinery.core.injecting.DataContextInjectApiController;
 import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,13 +17,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(properties = {"meshinery.core.inject=abc", "meshinery.core.shutdown-on-finished=false"})
 class AutoConfigurationTest {
 
+
+  @Autowired
+  RoundRobinScheduler roundRobinScheduler;
+
   @Test
-  void autoConfigTest(@Autowired RoundRobinScheduler scheduler) {
+  void autoConfigTest() {
     //Arrange ----------------------------------------------------------------------------------------------------------
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
-    assertThat(scheduler).isNotNull();
-    scheduler.gracefulShutdown();
+    assertThat(roundRobinScheduler).isNotNull();
   }
 
   @Test
@@ -31,6 +35,11 @@ class AutoConfigurationTest {
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(properties.getInject()).contains("abc");
+  }
+
+  @AfterEach
+  void shutdown() {
+    roundRobinScheduler.gracefulShutdown();
   }
 
 }

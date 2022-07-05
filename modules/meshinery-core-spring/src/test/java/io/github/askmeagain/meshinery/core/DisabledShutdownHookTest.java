@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.core;
 import io.github.askmeagain.meshinery.core.hooks.CustomizeShutdownHook;
 import io.github.askmeagain.meshinery.core.injecting.DataContextInjectApiController;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,11 @@ class DisabledShutdownHookTest {
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(hook).isNull();
+    roundRobinScheduler.gracefulShutdown();
+  }
+
+  @AfterEach
+  void shutdown(){
     roundRobinScheduler.gracefulShutdown();
   }
 
