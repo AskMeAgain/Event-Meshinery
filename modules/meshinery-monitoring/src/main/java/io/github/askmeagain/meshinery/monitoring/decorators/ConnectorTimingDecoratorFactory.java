@@ -27,12 +27,12 @@ public class ConnectorTimingDecoratorFactory implements ConnectorDecoratorFactor
       var keyNames = MeshineryUtils.joinEventKeys(keys);
       var summary = MeshineryMonitoringService.CONNECTOR_HISTOGRAM_IN.labels(connectorName, keyNames);
 
-      var timer = summary.startTimer();
-
-      try {
-        return innerConnector.getInputs(keys);
-      } finally {
-        timer.observeDuration();
+      try (var timer = summary.startTimer()) {
+        try {
+          return innerConnector.getInputs(keys);
+        } finally {
+          timer.observeDuration();
+        }
       }
     }
 
@@ -47,12 +47,12 @@ public class ConnectorTimingDecoratorFactory implements ConnectorDecoratorFactor
       var connectorName = innerConnector.getName();
       var histogram = MeshineryMonitoringService.CONNECTOR_HISTOGRAM_OUT.labels(connectorName, key.toString());
 
-      var timer = histogram.startTimer();
-
-      try {
-        innerConnector.writeOutput(key, output);
-      } finally {
-        timer.observeDuration();
+      try (var timer = histogram.startTimer()) {
+        try {
+          innerConnector.writeOutput(key, output);
+        } finally {
+          timer.observeDuration();
+        }
       }
     }
   }
