@@ -1,8 +1,7 @@
 package io.github.askmeagain.meshinery.core.injecting;
 
-import io.github.askmeagain.meshinery.core.AbstractCoreSpringTestBase;
+import io.github.askmeagain.meshinery.core.setup.AbstractCoreSpringTestBase;
 import io.github.askmeagain.meshinery.core.MeshineryAutoConfiguration;
-import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;

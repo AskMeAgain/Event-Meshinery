@@ -2,8 +2,7 @@ package io.github.askmeagain.meshinery.core;
 
 import io.github.askmeagain.meshinery.core.injecting.DataContextInjectApiController;
 import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
-import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
-import org.junit.jupiter.api.AfterEach;
+import io.github.askmeagain.meshinery.core.setup.AbstractCoreSpringTestBase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
