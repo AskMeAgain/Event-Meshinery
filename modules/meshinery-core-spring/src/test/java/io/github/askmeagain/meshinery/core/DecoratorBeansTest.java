@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Bean;
@@ -25,17 +26,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.any;
 
 @MockBean(DataContextInjectApiController.class)
-@SpringBootTest(
-    classes = {MeshineryAutoConfiguration.class, DecoratorBeansTest.TestDecoratorConfiguration.class},
-    properties = "meshinery.core.shutdown-on-finished=false")
-class DecoratorBeansTest {
+@SpringBootTest(classes = {MeshineryAutoConfiguration.class, DecoratorBeansTest.TestDecoratorConfiguration.class})
+class DecoratorBeansTest extends AbstractCoreSpringTestBase {
 
   @Autowired
   ConnectorDecoratorFactory decorator;
   @SpyBean
   MemoryConnector<String, TestContext> connector;
-  @Autowired
-  RoundRobinScheduler scheduler;
 
   @Test
   void autoConfigTest() throws InterruptedException {
@@ -46,7 +43,7 @@ class DecoratorBeansTest {
 
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
-    assertThat(scheduler).isNotNull();
+    assertThat(roundRobinScheduler).isNotNull();
 
     Thread.sleep(3000);
 
@@ -54,12 +51,7 @@ class DecoratorBeansTest {
     Mockito.verify(connector, Mockito.atLeastOnce()).getInputs(any());
   }
 
-  @AfterEach
-  void shutdown(){
-    scheduler.gracefulShutdown();
-  }
-
-  @Configuration
+  @TestConfiguration
   public static class TestDecoratorConfiguration {
 
     @Bean

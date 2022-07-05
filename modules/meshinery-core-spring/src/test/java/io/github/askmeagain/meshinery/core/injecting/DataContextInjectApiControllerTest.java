@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.core.injecting;
 
+import io.github.askmeagain.meshinery.core.AbstractCoreSpringTestBase;
 import io.github.askmeagain.meshinery.core.MeshineryAutoConfiguration;
 import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
@@ -30,11 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(DataContextInjectApiController.class)
 @ContextConfiguration(classes = MeshineryAutoConfiguration.class)
-@TestPropertySource(properties = {
-    "meshinery.core.inject=io.github.askmeagain.meshinery.core.utils.context.TestContext",
-    "meshinery.core.shutdown-on-finished=false"
-})
-class DataContextInjectApiControllerTest {
+@TestPropertySource(properties = "meshinery.core.inject=io.github.askmeagain.meshinery.core.utils.context.TestContext")
+class DataContextInjectApiControllerTest extends AbstractCoreSpringTestBase {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final TestContext INPUT_CONTEXT = new TestContext(0);

@@ -18,11 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpyBean(BatchJobTimingHooks.class)
 @MockBean(DataContextInjectApiController.class)
 @SpringJUnitConfig(MeshineryAutoConfiguration.class)
-@TestPropertySource(properties = {
-    "meshinery.core.batch-job=true",
-    "meshinery.core.shutdown-on-finished=false"
-})
-class BatchJobTimingHooksTest {
+@TestPropertySource(properties = "meshinery.core.batch-job=true")
+class BatchJobTimingHooksTest extends AbstractCoreSpringTestBase {
 
   @Autowired
   List<CustomizeShutdownHook> hooks;
@@ -30,19 +27,11 @@ class BatchJobTimingHooksTest {
   @Autowired
   BatchJobTimingHooks batchJobTimingHooks;
 
-  @Autowired
-  RoundRobinScheduler roundRobinScheduler;
-
   @Test
   void testSpringhook() {
     //Arrange ----------------------------------------------------------------------------------------------------------
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(hooks).contains(batchJobTimingHooks);
-  }
-
-  @AfterEach
-  void shutdown(){
-    roundRobinScheduler.gracefulShutdown();
   }
 }

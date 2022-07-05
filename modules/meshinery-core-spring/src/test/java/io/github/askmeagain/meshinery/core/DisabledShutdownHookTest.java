@@ -15,8 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @MockBean(DataContextInjectApiController.class)
 @SpringJUnitConfig(MeshineryAutoConfiguration.class)
-@TestPropertySource(properties = "meshinery.core.shutdown-on-finished=false")
-class DisabledShutdownHookTest {
+class DisabledShutdownHookTest  extends AbstractCoreSpringTestBase {
 
   @Autowired(required = false)
   CustomizeShutdownHook hook;
@@ -29,12 +28,5 @@ class DisabledShutdownHookTest {
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(hook).isNull();
-    roundRobinScheduler.gracefulShutdown();
   }
-
-  @AfterEach
-  void shutdown(){
-    roundRobinScheduler.gracefulShutdown();
-  }
-
 }

@@ -14,12 +14,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @MockBean(DataContextInjectApiController.class)
 @SpringBootTest(classes = MeshineryAutoConfiguration.class)
-@TestPropertySource(properties = {"meshinery.core.inject=abc", "meshinery.core.shutdown-on-finished=false"})
-class AutoConfigurationTest {
-
-
-  @Autowired
-  RoundRobinScheduler roundRobinScheduler;
+@TestPropertySource(properties = "meshinery.core.inject=abc")
+class AutoConfigurationTest  extends AbstractCoreSpringTestBase {
 
   @Test
   void autoConfigTest() {
@@ -36,10 +32,4 @@ class AutoConfigurationTest {
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(properties.getInject()).contains("abc");
   }
-
-  @AfterEach
-  void shutdown() {
-    roundRobinScheduler.gracefulShutdown();
-  }
-
 }

@@ -13,14 +13,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @MockBean(DataContextInjectApiController.class)
 @SpringJUnitConfig(MeshineryAutoConfiguration.class)
-@TestPropertySource(properties = {
-    "meshinery.core.backpressure-limit=12345",
-    "meshinery.core.shutdown-on-finished=false"
-})
-class BackpressureTest {
-
-  @Autowired
-  RoundRobinScheduler roundRobinScheduler;
+@TestPropertySource(properties = "meshinery.core.backpressure-limit=12345")
+class BackpressureTest extends AbstractCoreSpringTestBase {
 
   @Test
   void testBackpressure() {
@@ -28,10 +22,5 @@ class BackpressureTest {
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(roundRobinScheduler.getBackpressureLimit()).isEqualTo(12345);
-  }
-
-  @AfterEach
-  void shutdown(){
-    roundRobinScheduler.gracefulShutdown();
   }
 }

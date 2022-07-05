@@ -26,17 +26,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     "meshinery.core.task-properties.test-task." + TASK_IGNORE_NO_KEYS_WARNING + "=true",
     "meshinery.core.task-properties.test-task-2.def=def",
     "meshinery.core.task-properties.test-task-2.abc2=abc",
-    "meshinery.core.shutdown-on-finished=false",
     "meshinery.core.task-properties.test-task-2." + TASK_IGNORE_NO_KEYS_WARNING + "=true",
 })
-class SpringTaskPropertyTest {
-
-  @Autowired RoundRobinScheduler roundRobinScheduler;
-
-  @AfterEach
-  void shutdown(){
-    roundRobinScheduler.gracefulShutdown();
-  }
+class SpringTaskPropertyTest extends AbstractCoreSpringTestBase {
 
   @Test
   void springPropertyTest(@Autowired MeshineryCoreProperties properties) {
