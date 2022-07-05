@@ -9,7 +9,9 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ConnectorTimingDecoratorFactory implements ConnectorDecoratorFactory {
 
   @Override
@@ -41,7 +43,6 @@ public class ConnectorTimingDecoratorFactory implements ConnectorDecoratorFactor
 
     @Override
     public void writeOutput(Object key, DataContext output) {
-
       var connectorName = innerConnector.getName();
       var histogram = MeshineryMonitoringService.CONNECTOR_HISTOGRAM_OUT.labels(connectorName, key.toString());
 

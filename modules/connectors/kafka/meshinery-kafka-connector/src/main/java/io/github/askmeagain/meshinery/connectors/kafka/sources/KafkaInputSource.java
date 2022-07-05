@@ -33,7 +33,7 @@ public class KafkaInputSource<C extends DataContext> implements InputSource<Stri
   @Override
   @SneakyThrows
   public List<C> getInputs(List<String> keys) {
-    var result = kafkaConsumerFactory.get(keys).poll(Duration.ofMillis(0));
+    var result = kafkaConsumerFactory.get(keys).poll(Duration.ofMillis(5000));
 
     return StreamSupport.stream(result.spliterator(), true)
         .map(ConsumerRecord::value)
