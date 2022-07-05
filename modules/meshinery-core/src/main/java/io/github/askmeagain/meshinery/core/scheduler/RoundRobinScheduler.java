@@ -43,6 +43,7 @@ public class RoundRobinScheduler {
   private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
   private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
   private final List<ProcessorDecorator<DataContext, DataContext>> processorDecorator;
+  private final List<ConnectorDecoratorFactory<?, DataContext>> connectorDecoratorFactories;
   private final boolean gracefulShutdownOnError;
   private final int gracePeriodMilliseconds;
 
@@ -86,11 +87,23 @@ public class RoundRobinScheduler {
   private void createLookupMap() {
     for (var task : tasks) {
       var connectorKey = ConnectorKey.builder()
-          .connector((MeshineryConnector<Object, DataContext>)task.getInputConnector())
+          .connector((MeshineryConnector<Object, DataContext>) task.getInputConnector())
           .key(task.getInputKeys())
           .build();
 
-      taskRunLookupMap.put(connectorKey, task);
+      var decoratedInput = MeshineryUtils.applyDecorator(
+          (MeshineryConnector<?, DataContext>) task.getInputConnector(), connectorDecoratorFactories
+      );
+      var decoratedOutput = MeshineryUtils.applyDecorator(
+          (MeshineryConnector<?, DataContext>) task.getInputConnector(), connectorDecoratorFactories
+      );
+
+      var fixedTask = task.withConnector(
+          decoratedInput,
+          decoratedOutput
+      );
+
+      taskRunLookupMap.put(connectorKey, fixedTask);
     }
   }
 

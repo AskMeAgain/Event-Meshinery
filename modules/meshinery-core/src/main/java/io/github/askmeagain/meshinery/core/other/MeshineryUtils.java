@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
+import lombok.Data;
 import lombok.experimental.UtilityClass;
 import org.slf4j.MDC;
 

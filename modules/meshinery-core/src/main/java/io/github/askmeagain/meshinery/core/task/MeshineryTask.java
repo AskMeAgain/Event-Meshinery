@@ -126,11 +126,11 @@ public class MeshineryTask<K, C extends DataContext> {
   }
 
   public MeshineryTask<K, C> withConnector(
-      MeshineryConnector<?, DataContext> decoratedConnector,
-      MeshineryConnector<?, DataContext> decoratedConnector2
+      MeshineryConnector<?, ?> inputConnector,
+      MeshineryConnector<?, ?> outputConnector
   ) {
-    return this.withInputConnector((MeshineryConnector<K, C>) decoratedConnector)
-        .withOutputConnector((MeshineryConnector<K, C>) decoratedConnector2);
+    return this.withInputConnector((MeshineryConnector<K, C>) inputConnector)
+        .withOutputConnector((MeshineryConnector<K, C>) outputConnector);
   }
 
 }

@@ -22,7 +22,7 @@ public class SchedulerBuilder {
   int backpressureLimit = 200;
   int gracePeriodMilliseconds = 2000;
   boolean isBatchJob;
-  List<MeshineryTask<? extends Object, ? extends DataContext>> tasks = new ArrayList<>();
+  List<MeshineryTask<?, ? extends DataContext>> tasks = new ArrayList<>();
   boolean gracefulShutdownOnError = true;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
@@ -99,22 +99,14 @@ public class SchedulerBuilder {
     //verifying tasks
     tasks.forEach(MeshineryTask::verifyTask);
 
-    List<? extends MeshineryTask<?, ? extends DataContext>> decoratedTasks = tasks.stream()
-        .map(x -> {
-          var decoratedConnector = MeshineryUtils.applyDecorator(
-              (MeshineryConnector<?, DataContext>) x.getInputConnector(), connectorDecoratorFactories);
-          var decoratedConnector2 = MeshineryUtils.applyDecorator(
-              (MeshineryConnector<?, DataContext>) x.getOutputConnector(), connectorDecoratorFactories);
-          return x.withConnector(decoratedConnector, decoratedConnector2);
-        }).toList();
-
     return new RoundRobinScheduler(
-        (List<MeshineryTask<?, ?>>) decoratedTasks,
+        tasks,
         backpressureLimit,
         isBatchJob,
         shutdownHook,
         startupHook,
         processorDecorators,
+        connectorDecoratorFactories,
         gracefulShutdownOnError,
         gracePeriodMilliseconds
     );
