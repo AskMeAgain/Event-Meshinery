@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
@@ -23,13 +25,16 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_I
  * A Meshinery task consists of an input source, a list of processors and multiple output sources.
  */
 @Slf4j
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MeshineryTask<K, C extends DataContext> {
 
   private final long backoffTimeMilli;
   @Getter private final List<K> inputKeys;
   @Getter private final String taskName;
   @Getter private TaskData taskData;
+  @With
   @Getter private final MeshineryConnector<K, C> inputConnector;
+  @With
   @Getter private final MeshineryConnector<K, C> outputConnector;
   @Getter private final DataInjectingExecutorService executorService;
   @Getter private final Function<Throwable, DataContext> handleException;
@@ -119,4 +124,13 @@ public class MeshineryTask<K, C extends DataContext> {
       TaskData.clearTaskData();
     }
   }
+
+  public MeshineryTask<K, C> withConnector(
+      MeshineryConnector<?, DataContext> decoratedConnector,
+      MeshineryConnector<?, DataContext> decoratedConnector2
+  ) {
+    return this.withInputConnector((MeshineryConnector<K, C>) decoratedConnector)
+        .withOutputConnector((MeshineryConnector<K, C>) decoratedConnector2);
+  }
+
 }

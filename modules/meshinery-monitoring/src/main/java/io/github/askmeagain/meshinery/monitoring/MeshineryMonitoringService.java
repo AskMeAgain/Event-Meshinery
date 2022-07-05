@@ -2,6 +2,7 @@ package io.github.askmeagain.meshinery.monitoring;
 
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Gauge;
+import io.prometheus.client.Histogram;
 import io.prometheus.client.Summary;
 import io.prometheus.client.exporter.common.TextFormat;
 import java.io.ByteArrayOutputStream;
@@ -20,6 +21,18 @@ public class MeshineryMonitoringService {
       .name("request_time")
       .help("Time of all requests")
       .labelNames("task_name", "processor_name")
+      .register(REGISTRY);
+
+  public static final Histogram CONNECTOR_HISTOGRAM_IN = Histogram.build()
+      .name("connector_processing_time_in")
+      .help("Time of all connector requests going in")
+      .labelNames("task_name", "key")
+      .register(REGISTRY);
+
+  public static final Histogram CONNECTOR_HISTOGRAM_OUT = Histogram.build()
+      .name("connector_processing_time_out")
+      .help("Time of all connector requests going out")
+      .labelNames("task_name", "key")
       .register(REGISTRY);
 
   public static final Gauge IN_PROCESSING_COUNTER = Gauge.build()

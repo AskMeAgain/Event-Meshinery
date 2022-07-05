@@ -1,8 +1,10 @@
-package io.github.askmeagain.meshinery.monitoring;
+package io.github.askmeagain.meshinery.monitoring.decorators;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
+import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
+import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringUtils;
 import java.time.Duration;
 import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +18,7 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_N
  * @param <O> Output Context Type
  */
 @Slf4j
-public class TimingDecorator<I extends DataContext, O extends DataContext> implements ProcessorDecorator<I, O> {
+public class ProcessorTimingDecorator<I extends DataContext, O extends DataContext> implements ProcessorDecorator<I, O> {
 
   /**
    * Wraps a processor and adds a monitoring around it.

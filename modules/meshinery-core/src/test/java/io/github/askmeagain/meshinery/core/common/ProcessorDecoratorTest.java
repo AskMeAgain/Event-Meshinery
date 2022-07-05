@@ -55,7 +55,7 @@ class ProcessorDecoratorTest {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
-        .registerDecorators(List.of(decorator))
+        .registerProcessorDecorators(List.of(decorator))
         .gracePeriodMilliseconds(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(2, TimeUnit.SECONDS);

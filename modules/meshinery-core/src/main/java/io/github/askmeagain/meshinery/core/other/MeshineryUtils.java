@@ -1,6 +1,8 @@
 package io.github.askmeagain.meshinery.core.other;
 
+import io.github.askmeagain.meshinery.core.common.ConnectorDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.task.TaskData;
@@ -73,6 +75,19 @@ public class MeshineryUtils {
     }
 
     return innerProcessor;
+  }
+
+  public static MeshineryConnector<?, DataContext> applyDecorator(
+      MeshineryConnector<?, DataContext> connector,
+      List<ConnectorDecoratorFactory<?, DataContext>> connectorDecoratorFactories
+  ) {
+    var innerConnector = connector;
+
+    for (var decorator : connectorDecoratorFactories) {
+      innerConnector = decorator.wrap(innerConnector);
+    }
+
+    return innerConnector;
   }
 
   /**

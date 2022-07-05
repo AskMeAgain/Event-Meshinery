@@ -1,13 +1,15 @@
 package io.github.askmeagain.meshinery.monitoring.config;
 
+import io.github.askmeagain.meshinery.core.common.ConnectorDecoratorFactory;
 import io.github.askmeagain.meshinery.core.hooks.CustomizeStartupHook;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
+import io.github.askmeagain.meshinery.monitoring.decorators.ConnectorTimingDecoratorFactory;
 import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
 import io.github.askmeagain.meshinery.monitoring.apis.DrawerApiController;
 import io.github.askmeagain.meshinery.monitoring.apis.MonitoringApiController;
 import io.github.askmeagain.meshinery.monitoring.utils.MeshineryMonitoringSpringUtils;
-import io.github.askmeagain.meshinery.monitoring.TimingDecorator;
+import io.github.askmeagain.meshinery.monitoring.decorators.ProcessorTimingDecorator;
 import io.github.askmeagain.meshinery.monitoring.grafanapush.MeshineryPushProperties;
 import io.prometheus.client.Gauge;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -32,8 +34,13 @@ import static io.github.askmeagain.meshinery.monitoring.utils.MeshineryMonitorin
 public class MeshineryMonitoringAutoConfiguration {
 
   @Bean
-  TimingDecorator<? extends DataContext, ?> timingDecorator() {
-    return new TimingDecorator<>();
+  ConnectorDecoratorFactory<?, DataContext> connectorTimingDecoratorFactory() {
+    return new ConnectorTimingDecoratorFactory();
+  }
+
+  @Bean
+  ProcessorTimingDecorator<? extends DataContext, ?> timingDecorator() {
+    return new ProcessorTimingDecorator<>();
   }
 
   @Bean
@@ -124,7 +131,7 @@ public class MeshineryMonitoringAutoConfiguration {
   }
 
   @Bean
-  CustomizeStartupHook taskMonitoringInformation() {
+  public CustomizeStartupHook taskMonitoringInformation() {
     return scheduler -> {
       MeshineryMonitoringService.createGauge(
           "priority_queue",

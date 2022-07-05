@@ -1,12 +1,14 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
+import io.github.askmeagain.meshinery.core.common.ConnectorDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
+import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 import lombok.SneakyThrows;
 
@@ -14,7 +16,8 @@ import lombok.SneakyThrows;
 public class SchedulerBuilder {
 
   List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
-  List<ProcessorDecorator<DataContext, DataContext>> processorDecorator = Collections.emptyList();
+  List<ProcessorDecorator<DataContext, DataContext>> processorDecorators = Collections.emptyList();
+  List<ConnectorDecoratorFactory<?, DataContext>> connectorDecoratorFactories = Collections.emptyList();
   List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
   int backpressureLimit = 200;
   int gracePeriodMilliseconds = 2000;
@@ -45,8 +48,17 @@ public class SchedulerBuilder {
     return this;
   }
 
-  public SchedulerBuilder registerDecorators(List<ProcessorDecorator<DataContext, DataContext>> processorDecorators) {
-    this.processorDecorator = processorDecorators;
+  public SchedulerBuilder registerProcessorDecorators(
+      List<ProcessorDecorator<DataContext, DataContext>> processorDecorators
+  ) {
+    this.processorDecorators = processorDecorators;
+    return this;
+  }
+
+  public SchedulerBuilder registerConnectorDecorators(
+      List<ConnectorDecoratorFactory<?, DataContext>> connectorDecoratorFactories
+  ) {
+    this.connectorDecoratorFactories = connectorDecoratorFactories;
     return this;
   }
 
@@ -87,13 +99,22 @@ public class SchedulerBuilder {
     //verifying tasks
     tasks.forEach(MeshineryTask::verifyTask);
 
+    List<? extends MeshineryTask<?, ? extends DataContext>> decoratedTasks = tasks.stream()
+        .map(x -> {
+          var decoratedConnector = MeshineryUtils.applyDecorator(
+              (MeshineryConnector<?, DataContext>) x.getInputConnector(), connectorDecoratorFactories);
+          var decoratedConnector2 = MeshineryUtils.applyDecorator(
+              (MeshineryConnector<?, DataContext>) x.getOutputConnector(), connectorDecoratorFactories);
+          return x.withConnector(decoratedConnector, decoratedConnector2);
+        }).toList();
+
     return new RoundRobinScheduler(
-        tasks,
+        (List<MeshineryTask<?, ?>>) decoratedTasks,
         backpressureLimit,
         isBatchJob,
         shutdownHook,
         startupHook,
-        processorDecorator,
+        processorDecorators,
         gracefulShutdownOnError,
         gracePeriodMilliseconds
     );

@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.askmeagain.meshinery.core.common.ConnectorDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.hooks.BatchJobTimingHooks;
@@ -80,6 +81,7 @@ public class MeshineryAutoConfiguration {
       List<CustomizeShutdownHook> shutdownHook,
       List<CustomizeStartupHook> startupHook,
       List<ProcessorDecorator<DataContext, DataContext>> processorDecorators,
+      List<ConnectorDecoratorFactory<?, DataContext>> connectorDecoratorFactories,
       MeshineryCoreProperties meshineryCoreProperties
   ) {
     var appliedPropertyTasks = PropertyTaskInjection.injectProperties(tasks, meshineryCoreProperties);
@@ -89,7 +91,8 @@ public class MeshineryAutoConfiguration {
         .isBatchJob(meshineryCoreProperties.isBatchJob())
         .registerShutdownHook(shutdownHook)
         .registerStartupHook(startupHook)
-        .registerDecorators(processorDecorators)
+        .registerProcessorDecorators(processorDecorators)
+        .registerConnectorDecorators(connectorDecoratorFactories)
         .gracefulShutdownOnError(meshineryCoreProperties.isShutdownOnError())
         .gracePeriodMilliseconds(meshineryCoreProperties.getGracePeriodMilliseconds())
         .tasks(appliedPropertyTasks)

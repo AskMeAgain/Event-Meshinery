@@ -4,6 +4,7 @@ import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.TestContextProcessor;
+import io.github.askmeagain.meshinery.monitoring.decorators.ProcessorTimingDecorator;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
@@ -20,7 +21,7 @@ class MonitoringTest {
     //Arrange ----------------------------------------------------------------------------------------------------------
     TaskData.setTaskData(new TaskData().put(TASK_NAME, TASK_NAME_VALUE));
     MDC.put("", "");
-    var decorator = new TimingDecorator<TestContext, TestContext>();
+    var decorator = new ProcessorTimingDecorator<TestContext, TestContext>();
     var simpleProcessor = new TestContextProcessor(0);
     var decoratedProcessor = decorator.wrap(simpleProcessor);
 

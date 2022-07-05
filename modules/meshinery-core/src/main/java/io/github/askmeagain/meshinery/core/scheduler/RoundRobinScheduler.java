@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
+import io.github.askmeagain.meshinery.core.common.ConnectorDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
@@ -47,7 +48,6 @@ public class RoundRobinScheduler {
 
   private final Queue<TaskRun> outputQueue = new ConcurrentLinkedQueue<>();
   private final Queue<TaskRun> priorityQueue = new ConcurrentLinkedQueue<>();
-
   private final Queue<ConnectorKey> inputQueue = new ConcurrentLinkedQueue<>();
 
   private final Map<ConnectorKey, MeshineryTask<?, ?>> taskRunLookupMap = new HashMap<>();
@@ -86,7 +86,7 @@ public class RoundRobinScheduler {
   private void createLookupMap() {
     for (var task : tasks) {
       var connectorKey = ConnectorKey.builder()
-          .connector((MeshineryConnector<Object, DataContext>) task.getInputConnector())
+          .connector((MeshineryConnector<Object, DataContext>)task.getInputConnector())
           .key(task.getInputKeys())
           .build();
 
