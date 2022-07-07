@@ -1,16 +1,16 @@
 package io.github.askmeagain.meshinery.monitoring.config;
 
-import io.github.askmeagain.meshinery.core.common.ConnectorDecoratorFactory;
-import io.github.askmeagain.meshinery.core.hooks.CustomizeStartupHook;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.hooks.CustomizeStartupHook;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
-import io.github.askmeagain.meshinery.monitoring.decorators.ConnectorTimingDecoratorFactory;
 import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
 import io.github.askmeagain.meshinery.monitoring.apis.DrawerApiController;
 import io.github.askmeagain.meshinery.monitoring.apis.MonitoringApiController;
-import io.github.askmeagain.meshinery.monitoring.utils.MeshineryMonitoringSpringUtils;
+import io.github.askmeagain.meshinery.monitoring.decorators.InputSourceTimingDecoratorFactory;
 import io.github.askmeagain.meshinery.monitoring.decorators.ProcessorTimingDecorator;
 import io.github.askmeagain.meshinery.monitoring.grafanapush.MeshineryPushProperties;
+import io.github.askmeagain.meshinery.monitoring.utils.MeshineryMonitoringSpringUtils;
 import io.prometheus.client.Gauge;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -34,8 +34,8 @@ import static io.github.askmeagain.meshinery.monitoring.utils.MeshineryMonitorin
 public class MeshineryMonitoringAutoConfiguration {
 
   @Bean
-  ConnectorDecoratorFactory connectorTimingDecoratorFactory() {
-    return new ConnectorTimingDecoratorFactory();
+  InputSourceTimingDecoratorFactory connectorTimingDecoratorFactory() {
+    return new InputSourceTimingDecoratorFactory();
   }
 
   @Bean

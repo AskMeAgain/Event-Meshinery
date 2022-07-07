@@ -1,6 +1,5 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
-import io.github.askmeagain.meshinery.core.common.ConnectorDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
@@ -43,7 +42,6 @@ public class RoundRobinScheduler {
   private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
   private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
   private final List<ProcessorDecorator<DataContext, DataContext>> processorDecorator;
-  private final List<ConnectorDecoratorFactory> connectorDecoratorFactories;
   private final boolean gracefulShutdownOnError;
   private final int gracePeriodMilliseconds;
 
@@ -56,8 +54,8 @@ public class RoundRobinScheduler {
   private boolean gracefulShutdownTriggered = false;
   private Instant lastInputEntry;
 
-  public static SchedulerBuilder builder() {
-    return new SchedulerBuilder();
+  public static RoundRobinSchedulerBuilder builder() {
+    return new RoundRobinSchedulerBuilder();
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
@@ -91,19 +89,7 @@ public class RoundRobinScheduler {
           .key(task.getInputKeys())
           .build();
 
-      var decoratedInput = MeshineryUtils.applyDecorator(
-          (MeshineryConnector<?, DataContext>) task.getInputConnector(), connectorDecoratorFactories
-      );
-      var decoratedOutput = MeshineryUtils.applyDecorator(
-          (MeshineryConnector<?, DataContext>) task.getInputConnector(), connectorDecoratorFactories
-      );
-
-      var fixedTask = task.withConnector(
-          decoratedInput,
-          decoratedOutput
-      );
-
-      taskRunLookupMap.put(connectorKey, fixedTask);
+      taskRunLookupMap.put(connectorKey, task);
     }
   }
 

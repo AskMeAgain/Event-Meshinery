@@ -1,8 +1,7 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
-import io.github.askmeagain.meshinery.core.common.ConnectorDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
@@ -13,11 +12,11 @@ import java.util.function.Consumer;
 import lombok.SneakyThrows;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class SchedulerBuilder {
+public class RoundRobinSchedulerBuilder {
 
   List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
   List<ProcessorDecorator<DataContext, DataContext>> processorDecorators = Collections.emptyList();
-  List<ConnectorDecoratorFactory> connectorDecoratorFactories = Collections.emptyList();
+  List<InputSourceDecoratorFactory> connectorDecoratorFactories = Collections.emptyList();
   List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
   int backpressureLimit = 200;
   int gracePeriodMilliseconds = 2000;
@@ -26,63 +25,63 @@ public class SchedulerBuilder {
   boolean gracefulShutdownOnError = true;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public SchedulerBuilder properties(MeshineryCoreProperties meshineryCoreProperties) {
+  public RoundRobinSchedulerBuilder properties(MeshineryCoreProperties meshineryCoreProperties) {
     return backpressureLimit(meshineryCoreProperties.getBackpressureLimit())
         .gracefulShutdownOnError(meshineryCoreProperties.isShutdownOnError())
         .gracePeriodMilliseconds(meshineryCoreProperties.getGracePeriodMilliseconds())
         .isBatchJob(meshineryCoreProperties.isBatchJob());
   }
 
-  public SchedulerBuilder task(MeshineryTask<?, ? extends DataContext> task) {
+  public RoundRobinSchedulerBuilder task(MeshineryTask<?, ? extends DataContext> task) {
     tasks.add(task);
     return this;
   }
 
-  public SchedulerBuilder backpressureLimit(int backpressureLimit) {
+  public RoundRobinSchedulerBuilder backpressureLimit(int backpressureLimit) {
     this.backpressureLimit = backpressureLimit;
     return this;
   }
 
-  public SchedulerBuilder tasks(List<MeshineryTask<?, ? extends DataContext>> task) {
+  public RoundRobinSchedulerBuilder tasks(List<MeshineryTask<?, ? extends DataContext>> task) {
     tasks.addAll(task);
     return this;
   }
 
-  public SchedulerBuilder registerProcessorDecorators(
+  public RoundRobinSchedulerBuilder registerProcessorDecorators(
       List<ProcessorDecorator<DataContext, DataContext>> processorDecorators
   ) {
     this.processorDecorators = processorDecorators;
     return this;
   }
 
-  public SchedulerBuilder registerConnectorDecorators(
-      List<ConnectorDecoratorFactory> connectorDecoratorFactories
+  public RoundRobinSchedulerBuilder registerConnectorDecorators(
+      List<InputSourceDecoratorFactory> connectorDecoratorFactories
   ) {
     this.connectorDecoratorFactories = connectorDecoratorFactories;
     return this;
   }
 
-  public SchedulerBuilder registerShutdownHook(List<? extends Consumer<RoundRobinScheduler>> shutdownHook) {
+  public RoundRobinSchedulerBuilder registerShutdownHook(List<? extends Consumer<RoundRobinScheduler>> shutdownHook) {
     this.shutdownHook = shutdownHook;
     return this;
   }
 
-  public SchedulerBuilder registerStartupHook(List<? extends Consumer<RoundRobinScheduler>> startupHook) {
+  public RoundRobinSchedulerBuilder registerStartupHook(List<? extends Consumer<RoundRobinScheduler>> startupHook) {
     this.startupHook = startupHook;
     return this;
   }
 
-  public SchedulerBuilder gracefulShutdownOnError(boolean gracefulShutdownOnError) {
+  public RoundRobinSchedulerBuilder gracefulShutdownOnError(boolean gracefulShutdownOnError) {
     this.gracefulShutdownOnError = gracefulShutdownOnError;
     return this;
   }
 
-  public SchedulerBuilder isBatchJob(boolean flag) {
+  public RoundRobinSchedulerBuilder isBatchJob(boolean flag) {
     isBatchJob = flag;
     return this;
   }
 
-  public SchedulerBuilder gracePeriodMilliseconds(int gracePeriodMilliseconds) {
+  public RoundRobinSchedulerBuilder gracePeriodMilliseconds(int gracePeriodMilliseconds) {
     this.gracePeriodMilliseconds = gracePeriodMilliseconds;
     return this;
   }
@@ -99,14 +98,15 @@ public class SchedulerBuilder {
     //verifying tasks
     tasks.forEach(MeshineryTask::verifyTask);
 
+    var fixedTasks = MeshineryUtils.decorateMeshineryTasks(tasks, connectorDecoratorFactories);
+
     return new RoundRobinScheduler(
-        tasks,
+        (List<MeshineryTask<?, ?>>) fixedTasks,
         backpressureLimit,
         isBatchJob,
         shutdownHook,
         startupHook,
         processorDecorators,
-        connectorDecoratorFactories,
         gracefulShutdownOnError,
         gracePeriodMilliseconds
     );

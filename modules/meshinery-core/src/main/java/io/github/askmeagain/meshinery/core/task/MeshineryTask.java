@@ -32,9 +32,9 @@ public class MeshineryTask<K, C extends DataContext> {
   @Getter private final List<K> inputKeys;
   @Getter private final String taskName;
   @Getter private TaskData taskData;
-  @With
+  @With(AccessLevel.PRIVATE)
   @Getter private final MeshineryConnector<K, C> inputConnector;
-  @With
+
   @Getter private final MeshineryConnector<K, C> outputConnector;
   @Getter private final DataInjectingExecutorService executorService;
   @Getter private final Function<Throwable, DataContext> handleException;
@@ -125,12 +125,7 @@ public class MeshineryTask<K, C extends DataContext> {
     }
   }
 
-  public MeshineryTask<K, C> withConnector(
-      MeshineryConnector<?, ?> inputConnector,
-      MeshineryConnector<?, ?> outputConnector
-  ) {
-    return this.withInputConnector((MeshineryConnector<K, C>) inputConnector)
-        .withOutputConnector((MeshineryConnector<K, C>) outputConnector);
+  public MeshineryTask<K, C> withNewInputConnector(MeshineryConnector<?, ?> decoratedInput) {
+    return this.withInputConnector((MeshineryConnector<K, C>) decoratedInput);
   }
-
 }

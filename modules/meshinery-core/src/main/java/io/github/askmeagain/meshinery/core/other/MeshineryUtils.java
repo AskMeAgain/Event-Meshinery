@@ -1,10 +1,11 @@
 package io.github.askmeagain.meshinery.core.other;
 
-import io.github.askmeagain.meshinery.core.common.ConnectorDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +13,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
-import lombok.Data;
 import lombok.experimental.UtilityClass;
 import org.slf4j.MDC;
 
@@ -80,7 +80,7 @@ public class MeshineryUtils {
 
   public static MeshineryConnector<?, ? extends DataContext> applyDecorator(
       MeshineryConnector<?, ? extends DataContext> connector,
-      List<ConnectorDecoratorFactory> connectorDecoratorFactories
+      List<InputSourceDecoratorFactory> connectorDecoratorFactories
   ) {
     var innerConnector = connector;
 
@@ -103,5 +103,17 @@ public class MeshineryUtils {
     return Arrays.stream(inputKeys)
         .map(Object::toString)
         .collect(Collectors.joining("-"));
+  }
+
+  public static List<? extends MeshineryTask<?, ? extends DataContext>> decorateMeshineryTasks(
+      List<MeshineryTask<?, ? extends DataContext>> tasks,
+      List<InputSourceDecoratorFactory> connectorDecoratorFactories
+  ) {
+    return tasks.stream()
+        .map(task -> {
+          var decoratedInput = MeshineryUtils.applyDecorator(task.getInputConnector(), connectorDecoratorFactories);
+
+          return task.withNewInputConnector(decoratedInput);
+        }).toList();
   }
 }

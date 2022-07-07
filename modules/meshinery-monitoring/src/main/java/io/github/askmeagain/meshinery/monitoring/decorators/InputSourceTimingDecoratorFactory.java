@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.monitoring.decorators;
 
-import io.github.askmeagain.meshinery.core.common.ConnectorDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
@@ -12,11 +12,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ConnectorTimingDecoratorFactory implements ConnectorDecoratorFactory {
+public class InputSourceTimingDecoratorFactory implements InputSourceDecoratorFactory {
 
   @Override
-  public MeshineryConnector<?, DataContext> wrap(MeshineryConnector<?, ? extends DataContext> innerConnector) {
-    return new ConnectorTimingDecorator((MeshineryConnector<Object, DataContext>) innerConnector);
+  public MeshineryConnector<?, DataContext> wrap(MeshineryConnector<?, ? extends DataContext> inputConnector) {
+    return new ConnectorTimingDecorator((MeshineryConnector<Object, DataContext>) inputConnector);
   }
 
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
