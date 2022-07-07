@@ -85,7 +85,7 @@ public class MeshineryUtils {
     var innerConnector = connector;
 
     for (var decorator : connectorDecoratorFactories) {
-      innerConnector = decorator.wrap(innerConnector);
+      innerConnector = decorator.decorate(innerConnector);
     }
 
     return innerConnector;

@@ -49,7 +49,7 @@ class ConnectorDecoratorTest {
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
-    Mockito.verify(spyDecorator, Mockito.atLeastOnce()).wrap(any());
+    Mockito.verify(spyDecorator, Mockito.atLeastOnce()).decorate(any());
     assertThat(inputCounter).hasValueGreaterThan(1);
   }
 

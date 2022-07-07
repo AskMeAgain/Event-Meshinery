@@ -54,6 +54,15 @@ public class RoundRobinSchedulerBuilder {
     return this;
   }
 
+  /**
+   * Connector Decorators registered via this method will only be applied to the
+   * {@link io.github.askmeagain.meshinery.core.common.InputSource}
+   * part of the connector due to technical limits. The
+   * {@link io.github.askmeagain.meshinery.core.common.OutputSource} WONT be decorated.
+   *
+   * @param connectorDecoratorFactories list of decorated factories
+   * @return returns this
+   */
   public RoundRobinSchedulerBuilder registerConnectorDecorators(
       List<InputSourceDecoratorFactory> connectorDecoratorFactories
   ) {

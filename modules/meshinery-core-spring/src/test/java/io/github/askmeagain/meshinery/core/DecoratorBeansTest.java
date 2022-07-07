@@ -44,7 +44,7 @@ class DecoratorBeansTest extends AbstractCoreSpringTestBase {
 
     Thread.sleep(3000);
 
-    Mockito.verify(decorator, Mockito.atLeastOnce()).wrap(any());
+    Mockito.verify(decorator, Mockito.atLeastOnce()).decorate(any());
     Mockito.verify(connector, Mockito.atLeastOnce()).getInputs(any());
     Mockito.verify(connector, Mockito.atLeast(2)).writeOutput(any(), any());
   }

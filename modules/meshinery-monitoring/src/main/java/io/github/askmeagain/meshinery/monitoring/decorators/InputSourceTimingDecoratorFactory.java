@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.monitoring.decorators;
 
-import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
@@ -9,13 +9,11 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class InputSourceTimingDecoratorFactory implements InputSourceDecoratorFactory {
 
   @Override
-  public MeshineryConnector<?, DataContext> wrap(MeshineryConnector<?, ? extends DataContext> inputConnector) {
+  public MeshineryConnector<?, DataContext> decorate(MeshineryConnector<?, ? extends DataContext> inputConnector) {
     return new ConnectorTimingDecorator((MeshineryConnector<Object, DataContext>) inputConnector);
   }
 
@@ -43,16 +41,7 @@ public class InputSourceTimingDecoratorFactory implements InputSourceDecoratorFa
 
     @Override
     public void writeOutput(Object key, DataContext output) {
-      var connectorName = innerConnector.getName();
-      var histogram = MeshineryMonitoringService.CONNECTOR_HISTOGRAM_OUT.labels(connectorName, key.toString());
-
-      try (var timer = histogram.startTimer()) {
-        try {
-          innerConnector.writeOutput(key, output);
-        } finally {
-          timer.observeDuration();
-        }
-      }
+      throw new UnsupportedOperationException("This is not supported");
     }
   }
 }

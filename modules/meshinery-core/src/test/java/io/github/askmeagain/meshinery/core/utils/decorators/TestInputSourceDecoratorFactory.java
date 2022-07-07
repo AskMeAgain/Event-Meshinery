@@ -15,7 +15,7 @@ public class TestInputSourceDecoratorFactory implements InputSourceDecoratorFact
   private final AtomicInteger atomicInteger;
 
   @Override
-  public MeshineryConnector<?, DataContext> wrap(MeshineryConnector<?, ? extends DataContext> inputConnector) {
+  public MeshineryConnector<?, DataContext> decorate(MeshineryConnector<?, ? extends DataContext> inputConnector) {
     return new TestConnectorDecorator(
         (MeshineryConnector<Object, DataContext>) inputConnector, atomicInteger);
   }
