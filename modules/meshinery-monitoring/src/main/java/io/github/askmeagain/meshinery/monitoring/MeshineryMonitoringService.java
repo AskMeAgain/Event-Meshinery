@@ -29,12 +29,6 @@ public class MeshineryMonitoringService {
       .labelNames("task_name", "key")
       .register(REGISTRY);
 
-  public static final Summary CONNECTOR_HISTOGRAM_OUT = Summary.build()
-      .name("connector_processing_time_out")
-      .help("Time of all connector requests going out")
-      .labelNames("task_name", "key")
-      .register(REGISTRY);
-
   public static final Gauge IN_PROCESSING_COUNTER = Gauge.build()
       .name("processing_counter")
       .help("Number of all currently in work processors")

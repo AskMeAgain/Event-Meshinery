@@ -8,25 +8,37 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.monitoring.apis.DrawerApiController;
 import io.github.askmeagain.meshinery.monitoring.common.EnableMeshineryMonitoring;
+import io.github.askmeagain.meshinery.monitoring.config.MeshineryDrawerConfiguration;
+import io.github.askmeagain.meshinery.monitoring.decorators.InputSourceTimingDecoratorFactory;
+import io.github.askmeagain.meshinery.monitoring.decorators.ProcessorTimingDecorator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.Extensions;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService.REGISTRY;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
+@ExtendWith(MockitoExtension.class)
 @WebMvcTest(DrawerApiController.class)
-@ContextConfiguration(classes = {DrawTestApplication.TestApplication.class})
+@MockBean({InputSourceTimingDecoratorFactory.class, ProcessorTimingDecorator.class})
+@ContextConfiguration(classes = {MeshineryDrawerConfiguration.class, DrawTestApplication.TestApplication.class})
 class DrawTestApplication {
 
   @Autowired
@@ -53,7 +65,6 @@ class DrawTestApplication {
       injection = TestContext.class,
       connector = @EnableMeshinery.KeyDataContext(context = TestContext.class, key = String.class)
   )
-  @EnableMeshineryMonitoring
   @SpringBootApplication
   public static class TestApplication {
 
