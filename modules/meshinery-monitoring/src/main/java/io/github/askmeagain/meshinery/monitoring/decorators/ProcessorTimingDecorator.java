@@ -18,7 +18,8 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_N
  * @param <O> Output Context Type
  */
 @Slf4j
-public class ProcessorTimingDecorator<I extends DataContext, O extends DataContext> implements ProcessorDecorator<I, O> {
+public class ProcessorTimingDecorator<I extends DataContext, O extends DataContext>
+    implements ProcessorDecorator<I, O> {
 
   /**
    * Wraps a processor and adds a monitoring around it.

@@ -6,7 +6,7 @@ package io.github.askmeagain.meshinery.core.common;
 public interface DataContext {
 
   /**
-   * unique id of the context
+   * unique id of the context.
    *
    * @return id
    */

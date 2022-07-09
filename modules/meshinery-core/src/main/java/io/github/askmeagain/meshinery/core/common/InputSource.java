@@ -5,6 +5,7 @@ import java.util.List;
 
 /**
  * Input Source interface. An inputSource enables you to get data from a MeshineryConnector by polling the source.
+ *
  * @param <K> Event key type
  * @param <I> context type
  */

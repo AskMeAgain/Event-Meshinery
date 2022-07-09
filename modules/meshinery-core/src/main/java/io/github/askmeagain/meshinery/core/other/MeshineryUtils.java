@@ -57,7 +57,7 @@ public class MeshineryUtils {
   }
 
   /**
-   * Applies all decorators to a processor
+   * Applies all decorators to a processor.
    *
    * @param nextProcessor      the processor to be decorated
    * @param processorDecorator list of decorators
@@ -78,6 +78,7 @@ public class MeshineryUtils {
     return innerProcessor;
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static MeshineryConnector<?, ? extends DataContext> applyDecorator(
       MeshineryConnector<?, ? extends DataContext> connector,
       List<InputSourceDecoratorFactory> connectorDecoratorFactories
@@ -92,7 +93,7 @@ public class MeshineryUtils {
   }
 
   /**
-   * Combines all input keys to a single string
+   * Combines all input keys to a single string.
    *
    * @param inputKeys list of input keys
    * @param <K>       type of the input key
@@ -105,6 +106,7 @@ public class MeshineryUtils {
         .collect(Collectors.joining("-"));
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static List<? extends MeshineryTask<?, ? extends DataContext>> decorateMeshineryTasks(
       List<MeshineryTask<?, ? extends DataContext>> tasks,
       List<InputSourceDecoratorFactory> connectorDecoratorFactories

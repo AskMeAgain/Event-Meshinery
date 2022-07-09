@@ -130,6 +130,7 @@ public class MeshineryMonitoringAutoConfiguration {
     };
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @Bean
   public CustomizeStartupHook taskMonitoringInformation() {
     return scheduler -> {

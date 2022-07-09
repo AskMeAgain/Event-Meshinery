@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class InputSourceTimingDecoratorFactory implements InputSourceDecoratorFactory {
 
   @Override
