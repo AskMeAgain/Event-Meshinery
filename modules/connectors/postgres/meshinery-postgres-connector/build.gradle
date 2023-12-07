@@ -1,0 +1,20 @@
+import com.vanniktech.maven.publish.*
+
+plugins {
+    id "com.vanniktech.maven.publish.base"
+}
+
+dependencies {
+    api project(':modules:meshinery-core')
+    api "org.postgresql:postgresql:${postgres_java_connector_version}"
+    api "org.jdbi:jdbi3-core:${jdbi_version}"
+    api "org.jdbi:jdbi3-jackson2:${jdbi_version}"
+    api "org.jdbi:jdbi3-sqlobject:${jdbi_version}"
+    api "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
+    implementation "com.zaxxer:HikariCP:${hikari_version}"
+    testImplementation project(':modules:meshinery-core').sourceSets.test.output
+}
+
+mavenPublishing {
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
+}

@@ -30,14 +30,13 @@ public class Blocking {
    * done since the key C is blocking for all threads. This is used to make sure that accessing input sources are not
    * interfering with the normal execution of input source, in case the input source is not thread safe.
    *
-   * @param keys   the keys which will be used to determin if the supplieder is blocked or not
+   * @param keys   the keys which will be used to determine if the supplier is blocked or not
    * @param action the action to be used
    * @param <O>    the type of the supplier return value
    * @return returns the value from the supplier
    */
   @SneakyThrows
   public static <O> O byKey(String[] keys, Supplier<O> action) {
-
     var semaphores = new Semaphore[keys.length];
     try {
       for (int i = 0; i < keys.length; i++) {

@@ -13,11 +13,13 @@
         <module name="EventMeshinery.modules.connectors.test" />
         <module name="EventMeshinery.modules.meshinery-core.main" />
         <module name="EventMeshinery.modules.connectors.mysql.meshinery-mysql-connector-spring.test" />
+        <module name="EventMeshinery.modules.connectors.postgres.test" />
         <module name="EventMeshinery.modules.connectors.mysql.meshinery-mysql-connector.main" />
         <module name="EventMeshinery.modules.meshinery-monitoring-spring.test" />
         <module name="EventMeshinery.modules.connectors.mysql.test" />
         <module name="EventMeshinery.modules.connectors.mysql.meshinery-mysql-connector.test" />
         <module name="EventMeshinery.modules.connectors.kafka.main" />
+        <module name="EventMeshinery.modules.connectors.postgres.main" />
         <module name="EventMeshinery.modules.meshinery-monitoring.test" />
         <module name="EventMeshinery.modules.connectors.mysql.main" />
         <module name="EventMeshinery.modules.connectors.kafka.meshinery-kafka-connector.test" />
@@ -28,7 +30,9 @@
         <module name="EventMeshinery.modules.meshinery-core-spring.test" />
         <module name="EventMeshinery.modules.connectors.kafka.test" />
         <module name="EventMeshinery.modules.main" />
+        <module name="EventMeshinery.modules.connectors.postgres.meshinery-postgres-connector.test" />
         <module name="EventMeshinery.modules.test" />
+        <module name="EventMeshinery.modules.connectors.postgres.meshinery-postgres-connector.main" />
         <module name="EventMeshinery.modules.meshinery-core.test" />
       </profile>
       <profile name="Gradle Imported" enabled="true">

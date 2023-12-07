@@ -24,7 +24,7 @@ public class MeshineryUtils {
    * This utility method takes a list of processors and chains them together sequentially via completable future
    * compose method.
    * Note that the input and output type of each processor can be different, but needs to be correct as long as
-   * the output type of a processor is the input type of the next processor. Essentials this utility method collapses
+   * the output type of a processor is the input type of the next processor. Essentially this utility method collapses
    * any list of processors
    *
    * @param processorList the list of processors which will run sequentially

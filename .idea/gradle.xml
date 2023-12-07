@@ -4,9 +4,7 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="delegatedBuild" value="true" />
         <option name="testRunner" value="CHOOSE_PER_TEST" />
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
@@ -19,6 +17,8 @@
             <option value="$PROJECT_DIR$/modules/connectors/mysql" />
             <option value="$PROJECT_DIR$/modules/connectors/mysql/meshinery-mysql-connector" />
             <option value="$PROJECT_DIR$/modules/connectors/mysql/meshinery-mysql-connector-spring" />
+            <option value="$PROJECT_DIR$/modules/connectors/postgres" />
+            <option value="$PROJECT_DIR$/modules/connectors/postgres/meshinery-postgres-connector" />
             <option value="$PROJECT_DIR$/modules/meshinery-core" />
             <option value="$PROJECT_DIR$/modules/meshinery-core-spring" />
             <option value="$PROJECT_DIR$/modules/meshinery-monitoring" />
