@@ -1,0 +1,18 @@
+import com.vanniktech.maven.publish.*
+
+plugins {
+    id "com.vanniktech.maven.publish.base"
+}
+
+dependencies {
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${spring_boot_version}"
+    api project(':modules:connectors:postgres:meshinery-postgres-connector')
+    api project(':modules:meshinery-core-spring')
+    testImplementation project(':modules:meshinery-core-spring').sourceSets.test.output
+    testImplementation project(':modules:meshinery-core').sourceSets.test.output
+    testImplementation project(':modules:connectors:postgres:meshinery-postgres-connector').sourceSets.test.output
+}
+
+mavenPublishing {
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
+}

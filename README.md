@@ -102,6 +102,10 @@ independent way.
   integration
     * [meshinery-connectors-mysql-spring](modules/connectors/mysql/meshinery-mysql-connector-spring/mysql-spring.md) has
       the Spring AutoConfiguration for Mysql
+* [meshinery-connectors-postgres](https://github.com/AskMeAgain/Event-Meshinery/wiki/Postgres) has the Postgres state store
+  integration
+    * [meshinery-connectors-postgres-spring](modules/connectors/postgres/meshinery-postgres-connector-spring/postgres-spring.md) has
+      the Spring AutoConfiguration for Postgres
 * [meshinery-connectors-kafka](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka) has the Kafka state store
   integration
     * [meshinery-connectors-kafka-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka-Spring)
@@ -240,6 +244,7 @@ Obviously, you can mix and match these sources and even write your own. They onl
 Currently supported are the following state sources:
 
 * [Mysql](https://github.com/AskMeAgain/Event-Meshinery/wiki/Mysql)
+* [Postgres](https://github.com/AskMeAgain/Event-Meshinery/wiki/Postgres)
 * [Kafka](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka)
 * [Memory](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Connector#utility-sources)
 
@@ -320,7 +325,7 @@ the actual topology of the application and is generated completely **automatical
 
 A picture can be generated of the actual topology layer.
 
-![example-png-graph](modules/meshinery-draw/example-graph.png)
+![example-png-graph](modules/meshinery-monitoring/example-graph.png)
 
 ### Mermaid.js
 
@@ -330,7 +335,7 @@ plugin to provide a real time overview of the system and all its metrics in [Gra
 The [meshinery-draw-spring](modules/meshinery-draw-spring/draw-spring.md) package provides an endpoint which can be
 passed into the plugin to display the topology directly, but you can easily implement this by yourself.
 
-![example-mermaid-diagram](modules/meshinery-draw/grafana-graph.png)
+![example-mermaid-diagram](modules/meshinery-monitoring/grafana-graph.png)
 
 ## Getting started
 

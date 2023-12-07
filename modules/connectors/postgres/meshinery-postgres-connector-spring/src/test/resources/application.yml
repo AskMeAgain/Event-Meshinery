@@ -1,0 +1,16 @@
+meshinery:
+  core:
+    shutdown-on-error: false
+    shutdown-on-finished: false
+    batch-job: true
+    grace-period-milliseconds: 1000
+  connectors:
+    postgres:
+      connection-string: jdbc:postgres://localhost:5432/db
+      user: user
+      password: password
+      limit: 1
+
+spring:
+  main:
+    web-application-type: none
