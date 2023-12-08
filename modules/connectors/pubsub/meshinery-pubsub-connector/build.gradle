@@ -1,0 +1,20 @@
+import com.vanniktech.maven.publish.*
+
+plugins {
+    id "com.vanniktech.maven.publish.base"
+}
+
+dependencies {
+    api project(':modules:meshinery-core')
+    implementation platform("com.google.cloud:libraries-bom:${google_cloud_bom_version}")
+    implementation 'com.google.cloud:google-cloud-pubsub'
+    implementation 'com.google.auth:google-auth-library-oauth2-http'
+
+    api "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
+    implementation "com.zaxxer:HikariCP:${hikari_version}"
+    testImplementation project(':modules:meshinery-core').sourceSets.test.output
+}
+
+mavenPublishing {
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
+}
