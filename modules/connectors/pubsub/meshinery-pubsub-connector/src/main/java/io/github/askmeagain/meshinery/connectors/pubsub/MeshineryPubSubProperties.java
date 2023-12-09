@@ -9,5 +9,8 @@ import lombok.Data;
 public class MeshineryPubSubProperties {
 
   @Positive
-  int limit = 10;
+  private int limit = 10;
+
+  @NotBlank
+  private String projectId;
 }
