@@ -46,7 +46,7 @@ public class PubSubConnector<C extends DataContext> implements MeshineryConnecto
       MeshineryPubSubProperties pubSubProperties,
       TransportChannelProvider transportChannelProvider,
       CredentialsProvider credentialsProvider
-  ) throws IOException {
+  ) {
     this.name = name;
     this.pubsubInputSource = new PubSubInputSource<>(
         name,

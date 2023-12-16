@@ -1,0 +1,14 @@
+meshinery:
+  core:
+    shutdown-on-error: false
+    shutdown-on-finished: false
+    batch-job: true
+    grace-period-milliseconds: 1000
+  connectors:
+    pubsub:
+      limit: 1
+      projectId: "test"
+
+spring:
+  main:
+    web-application-type: none

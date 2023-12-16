@@ -43,8 +43,8 @@ class PubSubInputTest extends AbstractPubSubTestBase {
     output.writeOutput(TOPIC, value1);
     output.writeOutput(TOPIC, value2);
 
-    var result1 = input.getInputs(List.of(SUBSCRIPTION));
-    var result2 = input.getInputs(List.of(SUBSCRIPTION));
+    var result1 = input.getInputs(List.of(TOPIC));
+    var result2 = input.getInputs(List.of(TOPIC));
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(result1)

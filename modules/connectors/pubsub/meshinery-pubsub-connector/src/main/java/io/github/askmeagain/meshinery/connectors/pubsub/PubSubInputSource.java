@@ -12,7 +12,6 @@ import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PullRequest;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSource;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +32,7 @@ public class PubSubInputSource<C extends DataContext> implements InputSource<Str
   private final SubscriberStubSettings subscriberStubSettings;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  @SneakyThrows
   public PubSubInputSource(
       String name,
       ObjectMapper objectMapper,
@@ -40,7 +40,7 @@ public class PubSubInputSource<C extends DataContext> implements InputSource<Str
       MeshineryPubSubProperties meshineryPubSubProperties,
       TransportChannelProvider transportChannelProvider,
       CredentialsProvider credentialsProvider
-  ) throws IOException {
+  ) {
     this.meshineryPubSubProperties = meshineryPubSubProperties;
     this.name = name;
     this.objectMapper = objectMapper;

@@ -15,6 +15,8 @@ dependencies {
     testAnnotationProcessor "org.projectlombok:lombok:${lombok_version}"
     testCompileOnly "org.projectlombok:lombok:${lombok_version}"
 
+    implementation platform("com.google.cloud:libraries-bom:${google_cloud_bom_version}")
+
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junit_version}"
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junit_version}"
     testImplementation "org.assertj:assertj-core:${assertj_version}"

@@ -13,4 +13,6 @@ public class MeshineryPubSubProperties {
 
   @NotBlank
   private String projectId;
+
+  private String emulatorEndpoint;
 }

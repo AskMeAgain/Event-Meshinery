@@ -16,16 +16,12 @@ class PubSubConnectorTest extends AbstractPubSubTestBase {
     pubSubProperties.setLimit(1);
     pubSubProperties.setProjectId(getProjectId());
 
-    var objectMapper = new ObjectMapper();
-    var credentialProvider = getCredentialProvider();
-    var transportChannelProvider = getTransportChannelProvider();
-
     var pubSubConnector = new PubSubConnector<>(
         TestContext.class,
-        objectMapper,
+        new ObjectMapper(),
         pubSubProperties,
-        transportChannelProvider,
-        credentialProvider
+        getTransportChannelProvider(),
+        getCredentialProvider()
     );
 
     var value1 = new TestContext(1);
@@ -35,8 +31,8 @@ class PubSubConnectorTest extends AbstractPubSubTestBase {
     pubSubConnector.writeOutput(TOPIC, value1);
     pubSubConnector.writeOutput(TOPIC, value2);
 
-    var result1 = pubSubConnector.getInputs(List.of(SUBSCRIPTION));
-    var result2 = pubSubConnector.getInputs(List.of(SUBSCRIPTION));
+    var result1 = pubSubConnector.getInputs(List.of(TOPIC));
+    var result2 = pubSubConnector.getInputs(List.of(TOPIC));
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(result1)

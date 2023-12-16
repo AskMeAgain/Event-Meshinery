@@ -12,7 +12,7 @@ import com.google.pubsub.v1.PushConfig;
 import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.TopicName;
 import io.grpc.ManagedChannelBuilder;
-import java.io.IOException;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.testcontainers.containers.PubSubEmulatorContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -23,33 +23,24 @@ public abstract class AbstractPubSubTestBase {
       DockerImageName.parse("gcr.io/google.com/cloudsdktool/google-cloud-cli:457.0.0-emulators")
   );
 
-  protected static final String TOPIC = "test-subscription_topic";
-  protected static final String SUBSCRIPTION = "test-subscription";
+  protected static final String TOPIC = "test-topic";
 
   @BeforeAll
-  protected static void setup() throws IOException {
+  protected static void setup() {
     PUB_SUB_EMULATOR_CONTAINER.start();
 
-    var topicAdminSettings = TopicAdminSettings
-        .newBuilder()
-        .setTransportChannelProvider(getTransportChannelProvider())
-        .setCredentialsProvider(getCredentialProvider())
-        .build();
+    createTopic(TOPIC);
+    createSubscription(TOPIC + "-subscription");
+  }
+
+  @SneakyThrows
+  protected static void createSubscription(String subscription) {
     var subscriptionAdminSettings = SubscriptionAdminSettings.newBuilder()
         .setCredentialsProvider(getCredentialProvider())
         .setTransportChannelProvider(getTransportChannelProvider())
         .build();
-
-    try (var topicAdminClient = TopicAdminClient.create(topicAdminSettings)) {
-      var topicName = TopicName.of(getProjectId(), TOPIC);
-      try {
-        topicAdminClient.getTopic(topicName);
-      } catch (NotFoundException e) {
-        topicAdminClient.createTopic(topicName);
-      }
-    }
     try (var subscriptionAdminClient = SubscriptionAdminClient.create(subscriptionAdminSettings)) {
-      var subscriptionName = SubscriptionName.of(getProjectId(), SUBSCRIPTION);
+      var subscriptionName = SubscriptionName.of(getProjectId(), subscription);
       try {
         subscriptionAdminClient.getSubscription(subscriptionName);
       } catch (NotFoundException e) {
@@ -59,6 +50,22 @@ public abstract class AbstractPubSubTestBase {
             PushConfig.getDefaultInstance(),
             10
         );
+      }
+    }
+  }
+
+  @SneakyThrows
+  protected static void createTopic(String topic) {
+    var topicAdminSettings = TopicAdminSettings.newBuilder()
+        .setTransportChannelProvider(getTransportChannelProvider())
+        .setCredentialsProvider(getCredentialProvider())
+        .build();
+    try (var topicAdminClient = TopicAdminClient.create(topicAdminSettings)) {
+      var topicName = TopicName.of(getProjectId(), topic);
+      try {
+        topicAdminClient.getTopic(topicName);
+      } catch (NotFoundException e) {
+        topicAdminClient.createTopic(topicName);
       }
     }
   }

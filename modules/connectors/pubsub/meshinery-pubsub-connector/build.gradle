@@ -7,7 +7,6 @@ plugins {
 
 dependencies {
     api project(':modules:meshinery-core')
-    implementation platform("com.google.cloud:libraries-bom:${google_cloud_bom_version}")
     implementation 'com.google.cloud:google-cloud-pubsub'
     implementation 'com.google.auth:google-auth-library-oauth2-http'
 

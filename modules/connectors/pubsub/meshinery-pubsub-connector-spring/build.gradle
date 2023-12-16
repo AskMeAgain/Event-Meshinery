@@ -1,0 +1,22 @@
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
+
+plugins {
+    id "com.vanniktech.maven.publish.base"
+}
+
+dependencies {
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${spring_boot_version}"
+    api project(':modules:connectors:pubsub:meshinery-pubsub-connector')
+    api project(':modules:meshinery-core-spring')
+
+    implementation 'com.google.cloud:google-cloud-pubsub'
+
+    testImplementation project(':modules:meshinery-core-spring').sourceSets.test.output
+    testImplementation project(':modules:meshinery-core').sourceSets.test.output
+    testImplementation project(':modules:connectors:pubsub:meshinery-pubsub-connector').sourceSets.test.output
+}
+
+mavenPublishing {
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
+}
