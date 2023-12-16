@@ -22,6 +22,7 @@ dependencies {
     testImplementation "org.mockito:mockito-inline:${mockito_version}"
     testImplementation "org.springframework.boot:spring-boot-starter-test:${spring_boot_version}"
     testImplementation "org.testcontainers:mysql:${testcontainers_version}"
+    testImplementation "org.testcontainers:gcloud:${testcontainers_version}"
     testImplementation "org.testcontainers:postgresql:${testcontainers_version}"
     testImplementation "org.testcontainers:kafka:${testcontainers_version}"
     testImplementation "ch.qos.logback:logback-classic:${logback_version}"

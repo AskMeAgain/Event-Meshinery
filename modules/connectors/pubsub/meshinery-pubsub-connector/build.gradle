@@ -1,4 +1,5 @@
-import com.vanniktech.maven.publish.*
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
 
 plugins {
     id "com.vanniktech.maven.publish.base"
@@ -11,7 +12,7 @@ dependencies {
     implementation 'com.google.auth:google-auth-library-oauth2-http'
 
     api "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
-    implementation "com.zaxxer:HikariCP:${hikari_version}"
+
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
 }
 

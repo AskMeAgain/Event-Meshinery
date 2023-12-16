@@ -2,14 +2,17 @@ package io.github.askmeagain.meshinery.connectors.pubsub;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.gax.core.CredentialsProvider;
+import com.google.api.gax.rpc.TransportChannelProvider;
 import com.google.cloud.pubsub.v1.stub.GrpcSubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
 import com.google.pubsub.v1.AcknowledgeRequest;
+import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PullRequest;
-import com.google.pubsub.v1.ReceivedMessage;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSource;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,41 +30,42 @@ public class PubSubInputSource<C extends DataContext> implements InputSource<Str
   private final ObjectMapper objectMapper;
   private final Class<C> clazz;
   private final MeshineryPubSubProperties meshineryPubSubProperties;
+  private final SubscriberStubSettings subscriberStubSettings;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public PubSubInputSource(
       String name,
       ObjectMapper objectMapper,
       Class<C> clazz,
-      MeshineryPubSubProperties meshineryPubSubProperties
-  ) {
+      MeshineryPubSubProperties meshineryPubSubProperties,
+      TransportChannelProvider transportChannelProvider,
+      CredentialsProvider credentialsProvider
+  ) throws IOException {
     this.meshineryPubSubProperties = meshineryPubSubProperties;
     this.name = name;
     this.objectMapper = objectMapper;
     this.clazz = clazz;
+    this.subscriberStubSettings = SubscriberStubSettings.newBuilder()
+        .setTransportChannelProvider(transportChannelProvider)
+        .setCredentialsProvider(credentialsProvider)
+        .build();
   }
 
   @Override
   @SneakyThrows
   public List<C> getInputs(List<String> keys) {
-    var subscriberStubSettings = SubscriberStubSettings.newBuilder()
-        .setTransportChannelProvider(SubscriberStubSettings.defaultGrpcTransportProviderBuilder()
-            .setMaxInboundMessageSize(20 * 1024 * 1024) // 20MB (maximum message size).
-            .build())
-        .build();
-
-    try (SubscriberStub subscriber = GrpcSubscriberStub.create(subscriberStubSettings)) {
+    try (var subscriber = GrpcSubscriberStub.create(subscriberStubSettings)) {
       return keys.stream()
-          .map(x -> createDataRequest(subscriber, x))
+          .map(subscriptionId -> createDataRequest(subscriber, subscriptionId))
           .flatMap(Collection::stream)
           .toList();
     }
   }
 
   private List<C> createDataRequest(SubscriberStub subscriber, String subscriptionId) {
-    PullRequest pullRequest = PullRequest.newBuilder()
+    var pullRequest = PullRequest.newBuilder()
         .setMaxMessages(meshineryPubSubProperties.getLimit())
-        .setSubscription(subscriptionId)
+        .setSubscription(ProjectSubscriptionName.format(meshineryPubSubProperties.getProjectId(), subscriptionId))
         .build();
 
     var pullResponse = subscriber.pullCallable().call(pullRequest);
@@ -73,7 +77,7 @@ public class PubSubInputSource<C extends DataContext> implements InputSource<Str
     var ackIds = new ArrayList<String>();
     var list = new ArrayList<C>();
 
-    for (ReceivedMessage message : pullResponse.getReceivedMessagesList()) {
+    for (var message : pullResponse.getReceivedMessagesList()) {
       try {
         var json = message.getMessage().getData().toStringUtf8();
         list.add(objectMapper.readValue(json, clazz));
@@ -84,13 +88,11 @@ public class PubSubInputSource<C extends DataContext> implements InputSource<Str
       }
     }
 
-    // Acknowledge received messages.
     var acknowledgeRequest = AcknowledgeRequest.newBuilder()
-        .setSubscription(subscriptionId)
+        .setSubscription(ProjectSubscriptionName.format(meshineryPubSubProperties.getProjectId(), subscriptionId))
         .addAllAckIds(ackIds)
         .build();
 
-    // Use acknowledgeCallable().futureCall to asynchronously perform this operation.
     subscriber.acknowledgeCallable().call(acknowledgeRequest);
 
     return list;
