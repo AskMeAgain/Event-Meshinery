@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.connectors.pubsub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.rpc.TransportChannelProvider;
+import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.DefaultPubSubNameResolver;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,7 @@ public class DynamicPubSubConnectorRegistration implements BeanDefinitionRegistr
                     objectMapper.getObject(),
                     meshineryPostgresProperties.getObject(),
                     transportChannelProviders.getObject(),
-                    credentialsProviders.getObject()
+                    credentialsProviders.getObject(), new DefaultPubSubNameResolver()
                 )
             );
             beanDefinition.setTargetType(getTargetType(clazz));

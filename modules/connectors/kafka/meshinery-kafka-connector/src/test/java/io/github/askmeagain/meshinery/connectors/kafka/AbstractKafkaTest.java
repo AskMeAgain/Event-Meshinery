@@ -12,7 +12,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 import org.testcontainers.utility.DockerImageName;
 
 import static org.apache.kafka.clients.admin.AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG;
@@ -36,7 +35,7 @@ public abstract class AbstractKafkaTest {
   public MeshineryKafkaProperties getKafkaProperties() {
     var kafkaProperties = new MeshineryKafkaProperties();
     kafkaProperties.setBootstrapServers(kafkaContainer.getBootstrapServers());
-    kafkaProperties.setGroupId(RandomStringUtils.random(10, true, false));
+    kafkaProperties.setGroupId("GROUP");
     return kafkaProperties;
   }
 

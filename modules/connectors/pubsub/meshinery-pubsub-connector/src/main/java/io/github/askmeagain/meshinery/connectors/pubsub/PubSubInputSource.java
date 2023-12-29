@@ -10,6 +10,7 @@ import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
 import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PullRequest;
+import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.PubSubNameResolver;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSource;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class PubSubInputSource<C extends DataContext> implements InputSource<Str
   private final String name;
   private final ObjectMapper objectMapper;
   private final Class<C> clazz;
+  private final PubSubNameResolver pubSubNameResolver;
   private final MeshineryPubSubProperties meshineryPubSubProperties;
   private final SubscriberStubSettings subscriberStubSettings;
 
@@ -39,12 +41,14 @@ public class PubSubInputSource<C extends DataContext> implements InputSource<Str
       Class<C> clazz,
       MeshineryPubSubProperties meshineryPubSubProperties,
       TransportChannelProvider transportChannelProvider,
-      CredentialsProvider credentialsProvider
+      CredentialsProvider credentialsProvider,
+      PubSubNameResolver pubSubNameResolver
   ) {
     this.meshineryPubSubProperties = meshineryPubSubProperties;
     this.name = name;
     this.objectMapper = objectMapper;
     this.clazz = clazz;
+    this.pubSubNameResolver = pubSubNameResolver;
     this.subscriberStubSettings = SubscriberStubSettings.newBuilder()
         .setTransportChannelProvider(transportChannelProvider)
         .setCredentialsProvider(credentialsProvider)
@@ -56,16 +60,17 @@ public class PubSubInputSource<C extends DataContext> implements InputSource<Str
   public List<C> getInputs(List<String> keys) {
     try (var subscriber = GrpcSubscriberStub.create(subscriberStubSettings)) {
       return keys.stream()
-          .map(subscriptionId -> createDataRequest(subscriber, subscriptionId))
+          .map(key -> createDataRequest(subscriber, key))
           .flatMap(Collection::stream)
           .toList();
     }
   }
 
-  private List<C> createDataRequest(SubscriberStub subscriber, String subscriptionId) {
+  private List<C> createDataRequest(SubscriberStub subscriber, String key) {
+    var resolvedKey = pubSubNameResolver.resolveSubscriptionNameFromKey(key);
     var pullRequest = PullRequest.newBuilder()
         .setMaxMessages(meshineryPubSubProperties.getLimit())
-        .setSubscription(ProjectSubscriptionName.format(meshineryPubSubProperties.getProjectId(), subscriptionId))
+        .setSubscription(ProjectSubscriptionName.format(meshineryPubSubProperties.getProjectId(), resolvedKey))
         .build();
 
     var pullResponse = subscriber.pullCallable().call(pullRequest);
@@ -89,7 +94,7 @@ public class PubSubInputSource<C extends DataContext> implements InputSource<Str
     }
 
     var acknowledgeRequest = AcknowledgeRequest.newBuilder()
-        .setSubscription(ProjectSubscriptionName.format(meshineryPubSubProperties.getProjectId(), subscriptionId))
+        .setSubscription(ProjectSubscriptionName.format(meshineryPubSubProperties.getProjectId(), resolvedKey))
         .addAllAckIds(ackIds)
         .build();
 

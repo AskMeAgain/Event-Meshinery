@@ -8,6 +8,8 @@ import com.google.api.gax.rpc.FixedTransportChannelProvider;
 import com.google.api.gax.rpc.TransportChannelProvider;
 import com.google.cloud.pubsub.v1.SubscriptionAdminSettings;
 import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
+import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.DefaultPubSubNameResolver;
+import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.PubSubNameResolver;
 import io.grpc.ManagedChannelBuilder;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -97,5 +99,11 @@ public class MeshineryPubSubConfiguration {
         .usePlaintext()
         .build();
     return FixedTransportChannelProvider.create(GrpcTransportChannel.create(channel));
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(PubSubNameResolver.class)
+  public PubSubNameResolver pubSubNameResolver() {
+    return new DefaultPubSubNameResolver();
   }
 }

@@ -30,7 +30,7 @@ public abstract class AbstractPubSubTestBase {
     PUB_SUB_EMULATOR_CONTAINER.start();
 
     createTopic(TOPIC);
-    createSubscription(TOPIC + "-subscription");
+    createSubscription(TOPIC + "_subscription");
   }
 
   @SneakyThrows

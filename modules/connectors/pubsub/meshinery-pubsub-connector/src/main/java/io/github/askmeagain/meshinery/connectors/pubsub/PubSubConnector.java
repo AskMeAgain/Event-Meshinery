@@ -3,9 +3,9 @@ package io.github.askmeagain.meshinery.connectors.pubsub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.rpc.TransportChannelProvider;
+import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.PubSubNameResolver;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
-import java.io.IOException;
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,15 +26,17 @@ public class PubSubConnector<C extends DataContext> implements MeshineryConnecto
       ObjectMapper objectMapper,
       MeshineryPubSubProperties pubSubProperties,
       TransportChannelProvider transportChannelProvider,
-      CredentialsProvider credentialsProvider
-  ) throws IOException {
+      CredentialsProvider credentialsProvider,
+      PubSubNameResolver pubSubNameResolver
+  ) {
     this(
         "default-pubsub-connector",
         clazz,
         objectMapper,
         pubSubProperties,
         transportChannelProvider,
-        credentialsProvider
+        credentialsProvider,
+        pubSubNameResolver
     );
   }
 
@@ -45,7 +47,8 @@ public class PubSubConnector<C extends DataContext> implements MeshineryConnecto
       ObjectMapper objectMapper,
       MeshineryPubSubProperties pubSubProperties,
       TransportChannelProvider transportChannelProvider,
-      CredentialsProvider credentialsProvider
+      CredentialsProvider credentialsProvider,
+      PubSubNameResolver pubSubNameResolver
   ) {
     this.name = name;
     this.pubsubInputSource = new PubSubInputSource<>(
@@ -54,7 +57,8 @@ public class PubSubConnector<C extends DataContext> implements MeshineryConnecto
         clazz,
         pubSubProperties,
         transportChannelProvider,
-        credentialsProvider
+        credentialsProvider,
+        pubSubNameResolver
     );
     this.pubsubOutputSource = new PubSubOutputSource<>(
         name,

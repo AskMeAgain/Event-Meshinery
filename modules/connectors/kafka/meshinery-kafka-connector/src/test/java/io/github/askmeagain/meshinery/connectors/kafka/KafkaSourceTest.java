@@ -8,13 +8,12 @@ import java.util.List;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class KafkaSourceTest extends AbstractKafkaTest {
 
-  private static final String TOPIC = RandomStringUtils.random(10, true, false);
+  private static final String TOPIC = "TOPIC";
 
   @BeforeAll
   static void creatingTopics() {

@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.connectors.pubsub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.DefaultPubSubNameResolver;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,8 @@ class PubSubInputTest extends AbstractPubSubTestBase {
         TestContext.class,
         pubSubProperties,
         transportChannelProvider,
-        credentialProvider
+        credentialProvider,
+        new DefaultPubSubNameResolver()
     );
     var output = new PubSubOutputSource<>(
         "default",
