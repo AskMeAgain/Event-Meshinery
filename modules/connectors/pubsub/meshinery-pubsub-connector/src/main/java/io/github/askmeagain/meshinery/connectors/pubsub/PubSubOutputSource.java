@@ -46,7 +46,7 @@ public class PubSubOutputSource<C extends DataContext> implements OutputSource<S
         .setData(ByteString.copyFrom(data))
         .build();
 
-    pubSubProducerFactory.getOrCreate(key).publish(pubsubMessage);
+    pubSubProducerFactory.getOrCreate(key).publish(pubsubMessage).get();
   }
 
   @Override

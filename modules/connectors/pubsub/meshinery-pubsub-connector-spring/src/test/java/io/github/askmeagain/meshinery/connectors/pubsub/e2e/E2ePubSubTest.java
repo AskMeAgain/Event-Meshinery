@@ -26,8 +26,10 @@ public class E2ePubSubTest extends AbstractPubSubTestBase {
     for (var i = 0; i < E2eTestApplication.NUMBER_OF_TOPICS; i++) {
       var topicName = E2eTestApplication.TOPIC_PREFIX + i;
       createTopic(topicName);
-      createSubscription(topicName + "_subscription");
+      createSubscription(topicName, topicName + "_subscription");
     }
+    createTopic("Finished");
+    createTopic("Finished_subscription");
   }
 
   @Test
@@ -35,7 +37,7 @@ public class E2ePubSubTest extends AbstractPubSubTestBase {
   void testE2ePubSub() {
     //Arrange --------------------------------------------------------------------------------
     //Act ------------------------------------------------------------------------------------
-    var batchJobFinished = executorService.awaitTermination(25_000, TimeUnit.MILLISECONDS);
+    var batchJobFinished = executorService.awaitTermination(15_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();

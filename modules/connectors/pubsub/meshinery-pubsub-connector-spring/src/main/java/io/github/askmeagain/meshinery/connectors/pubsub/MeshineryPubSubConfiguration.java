@@ -2,18 +2,13 @@ package io.github.askmeagain.meshinery.connectors.pubsub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.gax.core.CredentialsProvider;
-import com.google.api.gax.core.NoCredentialsProvider;
-import com.google.api.gax.grpc.GrpcTransportChannel;
-import com.google.api.gax.rpc.FixedTransportChannelProvider;
 import com.google.api.gax.rpc.TransportChannelProvider;
 import com.google.cloud.pubsub.v1.SubscriptionAdminSettings;
 import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
 import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.DefaultPubSubNameResolver;
 import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.PubSubNameResolver;
-import io.grpc.ManagedChannelBuilder;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -29,18 +24,18 @@ public class MeshineryPubSubConfiguration {
 
   @Bean
   public DynamicPubSubConnectorRegistration dynamicMysqlConnectorRegistration(
-      ApplicationContext applicationContext,
-      ObjectProvider<ObjectMapper> objectMapper,
+      ApplicationContext applicationContext, ObjectProvider<ObjectMapper> objectMapper,
       ObjectProvider<MeshineryPubSubProperties> meshineryPubSubProperties,
-      ObjectProvider<TransportChannelProvider> transportChannelProviders,
-      ObjectProvider<CredentialsProvider> credentialsProviders
+      ObjectProvider<MeshineryTransportChannelProvider> transportChannelProviders,
+      ObjectProvider<CredentialsProvider> credentialsProviders,
+      ObjectProvider<PubSubNameResolver> pubSubNameResolvers
   ) {
     return new DynamicPubSubConnectorRegistration(
-        applicationContext,
-        objectMapper,
+        applicationContext, objectMapper,
         meshineryPubSubProperties,
         transportChannelProviders,
-        credentialsProviders
+        credentialsProviders,
+        pubSubNameResolvers
     );
   }
 
@@ -58,26 +53,6 @@ public class MeshineryPubSubConfiguration {
   }
 
   @Bean
-  @ConditionalOnProperty(
-      prefix = "meshinery.connectors.pubsub",
-      name = "emulatorEndpoint",
-      havingValue = "NO_MATCH",
-      matchIfMissing = true
-  )
-  @ConditionalOnMissingBean(TransportChannelProvider.class)
-  public TransportChannelProvider transportChannelProvider() {
-    return SubscriberStubSettings.defaultGrpcTransportProviderBuilder()
-        .setMaxInboundMessageSize(20 * 1024 * 1024) // 20MB (maximum message size).
-        .build();
-  }
-
-  @Bean
-  @ConditionalOnProperty(
-      prefix = "meshinery.connectors.pubsub",
-      name = "emulatorEndpoint",
-      havingValue = "NO_MATCH",
-      matchIfMissing = true
-  )
   @ConditionalOnMissingBean(CredentialsProvider.class)
   public CredentialsProvider defaultCloudCredentialsProvider() {
     return SubscriptionAdminSettings.defaultCredentialsProviderBuilder()
@@ -85,25 +60,23 @@ public class MeshineryPubSubConfiguration {
   }
 
   @Bean
-  @ConditionalOnMissingBean(CredentialsProvider.class)
-  @ConditionalOnProperty(prefix = "meshinery.connectors.pubsub", name = "emulatorEndpoint")
-  public CredentialsProvider credentialsProvider() {
-    return NoCredentialsProvider.create();
-  }
-
-  @Bean
   @ConditionalOnMissingBean(TransportChannelProvider.class)
-  @ConditionalOnProperty(prefix = "meshinery.connectors.pubsub", name = "emulatorEndpoint")
-  public TransportChannelProvider transportChannelProvider(MeshineryPubSubProperties pubSubProperties) {
-    var channel = ManagedChannelBuilder.forTarget(pubSubProperties.getEmulatorEndpoint())
-        .usePlaintext()
+  public TransportChannelProvider defaultTransportChannelProvider() {
+    return SubscriberStubSettings.defaultGrpcTransportProviderBuilder()
+        .setMaxInboundMessageSize(20 * 1024 * 1024) // 20MB (maximum message size).
         .build();
-    return FixedTransportChannelProvider.create(GrpcTransportChannel.create(channel));
   }
 
   @Bean
   @ConditionalOnMissingBean(PubSubNameResolver.class)
-  public PubSubNameResolver pubSubNameResolver() {
+  public PubSubNameResolver defaultPubSubNameResolver() {
     return new DefaultPubSubNameResolver();
+  }
+
+  @Bean
+  public MeshineryTransportChannelProvider meshineryTransportChannelProvider(
+      TransportChannelProvider transportChannelProvider
+  ) {
+    return new MeshineryTransportChannelProvider(transportChannelProvider);
   }
 }

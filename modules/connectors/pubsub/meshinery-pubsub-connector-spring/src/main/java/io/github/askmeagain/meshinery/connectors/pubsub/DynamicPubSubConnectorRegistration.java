@@ -2,8 +2,7 @@ package io.github.askmeagain.meshinery.connectors.pubsub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.gax.core.CredentialsProvider;
-import com.google.api.gax.rpc.TransportChannelProvider;
-import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.DefaultPubSubNameResolver;
+import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.PubSubNameResolver;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +22,9 @@ public class DynamicPubSubConnectorRegistration implements BeanDefinitionRegistr
   private final ApplicationContext applicationContext;
   private final ObjectProvider<ObjectMapper> objectMapper;
   private final ObjectProvider<MeshineryPubSubProperties> meshineryPostgresProperties;
-  private final ObjectProvider<TransportChannelProvider> transportChannelProviders;
+  private final ObjectProvider<MeshineryTransportChannelProvider> transportChannelProviders;
   private final ObjectProvider<CredentialsProvider> credentialsProviders;
+  private final ObjectProvider<PubSubNameResolver> pubSubNameResolvers;
 
   private static ResolvableType getTargetType(Class<? extends DataContext> clazz) {
     return ResolvableType.forClassWithGenerics(PubSubConnector.class, clazz);
@@ -49,8 +49,9 @@ public class DynamicPubSubConnectorRegistration implements BeanDefinitionRegistr
                     clazz,
                     objectMapper.getObject(),
                     meshineryPostgresProperties.getObject(),
-                    transportChannelProviders.getObject(),
-                    credentialsProviders.getObject(), new DefaultPubSubNameResolver()
+                    transportChannelProviders.getObject().getTransportChannelProvider(),
+                    credentialsProviders.getObject(),
+                    pubSubNameResolvers.getObject()
                 )
             );
             beanDefinition.setTargetType(getTargetType(clazz));

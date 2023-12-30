@@ -70,6 +70,7 @@ public class PubSubInputSource<C extends DataContext> implements InputSource<Str
     var resolvedKey = pubSubNameResolver.resolveSubscriptionNameFromKey(key);
     var pullRequest = PullRequest.newBuilder()
         .setMaxMessages(meshineryPubSubProperties.getLimit())
+        .setReturnImmediately(true)
         .setSubscription(ProjectSubscriptionName.format(meshineryPubSubProperties.getProjectId(), resolvedKey))
         .build();
 

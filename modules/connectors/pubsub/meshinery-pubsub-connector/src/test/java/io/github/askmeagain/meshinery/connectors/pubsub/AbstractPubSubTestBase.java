@@ -14,6 +14,8 @@ import com.google.pubsub.v1.TopicName;
 import io.grpc.ManagedChannelBuilder;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PubSubEmulatorContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -30,14 +32,15 @@ public abstract class AbstractPubSubTestBase {
     PUB_SUB_EMULATOR_CONTAINER.start();
 
     createTopic(TOPIC);
-    createSubscription(TOPIC + "_subscription");
+    createSubscription(TOPIC, TOPIC + "_subscription");
   }
 
   @SneakyThrows
-  protected static void createSubscription(String subscription) {
+  protected static void createSubscription(String topic, String subscription) {
+    var transportChannelProvider = getTransportChannelProvider();
     var subscriptionAdminSettings = SubscriptionAdminSettings.newBuilder()
         .setCredentialsProvider(getCredentialProvider())
-        .setTransportChannelProvider(getTransportChannelProvider())
+        .setTransportChannelProvider(transportChannelProvider)
         .build();
     try (var subscriptionAdminClient = SubscriptionAdminClient.create(subscriptionAdminSettings)) {
       var subscriptionName = SubscriptionName.of(getProjectId(), subscription);
@@ -46,18 +49,20 @@ public abstract class AbstractPubSubTestBase {
       } catch (NotFoundException e) {
         subscriptionAdminClient.createSubscription(
             subscriptionName,
-            TopicName.of(getProjectId(), TOPIC),
+            TopicName.of(getProjectId(), topic),
             PushConfig.getDefaultInstance(),
             10
         );
       }
     }
+    transportChannelProvider.getTransportChannel().close();
   }
 
   @SneakyThrows
   protected static void createTopic(String topic) {
+    var transportChannelProvider = getTransportChannelProvider();
     var topicAdminSettings = TopicAdminSettings.newBuilder()
-        .setTransportChannelProvider(getTransportChannelProvider())
+        .setTransportChannelProvider(transportChannelProvider)
         .setCredentialsProvider(getCredentialProvider())
         .build();
     try (var topicAdminClient = TopicAdminClient.create(topicAdminSettings)) {
@@ -68,6 +73,15 @@ public abstract class AbstractPubSubTestBase {
         topicAdminClient.createTopic(topicName);
       }
     }
+    transportChannelProvider.getTransportChannel().close();
+  }
+
+  @DynamicPropertySource
+  static void dynamicPropertySource(DynamicPropertyRegistry registry) {
+    registry.add(
+        "meshinery.connectors.pubsub.emulatorEndpoint",
+        PUB_SUB_EMULATOR_CONTAINER::getEmulatorEndpoint
+    );
   }
 
   protected static NoCredentialsProvider getCredentialProvider() {
@@ -79,7 +93,7 @@ public abstract class AbstractPubSubTestBase {
   }
 
   protected static String getProjectId() {
-    return "test-project";
+    return "test";
   }
 
   protected static FixedTransportChannelProvider getTransportChannelProvider() {
