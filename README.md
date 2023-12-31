@@ -110,6 +110,10 @@ independent way.
   integration
     * [meshinery-connectors-kafka-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka-Spring)
       has the Spring AutoConfiguration for Kafka
+* [meshinery-connectors-pubsub](https://github.com/AskMeAgain/Event-Meshinery/wiki/PubSub) has the PubSub state store
+  integration
+    * [meshinery-connectors-pubsub-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/PubSub-Spring)
+      has the Spring AutoConfiguration for PubSub
 
 ## Architecture <a name="Architecture"></a>
 
@@ -137,10 +141,12 @@ in a DataContext and a thread Executor and return a **CompletableFuture**.
             return CompletableFuture.supplyAsync(() -> {
             
                   log.info("Starting Request");
-                  thisIsASuperLongRestCall();
+                  var response = thisIsASuperLongRestCall();
                   log.info("Finished Request");
             
-                  return context;
+                  return context.toBuilder()
+                      .restCallResponseId(response.getId())
+                      .build();
                 }, executor); //running on this thread executor
         }
     }
@@ -174,8 +180,8 @@ business case.
 
 [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-DataContext)
 
-A MeshineryTask has a dataContext assigned, which is basically just the input and output class type in
-sources/processors.
+A MeshineryTask has a data context assigned, which is basically just the input and output class type in
+sources/processors. It is literally the "DTO" between tasks.
 
     var task = MeshineryTaskFactory.<String, TestContext>builder() //here the DataContext is TestContext
         .inputSource(inputSource) //this source can read all TestContext from the state store
@@ -215,6 +221,8 @@ There are Input and OutputSources and both form a MeshineryConnector. InputSourc
 processors. OutputSources write the data to state stores and trigger one or more new events (by the respective
 InputSource). A MeshineryConnector implements both interfaces to connect a single event with input and outputs.
 
+Think of an InputSource as a way to get data into the MeshineryFramework.
+
 Most of the time a signaling source can implement both Input and Output, like in mysql you can write data and read this
 exact data back again in different parts of your application. But sometimes this is not the case, for example if you
 receive data from a rest api, you can read this data, but you cannot write this data back to the original source.
@@ -245,6 +253,8 @@ Currently supported are the following state sources:
 
 * [Mysql](https://github.com/AskMeAgain/Event-Meshinery/wiki/Mysql)
 * [Postgres](https://github.com/AskMeAgain/Event-Meshinery/wiki/Postgres)
+* [Kafka](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka)
+* [PubSub](https://github.com/AskMeAgain/Event-Meshinery/wiki/PubSub)
 * [Kafka](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka)
 * [Memory](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Connector#utility-sources)
 
@@ -294,8 +304,8 @@ RoundRobingScheduler. You can throw here hard, turn off the scheduler, do some r
 ## Logging
 
 This Framework already does the hard work with logging: Setting up the MDC for each thread correctly. Each log message
-in **each** processor, **even in threads created by CompletableFuture.runAsync()**, you will have a correct MDC value **
-automatically** of:
+in **each** processor, **even in threads created by CompletableFuture.runAsync()**,
+you will have a correct MDC value **automatically** of:
 
 * "task.name" -> taskName
 * "task.id" -> ContextId
@@ -319,7 +329,7 @@ and easily expanded by your needs.
 Since this framework provides a single way of defining tasks, we can use this to draw diagrams
 via [GraphStream](https://graphstream-project.org/). These diagrams are rendered based on the actual
 implementation/connection of tasks and can be styled as you wish. Such a diagram can give you an easy way to argue about
-the actual topology of the application and is generated completely **automatically**.
+the actual topology of the application and is generated completely **automatic**.
 
 ### Pictures
 
