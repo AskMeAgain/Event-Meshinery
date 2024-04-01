@@ -11,19 +11,19 @@ import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PullRequest;
 import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.PubSubNameResolver;
-import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class PubSubInputSource<C extends DataContext> implements InputSource<String, C> {
+public class PubSubInputSource<C extends PubSubContext> implements InputSource<String, C> {
 
   @Getter
   private final String name;
@@ -86,7 +86,9 @@ public class PubSubInputSource<C extends DataContext> implements InputSource<Str
     for (var message : pullResponse.getReceivedMessagesList()) {
       try {
         var json = message.getMessage().getData().toStringUtf8();
-        list.add(objectMapper.readValue(json, clazz));
+        var contextWithoutAckId = objectMapper.readValue(json, clazz);
+        var pubSubContext = contextWithoutAckId.withAckId(message.getAckId());
+        list.add((C) pubSubContext);
         ackIds.add(message.getAckId());
       } catch (JsonProcessingException e) {
         //do nothing
@@ -102,5 +104,11 @@ public class PubSubInputSource<C extends DataContext> implements InputSource<Str
     subscriber.acknowledgeCallable().call(acknowledgeRequest);
 
     return list;
+  }
+
+  @Override
+  public CompletableFuture<C> commit(C id) {
+    log.info("Committing message with id {}", id.getAckId());
+    return CompletableFuture.completedFuture(id);
   }
 }

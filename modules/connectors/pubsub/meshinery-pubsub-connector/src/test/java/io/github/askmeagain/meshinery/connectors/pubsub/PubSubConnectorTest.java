@@ -2,7 +2,6 @@ package io.github.askmeagain.meshinery.connectors.pubsub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.DefaultPubSubNameResolver;
-import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -18,15 +17,15 @@ class PubSubConnectorTest extends AbstractPubSubTestBase {
     pubSubProperties.setProjectId(getProjectId());
 
     var pubSubConnector = new PubSubConnector<>(
-        TestContext.class,
+        PubSubTestContext.class,
         new ObjectMapper(),
         pubSubProperties,
         getTransportChannelProvider(),
         getCredentialProvider(), new DefaultPubSubNameResolver()
     );
 
-    var value1 = new TestContext(1);
-    var value2 = new TestContext(2);
+    var value1 = new PubSubTestContext(1);
+    var value2 = new PubSubTestContext(2);
 
     //Act ------------------------------------------------------------------------------------
     pubSubConnector.writeOutput(TOPIC, value1);

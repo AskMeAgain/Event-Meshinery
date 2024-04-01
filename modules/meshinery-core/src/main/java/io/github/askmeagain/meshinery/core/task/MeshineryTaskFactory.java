@@ -14,7 +14,6 @@ import io.github.askmeagain.meshinery.core.source.JoinedInnerInputSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
@@ -25,10 +24,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
-import lombok.With;
 
 import static io.github.askmeagain.meshinery.core.other.MeshineryUtils.joinEventKeys;
-import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_IGNORE_NO_KEYS_WARNING;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Builder(toBuilder = true, access = AccessLevel.PRIVATE)
@@ -402,6 +399,9 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<K, C> build() {
+    var finalProcessorList = new ArrayList<>(processorList);
+    finalProcessorList.add((context, r) -> (CompletableFuture<DataContext>) inputConnector.commit((C) context));
+
     return new MeshineryTask<>(
         backoffTime,
         inputKeys,
@@ -411,7 +411,7 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
         outputConnector,
         executorService,
         handleException,
-        processorList
+        finalProcessorList
     );
   }
 }
