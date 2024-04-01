@@ -23,8 +23,9 @@ class MeshineryTaskFactoryTest {
     var task2 = baseTask.process((c, e) -> CompletableFuture.completedFuture(c)).build();
 
     //Assert ---------------------------------------------------------------------------------
-    assertThat(task2).extracting(MeshineryTask::getProcessorList).asList().hasSize(1);
-    assertThat(task1).extracting(MeshineryTask::getProcessorList).asList().hasSize(1);
+    //an internal processor is created aswell
+    assertThat(task2).extracting(MeshineryTask::getProcessorList).asList().hasSize(2);
+    assertThat(task1).extracting(MeshineryTask::getProcessorList).asList().hasSize(2);
   }
 
 
