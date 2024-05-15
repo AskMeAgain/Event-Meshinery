@@ -21,7 +21,8 @@ class PubSubConnectorTest extends AbstractPubSubTestBase {
         new ObjectMapper(),
         pubSubProperties,
         getTransportChannelProvider(),
-        getCredentialProvider(), new DefaultPubSubNameResolver()
+        getCredentialProvider(),
+        new DefaultPubSubNameResolver()
     );
 
     var value1 = new PubSubTestContext(1);
@@ -36,11 +37,13 @@ class PubSubConnectorTest extends AbstractPubSubTestBase {
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(result1)
+        .extracting(PubSubTestContext::getId)
         .hasSize(1)
-        .contains(value1);
+        .contains("1");
     assertThat(result2)
+        .extracting(PubSubTestContext::getId)
         .hasSize(1)
-        .contains(value2);
+        .contains("2");
 
     pubSubConnector.close();
   }
