@@ -17,7 +17,7 @@ import org.springframework.validation.annotation.Validated;
 public class MeshineryMysqlConfiguration {
 
   @Bean
-  public DynamicMysqlConnectorRegistration dynamicMysqlConnectorRegistration(
+  public static DynamicMysqlConnectorRegistration dynamicMysqlConnectorRegistration(
       ApplicationContext applicationContext,
       ObjectProvider<ObjectMapper> objectMapper,
       ObjectProvider<MeshineryMysqlProperties> meshineryMysqlProperties

@@ -23,7 +23,7 @@ import org.springframework.validation.annotation.Validated;
 public class MeshineryPubSubConfiguration {
 
   @Bean
-  public DynamicPubSubConnectorRegistration dynamicMysqlConnectorRegistration(
+  public static DynamicPubSubConnectorRegistration dynamicMysqlConnectorRegistration(
       ApplicationContext applicationContext, ObjectProvider<ObjectMapper> objectMapper,
       ObjectProvider<MeshineryPubSubProperties> meshineryPubSubProperties,
       ObjectProvider<MeshineryTransportChannelProvider> transportChannelProviders,

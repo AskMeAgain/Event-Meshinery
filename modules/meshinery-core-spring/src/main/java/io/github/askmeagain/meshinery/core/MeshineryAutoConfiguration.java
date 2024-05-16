@@ -1,8 +1,8 @@
 package io.github.askmeagain.meshinery.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.hooks.BatchJobTimingHooks;
 import io.github.askmeagain.meshinery.core.hooks.CustomizeShutdownHook;
@@ -53,7 +53,9 @@ public class MeshineryAutoConfiguration {
   }
 
   @Bean
-  public DynamicMemoryConnectorRegistration dynamicMemoryConnectorRegistration(ApplicationContext applicationContext) {
+  public static DynamicMemoryConnectorRegistration dynamicMemoryConnectorRegistration(
+      ApplicationContext applicationContext
+  ) {
     return new DynamicMemoryConnectorRegistration(applicationContext);
   }
 

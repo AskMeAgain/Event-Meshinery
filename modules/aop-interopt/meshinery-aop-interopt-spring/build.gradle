@@ -1,0 +1,18 @@
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
+
+plugins {
+    id "com.vanniktech.maven.publish.base"
+}
+
+dependencies {
+    implementation project(':modules:meshinery-core')
+    api project(':modules:meshinery-core-spring')
+    api "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
+    api "org.springframework.boot:spring-boot-starter-aop:${spring_boot_version}"
+    testImplementation project(':modules:meshinery-core').sourceSets.test.output
+}
+
+mavenPublishing {
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
+}

@@ -18,7 +18,7 @@ import org.springframework.validation.annotation.Validated;
 public class MeshineryPostgresConfiguration {
 
   @Bean
-  public DynamicPostgresConnectorRegistration dynamicMysqlConnectorRegistration(
+  public static DynamicPostgresConnectorRegistration dynamicMysqlConnectorRegistration(
       ApplicationContext applicationContext,
       ObjectProvider<ObjectMapper> objectMapper,
       ObjectProvider<MeshineryPostgresProperties> meshineryPostgresProperties
