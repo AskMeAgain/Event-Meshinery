@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.aop.e2e.base;
 
-import io.github.askmeagain.meshinery.aop.MeshineryReadTask;
+import io.github.askmeagain.meshinery.aop.common.MeshineryReadTask;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import lombok.extern.slf4j.Slf4j;

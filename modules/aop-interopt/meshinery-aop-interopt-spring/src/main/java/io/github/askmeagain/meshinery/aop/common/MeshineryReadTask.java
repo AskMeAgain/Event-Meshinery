@@ -1,4 +1,4 @@
-package io.github.askmeagain.meshinery.aop;
+package io.github.askmeagain.meshinery.aop.common;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import java.lang.annotation.ElementType;

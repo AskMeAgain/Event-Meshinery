@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     "meshinery.aop.enabled=true",
     "meshinery.core.shutdown-on-finished=false"
 })
-class E2eMemoryTest {
+class E2eAopTest {
 
   @Autowired ExecutorService executorService;
   @Autowired E2eTestService service;

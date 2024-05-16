@@ -6,6 +6,7 @@ plugins {
 }
 
 dependencies {
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${spring_boot_version}"
     implementation project(':modules:meshinery-core')
     api project(':modules:meshinery-core-spring')
     api "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
