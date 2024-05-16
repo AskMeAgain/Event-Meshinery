@@ -2,13 +2,20 @@ package io.github.askmeagain.meshinery.aop.e2e;
 
 import io.github.askmeagain.meshinery.aop.e2e.base.E2eAopTestApplication;
 import io.github.askmeagain.meshinery.aop.e2e.base.E2eTestService;
+import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(classes = {E2eAopTestApplication.class})
@@ -19,10 +26,9 @@ import org.springframework.test.context.TestPropertySource;
 })
 class E2eMemoryTest {
 
-  //  @Autowired
-  //  ExecutorService executorService;
-  @Autowired
-  E2eTestService service;
+  @Autowired ExecutorService executorService;
+  @Autowired E2eTestService service;
+  @Autowired MeshineryConnector<String, DataContext> connector;
 
   @Test
   @SneakyThrows
@@ -34,10 +40,12 @@ class E2eMemoryTest {
 
     //Act ------------------------------------------------------------------------------------
     service.executeViaJob(context);
-    //var batchJobFinished = executorService.awaitTermination(10_000, TimeUnit.MILLISECONDS);
+    var batchJobFinished = executorService.awaitTermination(10_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
-    //assertThat(batchJobFinished).isTrue();
+    var inputs = connector.getInputs(List.of("test"));
+    assertThat(inputs).extracting(DataContext::getId).isEqualTo(List.of("abc"));
+    //    assertThat(batchJobFinished).isTrue();
   }
 }
 

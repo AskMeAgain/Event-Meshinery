@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 
-@Import(MeshineryAopConfiguration.class)
+@Import(MeshineryAopAutoConfiguration.class)
 @EnableAspectJAutoProxy
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

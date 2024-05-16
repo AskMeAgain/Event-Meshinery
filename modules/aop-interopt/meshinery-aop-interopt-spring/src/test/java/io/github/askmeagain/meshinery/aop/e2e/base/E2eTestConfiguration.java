@@ -1,9 +1,9 @@
 package io.github.askmeagain.meshinery.aop.e2e.base;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
-import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class E2eTestConfiguration {
   }
 
   @Bean
-  public MeshineryConnector<String, TestContext> connector() {
+  public MeshineryConnector<String, DataContext> connector() {
     return new MemoryConnector<>();
   }
 

@@ -3,16 +3,20 @@ package io.github.askmeagain.meshinery.aop;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
@@ -23,64 +27,72 @@ import org.springframework.core.ResolvableType;
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
-public class DynamicJobRegistrar implements BeanDefinitionRegistryPostProcessor {
+public class DynamicJobRegistrar implements BeanDefinitionRegistryPostProcessor, BeanPostProcessor {
 
   private final ApplicationContext applicationContext;
   private final ExecutorService executorService;
 
-  private static ResolvableType getTargetType(Class<? extends DataContext> contextClazz) {
+  private ConcurrentHashMap<String, Method> lookupMap = new ConcurrentHashMap<>();
+
+  private static ResolvableType getTargetType(Class<?> contextClazz) {
     return ResolvableType.forClassWithGenerics(MeshineryTaskFactory.class, String.class, contextClazz);
   }
 
-  private static String getBeanName(Class<? extends DataContext> clazz) {
+  private static String getBeanName(Class<?> clazz) {
     return clazz.getSimpleName() + "-auto-generated-kafka-connector-bean";
   }
 
-  @Override
-  public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 
-    for (String beanName : applicationContext.getBeanDefinitionNames()) {
-      try {
-        extracted(registry, beanName);
-      } catch (Exception e) {
-
-      }
-    }
-  }
-
-  private void extracted(BeanDefinitionRegistry registry, String beanName) {
-    Object obj = applicationContext.getBean(beanName); //at this point beans dont exist yet sometimes
-
-    var provider = applicationContext.getBeanProvider(MeshineryConnector.class);
+  public Object postProcessBeforeInitialization(Object obj, String beanName) throws BeansException {
 
     Class<?> objClz = obj.getClass();
-    if (org.springframework.aop.support.AopUtils.isAopProxy(obj)) {
-      objClz = org.springframework.aop.support.AopUtils.getTargetClass(obj);
+    if (AopUtils.isAopProxy(obj)) {
+      objClz = AopUtils.getTargetClass(obj);
     }
 
     for (var m : objClz.getDeclaredMethods()) {
       if (m.isAnnotationPresent(MeshineryReadTask.class)) {
-        var annotation = m.getAnnotation(MeshineryReadTask.class);
+        lookupMap.put(beanName, m);
+      }
+    }
 
-        var dataContextClass = annotation.context();
-        var read = annotation.event();
+    return obj;
+  }
 
-        var beanDefinition = new RootBeanDefinition(
-            io.github.askmeagain.meshinery.core.task.MeshineryTask.class,
-            () -> getBuild(m, executorService, read, provider)
-        );
-        beanDefinition.setTargetType(getTargetType(dataContextClass));
-        registry.registerBeanDefinition(getBeanName(dataContextClass), beanDefinition);
+  @Override
+  public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+    var resolvableType = ResolvableType.forClassWithGenerics(MeshineryConnector.class, String.class, DataContext.class);
+    ObjectProvider<MeshineryConnector<String, DataContext>> provider =
+        applicationContext.getBeanProvider(resolvableType);
+
+    for (var beanName : applicationContext.getBeanDefinitionNames()) {
+      var clazz = applicationContext.getType(beanName);
+      if (AopUtils.isAopProxy(clazz)) {
+        clazz = AopUtils.getTargetClass(clazz);
+      }
+
+      for (var m : clazz.getDeclaredMethods()) {
+        if (m.isAnnotationPresent(MeshineryReadTask.class)) {
+          var beanDefinition = new RootBeanDefinition(
+              MeshineryTask.class, () -> getBuild(lookupMap.get(beanName), executorService, provider)
+          );
+          beanDefinition.setTargetType(getTargetType(clazz));
+          registry.registerBeanDefinition(getBeanName(clazz), beanDefinition);
+        }
       }
     }
   }
 
-  private static io.github.askmeagain.meshinery.core.task.MeshineryTask<String, DataContext> getBuild(
+  private static MeshineryTask<String, DataContext> getBuild(
       Method m,
       ExecutorService executorService,
-      String read,
-      ObjectProvider<MeshineryConnector> provider
+      ObjectProvider<MeshineryConnector<String, DataContext>> provider
   ) {
+    var annotation = m.getAnnotation(MeshineryReadTask.class);
+
+    var dataContextClass = annotation.context();
+    var read = annotation.event();
+
     return MeshineryTaskFactory.<String, DataContext>builder()
         .connector(provider.getObject())
         .read(executorService, read)
@@ -96,7 +108,8 @@ public class DynamicJobRegistrar implements BeanDefinitionRegistryPostProcessor 
   }
 
   @Override
-  public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+  public void postProcessBeanFactory(ConfigurableListableBeanFactory configurableListableBeanFactory)
+      throws BeansException {
     //empty
   }
 }
