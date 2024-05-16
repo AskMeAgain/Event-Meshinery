@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
@@ -35,11 +36,14 @@ public class DynamicJobRegistrar implements BeanDefinitionRegistryPostProcessor,
   private ConcurrentHashMap<String, Method> lookupMap = new ConcurrentHashMap<>();
 
   private static ResolvableType getTargetType(Class<?> contextClazz) {
-    return ResolvableType.forClassWithGenerics(MeshineryTaskFactory.class, String.class, contextClazz);
+    return ResolvableType.forClassWithGenerics(MeshineryTask.class, String.class, contextClazz);
   }
 
   private static String getBeanName(Class<?> clazz) {
-    return clazz.getSimpleName() + "-auto-generated-kafka-connector-bean";
+    if (MeshineryTask.class.isAssignableFrom(clazz)) {
+      int i = 0;
+    }
+    return clazz.getSimpleName() + "abnc";
   }
 
 
@@ -74,7 +78,7 @@ public class DynamicJobRegistrar implements BeanDefinitionRegistryPostProcessor,
       for (var m : clazz.getDeclaredMethods()) {
         if (m.isAnnotationPresent(MeshineryReadTask.class)) {
           var beanDefinition = new RootBeanDefinition(
-              MeshineryTask.class, () -> getBuild(lookupMap.get(beanName), executorService, provider)
+              MeshineryTask.class, () -> getBuild(m, applicationContext.getBean(beanName), executorService, provider)
           );
           beanDefinition.setTargetType(getTargetType(clazz));
           registry.registerBeanDefinition(getBeanName(clazz), beanDefinition);
@@ -85,6 +89,7 @@ public class DynamicJobRegistrar implements BeanDefinitionRegistryPostProcessor,
 
   private static MeshineryTask<String, DataContext> getBuild(
       Method m,
+      Object instance,
       ExecutorService executorService,
       ObjectProvider<MeshineryConnector<String, DataContext>> provider
   ) {
@@ -92,6 +97,7 @@ public class DynamicJobRegistrar implements BeanDefinitionRegistryPostProcessor,
 
     var dataContextClass = annotation.context();
     var read = annotation.event();
+    var unproxiedObject = AopProxyUtils.getSingletonTarget(instance);
 
     return MeshineryTaskFactory.<String, DataContext>builder()
         .connector(provider.getObject())
@@ -101,7 +107,8 @@ public class DynamicJobRegistrar implements BeanDefinitionRegistryPostProcessor,
           @Override
           public CompletableFuture<DataContext> processAsync(DataContext context, Executor executor) {
             log.info("proxied method execution?");
-            return CompletableFuture.completedFuture((DataContext) m.invoke(context));
+            m.invoke(unproxiedObject, context);
+            return CompletableFuture.completedFuture(null);
           }
         })
         .build();

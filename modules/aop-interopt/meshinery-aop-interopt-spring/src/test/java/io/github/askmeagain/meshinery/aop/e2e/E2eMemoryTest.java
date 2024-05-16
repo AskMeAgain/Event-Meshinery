@@ -43,9 +43,8 @@ class E2eMemoryTest {
     var batchJobFinished = executorService.awaitTermination(10_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
-    var inputs = connector.getInputs(List.of("test"));
-    assertThat(inputs).extracting(DataContext::getId).isEqualTo(List.of("abc"));
-    //    assertThat(batchJobFinished).isTrue();
+    assertThat(connector.getInputs(List.of("test"))).isEmpty();
+    assertThat(batchJobFinished).isTrue();
   }
 }
 
