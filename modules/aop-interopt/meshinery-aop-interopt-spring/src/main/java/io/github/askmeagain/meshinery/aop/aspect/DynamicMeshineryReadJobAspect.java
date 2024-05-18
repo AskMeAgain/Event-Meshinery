@@ -19,7 +19,6 @@ public class DynamicMeshineryReadJobAspect {
 
   @Around("@annotation(io.github.askmeagain.meshinery.aop.common.MeshineryReadTask)")
   public void writeToConnectorAspect(ProceedingJoinPoint proceedingJoinPoint) {
-    //we just do nothing
     var signature = (MethodSignature) proceedingJoinPoint.getSignature();
     var method = signature.getMethod();
     var myAnnotation = method.getAnnotation(MeshineryReadTask.class);

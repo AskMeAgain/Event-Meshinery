@@ -1,17 +1,17 @@
 package io.github.askmeagain.meshinery.monitoring;
 
 import io.github.askmeagain.meshinery.core.utils.AbstractLogTestBase;
+import io.github.askmeagain.meshinery.core.utils.sources.OutputCapture;
 import io.github.askmeagain.meshinery.monitoring.config.MeshineryDrawerConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.test.system.CapturedOutput;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MeshineryDrawerPropertyValidationTest extends AbstractLogTestBase {
 
   @Test
-  void testProperties(CapturedOutput output) {
+  void testProperties(OutputCapture output) {
     //Arrange --------------------------------------------------------------------------------
     var application = new SpringApplication(MeshineryDrawerConfiguration.class);
 

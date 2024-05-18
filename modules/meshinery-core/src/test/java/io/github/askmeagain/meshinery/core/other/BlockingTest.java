@@ -3,7 +3,6 @@ package io.github.askmeagain.meshinery.core.other;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.SneakyThrows;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -132,7 +131,6 @@ class BlockingTest {
     return Blocking.byKey("KEY", () -> waitAndApply(counter, 0, 1));
   }
 
-  @NotNull
   @SneakyThrows
   private String waitAndApply(AtomicInteger counter, int millis, int newValue) {
     Thread.sleep(millis);

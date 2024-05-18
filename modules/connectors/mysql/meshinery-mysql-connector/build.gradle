@@ -1,4 +1,5 @@
-import com.vanniktech.maven.publish.*
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
 
 plugins {
     id "com.vanniktech.maven.publish.base"
@@ -10,9 +11,12 @@ dependencies {
     api "org.jdbi:jdbi3-core:${jdbi_version}"
     api "org.jdbi:jdbi3-jackson2:${jdbi_version}"
     api "org.jdbi:jdbi3-sqlobject:${jdbi_version}"
-    api "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
-    implementation "com.zaxxer:HikariCP:${hikari_version}"
+    api "com.fasterxml.jackson.core:jackson-databind"
+
+    implementation "com.zaxxer:HikariCP"
+
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
+    testImplementation "org.testcontainers:mysql"
 }
 
 mavenPublishing {

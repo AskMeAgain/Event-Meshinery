@@ -3,11 +3,11 @@ package io.github.askmeagain.meshinery.core;
 import io.github.askmeagain.meshinery.core.hooks.BatchJobTimingHooks;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.utils.AbstractLogTestBase;
+import io.github.askmeagain.meshinery.core.utils.sources.OutputCapture;
 import java.util.List;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.system.CapturedOutput;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -15,7 +15,7 @@ class BatchJobTimingHooksExecutionTest extends AbstractLogTestBase {
 
   @Test
   @SneakyThrows
-  void testExecution(CapturedOutput output) {
+  void testExecution(OutputCapture output) {
     //Arrange --------------------------------------------------------------------------------
     var applicationTimeHook = Mockito.spy(new BatchJobTimingHooks());
     var roundRobinScheduler = RoundRobinScheduler.builder()

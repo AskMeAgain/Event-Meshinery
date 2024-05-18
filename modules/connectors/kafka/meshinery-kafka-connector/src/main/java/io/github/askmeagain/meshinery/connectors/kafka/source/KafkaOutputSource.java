@@ -1,4 +1,4 @@
-package io.github.askmeagain.meshinery.connectors.kafka.sources;
+package io.github.askmeagain.meshinery.connectors.kafka.source;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaProducerFactory;

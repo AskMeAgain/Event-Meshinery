@@ -1,4 +1,5 @@
-import com.vanniktech.maven.publish.*
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
 
 plugins {
     id "com.vanniktech.maven.publish.base"
@@ -6,9 +7,12 @@ plugins {
 
 dependencies {
     implementation project(':modules:meshinery-core')
-    api "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+
     api "org.apache.kafka:kafka-clients:${kafka_client_version}"
+
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
+    testImplementation "org.testcontainers:kafka"
 }
 
 mavenPublishing {

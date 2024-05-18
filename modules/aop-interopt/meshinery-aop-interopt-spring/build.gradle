@@ -6,11 +6,15 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${spring_boot_version}"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
     implementation project(':modules:meshinery-core')
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+
     api project(':modules:meshinery-core-spring')
-    api "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
-    api "org.springframework.boot:spring-boot-starter-aop:${spring_boot_version}"
+    api "org.springframework.boot:spring-boot-starter-aop"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
 }
 

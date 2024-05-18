@@ -1,9 +1,10 @@
-package io.github.askmeagain.meshinery.connectors.kafka.sources;
+package io.github.askmeagain.meshinery.connectors.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.askmeagain.meshinery.connectors.kafka.MeshineryKafkaProperties;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaProducerFactory;
+import io.github.askmeagain.meshinery.connectors.kafka.source.KafkaInputSource;
+import io.github.askmeagain.meshinery.connectors.kafka.source.KafkaOutputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import java.util.List;

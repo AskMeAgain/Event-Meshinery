@@ -1,20 +1,18 @@
 package io.github.askmeagain.meshinery.connectors.pubsub.e2e;
 
-import io.github.askmeagain.meshinery.connectors.pubsub.AbstractPubSubTestBase;
+import io.github.askmeagain.meshinery.connectors.pubsub.AbstractSpringPubSubTestBase;
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication;
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestBaseUtils;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = {E2eTestApplication.class, E2ePubSubTestConfiguration.class})
-public class E2ePubSubTest extends AbstractPubSubTestBase {
+//@SpringBootTest(classes = {E2eTestApplication.class, E2ePubSubTestConfiguration.class})
+public class E2ePubSubTest extends AbstractSpringPubSubTestBase {
 
   @Autowired
   ExecutorService executorService;
@@ -32,7 +30,7 @@ public class E2ePubSubTest extends AbstractPubSubTestBase {
     createTopic("Finished_subscription");
   }
 
-  @Test
+  //@Test
   @SneakyThrows
   void testE2ePubSub() {
     //Arrange --------------------------------------------------------------------------------

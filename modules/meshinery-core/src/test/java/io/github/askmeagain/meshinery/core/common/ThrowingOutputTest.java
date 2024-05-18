@@ -4,12 +4,12 @@ import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.AbstractLogTestBase;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
+import io.github.askmeagain.meshinery.core.utils.sources.OutputCapture;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import io.github.askmeagain.meshinery.core.utils.sources.ThrowingOutputSource;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.system.CapturedOutput;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,7 +18,7 @@ class ThrowingOutputTest extends AbstractLogTestBase {
   private static final String KEY = "Test";
 
   @Test
-  void testBatchJobFlag(CapturedOutput output) throws InterruptedException {
+  void testBatchJobFlag(OutputCapture output) throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
     var executor = Executors.newSingleThreadExecutor();
     var inputSource = TestInputSource.builder()

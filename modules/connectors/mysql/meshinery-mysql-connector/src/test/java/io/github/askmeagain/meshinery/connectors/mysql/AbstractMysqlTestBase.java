@@ -4,8 +4,6 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
@@ -25,14 +23,6 @@ public abstract class AbstractMysqlTestBase {
     mysqlContainer.start();
   }
 
-  @DynamicPropertySource
-  static void dynamicPropertySource(DynamicPropertyRegistry registry) {
-    registry.add(
-        "meshinery.connectors.mysql.connection-string",
-        AbstractMysqlTestBase::getConnectingString
-    );
-  }
-
   @AfterEach
   protected void truncate() {
     jdbi().useHandle(handle -> handle.createCall("TRUNCATE db.TestContext").invoke());
@@ -50,7 +40,7 @@ public abstract class AbstractMysqlTestBase {
     return jdbi;
   }
 
-  private static String getConnectingString() {
+  protected static String getConnectingString() {
     return mysqlContainer.getJdbcUrl() + "?useSSL=false";
   }
 

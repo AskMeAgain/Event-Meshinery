@@ -10,38 +10,25 @@ test {
 }
 
 dependencies {
-    compileOnly "org.projectlombok:lombok:${lombok_version}"
-    annotationProcessor "org.projectlombok:lombok:${lombok_version}"
-    testAnnotationProcessor "org.projectlombok:lombok:${lombok_version}"
-    testCompileOnly "org.projectlombok:lombok:${lombok_version}"
+    api platform("com.google.cloud:libraries-bom:${google_cloud_bom_version}")
+    implementation platform("org.springframework.boot:spring-boot-dependencies:${spring_boot_version}")
+    annotationProcessor platform("org.springframework.boot:spring-boot-dependencies:${spring_boot_version}")
+    testAnnotationProcessor platform("org.springframework.boot:spring-boot-dependencies:${spring_boot_version}")
+    implementation platform("org.testcontainers:testcontainers-bom:${testcontainers_version}")
 
-    implementation platform("com.google.cloud:libraries-bom:${google_cloud_bom_version}")
+    annotationProcessor "org.projectlombok:lombok"
+    compileOnly "org.projectlombok:lombok"
+    testAnnotationProcessor "org.projectlombok:lombok"
+    testCompileOnly "org.projectlombok:lombok"
 
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junit_version}"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${junit_version}"
-    testImplementation "org.assertj:assertj-core:${assertj_version}"
-    testImplementation "org.mockito:mockito-core:${mockito_version}"
-    testImplementation "org.mockito:mockito-inline:${mockito_version}"
-    testImplementation "org.springframework.boot:spring-boot-starter-test:${spring_boot_version}"
-    testImplementation "org.testcontainers:mysql:${testcontainers_version}"
-    testImplementation "org.testcontainers:gcloud:${testcontainers_version}"
-    testImplementation "org.testcontainers:postgresql:${testcontainers_version}"
-    testImplementation "org.testcontainers:kafka:${testcontainers_version}"
-    testImplementation "ch.qos.logback:logback-classic:${logback_version}"
-
-    implementation "org.slf4j:slf4j-api:${slf4j_api_version}"
-    implementation("org.apache.logging.log4j:log4j-api") {
-        version {
-            strictly "${log4j_version}"
-        }
-        because "fixing log4shell exploit"
-    }
-    implementation("org.apache.logging.log4j:log4j-to-slf4j") {
-        version {
-            strictly "${log4j_version}"
-        }
-        because "fixing log4shell exploit"
-    }
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    testImplementation "org.junit.jupiter:junit-jupiter-api"
+    testImplementation "org.junit.jupiter:junit-jupiter-params"
+    testImplementation "org.assertj:assertj-core"
+    testImplementation "org.mockito:mockito-core"
+    testImplementation "org.mockito:mockito-inline"
+    testImplementation "ch.qos.logback:logback-classic"
+    implementation "org.slf4j:slf4j-api"
 }
 
 java {

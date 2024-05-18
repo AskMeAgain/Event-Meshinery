@@ -1,17 +1,13 @@
-package io.github.askmeagain.meshinery.connectors.kafka.sources;
+package io.github.askmeagain.meshinery.connectors.kafka.source;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSource;
-import io.github.askmeagain.meshinery.core.other.Blocking;
-import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

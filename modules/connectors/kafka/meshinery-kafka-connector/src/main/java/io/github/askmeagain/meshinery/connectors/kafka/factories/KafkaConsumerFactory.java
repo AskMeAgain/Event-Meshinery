@@ -1,8 +1,6 @@
 package io.github.askmeagain.meshinery.connectors.kafka.factories;
 
 import io.github.askmeagain.meshinery.connectors.kafka.MeshineryKafkaProperties;
-import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;

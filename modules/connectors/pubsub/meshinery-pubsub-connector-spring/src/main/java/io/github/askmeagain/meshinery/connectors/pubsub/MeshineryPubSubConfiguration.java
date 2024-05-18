@@ -24,7 +24,8 @@ public class MeshineryPubSubConfiguration {
 
   @Bean
   public static DynamicPubSubConnectorRegistration dynamicMysqlConnectorRegistration(
-      ApplicationContext applicationContext, ObjectProvider<ObjectMapper> objectMapper,
+      ApplicationContext applicationContext,
+      ObjectProvider<ObjectMapper> objectMapper,
       ObjectProvider<MeshineryPubSubProperties> meshineryPubSubProperties,
       ObjectProvider<MeshineryTransportChannelProvider> transportChannelProviders,
       ObjectProvider<CredentialsProvider> credentialsProviders,

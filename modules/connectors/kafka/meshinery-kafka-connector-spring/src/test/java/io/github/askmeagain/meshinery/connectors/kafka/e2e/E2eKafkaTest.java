@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.connectors.kafka.e2e;
 
-import io.github.askmeagain.meshinery.connectors.kafka.AbstractKafkaTest;
+import io.github.askmeagain.meshinery.connectors.kafka.AbstractSpringKafkaTestBase;
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication;
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestBaseUtils;
 import java.util.concurrent.ExecutorService;
@@ -17,7 +17,7 @@ import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.TO
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = {E2eTestApplication.class, E2eKafkaTestConfiguration.class})
-class E2eKafkaTest extends AbstractKafkaTest {
+class E2eKafkaTest extends AbstractSpringKafkaTestBase {
 
   @Autowired
   ExecutorService executorService;

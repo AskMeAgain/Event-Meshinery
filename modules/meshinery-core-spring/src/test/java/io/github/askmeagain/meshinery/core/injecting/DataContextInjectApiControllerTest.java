@@ -1,8 +1,9 @@
 package io.github.askmeagain.meshinery.core.injecting;
 
-import io.github.askmeagain.meshinery.core.setup.AbstractCoreSpringTestBase;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.MeshineryAutoConfiguration;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
+import io.github.askmeagain.meshinery.core.setup.AbstractCoreSpringTestBase;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

@@ -1,7 +1,6 @@
 package io.github.askmeagain.meshinery.connectors.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.askmeagain.meshinery.connectors.kafka.sources.KafkaConnector;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.Collections;
 import java.util.List;

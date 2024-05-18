@@ -6,13 +6,14 @@ plugins {
 }
 
 dependencies {
-    api project(':modules:meshinery-core')
     implementation 'com.google.cloud:google-cloud-pubsub'
     implementation 'com.google.auth:google-auth-library-oauth2-http'
+    implementation "com.fasterxml.jackson.core:jackson-databind"
 
-    api "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
+    api project(':modules:meshinery-core')
 
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
+    testImplementation "org.testcontainers:gcloud"
 }
 
 mavenPublishing {

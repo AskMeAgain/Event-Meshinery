@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.connectors.mysql.e2e;
 
-import io.github.askmeagain.meshinery.connectors.mysql.AbstractMysqlTestBase;
+import io.github.askmeagain.meshinery.connectors.mysql.AbstractSpringMysqlTestBase;
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication;
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestBaseUtils;
 import java.util.concurrent.ExecutorService;
@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(classes = {E2eTestApplication.class, E2eMysqlTestConfiguration.class})
-public class E2eMysqlTest extends AbstractMysqlTestBase {
+public class E2eMysqlTest extends AbstractSpringMysqlTestBase {
 
   @Autowired
   ExecutorService executorService;

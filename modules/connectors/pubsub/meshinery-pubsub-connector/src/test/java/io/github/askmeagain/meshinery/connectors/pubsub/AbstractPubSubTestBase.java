@@ -14,14 +14,12 @@ import com.google.pubsub.v1.TopicName;
 import io.grpc.ManagedChannelBuilder;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PubSubEmulatorContainer;
 import org.testcontainers.utility.DockerImageName;
 
 public abstract class AbstractPubSubTestBase {
 
-  private static final PubSubEmulatorContainer PUB_SUB_EMULATOR_CONTAINER = new PubSubEmulatorContainer(
+  protected static final PubSubEmulatorContainer PUB_SUB_EMULATOR_CONTAINER = new PubSubEmulatorContainer(
       DockerImageName.parse("gcr.io/google.com/cloudsdktool/google-cloud-cli:457.0.0-emulators")
   );
 
@@ -74,14 +72,6 @@ public abstract class AbstractPubSubTestBase {
       }
     }
     transportChannelProvider.getTransportChannel().close();
-  }
-
-  @DynamicPropertySource
-  static void dynamicPropertySource(DynamicPropertyRegistry registry) {
-    registry.add(
-        "meshinery.connectors.pubsub.emulatorEndpoint",
-        PUB_SUB_EMULATOR_CONTAINER::getEmulatorEndpoint
-    );
   }
 
   protected static NoCredentialsProvider getCredentialProvider() {

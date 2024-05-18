@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.junit.jupiter.api.BeforeAll;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
@@ -25,11 +23,6 @@ public abstract class AbstractKafkaTest {
   @BeforeAll
   public static void setup() {
     kafkaContainer.start();
-  }
-
-  @DynamicPropertySource
-  static void dynamicPropertySource(DynamicPropertyRegistry registry) {
-    registry.add("meshinery.connectors.kafka.bootstrap-servers", () -> kafkaContainer.getBootstrapServers());
   }
 
   public MeshineryKafkaProperties getKafkaProperties() {
