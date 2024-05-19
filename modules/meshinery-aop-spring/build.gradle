@@ -10,6 +10,7 @@ dependencies {
 
     implementation project(':modules:meshinery-core')
     implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "org.apache.commons:commons-lang3:${commons_lang_3_version}"
 
     api project(':modules:meshinery-core-spring')
     api "org.springframework.boot:spring-boot-starter-aop"

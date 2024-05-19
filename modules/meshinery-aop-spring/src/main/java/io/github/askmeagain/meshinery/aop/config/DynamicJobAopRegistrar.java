@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.aop.config;
 
+import io.github.askmeagain.meshinery.aop.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.aop.common.MeshineryReadTask;
 import io.github.askmeagain.meshinery.aop.exception.MeshineryAopWrongMethodParameterType;
 import io.github.askmeagain.meshinery.core.common.DataContext;
@@ -78,9 +79,10 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
       ExecutorService executorService,
       ObjectProvider<MeshineryConnector<String, ? extends DataContext>> provider
   ) {
-
-    var read = methodHandle.getName();
     var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
+
+    var annotation = methodHandle.getAnnotation(MeshineryReadTask.class);
+    var event = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
     var contextClazz = methodHandle.getParameterTypes()[0];
 
     if (!DataContext.class.isAssignableFrom(contextClazz)) {
@@ -89,7 +91,7 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
 
     return MeshineryTaskFactory.<String, DataContext>builder()
         .connector((MeshineryConnector<String, DataContext>) provider.getObject())
-        .read(executorService, read)
+        .read(executorService, event)
         .process(new MeshineryProcessor<>() {
           @SneakyThrows
           @Override
