@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AccessingInputTest extends AbstractMysqlTestBase {
+class MysqlAccessingInputTest extends AbstractMysqlTestBase {
 
   private static final String STATE = "Test";
 
@@ -15,10 +15,10 @@ class AccessingInputTest extends AbstractMysqlTestBase {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
 
-    var mysqlProperties = new MeshineryMysqlProperties();
-    mysqlProperties.setLimit(1);
+    var mysqlProperties = meshineryMysqlProperties();
+
     var input = new MysqlInputSource<>("default", new ObjectMapper(), jdbi, TestContext.class, mysqlProperties);
-    var output = new MysqlOutputSource<>("default", jdbi, TestContext.class);
+    var output = new MysqlOutputSource<>("default", jdbi, TestContext.class, mysqlProperties);
 
     var value1 = new TestContext(1);
     var value2 = new TestContext(2);

@@ -23,7 +23,7 @@ public class PostgresInputSource<C extends DataContext> implements AccessingInpu
       WHERE eid IN
       (
         SELECT eid
-        FROM <TABLE>
+        FROM <SCHEMA>.<TABLE>
         WHERE processed = false AND state IN (<STATES>)
         ORDER BY eid ASC
         FOR UPDATE SKIP LOCKED

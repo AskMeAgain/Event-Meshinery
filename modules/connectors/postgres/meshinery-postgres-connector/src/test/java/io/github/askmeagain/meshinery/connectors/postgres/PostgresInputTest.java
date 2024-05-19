@@ -19,10 +19,10 @@ class PostgresInputTest extends AbstractPostgresTestBase {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
 
-    var postgresProperties = new MeshineryPostgresProperties();
-    postgresProperties.setLimit(1);
+    var postgresProperties = postgresProperties();
+
     var input = new PostgresInputSource<>("default", new ObjectMapper(), jdbi, TestContext.class, postgresProperties);
-    var output = new PostgresOutputSource<>("default", jdbi, TestContext.class);
+    var output = new PostgresOutputSource<>("default", jdbi, TestContext.class, postgresProperties);
     var value1 = new TestContext(1);
     var value2 = new TestContext(2);
 
@@ -47,10 +47,10 @@ class PostgresInputTest extends AbstractPostgresTestBase {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
 
-    var mysqlProperties = new MeshineryPostgresProperties();
-    mysqlProperties.setLimit(1);
-    var input = new PostgresInputSource<>("default", new ObjectMapper(), jdbi, TestContext.class, mysqlProperties);
-    var output = new PostgresOutputSource<>("default", jdbi, TestContext.class);
+    var postgresProperties = postgresProperties();
+
+    var input = new PostgresInputSource<>("default", new ObjectMapper(), jdbi, TestContext.class, postgresProperties);
+    var output = new PostgresOutputSource<>("default", jdbi, TestContext.class, postgresProperties);
     var value1 = new TestContext(1);
     var value2 = new TestContext(2);
 
@@ -77,7 +77,7 @@ class PostgresInputTest extends AbstractPostgresTestBase {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
 
-    var output = new PostgresOutputSource<>("default", jdbi, TestContext.class);
+    var output = new PostgresOutputSource<>("default", jdbi, TestContext.class, postgresProperties());
     var value1 = new TestContext(1);
 
     //Act ------------------------------------------------------------------------------------

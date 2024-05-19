@@ -7,7 +7,7 @@ import org.springframework.boot.SpringApplication;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class MeshineryMysqlPropertyValidationTest extends AbstractLogTestBase {
+class MysqlPropertyValidationTest extends AbstractLogTestBase {
 
   @Test
   void testProperties(OutputCapture output) {
@@ -27,5 +27,4 @@ class MeshineryMysqlPropertyValidationTest extends AbstractLogTestBase {
     assertThatLogContainsMessage(
         output, "Property: meshinery.connectors.mysql.connectionString", "Reason: must not be blank");
   }
-
 }

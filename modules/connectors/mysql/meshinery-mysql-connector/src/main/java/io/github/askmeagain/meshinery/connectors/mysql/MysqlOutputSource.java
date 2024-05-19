@@ -14,12 +14,12 @@ import org.jdbi.v3.json.Json;
 public class MysqlOutputSource<C extends DataContext> implements OutputSource<String, C> {
 
   private static final String INSERT = """
-      INSERT INTO <TABLE> (id,context,state)
+      INSERT INTO <SCHEMA>.<TABLE> (id,context,state)
       VALUES (:ID, :CONTEXT, :STATE)
       """;
 
   private static final String OVERRIDE = """
-      INSERT INTO <TABLE> (id,context,state)
+      INSERT INTO <SCHEMA>.<TABLE> (id,context,state)
       VALUES (:ID, :CONTEXT, :STATE)
       ON DUPLICATE KEY UPDATE
         context = :CONTEXT,
@@ -31,10 +31,12 @@ public class MysqlOutputSource<C extends DataContext> implements OutputSource<St
   private final Jdbi jdbi;
   private final String simpleName;
   private final QualifiedType<C> qualifiedType;
+  private final MeshineryMysqlProperties mysqlProperties;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MysqlOutputSource(String name, Jdbi jdbi, Class<C> clazz) {
+  public MysqlOutputSource(String name, Jdbi jdbi, Class<C> clazz, MeshineryMysqlProperties mysqlProperties) {
     this.name = name;
+    this.mysqlProperties = mysqlProperties;
     this.jdbi = jdbi;
     qualifiedType = QualifiedType.of(clazz).with(Json.class);
     simpleName = clazz.getSimpleName();
@@ -48,6 +50,7 @@ public class MysqlOutputSource<C extends DataContext> implements OutputSource<St
 
     jdbi.useHandle(h -> h.createUpdate(insertStatement)
         .define("TABLE", simpleName)
+        .define("SCHEMA", mysqlProperties.getSchema())
         .bindByType("CONTEXT", output, qualifiedType)
         .bind("STATE", key)
         .bind("ID", output.getId())

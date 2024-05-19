@@ -51,6 +51,10 @@ checkstyle {
     configFile = rootProject.file('checkstyle.xml')
 }
 
+test {
+    outputs.upToDateWhen { false }
+}
+
 checkstyleTest {
     enabled = false
 }

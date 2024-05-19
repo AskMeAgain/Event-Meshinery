@@ -1,6 +1,6 @@
-package io.github.askmeagain.meshinery.connectors.mysql;
+package io.github.askmeagain.meshinery.connectors.postgres;
 
-import io.github.askmeagain.meshinery.connectors.postgres.MeshineryPostgresProperties;
+import io.github.askmeagain.meshinery.connectors.mysql.MeshineryPostgresConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;

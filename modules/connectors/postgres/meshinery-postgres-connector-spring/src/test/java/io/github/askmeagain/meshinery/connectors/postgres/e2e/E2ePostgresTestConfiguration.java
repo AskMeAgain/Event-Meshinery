@@ -1,4 +1,4 @@
-package io.github.askmeagain.meshinery.connectors.mysql.e2e;
+package io.github.askmeagain.meshinery.connectors.postgres.e2e;
 
 import io.github.askmeagain.meshinery.connectors.mysql.EnableMeshineryPostgres;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;

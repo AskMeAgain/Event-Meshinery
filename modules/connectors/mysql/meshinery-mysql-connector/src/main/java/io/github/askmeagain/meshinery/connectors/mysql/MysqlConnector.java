@@ -32,9 +32,12 @@ public class MysqlConnector<C extends DataContext> implements AccessingInputSour
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MysqlConnector(
-      String name, Class<C> clazz, ObjectMapper objectMapper, MeshineryMysqlProperties mysqlProperties
+      String name,
+      Class<C> clazz,
+      ObjectMapper objectMapper,
+      MeshineryMysqlProperties mysqlProperties
   ) {
-    HikariConfig config = new HikariConfig();
+    var config = new HikariConfig();
 
     config.setJdbcUrl(mysqlProperties.getConnectionString());
     config.setUsername(mysqlProperties.getUser());
@@ -60,7 +63,7 @@ public class MysqlConnector<C extends DataContext> implements AccessingInputSour
 
     this.name = name;
     this.mysqlInputSource = new MysqlInputSource<>(name, objectMapper, jdbi, clazz, mysqlProperties);
-    this.mysqlOutputSource = new MysqlOutputSource<>(name, jdbi, clazz);
+    this.mysqlOutputSource = new MysqlOutputSource<>(name, jdbi, clazz, mysqlProperties);
   }
 
   @Override

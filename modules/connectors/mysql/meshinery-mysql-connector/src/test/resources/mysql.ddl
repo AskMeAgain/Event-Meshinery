@@ -1,4 +1,4 @@
-CREATE TABLE `TestContext`
+CREATE TABLE db.TestContext
 (
     `eid`       bigint       NOT NULL AUTO_INCREMENT,
     `id`        varchar(100) NOT NULL,

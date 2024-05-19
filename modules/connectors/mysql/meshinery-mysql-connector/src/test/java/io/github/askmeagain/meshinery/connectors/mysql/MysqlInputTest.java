@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class InputTest extends AbstractMysqlTestBase {
+class MysqlInputTest extends AbstractMysqlTestBase {
 
   private static final String STATE = "Test";
 
@@ -19,10 +19,10 @@ class InputTest extends AbstractMysqlTestBase {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
 
-    var mysqlProperties = new MeshineryMysqlProperties();
-    mysqlProperties.setLimit(1);
+    var mysqlProperties = meshineryMysqlProperties();
+
     var input = new MysqlInputSource<>("default", new ObjectMapper(), jdbi, TestContext.class, mysqlProperties);
-    var output = new MysqlOutputSource<>("default", jdbi, TestContext.class);
+    var output = new MysqlOutputSource<>("default", jdbi, TestContext.class, mysqlProperties);
     var value1 = new TestContext(1);
     var value2 = new TestContext(2);
 
@@ -47,10 +47,10 @@ class InputTest extends AbstractMysqlTestBase {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
 
-    var mysqlProperties = new MeshineryMysqlProperties();
-    mysqlProperties.setLimit(1);
+    var mysqlProperties = meshineryMysqlProperties();
+
     var input = new MysqlInputSource<>("default", new ObjectMapper(), jdbi, TestContext.class, mysqlProperties);
-    var output = new MysqlOutputSource<>("default", jdbi, TestContext.class);
+    var output = new MysqlOutputSource<>("default", jdbi, TestContext.class, mysqlProperties);
     var value1 = new TestContext(1);
     var value2 = new TestContext(2);
 
@@ -77,7 +77,9 @@ class InputTest extends AbstractMysqlTestBase {
     //Arrange --------------------------------------------------------------------------------
     var jdbi = jdbi();
 
-    var output = new MysqlOutputSource<>("default", jdbi, TestContext.class);
+    var mysqlProperties = meshineryMysqlProperties();
+
+    var output = new MysqlOutputSource<>("default", jdbi, TestContext.class, mysqlProperties);
     var value1 = new TestContext(1);
 
     //Act ------------------------------------------------------------------------------------

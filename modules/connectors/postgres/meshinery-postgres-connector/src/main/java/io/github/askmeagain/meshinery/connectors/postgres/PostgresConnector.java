@@ -26,19 +26,22 @@ public class PostgresConnector<C extends DataContext> implements AccessingInputS
   private final PostgresInputSource<C> postgresInputSource;
   private final PostgresOutputSource<C> postgresOutputSource;
 
-  public PostgresConnector(Class<C> clazz, ObjectMapper objectMapper, MeshineryPostgresProperties mysqlProperties) {
-    this("default-postgres-connector", clazz, objectMapper, mysqlProperties);
+  public PostgresConnector(Class<C> clazz, ObjectMapper objectMapper, MeshineryPostgresProperties postgresProperties) {
+    this("default-postgres-connector", clazz, objectMapper, postgresProperties);
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public PostgresConnector(
-      String name, Class<C> clazz, ObjectMapper objectMapper, MeshineryPostgresProperties mysqlProperties
+      String name,
+      Class<C> clazz,
+      ObjectMapper objectMapper,
+      MeshineryPostgresProperties postgresProperties
   ) {
-    HikariConfig config = new HikariConfig();
+    var config = new HikariConfig();
 
-    config.setJdbcUrl(mysqlProperties.getConnectionString());
-    config.setUsername(mysqlProperties.getUser());
-    config.setPassword(mysqlProperties.getPassword());
+    config.setJdbcUrl(postgresProperties.getConnectionString());
+    config.setUsername(postgresProperties.getUser());
+    config.setPassword(postgresProperties.getPassword());
 
     config.addDataSourceProperty("cachePrepStmts", "true");
     config.addDataSourceProperty("prepStmtCacheSize", "250");
@@ -59,8 +62,8 @@ public class PostgresConnector<C extends DataContext> implements AccessingInputS
     jdbi.getConfig(Jackson2Config.class).setMapper(objectMapper);
 
     this.name = name;
-    this.postgresInputSource = new PostgresInputSource<>(name, objectMapper, jdbi, clazz, mysqlProperties);
-    this.postgresOutputSource = new PostgresOutputSource<>(name, jdbi, clazz);
+    this.postgresInputSource = new PostgresInputSource<>(name, objectMapper, jdbi, clazz, postgresProperties);
+    this.postgresOutputSource = new PostgresOutputSource<>(name, jdbi, clazz, postgresProperties);
   }
 
   @Override

@@ -1,6 +1,6 @@
-package io.github.askmeagain.meshinery.connectors.mysql.e2e;
+package io.github.askmeagain.meshinery.connectors.postgres.e2e;
 
-import io.github.askmeagain.meshinery.connectors.mysql.AbstractSpringPostgresTestBase;
+import io.github.askmeagain.meshinery.connectors.postgres.AbstractSpringPostgresTestBase;
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication;
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestBaseUtils;
 import java.util.concurrent.ExecutorService;

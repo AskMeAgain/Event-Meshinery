@@ -1,5 +1,6 @@
-package io.github.askmeagain.meshinery.connectors.mysql;
+package io.github.askmeagain.meshinery.connectors.postgres;
 
+import io.github.askmeagain.meshinery.connectors.mysql.MeshineryPostgresConfiguration;
 import io.github.askmeagain.meshinery.core.utils.AbstractLogTestBase;
 import io.github.askmeagain.meshinery.core.utils.sources.OutputCapture;
 import org.junit.jupiter.api.Test;

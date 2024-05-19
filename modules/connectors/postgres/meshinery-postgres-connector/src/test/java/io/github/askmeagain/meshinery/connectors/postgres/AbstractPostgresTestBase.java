@@ -25,7 +25,7 @@ public abstract class AbstractPostgresTestBase {
 
   @AfterEach
   protected void truncate() {
-    jdbi().useHandle(handle -> handle.createCall("TRUNCATE testcontext").invoke());
+    jdbi().useHandle(handle -> handle.createCall("TRUNCATE db.testcontext").invoke());
   }
 
   protected Jdbi jdbi() {
@@ -44,14 +44,15 @@ public abstract class AbstractPostgresTestBase {
     return postgresContainer.getJdbcUrl() + "?useSSL=false";
   }
 
-  protected MeshineryPostgresProperties meshineryMysqlProperties() {
-    var meshineryPostgresProperties = new MeshineryPostgresProperties();
+  protected MeshineryPostgresProperties postgresProperties() {
+    var postgresProperties = new MeshineryPostgresProperties();
 
-    meshineryPostgresProperties.setLimit(1);
-    meshineryPostgresProperties.setPassword(postgresContainer.getPassword());
-    meshineryPostgresProperties.setUser(postgresContainer.getUsername());
-    meshineryPostgresProperties.setConnectionString(getConnectingString());
+    postgresProperties.setLimit(1);
+    postgresProperties.setSchema("db");
+    postgresProperties.setPassword(postgresContainer.getPassword());
+    postgresProperties.setUser(postgresContainer.getUsername());
+    postgresProperties.setConnectionString(getConnectingString());
 
-    return meshineryPostgresProperties;
+    return postgresProperties;
   }
 }

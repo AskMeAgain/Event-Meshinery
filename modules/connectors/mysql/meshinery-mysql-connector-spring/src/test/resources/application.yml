@@ -10,6 +10,7 @@ meshinery:
       user: user
       password: password
       limit: 1
+      schema: 'db'
 
 spring:
   main:

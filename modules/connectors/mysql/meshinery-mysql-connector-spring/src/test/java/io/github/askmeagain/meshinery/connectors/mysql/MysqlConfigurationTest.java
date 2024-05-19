@@ -23,12 +23,14 @@ class MysqlConfigurationTest {
     //Assert ---------------------------------------------------------------------------------
     assertThat(mysqlProperties)
         .extracting(
+            MeshineryMysqlProperties::getSchema,
             MeshineryMysqlProperties::getConnectionString,
             MeshineryMysqlProperties::getLimit,
             MeshineryMysqlProperties::getPassword,
             MeshineryMysqlProperties::getUser
         )
         .containsExactly(
+            "db",
             "jdbc:mysql://localhost:3306/db",
             1,
             "password",

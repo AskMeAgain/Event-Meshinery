@@ -47,6 +47,7 @@ public abstract class AbstractMysqlTestBase {
   protected MeshineryMysqlProperties meshineryMysqlProperties() {
     var meshineryMysqlProperties = new MeshineryMysqlProperties();
 
+    meshineryMysqlProperties.setSchema("db");
     meshineryMysqlProperties.setLimit(1);
     meshineryMysqlProperties.setPassword(mysqlContainer.getPassword());
     meshineryMysqlProperties.setUser(mysqlContainer.getUsername());

@@ -1,6 +1,5 @@
-package io.github.askmeagain.meshinery.connectors.mysql;
+package io.github.askmeagain.meshinery.connectors.postgres;
 
-import io.github.askmeagain.meshinery.connectors.postgres.AbstractPostgresTestBase;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 

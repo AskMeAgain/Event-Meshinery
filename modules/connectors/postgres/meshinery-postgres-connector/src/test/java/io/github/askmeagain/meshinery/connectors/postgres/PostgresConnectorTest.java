@@ -12,9 +12,9 @@ class PostgresConnectorTest extends AbstractPostgresTestBase {
   private static final String STATE = "Test";
 
   @Test
-  void testMysqlConnector() {
+  void testPostgresConnector() {
     //Arrange --------------------------------------------------------------------------------
-    var postgresConnector = new PostgresConnector<>(TestContext.class, new ObjectMapper(), meshineryMysqlProperties());
+    var postgresConnector = new PostgresConnector<>(TestContext.class, new ObjectMapper(), postgresProperties());
     var value1 = new TestContext(1);
     var value2 = new TestContext(2);
 
