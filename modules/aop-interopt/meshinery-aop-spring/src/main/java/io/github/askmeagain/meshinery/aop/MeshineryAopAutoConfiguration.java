@@ -21,9 +21,9 @@ public class MeshineryAopAutoConfiguration {
 
   @Bean
   public DynamicMeshineryReadJobAspect dynamicMeshineryReadJobAspect(
-      MeshineryConnector<String, DataContext> connector
+      MeshineryConnector<String, ? extends DataContext> connector
   ) {
-    return new DynamicMeshineryReadJobAspect(connector);
+    return new DynamicMeshineryReadJobAspect((MeshineryConnector<String, DataContext>) connector);
   }
 
   @Bean

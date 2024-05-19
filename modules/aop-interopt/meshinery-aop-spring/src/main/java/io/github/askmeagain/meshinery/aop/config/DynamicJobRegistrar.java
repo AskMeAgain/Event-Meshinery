@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.aop.config;
 
 import io.github.askmeagain.meshinery.aop.common.MeshineryReadTask;
+import io.github.askmeagain.meshinery.aop.exception.MeshineryAopWrongMethodParameterType;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
@@ -42,8 +43,6 @@ public class DynamicJobRegistrar implements BeanDefinitionRegistryPostProcessor 
 
   @Override
   public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-    var resolvableType = ResolvableType.forClassWithGenerics(MeshineryConnector.class, String.class, DataContext.class);
-    var provider = applicationContext.<MeshineryConnector<String, DataContext>>getBeanProvider(resolvableType);
 
     for (var beanName : applicationContext.getBeanDefinitionNames()) {
       var clazz = applicationContext.getType(beanName);
@@ -55,7 +54,16 @@ public class DynamicJobRegistrar implements BeanDefinitionRegistryPostProcessor 
         if (m.isAnnotationPresent(MeshineryReadTask.class)) {
           var beanDefinition = new RootBeanDefinition(
               MeshineryTask.class,
-              () -> buildMeshineryJob(m, applicationContext.getBean(beanName), executorService, provider)
+              () -> buildMeshineryJob(
+                  m,
+                  applicationContext.getBean(beanName),
+                  executorService,
+                  applicationContext.getBeanProvider(ResolvableType.forClassWithGenerics(
+                      MeshineryConnector.class,
+                      String.class,
+                      m.getParameterTypes()[0]
+                  ))
+              )
           );
           beanDefinition.setTargetType(getTargetType(clazz));
           registry.registerBeanDefinition(getBeanName(clazz), beanDefinition);
@@ -68,21 +76,24 @@ public class DynamicJobRegistrar implements BeanDefinitionRegistryPostProcessor 
       Method methodHandle,
       Object beanInstance,
       ExecutorService executorService,
-      ObjectProvider<MeshineryConnector<String, DataContext>> provider
+      ObjectProvider<MeshineryConnector<String, ? extends DataContext>> provider
   ) {
-    var annotation = methodHandle.getAnnotation(MeshineryReadTask.class);
 
-    var read = annotation.event();
+    var read = methodHandle.getName();
     var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
+    var contextClazz = methodHandle.getParameterTypes()[0];
+
+    if (!DataContext.class.isAssignableFrom(contextClazz)) {
+      throw new MeshineryAopWrongMethodParameterType(methodHandle);
+    }
 
     return MeshineryTaskFactory.<String, DataContext>builder()
-        .connector(provider.getObject())
+        .connector((MeshineryConnector<String, DataContext>) provider.getObject())
         .read(executorService, read)
         .process(new MeshineryProcessor<>() {
           @SneakyThrows
           @Override
           public CompletableFuture<DataContext> processAsync(DataContext context, Executor executor) {
-            log.info("proxied method execution?");
             methodHandle.invoke(unproxiedObject, context);
             return CompletableFuture.completedFuture(null);
           }

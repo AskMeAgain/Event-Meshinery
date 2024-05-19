@@ -1,6 +1,5 @@
 package io.github.askmeagain.meshinery.aop.common;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -9,9 +8,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MeshineryReadTask {
-
-  String event();
-
-  Class<? extends DataContext> context();
 
 }

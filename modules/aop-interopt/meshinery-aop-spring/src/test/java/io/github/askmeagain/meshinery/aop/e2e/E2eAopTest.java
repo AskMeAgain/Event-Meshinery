@@ -28,7 +28,7 @@ class E2eAopTest {
 
   @Autowired ExecutorService executorService;
   @Autowired E2eTestService service;
-  @Autowired MeshineryConnector<String, DataContext> connector;
+  @Autowired MeshineryConnector<String, ? extends DataContext> connector;
 
   @Test
   @SneakyThrows
