@@ -1,4 +1,5 @@
-import com.vanniktech.maven.publish.*
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
 
 plugins {
     id "com.vanniktech.maven.publish.base"
@@ -15,7 +16,7 @@ dependencies {
         exclude group: 'junit', module: 'junit'
         exclude group: 'com.lowagie', module: 'itext'
     }
-    implementation "org.apache.commons:commons-lang3:${commons_lang_3_version}"
+    implementation "org.apache.commons:commons-lang3"
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
 }
 

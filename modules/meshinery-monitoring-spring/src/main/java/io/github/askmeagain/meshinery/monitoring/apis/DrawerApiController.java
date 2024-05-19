@@ -7,7 +7,7 @@ import io.github.askmeagain.meshinery.monitoring.customizer.GraphCustomizer;
 import io.github.askmeagain.meshinery.monitoring.customizer.NodeCustomizer;
 import io.github.askmeagain.meshinery.monitoring.generators.MermaidGenerator;
 import io.github.askmeagain.meshinery.monitoring.generators.PictureGenerator;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

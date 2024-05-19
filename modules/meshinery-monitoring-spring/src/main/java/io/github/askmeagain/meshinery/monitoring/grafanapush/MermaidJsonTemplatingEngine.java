@@ -5,16 +5,12 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.web.client.RestTemplate;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j
@@ -30,27 +26,14 @@ public class MermaidJsonTemplatingEngine {
   public void sendDashboardToGrafana() {
     var body = fillTemplate();
 
-    var restTemplate = new RestTemplate();
+    var restTemplate = new RestTemplateBuilder()
+        .basicAuthentication(properties.getUsername(), properties.getPassword())
+        .build();
 
-    var headers = createHeaders(properties.getUsername(), properties.getPassword());
-
-    var entity = new HttpEntity<>(body, headers);
+    var entity = new HttpEntity<>(body);
 
     restTemplate.postForEntity(properties.getGrafanaUrl(), entity, String.class);
     log.info("Pushed new Dashboard '{}' to Grafana at '{}'", properties.getDashboardName(), properties.getGrafanaUrl());
-  }
-
-  //https://www.baeldung.com/how-to-use-resttemplate-with-basic-authentication-in-spring
-  @SuppressWarnings("checkstyle:Indentation")
-  HttpHeaders createHeaders(String username, String password) {
-    return new HttpHeaders() {{
-      var auth = username + ":" + password;
-      var encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
-      var authHeader = "Basic " + new String(encodedAuth);
-
-      set("Authorization", authHeader);
-      setContentType(MediaType.APPLICATION_JSON);
-    }};
   }
 
   @SneakyThrows

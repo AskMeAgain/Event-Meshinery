@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.monitoring;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")

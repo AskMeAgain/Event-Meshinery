@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
     api "com.cronutils:cron-utils:${cronutils_version}"
-    api "org.hibernate.validator:hibernate-validator:${hibernate_version}"
+    api "org.hibernate.validator:hibernate-validator"
 
     implementation "org.apache.commons:commons-collections4:${commons_collections4_version}"
 

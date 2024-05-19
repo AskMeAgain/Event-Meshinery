@@ -1,5 +1,7 @@
 package io.github.askmeagain.meshinery.aop.aspect;
 
+import io.github.askmeagain.meshinery.aop.MeshineryAopUtils;
+import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +18,13 @@ public class DynamicMeshineryReadJobAspect {
 
   private final MeshineryConnector<String, DataContext> connector;
 
-  @Around("@annotation(io.github.askmeagain.meshinery.aop.common.MeshineryReadTask)")
+  @Around("@annotation(io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge)")
   public void writeToConnectorAspect(ProceedingJoinPoint proceedingJoinPoint) {
     var signature = (MethodSignature) proceedingJoinPoint.getSignature();
     var method = signature.getMethod();
-
+    var annotation = method.getAnnotation(MeshineryTaskBridge.class);
     var arg = proceedingJoinPoint.getArgs()[0];
-    connector.writeOutput(method.getName(), (DataContext) arg);
+    var event = MeshineryAopUtils.calculateEventName(annotation, method, proceedingJoinPoint.getTarget());
+    connector.writeOutput(event, (DataContext) arg);
   }
 }

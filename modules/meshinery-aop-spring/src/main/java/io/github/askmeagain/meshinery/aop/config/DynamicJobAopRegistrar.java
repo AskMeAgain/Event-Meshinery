@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.aop.config;
 
 import io.github.askmeagain.meshinery.aop.MeshineryAopUtils;
-import io.github.askmeagain.meshinery.aop.common.MeshineryReadTask;
+import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
 import io.github.askmeagain.meshinery.aop.exception.MeshineryAopWrongMethodParameterType;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
@@ -44,20 +44,22 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
 
   @Override
   public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-
-    for (var beanName : applicationContext.getBeanDefinitionNames()) {
-      var clazz = applicationContext.getType(beanName);
+    for (var proxiedBeanName : applicationContext.getBeanDefinitionNames()) {
+      var clazz = applicationContext.getType(proxiedBeanName);
       if (AopUtils.isAopProxy(clazz)) {
         clazz = AopUtils.getTargetClass(clazz);
       }
 
       for (var m : clazz.getDeclaredMethods()) {
-        if (m.isAnnotationPresent(MeshineryReadTask.class)) {
+        var targetType = getTargetType(clazz);
+        var newBeanName = getBeanName(clazz);
+
+        if (m.isAnnotationPresent(MeshineryTaskBridge.class)) {
           var beanDefinition = new RootBeanDefinition(
               MeshineryTask.class,
               () -> buildMeshineryJob(
                   m,
-                  applicationContext.getBean(beanName),
+                  applicationContext.getBean(proxiedBeanName),
                   executorService,
                   applicationContext.getBeanProvider(ResolvableType.forClassWithGenerics(
                       MeshineryConnector.class,
@@ -66,8 +68,8 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
                   ))
               )
           );
-          beanDefinition.setTargetType(getTargetType(clazz));
-          registry.registerBeanDefinition(getBeanName(clazz), beanDefinition);
+          beanDefinition.setTargetType(targetType);
+          registry.registerBeanDefinition(newBeanName, beanDefinition);
         }
       }
     }
@@ -77,29 +79,38 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
       Method methodHandle,
       Object beanInstance,
       ExecutorService executorService,
-      ObjectProvider<MeshineryConnector<String, ? extends DataContext>> provider
+      ObjectProvider<MeshineryConnector<String, DataContext>> provider
   ) {
     var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
 
-    var annotation = methodHandle.getAnnotation(MeshineryReadTask.class);
-    var event = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
+    var annotation = methodHandle.getAnnotation(MeshineryTaskBridge.class);
+    var readEvent = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
+    var writeEvent = annotation.write().equals("-") ? new String[0] : new String[]{annotation.write()};
+
     var contextClazz = methodHandle.getParameterTypes()[0];
+    var responseType = methodHandle.getReturnType();
 
     if (!DataContext.class.isAssignableFrom(contextClazz)) {
       throw new MeshineryAopWrongMethodParameterType(methodHandle);
     }
 
     return MeshineryTaskFactory.<String, DataContext>builder()
-        .connector((MeshineryConnector<String, DataContext>) provider.getObject())
-        .read(executorService, event)
+        .connector(provider.getObject())
+        .taskName("dynamic-job-" + readEvent.toLowerCase())
+        .read(executorService, readEvent)
         .process(new MeshineryProcessor<>() {
           @SneakyThrows
           @Override
           public CompletableFuture<DataContext> processAsync(DataContext context, Executor executor) {
-            methodHandle.invoke(unproxiedObject, context);
-            return CompletableFuture.completedFuture(null);
+            var response = methodHandle.invoke(unproxiedObject, context);
+            if (DataContext.class.isAssignableFrom(responseType)) {
+              return CompletableFuture.completedFuture((DataContext) response);
+            } else {
+              return CompletableFuture.completedFuture(null);
+            }
           }
         })
+        .write(writeEvent)
         .build();
   }
 

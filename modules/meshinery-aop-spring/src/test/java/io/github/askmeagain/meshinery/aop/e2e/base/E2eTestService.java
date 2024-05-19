@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.aop.e2e.base;
 
-import io.github.askmeagain.meshinery.aop.common.MeshineryReadTask;
+import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class E2eTestService {
 
-  @MeshineryReadTask
+  @MeshineryTaskBridge
   public void executeViaJob(TestContext context) {
     log.info("executed inside job? " + context.getId());
   }

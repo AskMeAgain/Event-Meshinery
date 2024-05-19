@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.connectors.kafka;
 
+import jakarta.validation.constraints.NotBlank;
 import java.util.Properties;
-import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")

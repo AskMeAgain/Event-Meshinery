@@ -1,6 +1,5 @@
 package io.github.askmeagain.meshinery.monitoring.config;
 
-import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.hooks.CustomizeStartupHook;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;

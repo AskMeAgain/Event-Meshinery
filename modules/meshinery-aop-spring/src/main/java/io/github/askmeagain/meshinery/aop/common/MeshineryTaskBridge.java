@@ -7,8 +7,10 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MeshineryReadTask {
+public @interface MeshineryTaskBridge {
 
   String event() default "-";
+
+  String write() default "-";
 
 }

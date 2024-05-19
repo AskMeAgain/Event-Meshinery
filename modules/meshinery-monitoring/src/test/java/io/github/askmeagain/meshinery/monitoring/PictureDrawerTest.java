@@ -5,7 +5,6 @@ import io.github.askmeagain.meshinery.monitoring.customizer.EdgeCustomizer;
 import io.github.askmeagain.meshinery.monitoring.customizer.GraphCustomizer;
 import io.github.askmeagain.meshinery.monitoring.customizer.NodeCustomizer;
 import io.github.askmeagain.meshinery.monitoring.generators.PictureGenerator;
-import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

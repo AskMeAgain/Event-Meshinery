@@ -2,7 +2,6 @@ package io.github.askmeagain.meshinery.monitoring;
 
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Gauge;
-import io.prometheus.client.Histogram;
 import io.prometheus.client.Summary;
 import io.prometheus.client.exporter.common.TextFormat;
 import java.io.ByteArrayOutputStream;

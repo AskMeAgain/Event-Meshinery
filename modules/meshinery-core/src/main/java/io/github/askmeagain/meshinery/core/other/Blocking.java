@@ -6,7 +6,6 @@ import java.util.concurrent.Semaphore;
 import java.util.function.Supplier;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")

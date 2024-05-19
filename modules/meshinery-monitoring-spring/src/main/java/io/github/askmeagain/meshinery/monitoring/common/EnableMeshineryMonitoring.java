@@ -1,10 +1,7 @@
 package io.github.askmeagain.meshinery.monitoring.common;
 
 import io.github.askmeagain.meshinery.core.MeshineryAutoConfiguration;
-import io.github.askmeagain.meshinery.monitoring.apis.DrawerApiController;
-import io.github.askmeagain.meshinery.monitoring.config.MeshineryDrawerConfiguration;
 import io.github.askmeagain.meshinery.monitoring.config.MeshineryMonitoringAutoConfiguration;
-import io.github.askmeagain.meshinery.monitoring.apis.MonitoringApiController;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
