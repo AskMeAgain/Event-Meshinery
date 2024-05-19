@@ -18,7 +18,7 @@ import org.jdbi.v3.core.Jdbi;
 public class PostgresInputSource<C extends DataContext> implements AccessingInputSource<String, C> {
 
   private static final String SELECT_QUERY = """
-      UPDATE <TABLE>
+      UPDATE <SCHEMA>.<TABLE>
       SET processed = true
       WHERE eid IN
       (
@@ -33,12 +33,12 @@ public class PostgresInputSource<C extends DataContext> implements AccessingInpu
       """;
 
   private static final String SPECIFIC_SELECT_QUERY = """
-      UPDATE <TABLE>
+      UPDATE <SCHEMA>.<TABLE>
       SET processed = true
       WHERE eid IN
       (
         SELECT eid
-        FROM <TABLE>
+        FROM <SCHEMA>.<TABLE>
         WHERE processed = false and id = :id and state = :state
         ORDER BY eid ASC
         FOR UPDATE SKIP LOCKED
@@ -79,6 +79,7 @@ public class PostgresInputSource<C extends DataContext> implements AccessingInpu
         () -> handle.createQuery(SPECIFIC_SELECT_QUERY)
             .bind("state", key)
             .define("TABLE", simpleName)
+            .define("SCHEMA", postgresProperties.getSchema())
             .bind("id", id)
             .mapToBean(InternalWrapper.class)
             .findFirst()
@@ -101,6 +102,7 @@ public class PostgresInputSource<C extends DataContext> implements AccessingInpu
         () -> {
           var result = handle.createQuery(SELECT_QUERY)
               .define("TABLE", clazz.getSimpleName())
+              .define("SCHEMA", postgresProperties.getSchema())
               .bindList("STATES", keys)
               .bind("limit", postgresProperties.getLimit())
               .mapToBean(InternalWrapper.class)

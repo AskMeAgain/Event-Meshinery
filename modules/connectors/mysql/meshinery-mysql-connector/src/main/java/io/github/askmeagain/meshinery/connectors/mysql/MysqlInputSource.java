@@ -20,7 +20,7 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
 
   private static final String SELECT_QUERY = """
       SELECT eid,context
-      FROM <TABLE>
+      FROM <SCHEMA>.<TABLE>
       WHERE processed = 0 AND state IN (<STATES>)
       ORDER BY eid ASC
       LIMIT :limit
@@ -28,7 +28,7 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
 
   private static final String SPECIFIC_SELECT_QUERY = """
       SELECT eid,context
-      FROM <TABLE>
+      FROM <SCHEMA>.<TABLE>
       WHERE processed = 0 and id = :id and state = :state
       LIMIT 1
       """;
@@ -66,6 +66,7 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
           var firstResult = handle.createQuery(SPECIFIC_SELECT_QUERY)
               .bind("state", key)
               .define("TABLE", simpleName)
+              .define("SCHEMA", mysqlProperties.getSchema())
               .bind("id", id)
               .mapToBean(InternalWrapper.class)
               .findFirst();
@@ -74,8 +75,9 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
             return Optional.empty();
           }
 
-          handle.createUpdate("UPDATE <TABLE> SET processed = 1 WHERE eid = :eid")
+          handle.createUpdate("UPDATE <SCHEMA>.<TABLE> SET processed = 1 WHERE eid = :eid")
               .define("TABLE", simpleName)
+              .define("SCHEMA", mysqlProperties.getSchema())
               .bind("eid", firstResult.get().getEid())
               .execute();
 
@@ -100,6 +102,7 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
         () -> {
           var result = handle.createQuery(SELECT_QUERY)
               .define("TABLE", clazz.getSimpleName())
+              .define("SCHEMA", mysqlProperties.getSchema())
               .bindList("STATES", keys)
               .bind("limit", mysqlProperties.getLimit())
               .mapToBean(InternalWrapper.class)
@@ -126,8 +129,9 @@ public class MysqlInputSource<C extends DataContext> implements AccessingInputSo
               .filter(Objects::nonNull)
               .toList();
 
-          handle.createUpdate("UPDATE <TABLE> SET processed = 1 WHERE eid IN (<LIST>)")
+          handle.createUpdate("UPDATE <SCHEMA>.<TABLE> SET processed = 1 WHERE eid IN (<LIST>)")
               .bindList("LIST", preparedIds)
+              .define("SCHEMA", mysqlProperties.getSchema())
               .define("TABLE", clazz.getSimpleName())
               .execute();
 

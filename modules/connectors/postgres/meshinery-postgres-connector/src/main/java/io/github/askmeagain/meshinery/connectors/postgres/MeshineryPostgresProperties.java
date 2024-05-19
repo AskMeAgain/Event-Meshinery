@@ -17,4 +17,6 @@ public class MeshineryPostgresProperties {
   String password;
   @NotBlank
   String connectionString;
+  @NotBlank
+  String schema;
 }

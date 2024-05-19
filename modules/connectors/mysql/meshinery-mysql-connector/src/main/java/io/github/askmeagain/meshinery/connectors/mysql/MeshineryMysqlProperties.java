@@ -17,4 +17,6 @@ public class MeshineryMysqlProperties {
   String password;
   @NotBlank
   String connectionString;
+  @NotBlank
+  String schema;
 }

@@ -2,7 +2,8 @@ package io.github.askmeagain.meshinery.connectors.mysql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -26,15 +27,17 @@ public class MeshineryMysqlConfiguration {
   }
 
   @Bean
-  @ConditionalOnMissingBean(ObjectMapper.class)
-  public ObjectMapper objectMapper() {
-    return new ObjectMapper();
-  }
-
-  @Bean
   @Validated
   @ConfigurationProperties("meshinery.connectors.mysql")
-  public MeshineryMysqlProperties mysqlProperties() {
-    return new MeshineryMysqlProperties();
+  public MeshineryMysqlProperties mysqlProperties(@Autowired(required = false) DataSourceProperties dataSource) {
+    var properties = new MeshineryMysqlProperties();
+
+    if (dataSource != null) {
+      properties.setConnectionString(dataSource.getUrl());
+      properties.setPassword(dataSource.getPassword());
+      properties.setUser(dataSource.getUsername());
+    }
+
+    return properties;
   }
 }

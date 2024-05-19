@@ -11,7 +11,7 @@ public class MeshineryMonitoringUtils {
   public static String convertLambdaProcessorName(Class<?> processorName) {
     var simpleName = processorName.getSimpleName();
 
-    if (simpleName.contains("$$Lambda$")) {
+    if (simpleName.contains("$$Lambda")) {
       return "lambda-" + processorName.hashCode();
     }
 
