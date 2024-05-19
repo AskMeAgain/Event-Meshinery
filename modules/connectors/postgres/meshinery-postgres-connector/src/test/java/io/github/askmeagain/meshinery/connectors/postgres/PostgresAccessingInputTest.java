@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AccessingInputTest extends AbstractPostgresTestBase {
+class PostgresAccessingInputTest extends AbstractPostgresTestBase {
 
   private static final String STATE = "Test";
 

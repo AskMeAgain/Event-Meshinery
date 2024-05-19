@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class InputTest extends AbstractPostgresTestBase {
+class PostgresInputTest extends AbstractPostgresTestBase {
 
   private static final String STATE = "Test";
 

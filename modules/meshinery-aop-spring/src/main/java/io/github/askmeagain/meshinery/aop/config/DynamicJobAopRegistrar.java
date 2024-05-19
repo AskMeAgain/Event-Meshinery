@@ -28,7 +28,7 @@ import org.springframework.core.ResolvableType;
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
-public class DynamicJobRegistrar implements BeanDefinitionRegistryPostProcessor {
+public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcessor {
 
   private final ApplicationContext applicationContext;
   private final ExecutorService executorService;

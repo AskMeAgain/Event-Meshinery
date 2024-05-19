@@ -13,13 +13,26 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 @ImportAutoConfiguration(MeshineryAutoConfiguration.class)
 public @interface EnableMeshinery {
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod") Class<? extends DataContext>[] injection() default {};
+  /**
+   * Creates an injection endpoint for this class
+   */
+  Class<? extends DataContext>[] injection() default {};
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod") KeyDataContext[] connector() default {};
+
+  /**
+   * Takes a list of keyvalue entries and creates a memory connector on startup
+   */
+  KeyDataContext[] connector() default {};
 
   @interface KeyDataContext {
-    @SuppressWarnings("checkstyle:MissingJavadocMethod") Class<? extends DataContext> context();
+    /**
+     * Context of the memory connector
+     */
+    Class<? extends DataContext> context();
 
-    @SuppressWarnings("checkstyle:MissingJavadocMethod") Class<?> key();
+    /**
+     * Key type of the memory connector
+     */
+    Class<?> key();
   }
 }

@@ -7,7 +7,7 @@ import org.springframework.boot.SpringApplication;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class MeshineryPostgresPropertyValidationTest extends AbstractLogTestBase {
+class PostgresPropertyValidationTest extends AbstractLogTestBase {
 
   @Test
   void testProperties(OutputCapture output) {
