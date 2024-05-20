@@ -26,6 +26,7 @@ public class DynamicMeshineryReadJobAspect {
     var annotation = method.getAnnotation(MeshineryTaskBridge.class);
     var arg = proceedingJoinPoint.getArgs()[0];
     var event = MeshineryAopUtils.calculateEventName(annotation, method, proceedingJoinPoint.getTarget());
+
     outputSource.writeOutput(event, (DataContext) arg, TaskData.ofPropertyList(annotation.properties()));
   }
 }

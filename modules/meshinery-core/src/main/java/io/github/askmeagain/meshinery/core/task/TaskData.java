@@ -1,9 +1,7 @@
 package io.github.askmeagain.meshinery.core.task;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,7 +23,7 @@ public class TaskData {
     var taskData = new TaskData();
     for (var kv : kvList) {
       var arr = kv.split("=");
-      taskData = taskData.put(arr[0], arr[1]);
+      taskData = taskData.with(arr[0], arr[1]);
     }
     return taskData;
   }
@@ -43,7 +41,7 @@ public class TaskData {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public TaskData put(String key, String value) {
+  public TaskData with(String key, String value) {
     var newProperties = new Properties();
     newProperties.putAll(properties);
     var list = (List<String>) newProperties.get(key);
@@ -70,17 +68,6 @@ public class TaskData {
     var newProperties = new Properties();
     newProperties.putAll(properties);
     return newProperties;
-  }
-
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public Map<String, Object> getAllWithPrefix(String prefix) {
-    var map = new HashMap<String, Object>();
-    properties.forEach((k, v) -> {
-      if (k.toString().startsWith(prefix)) {
-        map.put(k.toString(), v);
-      }
-    });
-    return map;
   }
 
   public List<String> get(String key) {

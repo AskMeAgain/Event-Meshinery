@@ -23,7 +23,7 @@ public class PropertyTaskInjection {
       if (coreProperties.getTaskProperties().containsKey(task.getTaskName())) {
         var newTaskData = Optional.ofNullable(task.getTaskData()).orElse(new TaskData());
         for (var kv : coreProperties.getTaskProperties().get(task.getTaskName()).entrySet()) {
-          newTaskData = newTaskData.put(kv.getKey(), kv.getValue());
+          newTaskData = newTaskData.with(kv.getKey(), kv.getValue());
         }
         newList.add(task.withTaskData(newTaskData));
       } else {

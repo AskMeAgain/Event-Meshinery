@@ -23,7 +23,7 @@ public class SignalingProcessor<K, C extends DataContext> implements MeshineryPr
 
   @Override
   public TaskData addToTaskData(TaskData taskData) {
-    return taskData.put(GRAPH_INPUT_KEY, key.toString());
+    return taskData.with(GRAPH_INPUT_KEY, key.toString());
   }
 
   @Override

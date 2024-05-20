@@ -77,7 +77,7 @@ public class CronInputSource<C extends DataContext> implements MeshineryConnecto
 
   @Override
   public TaskData addToTaskData(TaskData taskData) {
-    return taskData.put(TASK_IGNORE_DUPLICATE_READ_KEY, "1");
+    return taskData.with(TASK_IGNORE_DUPLICATE_READ_KEY, "1");
   }
 
   @Override

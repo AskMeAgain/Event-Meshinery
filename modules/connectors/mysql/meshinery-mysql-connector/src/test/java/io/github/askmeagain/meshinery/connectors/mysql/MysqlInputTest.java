@@ -58,7 +58,7 @@ class MysqlInputTest extends AbstractMysqlTestBase {
     output.writeOutput(STATE, value1);
     var result1 = input.getInputs(List.of(STATE));
 
-    TaskData.setTaskData(new TaskData().put(MeshineryMysqlProperties.MYSQL_OVERRIDE_EXISTING, ""));
+    TaskData.setTaskData(new TaskData().with(MeshineryMysqlProperties.MYSQL_OVERRIDE_EXISTING, ""));
     output.writeOutput(STATE, value2);
     var result2 = input.getInputs(List.of(STATE));
 

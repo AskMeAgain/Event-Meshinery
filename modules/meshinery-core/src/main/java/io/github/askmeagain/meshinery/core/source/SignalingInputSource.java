@@ -30,7 +30,7 @@ public class SignalingInputSource<K extends Comparable<K>, C extends DataContext
 
   @Override
   public TaskData addToTaskData(TaskData taskData) {
-    return taskData.put(GRAPH_INPUT_KEY, innerKey.toString());
+    return taskData.with(GRAPH_INPUT_KEY, innerKey.toString());
   }
 
   @Override

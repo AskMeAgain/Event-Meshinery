@@ -19,7 +19,7 @@ class MonitoringTest {
   @Test
   void testMonitoringDecorator() {
     //Arrange ----------------------------------------------------------------------------------------------------------
-    TaskData.setTaskData(new TaskData().put(TASK_NAME, TASK_NAME_VALUE));
+    TaskData.setTaskData(new TaskData().with(TASK_NAME, TASK_NAME_VALUE));
     MDC.put("", "");
     var decorator = new ProcessorTimingDecorator<TestContext, TestContext>();
     var simpleProcessor = new TestContextProcessor(0);
