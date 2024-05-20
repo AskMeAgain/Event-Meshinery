@@ -9,6 +9,7 @@ import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -84,6 +85,7 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
     var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
 
     var annotation = methodHandle.getAnnotation(MeshineryTaskBridge.class);
+    var properties = annotation.properties();
     var readEvent = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
     var writeEvent = annotation.write().equals("-") ? new String[0] : new String[]{annotation.write()};
 
@@ -96,7 +98,8 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
 
     return MeshineryTaskFactory.<String, DataContext>builder()
         .connector(provider.getObject())
-        .taskName("dynamic-job-" + readEvent.toLowerCase())
+        .taskName(annotation.taskName().equals("-") ? "dynamic-job-" + readEvent.toLowerCase() : annotation.taskName())
+        .putData(List.of(properties))
         .read(executorService, readEvent)
         .process(new MeshineryProcessor<>() {
           @SneakyThrows

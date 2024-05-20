@@ -36,6 +36,7 @@ public class MeshineryMysqlConfiguration {
       properties.setConnectionString(dataSource.getUrl());
       properties.setPassword(dataSource.getPassword());
       properties.setUser(dataSource.getUsername());
+      properties.setSchema(dataSource.getName());
     }
 
     return properties;

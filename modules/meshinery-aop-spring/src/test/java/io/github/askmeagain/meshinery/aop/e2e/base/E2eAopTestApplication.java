@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.aop.e2e.base;
 
-import io.github.askmeagain.meshinery.aop.EnableMeshineryAop;
+import io.github.askmeagain.meshinery.aop.common.EnableMeshineryAop;
 import io.github.askmeagain.meshinery.core.EnableMeshinery;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

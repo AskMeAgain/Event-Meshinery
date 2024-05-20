@@ -3,7 +3,7 @@ package io.github.askmeagain.meshinery.aop.aspect;
 import io.github.askmeagain.meshinery.aop.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
 import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.OutputSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -16,7 +16,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 @RequiredArgsConstructor
 public class DynamicMeshineryReadJobAspect {
 
-  private final MeshineryConnector<String, DataContext> connector;
+  private final OutputSource<String, DataContext> outputSource;
 
   @Around("@annotation(io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge)")
   public void writeToConnectorAspect(ProceedingJoinPoint proceedingJoinPoint) {
@@ -25,6 +25,6 @@ public class DynamicMeshineryReadJobAspect {
     var annotation = method.getAnnotation(MeshineryTaskBridge.class);
     var arg = proceedingJoinPoint.getArgs()[0];
     var event = MeshineryAopUtils.calculateEventName(annotation, method, proceedingJoinPoint.getTarget());
-    connector.writeOutput(event, (DataContext) arg);
+    outputSource.writeOutput(event, (DataContext) arg);
   }
 }

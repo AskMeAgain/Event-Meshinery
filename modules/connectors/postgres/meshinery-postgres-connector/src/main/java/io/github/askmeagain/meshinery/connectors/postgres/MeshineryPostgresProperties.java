@@ -18,5 +18,5 @@ public class MeshineryPostgresProperties {
   @NotBlank
   String connectionString;
   @NotBlank
-  String schema;
+  String schema = "public";
 }

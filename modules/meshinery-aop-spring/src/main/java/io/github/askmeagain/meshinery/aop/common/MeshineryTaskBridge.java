@@ -13,4 +13,8 @@ public @interface MeshineryTaskBridge {
 
   String write() default "-";
 
+  String taskName() default "-";
+
+  String[] properties() default {};
+
 }

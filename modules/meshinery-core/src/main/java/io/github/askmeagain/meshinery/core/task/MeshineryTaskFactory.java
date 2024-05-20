@@ -130,6 +130,17 @@ public class MeshineryTaskFactory<K, C extends DataContext> {
         .build();
   }
 
+  public MeshineryTaskFactory<K, C> putData(List<String> kvs) {
+    for (var kv : kvs) {
+      var arr = kv.split("=");
+      taskData = taskData.put(arr[0], arr[1]);
+    }
+
+    return toBuilder()
+        .taskData(taskData)
+        .build();
+  }
+
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTaskFactory<K, C> putData(String key) {
     return putData(key, "1");

@@ -1,5 +1,6 @@
-package io.github.askmeagain.meshinery.aop;
+package io.github.askmeagain.meshinery.aop.common;
 
+import io.github.askmeagain.meshinery.aop.MeshineryAopAutoConfiguration;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

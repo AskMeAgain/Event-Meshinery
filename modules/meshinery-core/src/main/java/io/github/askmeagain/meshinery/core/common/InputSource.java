@@ -16,6 +16,10 @@ public interface InputSource<K, I extends DataContext> {
 
   List<I> getInputs(List<K> key);
 
+  /**
+   * Each source can add their own properties to task data. For example to color the graphs etc.
+   * By default we just do pass through
+   */
   default TaskData addToTaskData(TaskData taskData) {
     return taskData;
   }
