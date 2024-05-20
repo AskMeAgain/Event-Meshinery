@@ -62,7 +62,7 @@ class ExceptionHandlingTest {
     assertThat(batchJobFinished).isTrue();
 
     Mockito.verify(mockInputSource, Mockito.atLeast(ITERATIONS)).getInputs(eq(List.of(KEY)));
-    Mockito.verify(mockOutputSource, Mockito.never()).writeOutput(any(), any());
+    Mockito.verify(mockOutputSource, Mockito.never()).writeOutput(any(), any(), any());
   }
 
 
@@ -103,6 +103,6 @@ class ExceptionHandlingTest {
     assertThat(batchJobFinished).isTrue();
 
     Mockito.verify(mockInputSource, Mockito.atLeast(ITERATIONS)).getInputs(eq(List.of(KEY)));
-    Mockito.verify(mockOutputSource).writeOutput(any(), eq(EXPECTED));
+    Mockito.verify(mockOutputSource).writeOutput(any(), eq(EXPECTED), any());
   }
 }

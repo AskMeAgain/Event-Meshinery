@@ -46,6 +46,6 @@ class BatchJobTest {
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
-    Mockito.verify(mockOutputSource, Mockito.times(ITERATIONS)).writeOutput(eq(""), any());
+    Mockito.verify(mockOutputSource, Mockito.times(ITERATIONS)).writeOutput(eq(""), any(), any());
   }
 }

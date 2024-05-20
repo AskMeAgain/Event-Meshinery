@@ -2,6 +2,7 @@ package io.github.askmeagain.meshinery.connectors.mysql;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -44,8 +45,8 @@ public class MysqlOutputSource<C extends DataContext> implements OutputSource<St
 
   @Override
   @SneakyThrows
-  public void writeOutput(String key, C output) {
-    var insertOverride = getTaskData().has(MeshineryMysqlProperties.MYSQL_OVERRIDE_EXISTING);
+  public void writeOutput(String key, C output, TaskData taskData) {
+    var insertOverride = taskData.has(MeshineryMysqlProperties.MYSQL_OVERRIDE_EXISTING);
     var insertStatement = insertOverride ? OVERRIDE : INSERT;
 
     jdbi.useHandle(h -> h.createUpdate(insertStatement)

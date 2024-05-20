@@ -14,14 +14,16 @@ import java.util.function.Predicate;
  * @param <K> KeyType
  * @param <C> ContextType
  */
-public record DynamicOutputProcessor<K, C extends DataContext>(Predicate<C> writeIf, Function<C, K> keyMethod,
-    MeshineryConnector<K, C> outputSource) implements MeshineryProcessor<C, C> {
+public record DynamicOutputProcessor<K, C extends DataContext>(
+    Predicate<C> writeIf,
+    Function<C, K> keyMethod,
+    MeshineryConnector<K, C> outputSource
+) implements MeshineryProcessor<C, C> {
 
   @Override
   public CompletableFuture<C> processAsync(C context, Executor executor) {
-
     if (writeIf.test(context)) {
-      outputSource.writeOutput(keyMethod.apply(context), context);
+      outputSource.writeOutput(keyMethod.apply(context), context, getTaskData());
     }
 
     return CompletableFuture.completedFuture(context);

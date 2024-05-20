@@ -4,6 +4,7 @@ import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.other.Blocking;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -63,8 +64,7 @@ public class MemoryConnector<K, C extends DataContext> implements AccessingInput
   }
 
   @Override
-  public void writeOutput(K key, C output) {
-
+  public void writeOutput(K key, C output, TaskData unused) {
     if (map.containsKey(key)) {
       map.get(key).put(output.getId(), output);
     } else {

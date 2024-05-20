@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.core.utils.sources;
 
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
 import lombok.Getter;
@@ -10,7 +11,7 @@ public class TestOutputSource implements MeshineryConnector<String, TestContext>
   private final String name = "null";
 
   @Override
-  public void writeOutput(String key, TestContext output) {
+  public void writeOutput(String key, TestContext output, TaskData taskData) {
   }
 
   @Override

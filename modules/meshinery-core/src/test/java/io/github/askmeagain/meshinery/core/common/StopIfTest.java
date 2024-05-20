@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 class StopIfTest {
@@ -47,6 +48,6 @@ class StopIfTest {
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
-    Mockito.verify(outputSource).writeOutput(eq(KEY), eq(EXPECTED));
+    Mockito.verify(outputSource).writeOutput(eq(KEY), eq(EXPECTED), any());
   }
 }

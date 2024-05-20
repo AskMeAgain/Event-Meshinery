@@ -53,7 +53,7 @@ class SimpleParallelizationTest extends AbstractTestBase {
 
     //Assert ----------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
-    Mockito.verify(outputSource).writeOutput(eq(KEY), any());
+    Mockito.verify(outputSource).writeOutput(eq(KEY), any(), any());
 
   }
 }

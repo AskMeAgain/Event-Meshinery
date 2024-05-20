@@ -6,6 +6,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
@@ -72,8 +73,8 @@ public class MysqlConnector<C extends DataContext> implements AccessingInputSour
   }
 
   @Override
-  public void writeOutput(String key, C output) {
-    mysqlOutputSource.writeOutput(key, output);
+  public void writeOutput(String key, C output, TaskData taskData) {
+    mysqlOutputSource.writeOutput(key, output, taskData);
   }
 
   @Override

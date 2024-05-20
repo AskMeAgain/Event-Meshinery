@@ -4,6 +4,7 @@ import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
 import java.util.List;
 import lombok.AccessLevel;
@@ -41,7 +42,7 @@ public class InputSourceTimingDecoratorFactory implements InputSourceDecoratorFa
     }
 
     @Override
-    public void writeOutput(Object key, DataContext output) {
+    public void writeOutput(Object key, DataContext output, TaskData taskData) {
       throw new UnsupportedOperationException("This is not supported");
     }
   }

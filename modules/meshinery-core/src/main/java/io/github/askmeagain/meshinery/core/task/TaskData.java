@@ -21,6 +21,15 @@ public class TaskData {
   @With(AccessLevel.PRIVATE)
   private Properties properties = new Properties();
 
+  public static TaskData ofPropertyList(String[] kvList) {
+    var taskData = new TaskData();
+    for (var kv : kvList) {
+      var arr = kv.split("=");
+      taskData = taskData.put(arr[0], arr[1]);
+    }
+    return taskData;
+  }
+
   public static TaskData getTaskData() {
     return taskData.get();
   }

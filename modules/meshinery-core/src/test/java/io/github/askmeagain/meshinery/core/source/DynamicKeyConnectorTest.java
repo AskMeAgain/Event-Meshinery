@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 class DynamicKeyConnectorTest {
@@ -56,6 +57,6 @@ class DynamicKeyConnectorTest {
     var batchJobFinished = executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
-    Mockito.verify(innerOutputMock).writeOutput(eq("result"), eq(innerContext));
+    Mockito.verify(innerOutputMock).writeOutput(eq("result"), eq(innerContext), any());
   }
 }

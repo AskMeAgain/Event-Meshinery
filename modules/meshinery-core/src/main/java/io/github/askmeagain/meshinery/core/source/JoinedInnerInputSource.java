@@ -2,6 +2,7 @@ package io.github.askmeagain.meshinery.core.source;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -105,7 +106,7 @@ public class JoinedInnerInputSource<K, C extends DataContext> implements Meshine
   }
 
   @Override
-  public void writeOutput(K key, C output) {
+  public void writeOutput(K key, C output, TaskData taskData) {
     throw new UnsupportedOperationException();
   }
 }

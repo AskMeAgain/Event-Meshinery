@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaProducerFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -22,7 +23,7 @@ public class KafkaOutputSource<C extends DataContext> implements OutputSource<St
 
   @Override
   @SneakyThrows
-  public void writeOutput(String topic, C output) {
+  public void writeOutput(String topic, C output, TaskData unused) {
     var key = output.getId();
     var value = objectMapper.writeValueAsBytes(output);
 

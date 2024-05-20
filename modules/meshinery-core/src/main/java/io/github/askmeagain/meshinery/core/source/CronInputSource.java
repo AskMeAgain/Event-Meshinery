@@ -81,7 +81,7 @@ public class CronInputSource<C extends DataContext> implements MeshineryConnecto
   }
 
   @Override
-  public void writeOutput(String key, C output) {
+  public void writeOutput(String key, C output, TaskData taskData) {
     throw new UnsupportedOperationException();
   }
 

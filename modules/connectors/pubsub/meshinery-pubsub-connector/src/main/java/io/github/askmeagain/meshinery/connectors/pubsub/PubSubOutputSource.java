@@ -8,6 +8,7 @@ import com.google.pubsub.v1.PubsubMessage;
 import io.github.askmeagain.meshinery.connectors.pubsub.factories.PubSubProducerFactory;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,7 @@ public class PubSubOutputSource<C extends DataContext> implements OutputSource<S
 
   @Override
   @SneakyThrows
-  public void writeOutput(String key, C output) {
+  public void writeOutput(String key, C output, TaskData taskData) {
     var data = objectMapper.writeValueAsBytes(output);
     var pubsubMessage = PubsubMessage.newBuilder()
         .setData(ByteString.copyFrom(data))

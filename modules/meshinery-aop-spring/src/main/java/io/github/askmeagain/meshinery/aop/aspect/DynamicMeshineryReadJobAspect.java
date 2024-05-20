@@ -4,6 +4,7 @@ import io.github.askmeagain.meshinery.aop.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -25,6 +26,6 @@ public class DynamicMeshineryReadJobAspect {
     var annotation = method.getAnnotation(MeshineryTaskBridge.class);
     var arg = proceedingJoinPoint.getArgs()[0];
     var event = MeshineryAopUtils.calculateEventName(annotation, method, proceedingJoinPoint.getTarget());
-    outputSource.writeOutput(event, (DataContext) arg);
+    outputSource.writeOutput(event, (DataContext) arg, TaskData.ofPropertyList(annotation.properties()));
   }
 }

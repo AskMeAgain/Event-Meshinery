@@ -4,6 +4,7 @@ import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
@@ -34,7 +35,7 @@ public class DynamicKeyConnector<K, C extends DataContext> implements MeshineryC
 
 
   @Override
-  public void writeOutput(K key, C output) {
-    innerOutputSource.writeOutput(key, output);
+  public void writeOutput(K key, C output, TaskData taskData) {
+    innerOutputSource.writeOutput(key, output, taskData);
   }
 }

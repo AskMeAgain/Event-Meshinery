@@ -48,8 +48,8 @@ class WriteTest {
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
-    Mockito.verify(memoryConnector).writeOutput(eq("abc2"), eq(context));
-    Mockito.verify(memoryConnector, Mockito.never()).writeOutput(eq("abc"), eq(context));
+    Mockito.verify(memoryConnector).writeOutput(eq("abc2"), eq(context), any());
+    Mockito.verify(memoryConnector, Mockito.never()).writeOutput(eq("abc"), eq(context), any());
   }
 
   @Test
@@ -84,7 +84,7 @@ class WriteTest {
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
 
-    Mockito.verify(mockOutputSource).writeOutput(any(), any());
-    Mockito.verify(defaultOutputSource, Mockito.times(2)).writeOutput(any(), any());
+    Mockito.verify(mockOutputSource).writeOutput(any(), any(), any());
+    Mockito.verify(defaultOutputSource, Mockito.times(2)).writeOutput(any(), any(), any());
   }
 }

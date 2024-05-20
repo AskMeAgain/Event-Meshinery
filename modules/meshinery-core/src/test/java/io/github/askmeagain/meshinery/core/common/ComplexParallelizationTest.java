@@ -17,6 +17,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 class ComplexParallelizationTest extends AbstractTestBase {
@@ -57,7 +58,7 @@ class ComplexParallelizationTest extends AbstractTestBase {
 
     //Assert ----------------------------------------------------------------------------------
     var argumentCapture = ArgumentCaptor.forClass(TestContext.class);
-    Mockito.verify(outputMock).writeOutput(eq(""), argumentCapture.capture());
+    Mockito.verify(outputMock).writeOutput(eq(""), argumentCapture.capture(), any());
     assertThat(batchJobFinished).isTrue();
     assertThat(argumentCapture.getValue())
         .extracting(TestContext::getIndex)

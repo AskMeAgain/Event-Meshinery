@@ -96,7 +96,6 @@ class ShutdownTest extends AbstractTestBase {
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(isShutdown).isTrue();
-    Mockito.verify(outputSource, times(counter.get())).writeOutput(any(), any());
+    Mockito.verify(outputSource, times(counter.get())).writeOutput(any(), any(), any());
   }
-
 }

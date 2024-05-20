@@ -5,6 +5,7 @@ import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.rpc.TransportChannelProvider;
 import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.PubSubNameResolver;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -69,8 +70,8 @@ public class PubSubConnector<C extends PubSubContext> implements MeshineryConnec
   }
 
   @Override
-  public void writeOutput(String key, C output) {
-    pubsubOutputSource.writeOutput(key, output);
+  public void writeOutput(String key, C output, TaskData taskData) {
+    pubsubOutputSource.writeOutput(key, output, taskData);
   }
 
   @Override

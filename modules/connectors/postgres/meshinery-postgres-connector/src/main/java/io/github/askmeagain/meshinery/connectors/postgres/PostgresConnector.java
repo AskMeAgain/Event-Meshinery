@@ -6,6 +6,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
@@ -72,8 +73,8 @@ public class PostgresConnector<C extends DataContext> implements AccessingInputS
   }
 
   @Override
-  public void writeOutput(String key, C output) {
-    postgresOutputSource.writeOutput(key, output);
+  public void writeOutput(String key, C output, TaskData taskData) {
+    postgresOutputSource.writeOutput(key, output, taskData);
   }
 
   @Override

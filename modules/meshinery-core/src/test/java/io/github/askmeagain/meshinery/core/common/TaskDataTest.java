@@ -57,7 +57,7 @@ class TaskDataTest extends AbstractTestBase {
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
-    Mockito.verify(defaultOutput).writeOutput(any(), eq(expected));
+    Mockito.verify(defaultOutput).writeOutput(any(), eq(expected), any());
 
   }
 }

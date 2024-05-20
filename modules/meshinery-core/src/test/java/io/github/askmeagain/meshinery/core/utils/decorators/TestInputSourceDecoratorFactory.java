@@ -4,6 +4,7 @@ import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class TestInputSourceDecoratorFactory implements InputSourceDecoratorFact
     }
 
     @Override
-    public void writeOutput(Object key, DataContext output) {
+    public void writeOutput(Object key, DataContext output, TaskData taskData) {
       throw new UnsupportedOperationException();
     }
 

@@ -7,6 +7,7 @@ import io.github.askmeagain.meshinery.connectors.kafka.source.KafkaInputSource;
 import io.github.askmeagain.meshinery.connectors.kafka.source.KafkaOutputSource;
 import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.List;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -58,8 +59,8 @@ public class KafkaConnector<C extends DataContext> implements MeshineryConnector
   }
 
   @Override
-  public void writeOutput(String key, C output) {
-    this.outputSource.writeOutput(key, output);
+  public void writeOutput(String key, C output, TaskData taskData) {
+    this.outputSource.writeOutput(key, output, taskData);
   }
 
   @Override

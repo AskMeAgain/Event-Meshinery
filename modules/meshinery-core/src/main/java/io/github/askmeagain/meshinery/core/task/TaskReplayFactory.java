@@ -85,7 +85,7 @@ public class TaskReplayFactory {
     MeshineryTask<Object, C> task = getMeshineryTask(replacedTaskName);
 
     var inputKeys = task.getInputKeys();
-    task.getInputConnector().writeOutput(inputKeys.get(0), context);
+    task.getInputConnector().writeOutput(inputKeys.get(0), context, new TaskData());
 
     MDC.clear();
   }

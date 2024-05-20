@@ -77,10 +77,11 @@ class SignalingProcessorTest {
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
-    Mockito.verify(outputSource, Mockito.times(expectedSignalingExecutions)).writeOutput(any(), eq(signalContext));
+    Mockito.verify(outputSource, Mockito.times(expectedSignalingExecutions))
+        .writeOutput(any(), eq(signalContext), any());
     Mockito.verify(outputSource, Mockito.times(expectedContextExecutions))
-        .writeOutput(any(), eq(new TestContext(1).withIndex(0)));
-    Mockito.verify(outputSource, Mockito.never()).writeOutput(any(), eq(new TestContext(0)));
+        .writeOutput(any(), eq(new TestContext(1).withIndex(0)), any());
+    Mockito.verify(outputSource, Mockito.never()).writeOutput(any(), eq(new TestContext(0)), any());
   }
 
 }

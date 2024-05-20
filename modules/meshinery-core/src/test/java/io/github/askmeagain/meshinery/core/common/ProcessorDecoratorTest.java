@@ -65,7 +65,7 @@ class ProcessorDecoratorTest {
     Mockito.verify(mockOutputSource).writeOutput(any(), eq(TestContext.builder()
         .id("2")
         .index(3)
-        .build()));
+        .build()), any());
 
   }
 
@@ -112,7 +112,7 @@ class ProcessorDecoratorTest {
     Mockito.verify(mockOutputSource).writeOutput(any(), eq(TestContext.builder()
         .id("2")
         .index(2)
-        .build()));
+        .build()), any());
 
   }
 

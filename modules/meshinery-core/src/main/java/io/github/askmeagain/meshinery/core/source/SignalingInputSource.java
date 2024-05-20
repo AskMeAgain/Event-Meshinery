@@ -66,7 +66,7 @@ public class SignalingInputSource<K extends Comparable<K>, C extends DataContext
   }
 
   @Override
-  public void writeOutput(K key, C output) {
+  public void writeOutput(K key, C output, TaskData taskData) {
     throw new UnsupportedOperationException();
   }
 }
