@@ -3,7 +3,7 @@ package io.github.askmeagain.meshinery.core.common;
 /**
  * Context interface. Each context needs to have a unique id.
  */
-public interface DataContext {
+public interface MeshineryDataContext {
 
   /**
    * unique id of the context.

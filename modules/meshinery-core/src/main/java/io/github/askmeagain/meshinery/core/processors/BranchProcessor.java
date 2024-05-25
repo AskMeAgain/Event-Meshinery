@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core.processors;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,12 @@ import lombok.RequiredArgsConstructor;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class BranchProcessor<C extends DataContext> implements MeshineryProcessor<C, C> {
+public class BranchProcessor<C extends MeshineryDataContext> implements MeshineryProcessor<C, C> {
 
   private final List<MeshineryProcessor<C, C>> processorList;
   private final List<Predicate<C>> predicateList;
 
-  public static <C extends DataContext> BranchProcessor<C> builder() {
+  public static <C extends MeshineryDataContext> BranchProcessor<C> builder() {
     return new BranchProcessor<>(new ArrayList<>(), new ArrayList<>());
   }
 

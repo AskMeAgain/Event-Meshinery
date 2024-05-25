@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.core.task;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.exceptions.OutputSourceMissingException;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import java.util.List;
@@ -21,7 +21,7 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_N
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class TaskReplayFactory {
 
-  private final Map<String, MeshineryTask<?, ? extends DataContext>> taskMap;
+  private final Map<String, MeshineryTask<?, ? extends MeshineryDataContext>> taskMap;
   private final ExecutorService executorService;
 
   /**
@@ -30,7 +30,9 @@ public class TaskReplayFactory {
    * @param tasks           list of tasks to choose from
    * @param executorService the executorService which should be used
    */
-  public TaskReplayFactory(List<MeshineryTask<?, ? extends DataContext>> tasks, ExecutorService executorService) {
+  public TaskReplayFactory(
+      List<MeshineryTask<?, ? extends MeshineryDataContext>> tasks, ExecutorService executorService
+  ) {
     this.executorService = executorService;
     this.taskMap = tasks.stream()
         .collect(Collectors.toMap(MeshineryTask::getTaskName, Function.identity()));
@@ -45,7 +47,7 @@ public class TaskReplayFactory {
    * @throws ExecutionException   throws execution exception
    * @throws InterruptedException throws interrupted exception
    */
-  public <C extends DataContext> DataContext injectData(String taskName, C context)
+  public <C extends MeshineryDataContext> MeshineryDataContext injectData(String taskName, C context)
       throws ExecutionException, InterruptedException, MeshineryTaskNotFoundException {
 
     var result = createTaskInjection(taskName, context).get();
@@ -62,7 +64,7 @@ public class TaskReplayFactory {
    * @param context  to use
    * @param <C>      type of the context
    */
-  public <C extends DataContext> CompletableFuture<C> injectDataAsync(String taskName, C context)
+  public <C extends MeshineryDataContext> CompletableFuture<C> injectDataAsync(String taskName, C context)
       throws MeshineryTaskNotFoundException {
 
     MDC.put(TASK_NAME, taskName);
@@ -77,7 +79,8 @@ public class TaskReplayFactory {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public <C extends DataContext> void replayData(String taskName, C context) throws MeshineryTaskNotFoundException {
+  public <C extends MeshineryDataContext> void replayData(String taskName, C context)
+      throws MeshineryTaskNotFoundException {
     var replacedTaskName = taskName.replace('_', ' ');
 
     MDC.put(TASK_NAME, replacedTaskName);
@@ -88,17 +91,17 @@ public class TaskReplayFactory {
 
     var inputKeys = task.getInputKeys();
 
-    if (!MeshineryConnector.class.isAssignableFrom(task.getInputConnector().getClass())) {
+    if (!MeshinerySourceConnector.class.isAssignableFrom(task.getInputConnector().getClass())) {
       throw new OutputSourceMissingException("Cant replay task since the output source of the input source is unknown");
     }
 
-    var inputConnector = (MeshineryConnector) task.getInputConnector();
+    var inputConnector = (MeshinerySourceConnector) task.getInputConnector();
     inputConnector.writeOutput(inputKeys.get(0), context, new TaskData());
 
     MDC.clear();
   }
 
-  private <C extends DataContext> MeshineryTask<Object, C> getMeshineryTask(String replacedTaskName)
+  private <C extends MeshineryDataContext> MeshineryTask<Object, C> getMeshineryTask(String replacedTaskName)
       throws MeshineryTaskNotFoundException {
     if (!taskMap.containsKey(replacedTaskName)) {
       throw new MeshineryTaskNotFoundException("Could not find Task with name '%s' in [%s]"
@@ -108,7 +111,7 @@ public class TaskReplayFactory {
     return (MeshineryTask<Object, C>) taskMap.get(replacedTaskName);
   }
 
-  private <C extends DataContext> CompletableFuture<C> createTaskInjection(String taskName, C context)
+  private <C extends MeshineryDataContext> CompletableFuture<C> createTaskInjection(String taskName, C context)
       throws MeshineryTaskNotFoundException {
 
     var replacedTaskName = taskName.replace('_', ' ');

@@ -1,8 +1,8 @@
 package io.github.askmeagain.meshinery.connectors.pubsub;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 
-public interface PubSubContext extends DataContext {
+public interface PubSubContext extends MeshineryDataContext {
 
   String getAckId();
 

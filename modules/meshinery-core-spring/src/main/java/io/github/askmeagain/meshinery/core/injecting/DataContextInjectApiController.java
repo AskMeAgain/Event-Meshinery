@@ -2,7 +2,7 @@ package io.github.askmeagain.meshinery.core.injecting;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.EnableMeshinery;
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import jakarta.annotation.PostConstruct;
@@ -69,7 +69,7 @@ public class DataContextInjectApiController {
       @RequestBody String context
   ) {
     try {
-      var entity = (DataContext) objectMapper.readValue(context, classMap.get(contextType));
+      var entity = (MeshineryDataContext) objectMapper.readValue(context, classMap.get(contextType));
       var resultBody = taskReplayFactory.injectData(taskName, entity);
 
       return ResponseEntity.ok(objectMapper.writeValueAsString(resultBody));
@@ -87,7 +87,7 @@ public class DataContextInjectApiController {
       @RequestBody String context
   ) {
     try {
-      var entity = (DataContext) objectMapper.readValue(context, classMap.get(contextType));
+      var entity = (MeshineryDataContext) objectMapper.readValue(context, classMap.get(contextType));
       taskReplayFactory.injectDataAsync(taskName, entity);
 
       return ResponseEntity.accepted().body("Accepted");
@@ -105,7 +105,7 @@ public class DataContextInjectApiController {
       @RequestBody String context
   ) {
     try {
-      var entity = (DataContext) objectMapper.readValue(context, classMap.get(contextType));
+      var entity = (MeshineryDataContext) objectMapper.readValue(context, classMap.get(contextType));
       taskReplayFactory.replayData(taskName, entity);
 
       return ResponseEntity.accepted().body("Accepted");

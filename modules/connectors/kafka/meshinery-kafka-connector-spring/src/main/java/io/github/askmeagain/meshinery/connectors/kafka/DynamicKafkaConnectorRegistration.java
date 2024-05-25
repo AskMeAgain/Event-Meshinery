@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.connectors.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeansException;
@@ -21,11 +21,11 @@ public class DynamicKafkaConnectorRegistration implements BeanDefinitionRegistry
   private final ObjectMapper objectMapper;
   private final ObjectProvider<MeshineryKafkaProperties> meshineryKafkaProperties;
 
-  private static ResolvableType getTargetType(Class<? extends DataContext> clazz) {
+  private static ResolvableType getTargetType(Class<? extends MeshineryDataContext> clazz) {
     return ResolvableType.forClassWithGenerics(KafkaConnector.class, clazz);
   }
 
-  private static String getBeanName(Class<? extends DataContext> clazz) {
+  private static String getBeanName(Class<? extends MeshineryDataContext> clazz) {
     return clazz.getSimpleName() + "-auto-generated-kafka-connector-bean";
   }
 

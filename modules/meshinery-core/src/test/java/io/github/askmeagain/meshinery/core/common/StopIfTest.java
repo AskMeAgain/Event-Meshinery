@@ -22,7 +22,7 @@ class StopIfTest {
   @SuppressWarnings("unchecked")
   void testStopIf() throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
-    MeshineryConnector<String, TestContext> outputSource = Mockito.mock(MeshineryConnector.class);
+    MeshinerySourceConnector<String, TestContext> outputSource = Mockito.mock(MeshinerySourceConnector.class);
 
     var inputSource = TestInputSource.<TestContext>builder()
         .todo(new TestContext(0))

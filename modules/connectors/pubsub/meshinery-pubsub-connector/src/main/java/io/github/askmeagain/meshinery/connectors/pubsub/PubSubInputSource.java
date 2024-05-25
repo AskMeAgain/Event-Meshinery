@@ -11,7 +11,7 @@ import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PullRequest;
 import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.PubSubNameResolver;
-import io.github.askmeagain.meshinery.core.common.InputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class PubSubInputSource<C extends PubSubContext> implements InputSource<String, C> {
+public class PubSubInputSource<C extends PubSubContext> implements MeshineryInputSource<String, C> {
 
   @Getter
   private final String name;

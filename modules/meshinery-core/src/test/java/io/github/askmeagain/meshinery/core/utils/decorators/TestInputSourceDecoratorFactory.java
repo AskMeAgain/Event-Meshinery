@@ -1,9 +1,9 @@
 package io.github.askmeagain.meshinery.core.utils.decorators;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
+import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,14 +16,17 @@ public class TestInputSourceDecoratorFactory implements InputSourceDecoratorFact
   private final AtomicInteger atomicInteger;
 
   @Override
-  public MeshineryConnector<?, DataContext> decorate(InputSource<?, ? extends DataContext> inputConnector) {
-    return new TestConnectorDecorator((MeshineryConnector<Object, DataContext>) inputConnector, atomicInteger);
+  public MeshinerySourceConnector<?, MeshineryDataContext> decorate(
+      MeshineryInputSource<?, ? extends MeshineryDataContext> inputConnector
+  ) {
+    return new TestConnectorDecorator(
+        (MeshinerySourceConnector<Object, MeshineryDataContext>) inputConnector, atomicInteger);
   }
 
   @RequiredArgsConstructor
-  public static class TestConnectorDecorator implements MeshineryConnector<Object, DataContext> {
+  public static class TestConnectorDecorator implements MeshinerySourceConnector<Object, MeshineryDataContext> {
 
-    private final InputSource<Object, DataContext> innerInputSource;
+    private final MeshineryInputSource<Object, MeshineryDataContext> innerInputSource;
     private final AtomicInteger atomicInteger;
 
     @Override
@@ -32,12 +35,12 @@ public class TestInputSourceDecoratorFactory implements InputSourceDecoratorFact
     }
 
     @Override
-    public void writeOutput(Object key, DataContext output, TaskData taskData) {
+    public void writeOutput(Object key, MeshineryDataContext output, TaskData taskData) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<DataContext> getInputs(List<Object> key) {
+    public List<MeshineryDataContext> getInputs(List<Object> key) {
       atomicInteger.addAndGet(key.size());
       return innerInputSource.getInputs(key);
     }

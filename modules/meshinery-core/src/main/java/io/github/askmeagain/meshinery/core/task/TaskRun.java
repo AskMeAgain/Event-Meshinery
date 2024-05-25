@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core.task;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import java.time.Instant;
@@ -24,12 +24,12 @@ public class TaskRun {
   String taskName;
 
   @With
-  CompletableFuture<DataContext> future;
+  CompletableFuture<MeshineryDataContext> future;
 
   DataInjectingExecutorService executorService;
 
-  Queue<MeshineryProcessor<DataContext, DataContext>> queue;
+  Queue<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> queue;
 
-  Function<Throwable, DataContext> handleError;
+  Function<Throwable, MeshineryDataContext> handleError;
   TaskData taskData;
 }

@@ -2,8 +2,8 @@ package io.github.askmeagain.meshinery.aop.aspect;
 
 import io.github.askmeagain.meshinery.aop.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 @RequiredArgsConstructor
 public class DynamicMeshineryReadJobAspect {
 
-  private final OutputSource<String, DataContext> outputSource;
+  private final MeshineryOutputSource<String, MeshineryDataContext> outputSource;
 
   @Around("@annotation(io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge)")
   public void writeToConnectorAspect(ProceedingJoinPoint proceedingJoinPoint) {
@@ -27,6 +27,6 @@ public class DynamicMeshineryReadJobAspect {
     var arg = proceedingJoinPoint.getArgs()[0];
     var event = MeshineryAopUtils.calculateEventName(annotation, method, proceedingJoinPoint.getTarget());
 
-    outputSource.writeOutput(event, (DataContext) arg, TaskData.ofPropertyList(annotation.properties()));
+    outputSource.writeOutput(event, (MeshineryDataContext) arg, TaskData.ofPropertyList(annotation.properties()));
   }
 }

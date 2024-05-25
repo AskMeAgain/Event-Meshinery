@@ -13,7 +13,7 @@ import java.util.concurrent.Executor;
  * @param <O> Output context type. Most of the time the same as the input type
  */
 @FunctionalInterface
-public interface MeshineryProcessor<I extends DataContext, O extends DataContext> {
+public interface MeshineryProcessor<I extends MeshineryDataContext, O extends MeshineryDataContext> {
 
   CompletableFuture<O> processAsync(I context, Executor executor);
 

@@ -3,8 +3,8 @@ package io.github.askmeagain.meshinery.aop;
 import io.github.askmeagain.meshinery.aop.aspect.DynamicMeshineryReadJobAspect;
 import io.github.askmeagain.meshinery.aop.config.DynamicJobAopRegistrar;
 import io.github.askmeagain.meshinery.aop.properties.MeshineryAopProperties;
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import java.util.concurrent.ExecutorService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -23,9 +23,9 @@ public class MeshineryAopAutoConfiguration {
 
   @Bean
   public DynamicMeshineryReadJobAspect dynamicMeshineryReadJobAspect(
-      MeshineryConnector<String, ? extends DataContext> connector
+      MeshinerySourceConnector<String, ? extends MeshineryDataContext> connector
   ) {
-    return new DynamicMeshineryReadJobAspect((MeshineryConnector<String, DataContext>) connector);
+    return new DynamicMeshineryReadJobAspect((MeshinerySourceConnector<String, MeshineryDataContext>) connector);
   }
 
   @Bean

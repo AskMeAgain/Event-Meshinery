@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.core.source;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,12 +19,12 @@ import org.apache.commons.collections4.map.PassiveExpiringMap;
 @Slf4j
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class JoinedInnerInputSource<K, C extends DataContext> implements InputSource<K, C> {
+public class JoinedInnerInputSource<K, C extends MeshineryDataContext> implements MeshineryInputSource<K, C> {
 
   @Getter
   private final String name;
-  private final InputSource<K, C> leftInputSource;
-  private final InputSource<K, C> rightInputSource;
+  private final MeshineryInputSource<K, C> leftInputSource;
+  private final MeshineryInputSource<K, C> rightInputSource;
   private final K rightKey;
   private final BiFunction<C, C, C> combine;
   private final int timeToLiveSeconds;

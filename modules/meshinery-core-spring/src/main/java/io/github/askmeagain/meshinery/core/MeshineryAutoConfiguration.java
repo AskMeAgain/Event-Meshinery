@@ -1,8 +1,8 @@
 package io.github.askmeagain.meshinery.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.hooks.BatchJobTimingHooks;
 import io.github.askmeagain.meshinery.core.hooks.CustomizeShutdownHook;
@@ -82,7 +82,7 @@ public class MeshineryAutoConfiguration {
       List<MeshineryTask<?, ?>> tasks,
       List<CustomizeShutdownHook> shutdownHook,
       List<CustomizeStartupHook> startupHook,
-      List<ProcessorDecorator<DataContext, DataContext>> processorDecorators,
+      List<ProcessorDecorator<MeshineryDataContext, MeshineryDataContext>> processorDecorators,
       List<InputSourceDecoratorFactory> connectorDecoratorFactories,
       MeshineryCoreProperties meshineryCoreProperties
   ) {

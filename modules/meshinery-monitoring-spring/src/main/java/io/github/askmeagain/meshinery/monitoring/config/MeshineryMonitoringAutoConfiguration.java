@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.monitoring.config;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.hooks.CustomizeStartupHook;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
@@ -38,7 +38,7 @@ public class MeshineryMonitoringAutoConfiguration {
   }
 
   @Bean
-  ProcessorTimingDecorator<? extends DataContext, ?> timingDecorator() {
+  ProcessorTimingDecorator<? extends MeshineryDataContext, ?> timingDecorator() {
     return new ProcessorTimingDecorator<>();
   }
 

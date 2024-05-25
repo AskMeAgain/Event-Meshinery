@@ -30,7 +30,7 @@ class TaskDataTest extends AbstractTestBase {
 
     var executor = Executors.newSingleThreadExecutor();
 
-    MeshineryConnector<String, TestContext> defaultOutput = Mockito.mock(MeshineryConnector.class);
+    MeshinerySourceConnector<String, TestContext> defaultOutput = Mockito.mock(MeshinerySourceConnector.class);
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)

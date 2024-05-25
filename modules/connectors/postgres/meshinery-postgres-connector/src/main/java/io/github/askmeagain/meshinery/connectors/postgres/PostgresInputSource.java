@@ -3,7 +3,7 @@ package io.github.askmeagain.meshinery.connectors.postgres;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.other.Blocking;
 import java.util.List;
 import java.util.Objects;
@@ -15,7 +15,7 @@ import org.jdbi.v3.core.Jdbi;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class PostgresInputSource<C extends DataContext> implements AccessingInputSource<String, C> {
+public class PostgresInputSource<C extends MeshineryDataContext> implements AccessingInputSource<String, C> {
 
   private static final String SELECT_QUERY = """
       UPDATE <SCHEMA>.<TABLE>

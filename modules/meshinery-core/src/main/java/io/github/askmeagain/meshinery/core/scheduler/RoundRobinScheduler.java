@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
@@ -41,7 +41,7 @@ public class RoundRobinScheduler {
   private final boolean isBatchJob;
   private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
   private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
-  private final List<ProcessorDecorator<DataContext, DataContext>> processorDecorator;
+  private final List<ProcessorDecorator<MeshineryDataContext, MeshineryDataContext>> processorDecorator;
   private final boolean gracefulShutdownOnError;
   private final int gracePeriodMilliseconds;
 
@@ -85,7 +85,7 @@ public class RoundRobinScheduler {
   private void createLookupMap() {
     for (var task : tasks) {
       var connectorKey = ConnectorKey.builder()
-          .connector((InputSource<Object, DataContext>) task.getInputConnector())
+          .connector((MeshineryInputSource<Object, MeshineryDataContext>) task.getInputConnector())
           .key(task.getInputKeys())
           .build();
 
@@ -246,10 +246,10 @@ public class RoundRobinScheduler {
     shutdownHook.forEach(hook -> hook.accept(this));
   }
 
-  private CompletableFuture<DataContext> getResultFuture(
+  private CompletableFuture<MeshineryDataContext> getResultFuture(
       TaskRun taskRun,
-      MeshineryProcessor<DataContext, DataContext> nextProcessor,
-      DataContext context
+      MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> nextProcessor,
+      MeshineryDataContext context
   ) {
     try {
       TaskData.setTaskData(taskRun.getTaskData());

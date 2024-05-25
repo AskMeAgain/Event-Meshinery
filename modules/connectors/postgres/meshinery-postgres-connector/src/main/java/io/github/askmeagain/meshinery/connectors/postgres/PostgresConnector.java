@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.List;
 import java.util.Optional;
@@ -19,8 +19,8 @@ import org.jdbi.v3.jackson2.Jackson2Plugin;
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
-public class PostgresConnector<C extends DataContext> implements AccessingInputSource<String, C>,
-    MeshineryConnector<String, C> {
+public class PostgresConnector<C extends MeshineryDataContext> implements AccessingInputSource<String, C>,
+    MeshinerySourceConnector<String, C> {
 
   @Getter
   private final String name;

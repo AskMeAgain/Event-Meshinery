@@ -1,7 +1,9 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
 import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
@@ -15,13 +17,13 @@ import lombok.SneakyThrows;
 public class RoundRobinSchedulerBuilder {
 
   List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
-  List<ProcessorDecorator<DataContext, DataContext>> processorDecorators = Collections.emptyList();
+  List<ProcessorDecorator<MeshineryDataContext, MeshineryDataContext>> processorDecorators = Collections.emptyList();
   List<InputSourceDecoratorFactory> connectorDecoratorFactories = Collections.emptyList();
   List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
   int backpressureLimit = 200;
   int gracePeriodMilliseconds = 2000;
   boolean isBatchJob;
-  List<MeshineryTask<?, ? extends DataContext>> tasks = new ArrayList<>();
+  List<MeshineryTask<?, ? extends MeshineryDataContext>> tasks = new ArrayList<>();
   boolean gracefulShutdownOnError = true;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
@@ -32,7 +34,7 @@ public class RoundRobinSchedulerBuilder {
         .isBatchJob(meshineryCoreProperties.isBatchJob());
   }
 
-  public RoundRobinSchedulerBuilder task(MeshineryTask<?, ? extends DataContext> task) {
+  public RoundRobinSchedulerBuilder task(MeshineryTask<?, ? extends MeshineryDataContext> task) {
     tasks.add(task);
     return this;
   }
@@ -42,13 +44,13 @@ public class RoundRobinSchedulerBuilder {
     return this;
   }
 
-  public RoundRobinSchedulerBuilder tasks(List<MeshineryTask<?, ? extends DataContext>> task) {
+  public RoundRobinSchedulerBuilder tasks(List<MeshineryTask<?, ? extends MeshineryDataContext>> task) {
     tasks.addAll(task);
     return this;
   }
 
   public RoundRobinSchedulerBuilder registerProcessorDecorators(
-      List<ProcessorDecorator<DataContext, DataContext>> processorDecorators
+      List<ProcessorDecorator<MeshineryDataContext, MeshineryDataContext>> processorDecorators
   ) {
     this.processorDecorators = processorDecorators;
     return this;
@@ -56,9 +58,9 @@ public class RoundRobinSchedulerBuilder {
 
   /**
    * Connector Decorators registered via this method will only be applied to the
-   * {@link io.github.askmeagain.meshinery.core.common.InputSource}
+   * {@link MeshineryInputSource}
    * part of the connector due to technical limits. The
-   * {@link io.github.askmeagain.meshinery.core.common.OutputSource} WONT be decorated.
+   * {@link MeshineryOutputSource} WONT be decorated.
    *
    * @param connectorDecoratorFactories list of decorated factories
    * @return returns this

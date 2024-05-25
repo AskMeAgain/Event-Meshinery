@@ -3,9 +3,11 @@ package io.github.askmeagain.meshinery.core.common;
 
 /**
  * A factory implementing this interface  will return a
- * decorated{@link io.github.askmeagain.meshinery.core.common.InputSource}.
+ * decorated{@link MeshineryInputSource}.
  */
 public interface InputSourceDecoratorFactory {
-  InputSource<?, ? extends DataContext> decorate(InputSource<?, ? extends DataContext> inputConnector);
+  MeshineryInputSource<?, ? extends MeshineryDataContext> decorate(
+      MeshineryInputSource<?, ? extends MeshineryDataContext> inputConnector
+  );
 
 }

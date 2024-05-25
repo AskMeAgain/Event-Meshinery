@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.rpc.TransportChannelProvider;
 import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.PubSubNameResolver;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.List;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
-public class PubSubConnector<C extends PubSubContext> implements MeshineryConnector<String, C>, AutoCloseable {
+public class PubSubConnector<C extends PubSubContext> implements MeshinerySourceConnector<String, C>, AutoCloseable {
 
   @Getter
   private final String name;

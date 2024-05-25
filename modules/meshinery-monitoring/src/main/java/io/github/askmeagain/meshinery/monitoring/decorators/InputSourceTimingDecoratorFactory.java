@@ -1,8 +1,8 @@
 package io.github.askmeagain.meshinery.monitoring.decorators;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
 import java.util.List;
@@ -14,19 +14,21 @@ import lombok.RequiredArgsConstructor;
 public class InputSourceTimingDecoratorFactory implements InputSourceDecoratorFactory {
 
   @Override
-  public InputSource<?, DataContext> decorate(InputSource<?, ? extends DataContext> inputConnector) {
-    return new ConnectorTimingDecorator((InputSource<Object, DataContext>) inputConnector);
+  public MeshineryInputSource<?, MeshineryDataContext> decorate(
+      MeshineryInputSource<?, ? extends MeshineryDataContext> inputConnector
+  ) {
+    return new ConnectorTimingDecorator((MeshineryInputSource<Object, MeshineryDataContext>) inputConnector);
   }
 
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-  public static class ConnectorTimingDecorator implements InputSource<Object, DataContext> {
+  public static class ConnectorTimingDecorator implements MeshineryInputSource<Object, MeshineryDataContext> {
 
-    private final InputSource<Object, DataContext> innerConnector;
+    private final MeshineryInputSource<Object, MeshineryDataContext> innerConnector;
     @Getter(lazy = true)
     private final String name = innerConnector.getName();
 
     @Override
-    public List<DataContext> getInputs(List<Object> keys) {
+    public List<MeshineryDataContext> getInputs(List<Object> keys) {
       var connectorName = innerConnector.getName();
       var keyNames = MeshineryUtils.joinEventKeys(keys);
       var summary = MeshineryMonitoringService.CONNECTOR_HISTOGRAM_IN.labels(connectorName, keyNames);

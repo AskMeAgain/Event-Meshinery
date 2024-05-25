@@ -6,8 +6,8 @@ import com.google.api.gax.rpc.TransportChannelProvider;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import io.github.askmeagain.meshinery.connectors.pubsub.factories.PubSubProducerFactory;
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -15,7 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class PubSubOutputSource<C extends DataContext> implements OutputSource<String, C>, AutoCloseable {
+public class PubSubOutputSource<C extends MeshineryDataContext>
+    implements MeshineryOutputSource<String, C>, AutoCloseable {
 
   @Getter
   private final String name;

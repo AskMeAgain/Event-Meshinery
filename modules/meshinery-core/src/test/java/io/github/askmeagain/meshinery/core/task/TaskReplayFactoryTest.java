@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.core.task;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.TaskDataTestProcessor;
@@ -31,9 +31,9 @@ class TaskReplayFactoryTest {
     var processorB = Mockito.spy(new TestContextProcessor(2));
     var testDataProcessor = Mockito.spy(new TaskDataTestProcessor());
 
-    MeshineryConnector<String, TestContext> outputSource = Mockito.mock(MeshineryConnector.class);
+    MeshinerySourceConnector<String, TestContext> outputSource = Mockito.mock(MeshinerySourceConnector.class);
 
-    List<MeshineryTask<?, ? extends DataContext>> tasks = List.of(
+    List<MeshineryTask<?, ? extends MeshineryDataContext>> tasks = List.of(
         MeshineryTaskFactory.<String, TestContext>builder()
             .outputSource(outputSource)
             .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))

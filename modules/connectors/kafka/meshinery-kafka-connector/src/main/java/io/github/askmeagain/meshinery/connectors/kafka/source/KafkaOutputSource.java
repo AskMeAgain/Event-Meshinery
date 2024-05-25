@@ -2,8 +2,8 @@ package io.github.askmeagain.meshinery.connectors.kafka.source;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaProducerFactory;
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 @Slf4j
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class KafkaOutputSource<C extends DataContext> implements OutputSource<String, C>, AutoCloseable {
+public class KafkaOutputSource<C extends MeshineryDataContext>
+    implements MeshineryOutputSource<String, C>, AutoCloseable {
 
   @Getter
   private final String name;

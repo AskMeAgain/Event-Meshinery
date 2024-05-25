@@ -3,7 +3,7 @@ package io.github.askmeagain.meshinery.connectors.pubsub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.gax.core.CredentialsProvider;
 import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.PubSubNameResolver;
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeansException;
@@ -26,11 +26,11 @@ public class DynamicPubSubConnectorRegistration implements BeanDefinitionRegistr
   private final ObjectProvider<CredentialsProvider> credentialsProviders;
   private final ObjectProvider<PubSubNameResolver> pubSubNameResolvers;
 
-  private static ResolvableType getTargetType(Class<? extends DataContext> clazz) {
+  private static ResolvableType getTargetType(Class<? extends MeshineryDataContext> clazz) {
     return ResolvableType.forClassWithGenerics(PubSubConnector.class, clazz);
   }
 
-  private static String getBeanName(Class<? extends DataContext> clazz) {
+  private static String getBeanName(Class<? extends MeshineryDataContext> clazz) {
     return clazz.getSimpleName() + "-auto-generated-pubsub-connector-bean";
   }
 

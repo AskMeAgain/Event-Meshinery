@@ -7,5 +7,6 @@ package io.github.askmeagain.meshinery.core.common;
  * @param <K> event key type
  * @param <C> context type
  */
-public interface MeshineryConnector<K, C extends DataContext> extends OutputSource<K, C>, InputSource<K, C> {
+public interface MeshinerySourceConnector<K, C extends MeshineryDataContext> extends MeshineryOutputSource<K, C>,
+    MeshineryInputSource<K, C> {
 }

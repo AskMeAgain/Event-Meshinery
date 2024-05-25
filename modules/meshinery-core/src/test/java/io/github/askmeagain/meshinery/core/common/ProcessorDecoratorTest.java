@@ -26,12 +26,12 @@ class ProcessorDecoratorTest {
         .todo(new TestContext(0))
         .build();
     var executor = Executors.newSingleThreadExecutor();
-    MeshineryConnector<String, TestContext> mockOutputSource = Mockito.mock(MeshineryConnector.class);
+    MeshinerySourceConnector<String, TestContext> mockOutputSource = Mockito.mock(MeshinerySourceConnector.class);
 
     var decorator = new ProcessorDecorator<>() {
       @Override
-      public MeshineryProcessor<DataContext, DataContext> wrap(
-          MeshineryProcessor<DataContext, DataContext> processor
+      public MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> wrap(
+          MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> processor
       ) {
 
         return (c, executor) -> {
@@ -77,7 +77,7 @@ class ProcessorDecoratorTest {
         .todo(new TestContext(0))
         .build();
     var executor = Executors.newSingleThreadExecutor();
-    MeshineryConnector<String, TestContext> mockOutputSource = Mockito.mock(MeshineryConnector.class);
+    MeshinerySourceConnector<String, TestContext> mockOutputSource = Mockito.mock(MeshinerySourceConnector.class);
 
     var decorator = new ProcessorDecorator<TestContext, TestContext>() {
       @Override

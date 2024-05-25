@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.monitoring.decorators;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
@@ -18,7 +18,7 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_N
  * @param <O> Output Context Type
  */
 @Slf4j
-public class ProcessorTimingDecorator<I extends DataContext, O extends DataContext>
+public class ProcessorTimingDecorator<I extends MeshineryDataContext, O extends MeshineryDataContext>
     implements ProcessorDecorator<I, O> {
 
   /**

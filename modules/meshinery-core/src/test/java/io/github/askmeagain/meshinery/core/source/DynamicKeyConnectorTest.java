@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core.source;
 
-import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
@@ -19,7 +19,7 @@ class DynamicKeyConnectorTest {
   void getInputs() throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
     var innerConnector = Mockito.spy(new MemoryConnector<String, TestContext>());
-    OutputSource<String, TestContext> innerOutputMock = Mockito.mock(OutputSource.class);
+    MeshineryOutputSource<String, TestContext> innerOutputMock = Mockito.mock(MeshineryOutputSource.class);
 
     var executor = Executors.newSingleThreadExecutor();
     var dynamicConnector = DynamicKeyConnector.<String, TestContext>builder()

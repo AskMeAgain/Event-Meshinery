@@ -1,10 +1,10 @@
 package io.github.askmeagain.meshinery.core.other;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
-import io.github.askmeagain.meshinery.core.common.OutputSource;
 import io.github.askmeagain.meshinery.core.common.OutputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
@@ -38,16 +38,16 @@ public class MeshineryUtils {
    * @param <O>           output context type of the last processor
    * @return returns a completable future which will return O
    */
-  public static <I extends DataContext, O extends DataContext> CompletableFuture<O> combineProcessors(
-      List<MeshineryProcessor<DataContext, DataContext>> processorList,
+  public static <I extends MeshineryDataContext, O extends MeshineryDataContext> CompletableFuture<O> combineProcessors(
+      List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList,
       I context,
       Executor executor,
       Map<String, String> mdc,
       TaskData taskData
   ) {
-    CompletableFuture<DataContext> temp = CompletableFuture.completedFuture(context);
+    CompletableFuture<MeshineryDataContext> temp = CompletableFuture.completedFuture(context);
 
-    for (MeshineryProcessor<DataContext, DataContext> newProcessor : processorList) {
+    for (MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> newProcessor : processorList) {
       temp = temp.thenCompose(x -> {
         MDC.setContextMap(mdc);
         TaskData.setTaskData(taskData);
@@ -67,7 +67,7 @@ public class MeshineryUtils {
    * @param <O>                output type of the context
    * @return a new processor which will be decorated
    */
-  public static <I extends DataContext, O extends DataContext> MeshineryProcessor<I, O> applyDecorators(
+  public static <I extends MeshineryDataContext, O extends MeshineryDataContext> MeshineryProcessor<I, O> applyDecorators(
       MeshineryProcessor<I, O> nextProcessor,
       List<ProcessorDecorator<I, O>> processorDecorator
   ) {
@@ -81,8 +81,8 @@ public class MeshineryUtils {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static InputSource<?, ? extends DataContext> applyDecorator(
-      InputSource<?, ? extends DataContext> connector,
+  public static MeshineryInputSource<?, ? extends MeshineryDataContext> applyDecorator(
+      MeshineryInputSource<?, ? extends MeshineryDataContext> connector,
       List<InputSourceDecoratorFactory> connectorDecoratorFactories
   ) {
     var innerConnector = connector;
@@ -95,8 +95,8 @@ public class MeshineryUtils {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static OutputSource<?, ? extends DataContext> applyDecorator(
-      OutputSource<?, ? extends DataContext> connector,
+  public static MeshineryOutputSource<?, ? extends MeshineryDataContext> applyDecorator(
+      MeshineryOutputSource<?, ? extends MeshineryDataContext> connector,
       List<OutputSourceDecoratorFactory> connectorDecoratorFactories
   ) {
     var innerConnector = connector;
@@ -123,8 +123,8 @@ public class MeshineryUtils {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static List<? extends MeshineryTask<?, ? extends DataContext>> decorateMeshineryTasks(
-      List<MeshineryTask<?, ? extends DataContext>> tasks,
+  public static List<? extends MeshineryTask<?, ? extends MeshineryDataContext>> decorateMeshineryTasks(
+      List<MeshineryTask<?, ? extends MeshineryDataContext>> tasks,
       List<InputSourceDecoratorFactory> connectorDecoratorFactories
   ) {
     return tasks.stream()

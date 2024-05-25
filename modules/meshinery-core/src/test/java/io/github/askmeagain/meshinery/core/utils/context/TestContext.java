@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core.utils.context;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -11,7 +11,7 @@ import lombok.extern.jackson.Jacksonized;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @Jacksonized
-public class TestContext implements DataContext {
+public class TestContext implements MeshineryDataContext {
 
   @With
   String id;

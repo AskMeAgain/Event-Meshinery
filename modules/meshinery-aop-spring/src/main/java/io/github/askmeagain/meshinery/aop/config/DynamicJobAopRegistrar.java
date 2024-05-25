@@ -3,9 +3,9 @@ package io.github.askmeagain.meshinery.aop.config;
 import io.github.askmeagain.meshinery.aop.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
 import io.github.askmeagain.meshinery.aop.exception.MeshineryAopWrongMethodParameterType;
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
+import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import java.lang.reflect.Method;
@@ -63,7 +63,7 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
                   applicationContext.getBean(proxiedBeanName),
                   executorService,
                   applicationContext.getBeanProvider(ResolvableType.forClassWithGenerics(
-                      MeshineryConnector.class,
+                      MeshinerySourceConnector.class,
                       String.class,
                       m.getParameterTypes()[0]
                   ))
@@ -76,11 +76,11 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
     }
   }
 
-  private static MeshineryTask<String, DataContext> buildMeshineryJob(
+  private static MeshineryTask<String, MeshineryDataContext> buildMeshineryJob(
       Method methodHandle,
       Object beanInstance,
       ExecutorService executorService,
-      ObjectProvider<MeshineryConnector<String, DataContext>> provider
+      ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider
   ) {
     var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
 
@@ -92,11 +92,11 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
     var contextClazz = methodHandle.getParameterTypes()[0];
     var responseType = methodHandle.getReturnType();
 
-    if (!DataContext.class.isAssignableFrom(contextClazz)) {
+    if (!MeshineryDataContext.class.isAssignableFrom(contextClazz)) {
       throw new MeshineryAopWrongMethodParameterType(methodHandle);
     }
 
-    return MeshineryTaskFactory.<String, DataContext>builder()
+    return MeshineryTaskFactory.<String, MeshineryDataContext>builder()
         .connector(provider.getObject())
         .taskName(annotation.taskName().equals("-") ? "dynamic-job-" + readEvent.toLowerCase() : annotation.taskName())
         .putData(List.of(properties))
@@ -104,10 +104,10 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
         .process(new MeshineryProcessor<>() {
           @SneakyThrows
           @Override
-          public CompletableFuture<DataContext> processAsync(DataContext context, Executor executor) {
+          public CompletableFuture<MeshineryDataContext> processAsync(MeshineryDataContext context, Executor executor) {
             var response = methodHandle.invoke(unproxiedObject, context);
-            if (DataContext.class.isAssignableFrom(responseType)) {
-              return CompletableFuture.completedFuture((DataContext) response);
+            if (MeshineryDataContext.class.isAssignableFrom(responseType)) {
+              return CompletableFuture.completedFuture((MeshineryDataContext) response);
             } else {
               return CompletableFuture.completedFuture(null);
             }

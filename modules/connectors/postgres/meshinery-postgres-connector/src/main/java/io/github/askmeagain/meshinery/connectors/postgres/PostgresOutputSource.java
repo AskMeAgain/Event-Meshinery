@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.connectors.postgres;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -12,7 +12,7 @@ import org.jdbi.v3.json.Json;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class PostgresOutputSource<C extends DataContext> implements OutputSource<String, C> {
+public class PostgresOutputSource<C extends MeshineryDataContext> implements MeshineryOutputSource<String, C> {
 
   private static final String INSERT = """
       INSERT INTO <SCHEMA>.<TABLE> (id,context,state)

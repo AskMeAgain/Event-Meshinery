@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.connectors.mysql;
 
 import io.github.askmeagain.meshinery.core.MeshineryAutoConfiguration;
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -16,6 +16,6 @@ import org.springframework.context.annotation.Import;
 @Import({MeshineryMysqlConfiguration.class})
 public @interface EnableMeshineryMysql {
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod") Class<? extends DataContext>[] context() default {};
+  @SuppressWarnings("checkstyle:MissingJavadocMethod") Class<? extends MeshineryDataContext>[] context() default {};
 
 }

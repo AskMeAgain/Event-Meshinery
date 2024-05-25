@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -16,7 +16,7 @@ public @interface EnableMeshinery {
   /**
    * Creates an injection endpoint for this class
    */
-  Class<? extends DataContext>[] injection() default {};
+  Class<? extends MeshineryDataContext>[] injection() default {};
 
 
   /**
@@ -28,7 +28,7 @@ public @interface EnableMeshinery {
     /**
      * Context of the memory connector
      */
-    Class<? extends DataContext> context();
+    Class<? extends MeshineryDataContext> context();
 
     /**
      * Key type of the memory connector

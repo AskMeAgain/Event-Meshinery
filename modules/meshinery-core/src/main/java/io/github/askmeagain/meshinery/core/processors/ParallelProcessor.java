@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core.processors;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.function.Function;
  *
  * @param <C> ContextType
  */
-public class ParallelProcessor<C extends DataContext> implements MeshineryProcessor<C, C> {
+public class ParallelProcessor<C extends MeshineryDataContext> implements MeshineryProcessor<C, C> {
 
   List<MeshineryProcessor<C, C>> processorList;
   Function<List<C>, C> combine;
@@ -27,7 +27,7 @@ public class ParallelProcessor<C extends DataContext> implements MeshineryProces
     this.combine = function;
   }
 
-  public static <C extends DataContext> ParallelProcessor.Builder<C> builder() {
+  public static <C extends MeshineryDataContext> ParallelProcessor.Builder<C> builder() {
     return new ParallelProcessor.Builder<>();
   }
 
@@ -41,7 +41,7 @@ public class ParallelProcessor<C extends DataContext> implements MeshineryProces
     return allOf(futures).thenApply(combine);
   }
 
-  private <T extends DataContext> CompletableFuture<List<T>> allOf(List<CompletableFuture<T>> futuresList) {
+  private <T extends MeshineryDataContext> CompletableFuture<List<T>> allOf(List<CompletableFuture<T>> futuresList) {
     var array = futuresList.toArray(new CompletableFuture[futuresList.size()]);
     var allFuturesResult = CompletableFuture.allOf(array);
 
@@ -53,7 +53,7 @@ public class ParallelProcessor<C extends DataContext> implements MeshineryProces
    *
    * @param <O> ContextType
    */
-  public static class Builder<O extends DataContext> {
+  public static class Builder<O extends MeshineryDataContext> {
 
     List<MeshineryProcessor<O, O>> processorList;
 

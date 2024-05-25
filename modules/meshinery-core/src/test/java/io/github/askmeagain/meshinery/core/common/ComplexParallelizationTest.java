@@ -31,7 +31,7 @@ class ComplexParallelizationTest extends AbstractTestBase {
         .todo(new TestContext(0))
         .build();
 
-    MeshineryConnector<String, TestContext> outputMock = Mockito.mock(MeshineryConnector.class);
+    MeshinerySourceConnector<String, TestContext> outputMock = Mockito.mock(MeshinerySourceConnector.class);
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .read(executor, "Test")

@@ -2,8 +2,8 @@ package io.github.askmeagain.meshinery.connectors.kafka.source;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.connectors.kafka.factories.KafkaConsumerFactory;
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -18,7 +18,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
-public class KafkaInputSource<C extends DataContext> implements InputSource<String, C>, AutoCloseable {
+public class KafkaInputSource<C extends MeshineryDataContext>
+    implements MeshineryInputSource<String, C>, AutoCloseable {
 
   @Getter
   private final String name;

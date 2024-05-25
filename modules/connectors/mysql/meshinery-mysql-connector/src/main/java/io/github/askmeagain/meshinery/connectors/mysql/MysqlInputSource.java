@@ -3,7 +3,7 @@ package io.github.askmeagain.meshinery.connectors.mysql;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.other.Blocking;
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +16,7 @@ import org.jdbi.v3.core.Jdbi;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class MysqlInputSource<C extends DataContext> implements AccessingInputSource<String, C> {
+public class MysqlInputSource<C extends MeshineryDataContext> implements AccessingInputSource<String, C> {
 
   private static final String SELECT_QUERY = """
       SELECT eid,context

@@ -31,7 +31,7 @@ class BranchTest {
         .build();
     var executor = Executors.newSingleThreadExecutor();
     var spyProcessor = Mockito.spy(new TestContextProcessor(2));
-    MeshineryConnector<String, TestContext> defaultOutputSource = Mockito.mock(MeshineryConnector.class);
+    MeshinerySourceConnector<String, TestContext> defaultOutputSource = Mockito.mock(MeshinerySourceConnector.class);
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)

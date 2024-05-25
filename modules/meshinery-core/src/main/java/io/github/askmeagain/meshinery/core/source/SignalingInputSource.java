@@ -1,8 +1,8 @@
 package io.github.askmeagain.meshinery.core.source;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
+import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,7 +16,8 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Builder
-public class SignalingInputSource<K extends Comparable<K>, C extends DataContext> implements InputSource<K, C> {
+public class SignalingInputSource<K extends Comparable<K>, C extends MeshineryDataContext> implements
+    MeshineryInputSource<K, C> {
 
   @Builder.Default
   private final boolean lockIn = false;
@@ -25,8 +26,8 @@ public class SignalingInputSource<K extends Comparable<K>, C extends DataContext
 
   @Getter
   private final String name;
-  private final MeshineryConnector<K, C> signalingInputSource;
-  private final MeshineryConnector<K, C> innerInputSource;
+  private final MeshinerySourceConnector<K, C> signalingInputSource;
+  private final MeshinerySourceConnector<K, C> innerInputSource;
   private final K innerKey;
 
   @Override

@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core.processors;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import java.util.ArrayList;
@@ -17,15 +17,16 @@ import org.slf4j.MDC;
  * @param <I> InputType
  * @param <O> OutputType
  */
-public class FluidProcessor<I extends DataContext, O extends DataContext> implements MeshineryProcessor<I, O> {
+public class FluidProcessor<I extends MeshineryDataContext, O extends MeshineryDataContext>
+    implements MeshineryProcessor<I, O> {
 
-  List<MeshineryProcessor<DataContext, DataContext>> processorList;
+  List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList;
 
   private FluidProcessor() {
     processorList = new ArrayList<>();
   }
 
-  private FluidProcessor(List<MeshineryProcessor<DataContext, DataContext>> newProcessorList) {
+  private FluidProcessor(List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> newProcessorList) {
     processorList = newProcessorList;
   }
 
@@ -35,7 +36,7 @@ public class FluidProcessor<I extends DataContext, O extends DataContext> implem
    * @param <I> Input Type
    * @return returns itself for builder pattern
    */
-  public static <I extends DataContext> FluidProcessor<I, I> builder() {
+  public static <I extends MeshineryDataContext> FluidProcessor<I, I> builder() {
     return new FluidProcessor<>();
   }
 
@@ -46,8 +47,8 @@ public class FluidProcessor<I extends DataContext, O extends DataContext> implem
    * @param <N>          New return type
    * @return returns itself for builder pattern.
    */
-  public <N extends DataContext> FluidProcessor<I, N> process(MeshineryProcessor<O, N> newProcessor) {
-    processorList.add((MeshineryProcessor<DataContext, DataContext>) newProcessor);
+  public <N extends MeshineryDataContext> FluidProcessor<I, N> process(MeshineryProcessor<O, N> newProcessor) {
+    processorList.add((MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>) newProcessor);
     return new FluidProcessor<>(processorList);
   }
 

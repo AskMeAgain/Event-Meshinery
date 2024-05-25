@@ -1,8 +1,8 @@
 package io.github.askmeagain.meshinery.core.e2e.base;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
+import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
@@ -45,7 +45,7 @@ public class E2eTestConfiguration {
   @Bean
   public MeshineryTask<String, TestContext> Task100Loop(
       MeshineryProcessor<TestContext, TestContext> processor,
-      MeshineryConnector<String, TestContext> connector,
+      MeshinerySourceConnector<String, TestContext> connector,
       ExecutorService executorService
   ) {
     var arr = IntStream.range(0, NUMBER_OF_TOPICS)
@@ -77,7 +77,7 @@ public class E2eTestConfiguration {
 
   @Bean
   public MeshineryTask<String, TestContext> task1(
-      MeshineryConnector<String, TestContext> connector,
+      MeshinerySourceConnector<String, TestContext> connector,
       ExecutorService executorService
   ) {
     var inputSource = TestInputSource.builder()

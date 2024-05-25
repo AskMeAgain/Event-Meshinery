@@ -10,7 +10,7 @@ import io.github.askmeagain.meshinery.core.task.TaskData;
  * @param <O> output type
  */
 @FunctionalInterface
-public interface ProcessorDecorator<I extends DataContext, O extends DataContext> {
+public interface ProcessorDecorator<I extends MeshineryDataContext, O extends MeshineryDataContext> {
   MeshineryProcessor<I, O> wrap(MeshineryProcessor<I, O> processor);
 
   default TaskData getTaskData() {

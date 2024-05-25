@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.core.task;
 
-import io.github.askmeagain.meshinery.core.common.InputSource;
-import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.exceptions.DuplicateReadKeyException;
 import io.github.askmeagain.meshinery.core.exceptions.DuplicateTaskNameException;
 import io.github.askmeagain.meshinery.core.exceptions.TaskNameInvalidException;
@@ -32,14 +32,14 @@ public class MeshineryTaskVerifier {
   private static Set<String> getOutputSources(List<MeshineryTask<?, ?>> tasks) {
     return tasks.stream()
         .map(MeshineryTask::getOutputConnector)
-        .map(OutputSource::getName)
+        .map(MeshineryOutputSource::getName)
         .collect(Collectors.toSet());
   }
 
   private static Set<String> getInputSources(List<MeshineryTask<?, ?>> tasks) {
     return tasks.stream()
         .map(MeshineryTask::getInputConnector)
-        .map(InputSource::getName)
+        .map(MeshineryInputSource::getName)
         .collect(Collectors.toSet());
   }
 

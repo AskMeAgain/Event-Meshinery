@@ -2,8 +2,8 @@ package io.github.askmeagain.meshinery.aop.e2e;
 
 import io.github.askmeagain.meshinery.aop.e2e.base.E2eAopTestApplication;
 import io.github.askmeagain.meshinery.aop.e2e.base.E2eTestService;
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -28,7 +28,7 @@ class E2eAopTest {
 
   @Autowired ExecutorService executorService;
   @Autowired E2eTestService service;
-  @Autowired MeshineryConnector<String, ? extends DataContext> connector;
+  @Autowired MeshinerySourceConnector<String, ? extends MeshineryDataContext> connector;
 
   @Test
   @SneakyThrows

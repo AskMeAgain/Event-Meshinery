@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
  * @param <K> Event key type
  * @param <I> context type
  */
-public interface InputSource<K, I extends DataContext> {
+public interface MeshineryInputSource<K, I extends MeshineryDataContext> {
 
   String getName();
 

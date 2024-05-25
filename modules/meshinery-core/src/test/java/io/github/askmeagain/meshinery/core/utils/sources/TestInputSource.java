@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core.utils.sources;
 
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.Collection;
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Builder
 @AllArgsConstructor
-public class TestInputSource implements MeshineryConnector<String, TestContext> {
+public class TestInputSource implements MeshinerySourceConnector<String, TestContext> {
 
   @Getter
   private final String name = "test-input";

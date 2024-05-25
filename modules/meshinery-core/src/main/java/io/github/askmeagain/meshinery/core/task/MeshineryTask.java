@@ -1,10 +1,10 @@
 package io.github.askmeagain.meshinery.core.task;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
-import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.scheduler.ConnectorKey;
 import java.time.Instant;
@@ -27,19 +27,19 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_I
  */
 @Slf4j
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MeshineryTask<K, C extends DataContext> {
+public class MeshineryTask<K, C extends MeshineryDataContext> {
 
   private final long backoffTimeMilli;
   @Getter private final List<K> inputKeys;
   @Getter private final String taskName;
   @Getter private TaskData taskData;
   @With(AccessLevel.PRIVATE)
-  @Getter private final InputSource<K, C> inputConnector;
+  @Getter private final MeshineryInputSource<K, C> inputConnector;
 
-  @Getter private final OutputSource<K, C> outputConnector;
+  @Getter private final MeshineryOutputSource<K, C> outputConnector;
   @Getter private final DataInjectingExecutorService executorService;
-  @Getter private final Function<Throwable, DataContext> handleException;
-  @Getter private final List<MeshineryProcessor<DataContext, DataContext>> processorList;
+  @Getter private final Function<Throwable, MeshineryDataContext> handleException;
+  @Getter private final List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList;
   Instant nextExecution = Instant.now();
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
@@ -48,11 +48,11 @@ public class MeshineryTask<K, C extends DataContext> {
       List<K> inputKeys,
       String taskName,
       TaskData taskData,
-      InputSource<K, C> inputConnector,
-      OutputSource<K, C> outputConnector,
+      MeshineryInputSource<K, C> inputConnector,
+      MeshineryOutputSource<K, C> outputConnector,
       DataInjectingExecutorService executorService,
-      Function<Throwable, DataContext> handleException,
-      List<MeshineryProcessor<DataContext, DataContext>> processorList
+      Function<Throwable, MeshineryDataContext> handleException,
+      List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList
   ) {
     if (inputConnector != null) {
       taskData = inputConnector.addToTaskData(taskData);
@@ -73,7 +73,7 @@ public class MeshineryTask<K, C extends DataContext> {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public ConnectorKey getConnectorKey() {
     return ConnectorKey.builder()
-        .connector((MeshineryConnector<Object, DataContext>) inputConnector)
+        .connector((MeshinerySourceConnector<Object, MeshineryDataContext>) inputConnector)
         .key(inputKeys)
         .build();
   }
@@ -126,7 +126,7 @@ public class MeshineryTask<K, C extends DataContext> {
     }
   }
 
-  public MeshineryTask<K, C> withNewInputConnector(InputSource<?, ?> decoratedInput) {
-    return this.withInputConnector((InputSource<K, C>) decoratedInput);
+  public MeshineryTask<K, C> withNewInputConnector(MeshineryInputSource<?, ?> decoratedInput) {
+    return this.withInputConnector((MeshineryInputSource<K, C>) decoratedInput);
   }
 }

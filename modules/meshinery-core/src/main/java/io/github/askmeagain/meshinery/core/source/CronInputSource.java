@@ -4,8 +4,8 @@ import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -21,7 +21,7 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_I
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class CronInputSource<C extends DataContext> implements InputSource<String, C> {
+public class CronInputSource<C extends MeshineryDataContext> implements MeshineryInputSource<String, C> {
 
   @Getter
   private String name = "default-cron-input-source";

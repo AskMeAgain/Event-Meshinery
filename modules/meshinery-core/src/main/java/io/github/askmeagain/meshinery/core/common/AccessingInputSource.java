@@ -9,7 +9,7 @@ import java.util.Optional;
  * @param <C> The id
  */
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public interface AccessingInputSource<K, C extends DataContext> extends InputSource<K, C> {
+public interface AccessingInputSource<K, C extends MeshineryDataContext> extends MeshineryInputSource<K, C> {
 
   /**
    * Get access to a specific context via key + id.

@@ -1,9 +1,9 @@
 package io.github.askmeagain.meshinery.core.source;
 
-import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.InputSource;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
-import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
+import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
+import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.Collection;
 import java.util.List;
@@ -15,14 +15,14 @@ import lombok.Value;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Value
 @Builder
-public class DynamicKeyConnector<K, C extends DataContext> implements MeshineryConnector<K, C> {
+public class DynamicKeyConnector<K, C extends MeshineryDataContext> implements MeshinerySourceConnector<K, C> {
 
   @Getter
   String name;
   Function<C, List<K>> keySupplier;
-  InputSource<K, C> outerInputSource;
-  InputSource<K, C> innerInputSource;
-  OutputSource<K, C> innerOutputSource;
+  MeshineryInputSource<K, C> outerInputSource;
+  MeshineryInputSource<K, C> innerInputSource;
+  MeshineryOutputSource<K, C> innerOutputSource;
 
   @Override
   public List<C> getInputs(List<K> key) {

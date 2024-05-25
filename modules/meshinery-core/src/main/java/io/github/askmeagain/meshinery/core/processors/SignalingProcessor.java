@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.core.processors;
 
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
-import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.concurrent.CompletableFuture;
@@ -15,7 +15,7 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Slf4j
 @RequiredArgsConstructor
-public class SignalingProcessor<K, C extends DataContext> implements MeshineryProcessor<C, C> {
+public class SignalingProcessor<K, C extends MeshineryDataContext> implements MeshineryProcessor<C, C> {
 
   private final AccessingInputSource<K, C> inputSource;
   private final K key;
