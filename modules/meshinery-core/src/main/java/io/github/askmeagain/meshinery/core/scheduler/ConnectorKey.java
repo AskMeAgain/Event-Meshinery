@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.InputSource;
 import lombok.Builder;
 import lombok.Value;
 
@@ -9,6 +9,6 @@ import lombok.Value;
 @Value
 @Builder
 public class ConnectorKey {
-  MeshineryConnector<Object, DataContext> connector;
+  InputSource<Object, DataContext> connector;
   Object key;
 }

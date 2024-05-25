@@ -5,35 +5,17 @@ apply plugin: "java-library"
 
 task allDeps(type: DependencyReportTask) {}
 
-test {
-    useJUnitPlatform()
-}
-
 dependencies {
-    api platform("com.google.cloud:libraries-bom:${google_cloud_bom_version}")
 
-    implementation platform("org.springframework.boot:spring-boot-dependencies:${spring_boot_version}")
-    implementation platform("org.testcontainers:testcontainers-bom:${testcontainers_version}")
-    implementation "org.slf4j:slf4j-api"
-
-    annotationProcessor platform("org.springframework.boot:spring-boot-dependencies:${spring_boot_version}")
     annotationProcessor "org.projectlombok:lombok"
-
-    testAnnotationProcessor platform("org.springframework.boot:spring-boot-dependencies:${spring_boot_version}")
     testAnnotationProcessor "org.projectlombok:lombok"
-
     testCompileOnly "org.projectlombok:lombok"
-
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
-
     compileOnly "org.projectlombok:lombok"
 
-    testImplementation platform("org.springframework.boot:spring-boot-dependencies:${spring_boot_version}")
     testImplementation "org.junit.jupiter:junit-jupiter-api"
     testImplementation "org.junit.jupiter:junit-jupiter-params"
     testImplementation "org.assertj:assertj-core"
     testImplementation "org.mockito:mockito-core"
-    //testImplementation "org.mockito:mockito-inline"
     testImplementation "ch.qos.logback:logback-classic"
 }
 
@@ -49,10 +31,6 @@ checkstyle {
     maxErrors = 0
     toolVersion '9.1'
     configFile = rootProject.file('checkstyle.xml')
-}
-
-test {
-    outputs.upToDateWhen { false }
 }
 
 checkstyleTest {

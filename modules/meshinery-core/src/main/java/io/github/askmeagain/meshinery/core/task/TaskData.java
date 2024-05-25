@@ -19,6 +19,7 @@ public class TaskData {
   @With(AccessLevel.PRIVATE)
   private Properties properties = new Properties();
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static TaskData ofPropertyList(String[] kvList) {
     var taskData = new TaskData();
     for (var kv : kvList) {
@@ -28,6 +29,7 @@ public class TaskData {
     return taskData;
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static TaskData getTaskData() {
     return taskData.get();
   }

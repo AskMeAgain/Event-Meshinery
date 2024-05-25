@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.core.source;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.Collection;
@@ -15,7 +16,7 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.GRAPH_
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Builder
-public class SignalingInputSource<K extends Comparable<K>, C extends DataContext> implements MeshineryConnector<K, C> {
+public class SignalingInputSource<K extends Comparable<K>, C extends DataContext> implements InputSource<K, C> {
 
   @Builder.Default
   private final boolean lockIn = false;
@@ -63,10 +64,5 @@ public class SignalingInputSource<K extends Comparable<K>, C extends DataContext
     }
 
     return result;
-  }
-
-  @Override
-  public void writeOutput(K key, C output, TaskData taskData) {
-    throw new UnsupportedOperationException();
   }
 }

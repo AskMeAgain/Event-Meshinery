@@ -1,8 +1,7 @@
 package io.github.askmeagain.meshinery.core.source;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
-import io.github.askmeagain.meshinery.core.task.TaskData;
+import io.github.askmeagain.meshinery.core.common.InputSource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,12 +19,12 @@ import org.apache.commons.collections4.map.PassiveExpiringMap;
 @Slf4j
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class JoinedInnerInputSource<K, C extends DataContext> implements MeshineryConnector<K, C> {
+public class JoinedInnerInputSource<K, C extends DataContext> implements InputSource<K, C> {
 
   @Getter
   private final String name;
-  private final MeshineryConnector<K, C> leftInputSource;
-  private final MeshineryConnector<K, C> rightInputSource;
+  private final InputSource<K, C> leftInputSource;
+  private final InputSource<K, C> rightInputSource;
   private final K rightKey;
   private final BiFunction<C, C, C> combine;
   private final int timeToLiveSeconds;
@@ -103,10 +102,5 @@ public class JoinedInnerInputSource<K, C extends DataContext> implements Meshine
     );
 
     return new PassiveExpiringMap<>(expirationPolicy);
-  }
-
-  @Override
-  public void writeOutput(K key, C output, TaskData taskData) {
-    throw new UnsupportedOperationException();
   }
 }

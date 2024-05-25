@@ -1,6 +1,8 @@
 package io.github.askmeagain.meshinery.core.task;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.exceptions.OutputSourceMissingException;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +87,13 @@ public class TaskReplayFactory {
     MeshineryTask<Object, C> task = getMeshineryTask(replacedTaskName);
 
     var inputKeys = task.getInputKeys();
-    task.getInputConnector().writeOutput(inputKeys.get(0), context, new TaskData());
+
+    if (!MeshineryConnector.class.isAssignableFrom(task.getInputConnector().getClass())) {
+      throw new OutputSourceMissingException("Cant replay task since the output source of the input source is unknown");
+    }
+
+    var inputConnector = (MeshineryConnector) task.getInputConnector();
+    inputConnector.writeOutput(inputKeys.get(0), context, new TaskData());
 
     MDC.clear();
   }

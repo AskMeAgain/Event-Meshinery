@@ -17,6 +17,26 @@ allprojects {
             url 'https://s01.oss.sonatype.org/content/repositories/staging/'
         }
     }
+
+    test {
+        useJUnitPlatform()
+        outputs.upToDateWhen { false }
+    }
+
+    dependencies {
+        implementation "org.slf4j:slf4j-api"
+
+        api platform("com.google.cloud:libraries-bom:${google_cloud_bom_version}")
+
+        implementation platform("org.testcontainers:testcontainers-bom:${testcontainers_version}")
+
+        implementation platform("org.springframework.boot:spring-boot-dependencies:${spring_boot_version}")
+        testImplementation platform("org.springframework.boot:spring-boot-dependencies:${spring_boot_version}")
+        annotationProcessor platform("org.springframework.boot:spring-boot-dependencies:${spring_boot_version}")
+        testAnnotationProcessor platform("org.springframework.boot:spring-boot-dependencies:${spring_boot_version}")
+
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    }
 }
 
 tocme {

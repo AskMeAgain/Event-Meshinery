@@ -1,9 +1,11 @@
 package io.github.askmeagain.meshinery.core.other;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
+import io.github.askmeagain.meshinery.core.common.OutputSource;
+import io.github.askmeagain.meshinery.core.common.OutputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
@@ -79,9 +81,23 @@ public class MeshineryUtils {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static MeshineryConnector<?, ? extends DataContext> applyDecorator(
-      MeshineryConnector<?, ? extends DataContext> connector,
+  public static InputSource<?, ? extends DataContext> applyDecorator(
+      InputSource<?, ? extends DataContext> connector,
       List<InputSourceDecoratorFactory> connectorDecoratorFactories
+  ) {
+    var innerConnector = connector;
+
+    for (var decorator : connectorDecoratorFactories) {
+      innerConnector = decorator.decorate(innerConnector);
+    }
+
+    return innerConnector;
+  }
+
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  public static OutputSource<?, ? extends DataContext> applyDecorator(
+      OutputSource<?, ? extends DataContext> connector,
+      List<OutputSourceDecoratorFactory> connectorDecoratorFactories
   ) {
     var innerConnector = connector;
 

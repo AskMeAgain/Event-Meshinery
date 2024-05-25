@@ -27,6 +27,9 @@ public class MeshineryPostgresConfiguration {
     return new DynamicPostgresConnectorRegistration(applicationContext, objectMapper, meshineryPostgresProperties);
   }
 
+  /**
+   * Enrich the postgres properties with spring internals if they exist
+   */
   @Bean
   @Validated
   @ConfigurationProperties("meshinery.connectors.postgres")

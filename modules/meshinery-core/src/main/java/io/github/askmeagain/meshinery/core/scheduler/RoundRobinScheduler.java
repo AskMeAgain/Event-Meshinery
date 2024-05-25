@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
@@ -85,7 +85,7 @@ public class RoundRobinScheduler {
   private void createLookupMap() {
     for (var task : tasks) {
       var connectorKey = ConnectorKey.builder()
-          .connector((MeshineryConnector<Object, DataContext>) task.getInputConnector())
+          .connector((InputSource<Object, DataContext>) task.getInputConnector())
           .key(task.getInputKeys())
           .build();
 

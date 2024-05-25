@@ -5,7 +5,7 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 import io.github.askmeagain.meshinery.core.common.DataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
+import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -21,7 +21,7 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_I
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class CronInputSource<C extends DataContext> implements MeshineryConnector<String, C> {
+public class CronInputSource<C extends DataContext> implements InputSource<String, C> {
 
   @Getter
   private String name = "default-cron-input-source";
@@ -78,11 +78,6 @@ public class CronInputSource<C extends DataContext> implements MeshineryConnecto
   @Override
   public TaskData addToTaskData(TaskData taskData) {
     return taskData.with(TASK_IGNORE_DUPLICATE_READ_KEY, "1");
-  }
-
-  @Override
-  public void writeOutput(String key, C output, TaskData taskData) {
-    throw new UnsupportedOperationException();
   }
 
   private void addNewCronEntry(String cron, ZonedDateTime now) {

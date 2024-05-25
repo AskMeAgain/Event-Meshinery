@@ -1,8 +1,10 @@
 package io.github.askmeagain.meshinery.core.task;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
+import io.github.askmeagain.meshinery.core.common.OutputSource;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.scheduler.ConnectorKey;
 import java.time.Instant;
@@ -32,9 +34,9 @@ public class MeshineryTask<K, C extends DataContext> {
   @Getter private final String taskName;
   @Getter private TaskData taskData;
   @With(AccessLevel.PRIVATE)
-  @Getter private final MeshineryConnector<K, C> inputConnector;
+  @Getter private final InputSource<K, C> inputConnector;
 
-  @Getter private final MeshineryConnector<K, C> outputConnector;
+  @Getter private final OutputSource<K, C> outputConnector;
   @Getter private final DataInjectingExecutorService executorService;
   @Getter private final Function<Throwable, DataContext> handleException;
   @Getter private final List<MeshineryProcessor<DataContext, DataContext>> processorList;
@@ -46,8 +48,8 @@ public class MeshineryTask<K, C extends DataContext> {
       List<K> inputKeys,
       String taskName,
       TaskData taskData,
-      MeshineryConnector<K, C> inputConnector,
-      MeshineryConnector<K, C> outputConnector,
+      InputSource<K, C> inputConnector,
+      OutputSource<K, C> outputConnector,
       DataInjectingExecutorService executorService,
       Function<Throwable, DataContext> handleException,
       List<MeshineryProcessor<DataContext, DataContext>> processorList
@@ -124,7 +126,7 @@ public class MeshineryTask<K, C extends DataContext> {
     }
   }
 
-  public MeshineryTask<K, C> withNewInputConnector(MeshineryConnector<?, ?> decoratedInput) {
-    return this.withInputConnector((MeshineryConnector<K, C>) decoratedInput);
+  public MeshineryTask<K, C> withNewInputConnector(InputSource<?, ?> decoratedInput) {
+    return this.withInputConnector((InputSource<K, C>) decoratedInput);
   }
 }

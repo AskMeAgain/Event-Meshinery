@@ -1,10 +1,9 @@
 package io.github.askmeagain.meshinery.monitoring.decorators;
 
 import io.github.askmeagain.meshinery.core.common.DataContext;
+import io.github.askmeagain.meshinery.core.common.InputSource;
 import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
-import io.github.askmeagain.meshinery.core.common.MeshineryConnector;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
-import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
 import java.util.List;
 import lombok.AccessLevel;
@@ -15,14 +14,14 @@ import lombok.RequiredArgsConstructor;
 public class InputSourceTimingDecoratorFactory implements InputSourceDecoratorFactory {
 
   @Override
-  public MeshineryConnector<?, DataContext> decorate(MeshineryConnector<?, ? extends DataContext> inputConnector) {
-    return new ConnectorTimingDecorator((MeshineryConnector<Object, DataContext>) inputConnector);
+  public InputSource<?, DataContext> decorate(InputSource<?, ? extends DataContext> inputConnector) {
+    return new ConnectorTimingDecorator((InputSource<Object, DataContext>) inputConnector);
   }
 
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-  public static class ConnectorTimingDecorator implements MeshineryConnector<Object, DataContext> {
+  public static class ConnectorTimingDecorator implements InputSource<Object, DataContext> {
 
-    private final MeshineryConnector<Object, DataContext> innerConnector;
+    private final InputSource<Object, DataContext> innerConnector;
     @Getter(lazy = true)
     private final String name = innerConnector.getName();
 
@@ -39,11 +38,6 @@ public class InputSourceTimingDecoratorFactory implements InputSourceDecoratorFa
           timer.observeDuration();
         }
       }
-    }
-
-    @Override
-    public void writeOutput(Object key, DataContext output, TaskData taskData) {
-      throw new UnsupportedOperationException("This is not supported");
     }
   }
 }
