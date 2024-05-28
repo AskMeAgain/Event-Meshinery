@@ -7,11 +7,15 @@ import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
 import io.github.askmeagain.meshinery.monitoring.apis.DrawerApiController;
 import io.github.askmeagain.meshinery.monitoring.apis.MonitoringApiController;
 import io.github.askmeagain.meshinery.monitoring.decorators.InputSourceTimingDecoratorFactory;
+import io.github.askmeagain.meshinery.monitoring.decorators.OtelInputSourceTimingDecoratorFactory;
+import io.github.askmeagain.meshinery.monitoring.decorators.OtelProcessorDecorator;
 import io.github.askmeagain.meshinery.monitoring.decorators.ProcessorTimingDecorator;
 import io.github.askmeagain.meshinery.monitoring.grafanapush.MeshineryPushProperties;
 import io.github.askmeagain.meshinery.monitoring.utils.MeshineryMonitoringSpringUtils;
+import io.opentelemetry.api.OpenTelemetry;
 import io.prometheus.client.Gauge;
 import java.util.concurrent.ThreadPoolExecutor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +42,21 @@ public class MeshineryMonitoringAutoConfiguration {
   }
 
   @Bean
-  ProcessorTimingDecorator<? extends MeshineryDataContext, ?> timingDecorator() {
+  @ConditionalOnBean(OpenTelemetry.class)
+  OtelInputSourceTimingDecoratorFactory otelTracerFactory(OpenTelemetry openTelemetry) {
+    return new OtelInputSourceTimingDecoratorFactory(openTelemetry);
+  }
+
+  //@Bean
+  //@ConditionalOnBean(OpenTelemetry.class)
+  OtelProcessorDecorator<MeshineryDataContext, MeshineryDataContext> otelProcessorFactory(
+      OpenTelemetry openTelemetry
+  ) {
+    return new OtelProcessorDecorator<>(openTelemetry);
+  }
+
+  @Bean
+  ProcessorTimingDecorator<MeshineryDataContext, MeshineryDataContext> timingDecorator() {
     return new ProcessorTimingDecorator<>();
   }
 

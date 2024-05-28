@@ -7,16 +7,20 @@ plugins {
 
 dependencies {
     api project(':modules:meshinery-core')
+    api "io.opentelemetry:opentelemetry-api"
     api "io.prometheus:simpleclient:${prometheus_simple_client_version}"
     api "io.prometheus:simpleclient_common:${prometheus_simple_client_version}"
     api("org.graphstream:gs-core:${graphstream_version}") {
         exclude group: 'junit', module: 'junit'
     }
-    implementation ("org.graphstream:gs-ui:${graphstream_version}") {
+
+    implementation platform("io.opentelemetry:opentelemetry-bom:${otel_bom_version}")
+    implementation "org.apache.commons:commons-lang3"
+    implementation("org.graphstream:gs-ui:${graphstream_version}") {
         exclude group: 'junit', module: 'junit'
         exclude group: 'com.lowagie', module: 'itext'
     }
-    implementation "org.apache.commons:commons-lang3"
+
     testImplementation project(':modules:meshinery-core').sourceSets.test.output
 }
 

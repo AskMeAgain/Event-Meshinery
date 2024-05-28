@@ -24,7 +24,6 @@ public class BranchProcessor<C extends MeshineryDataContext> implements Meshiner
 
   @Override
   public CompletableFuture<C> processAsync(C context, Executor executor) {
-
     for (int i = 0; i < processorList.size(); i++) {
       if (predicateList.get(i).test(context)) {
         return processorList.get(i).processAsync(context, executor);

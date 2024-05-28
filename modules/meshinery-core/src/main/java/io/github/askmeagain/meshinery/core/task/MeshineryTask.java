@@ -4,7 +4,6 @@ import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
-import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.scheduler.ConnectorKey;
 import java.time.Instant;
@@ -73,7 +72,7 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public ConnectorKey getConnectorKey() {
     return ConnectorKey.builder()
-        .connector((MeshinerySourceConnector<Object, MeshineryDataContext>) inputConnector)
+        .connector((MeshineryInputSource<Object, MeshineryDataContext>) inputConnector)
         .key(inputKeys)
         .build();
   }
