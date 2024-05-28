@@ -68,8 +68,8 @@ class ContextSwitchTest extends AbstractTestBase {
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
 
-    Mockito.verify(processorA, times(2)).processAsync(any(), any());
-    Mockito.verify(processorB).processAsync(any(), any());
+    Mockito.verify(processorA, times(2)).processAsync(any());
+    Mockito.verify(processorB).processAsync(any());
     Mockito.verify(defaultOutput).writeOutput(eq(INPUT_KEY + "asd"), any(), any());
     Mockito.verify(contextOutput).writeOutput(eq(INPUT_KEY + "asd"), any(), any());
     Mockito.verify(context2Output).writeOutput(eq(INPUT_KEY + "asd"), eq(EXPECTED), any());

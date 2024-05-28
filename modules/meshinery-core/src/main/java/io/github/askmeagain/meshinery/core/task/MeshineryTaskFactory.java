@@ -16,7 +16,6 @@ import io.github.askmeagain.meshinery.core.source.JoinedInnerInputSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -224,7 +223,7 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
       Function<C, N> map,
       List<ProcessorDecorator<N, N>> decorators
   ) {
-    MeshineryProcessor<C, N> newProcessor = (context, ex) -> CompletableFuture.completedFuture(map.apply(context));
+    MeshineryProcessor<C, N> newProcessor = map::apply;
 
     var newTaskData = inputConnector.addToTaskData(
         taskData.with(TaskDataProperties.GRAPH_OUTPUT_SOURCE, newOutputSource.getName())
@@ -416,8 +415,7 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<K, C> build() {
     var finalProcessorList = new ArrayList<>(processorList);
-    finalProcessorList.add(
-        (context, r) -> (CompletableFuture<MeshineryDataContext>) inputConnector.commit((C) context));
+    finalProcessorList.add((context) -> (MeshineryDataContext) inputConnector.commit((C) context));
 
     return new MeshineryTask<>(
         backoffTime,

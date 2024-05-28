@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -107,8 +106,9 @@ public class PubSubInputSource<C extends PubSubContext> implements MeshineryInpu
   }
 
   @Override
-  public CompletableFuture<C> commit(C id) {
+  public C commit(C id) {
+    //TODO fix this
     log.info("Committing message with id {}", id.getAckId());
-    return CompletableFuture.completedFuture(id);
+    return id;
   }
 }

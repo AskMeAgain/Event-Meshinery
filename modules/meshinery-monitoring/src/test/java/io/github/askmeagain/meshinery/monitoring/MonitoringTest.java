@@ -1,11 +1,9 @@
 package io.github.askmeagain.meshinery.monitoring;
 
-import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.TestContextProcessor;
 import io.github.askmeagain.meshinery.monitoring.decorators.ProcessorTimingDecorator;
-import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
@@ -27,8 +25,7 @@ class MonitoringTest {
 
     //Act --------------------------------------------------------------------------------------------------------------
     var context = new TestContext(1);
-    var executor = new DataInjectingExecutorService(TASK_NAME_VALUE, Executors.newSingleThreadExecutor());
-    decoratedProcessor.processAsync(context, executor);
+    decoratedProcessor.processAsync(context);
 
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(MeshineryMonitoringService.IN_PROCESSING_COUNTER.labels(TASK_NAME_VALUE).get()).isEqualTo(1);

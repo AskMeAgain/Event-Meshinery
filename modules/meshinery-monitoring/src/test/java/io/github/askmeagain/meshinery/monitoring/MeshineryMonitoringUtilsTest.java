@@ -3,7 +3,6 @@ package io.github.askmeagain.meshinery.monitoring;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.TestContextProcessor;
-import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,7 +12,7 @@ class MeshineryMonitoringUtilsTest {
   @Test
   void testLambdaProcessorName() {
     //Arrange --------------------------------------------------------------------------------
-    MeshineryProcessor<TestContext, TestContext> processor = (c, e) -> CompletableFuture.completedFuture(c);
+    MeshineryProcessor<TestContext, TestContext> processor = c -> c;
 
     //Act ------------------------------------------------------------------------------------
     var result = MeshineryMonitoringUtils.convertLambdaProcessorName(processor.getClass());

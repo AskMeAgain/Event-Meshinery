@@ -8,7 +8,6 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.monitoring.common.EnableMeshineryMonitoring;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,7 +34,7 @@ public class SimpleApplication {
         .taskName("task1")
         .outputSource(memoryConnector)
         .read(executorService, "0/1 * * * * *")
-        .process((c, e) -> CompletableFuture.completedFuture(c.withId("" + atomicInt.getAndIncrement())))
+        .process(c -> c.withId("" + atomicInt.getAndIncrement()))
         .write("Next-Step")
         .build();
   }

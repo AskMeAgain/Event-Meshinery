@@ -7,7 +7,6 @@ import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
 import io.github.askmeagain.meshinery.monitoring.apis.MonitoringApiController;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -66,20 +65,20 @@ class MonitoringApiControllerTest {
             .taskName("cool-task-name")
             .read(executor, "test")
             .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 1, 0, 0))
-            .process((c, e) -> CompletableFuture.supplyAsync(() -> {
+            .process((c) -> {
               wait3Sec();
               return c;
-            }, e))
+            })
             .outputSource(new TestOutputSource())
             .build())
         .task(MeshineryTaskFactory.<String, TestContext>builder()
             .taskName("cool-task-name-2")
             .read(executor, "test2")
             .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 1, 0, 0))
-            .process((c, e) -> CompletableFuture.supplyAsync(() -> {
+            .process((c) -> {
               wait3Sec();
               return c;
-            }, e))
+            })
             .outputSource(new TestOutputSource())
             .build())
         .isBatchJob(false)

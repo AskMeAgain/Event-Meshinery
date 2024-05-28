@@ -4,8 +4,6 @@ import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.task.TaskData;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +25,9 @@ public class SignalingProcessor<K, C extends MeshineryDataContext> implements Me
   }
 
   @Override
-  public CompletableFuture<C> processAsync(C context, Executor executor) {
-    var result = inputSource.getContext(key, context.getId());
-
-    if (result.isEmpty()) {
-      return CompletableFuture.completedFuture(null);
-    }
-
-    return CompletableFuture.completedFuture(join.apply(context, result.get()));
+  public C processAsync(C context) {
+    return inputSource.getContext(key, context.getId())
+        .map(c -> join.apply(context, c))
+        .orElse(null);
   }
 }

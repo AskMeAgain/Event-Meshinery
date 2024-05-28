@@ -247,26 +247,27 @@ public class RoundRobinScheduler {
   }
 
   private CompletableFuture<MeshineryDataContext> getResultFuture(
-      TaskRun taskRun,
+      TaskRun run,
       MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> nextProcessor,
       MeshineryDataContext context
   ) {
-    try {
-      TaskData.setTaskData(taskRun.getTaskData());
-      var decoratedProcessor = MeshineryUtils.applyDecorators(nextProcessor, processorDecorator);
-      return decoratedProcessor.processAsync(context, taskRun.getExecutorService());
-    } catch (Exception exception) {
-      if (gracefulShutdownOnError) {
-        log.error(
-            "Error while preparing/processing processor '{}'. Shutting down gracefully",
-            nextProcessor.getClass().getSimpleName(),
-            exception
-        );
-        gracefulShutdown();
-        return CompletableFuture.completedFuture(null);
+    TaskData.setTaskData(run.getTaskData());
+    var decoratedProc = MeshineryUtils.applyDecorators(nextProcessor, processorDecorator);
+    return CompletableFuture.supplyAsync(() -> {
+      try {
+        return decoratedProc.processAsync(context);
+      } catch (Exception exception) {
+        if (gracefulShutdownOnError) {
+          log.error(
+              "Error while preparing/processing processor '{}'. Shutting down gracefully",
+              nextProcessor.getClass().getName(),
+              exception
+          );
+          gracefulShutdown();
+          return null;
+        }
+        throw exception;
       }
-
-      throw exception;
-    }
+    }, run.getExecutorService());
   }
 }

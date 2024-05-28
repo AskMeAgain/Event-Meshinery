@@ -3,8 +3,6 @@ package io.github.askmeagain.meshinery.core.utils.processor;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext2;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -14,8 +12,8 @@ public class ToTestContext2Processor implements MeshineryProcessor<TestContext, 
   private final int index;
 
   @Override
-  public CompletableFuture<TestContext2> processAsync(TestContext context, Executor executor) {
-    return CompletableFuture.supplyAsync(() -> wait(context), executor);
+  public TestContext2 processAsync(TestContext context) {
+    return wait(context);
   }
 
   @SneakyThrows

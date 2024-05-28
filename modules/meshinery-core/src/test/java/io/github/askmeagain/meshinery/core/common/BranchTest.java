@@ -55,7 +55,7 @@ class BranchTest {
     assertThat(batchJobFinished).isTrue();
     Mockito.verify(defaultOutputSource).writeOutput(any(), eq(new TestContext(expected)), any());
     if (expectSecondProcessorToRun) {
-      Mockito.verify(spyProcessor).processAsync(any(), any());
+      Mockito.verify(spyProcessor).processAsync(any());
     }
   }
 }

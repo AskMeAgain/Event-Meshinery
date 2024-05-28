@@ -1,8 +1,6 @@
 package io.github.askmeagain.meshinery.core.common;
 
 import io.github.askmeagain.meshinery.core.task.TaskData;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 /**
  * Processor interface to execute the business logic of your application. An executor is passed into the processor
@@ -15,7 +13,7 @@ import java.util.concurrent.Executor;
 @FunctionalInterface
 public interface MeshineryProcessor<I extends MeshineryDataContext, O extends MeshineryDataContext> {
 
-  CompletableFuture<O> processAsync(I context, Executor executor);
+  O processAsync(I context);
 
   default TaskData addToTaskData(TaskData taskData) {
     return taskData;

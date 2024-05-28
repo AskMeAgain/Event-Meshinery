@@ -7,7 +7,6 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
@@ -58,13 +57,13 @@ public class E2eTestConfiguration {
         .taskName("Task3Loop")
         .read(executorService, arr)
         .process(processor)
-        .process(((context, e) -> CompletableFuture.completedFuture(context.withIndex(context.getIndex() + 1))))
-        .process(((context, e) -> {
+        .process(((context) -> context.withIndex(context.getIndex() + 1)))
+        .process(((context) -> {
           RESULT_MAP.get(context.getIndex()).add(context.getId());
           if (context.getIndex() >= NUMBER_OF_TOPICS) {
             log.warn("------ FINISHED %s ------".formatted(context.getId()));
           }
-          return CompletableFuture.completedFuture(context);
+          return context;
         }))
         .write(context -> {
           if (context.getIndex() >= NUMBER_OF_TOPICS) {

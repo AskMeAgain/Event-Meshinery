@@ -8,55 +8,51 @@ import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.OutputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
-import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
-import org.slf4j.MDC;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @UtilityClass
 public class MeshineryUtils {
 
-  /**
-   * This utility method takes a list of processors and chains them together sequentially via completable future
-   * compose method.
-   * Note that the input and output type of each processor can be different, but needs to be correct as long as
-   * the output type of a processor is the input type of the next processor. Essentially this utility method collapses
-   * any list of processors
-   *
-   * @param processorList the list of processors which will run sequentially
-   * @param context       the start context which will be passed to the first processor
-   * @param executor      the executor which will be used in all processors
-   * @param mdc           the log mdc which will be used in each processor
-   * @param taskData      the taskdata to be used in each processor
-   * @param <I>           input context type of the first processor
-   * @param <O>           output context type of the last processor
-   * @return returns a completable future which will return O
-   */
-  public static <I extends MeshineryDataContext, O extends MeshineryDataContext> CompletableFuture<O> combineProcessors(
-      List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList,
-      I context,
-      Executor executor,
-      Map<String, String> mdc,
-      TaskData taskData
-  ) {
-    CompletableFuture<MeshineryDataContext> temp = CompletableFuture.completedFuture(context);
-
-    for (MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> newProcessor : processorList) {
-      temp = temp.thenCompose(x -> {
-        MDC.setContextMap(mdc);
-        TaskData.setTaskData(taskData);
-        return newProcessor.processAsync(x, executor);
-      });
-    }
-
-    return (CompletableFuture<O>) temp;
-  }
+  //TODO fix this
+  //  /**
+  //   * This utility method takes a list of processors and chains them together sequentially via completable future
+  //   * compose method.
+  //   * Note that the input and output type of each processor can be different, but needs to be correct as long as
+  //   * the output type of a processor is the input type of the next processor. Essentially this utility method
+  //   collapses
+  //   * any list of processors
+  //   *
+  //   * @param processorList the list of processors which will run sequentially
+  //   * @param context       the start context which will be passed to the first processor
+  //   * @param mdc           the log mdc which will be used in each processor
+  //   * @param taskData      the taskdata to be used in each processor
+  //   * @param <I>           input context type of the first processor
+  //   * @param <O>           output context type of the last processor
+  //   * @return returns a completable future which will return O
+  //   */
+  //  public static <I extends MeshineryDataContext, O extends MeshineryDataContext> CompletableFuture<O>
+  //  combineProcessors(
+  //      List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList,
+  //      I context,
+  //      Map<String, String> mdc,
+  //      TaskData taskData
+  //  ) {
+  //    MeshineryDataContext temp = context;
+  //
+  //    for (MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> newProcessor : processorList) {
+  //      temp = temp.thenCompose(x -> {
+  //        MDC.setContextMap(mdc);
+  //        TaskData.setTaskData(taskData);
+  //        return newProcessor.processAsync(x);
+  //      });
+  //    }
+  //
+  //    return (O) temp;
+  //  }
 
   /**
    * Applies all decorators to a processor.

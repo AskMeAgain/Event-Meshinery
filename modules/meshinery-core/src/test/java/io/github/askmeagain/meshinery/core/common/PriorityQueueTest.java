@@ -6,7 +6,6 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -36,16 +35,15 @@ class PriorityQueueTest {
         .inputSource(inputSource)
         .outputSource(new TestOutputSource())
         .read(executor, "")
-        .process((ctx, e) -> CompletableFuture.supplyAsync(() -> {
-              try {
-                Thread.sleep(1000);
-              } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-              }
-              received.add(Integer.parseInt(ctx.getId()));
-              return ctx;
-            }
-            , e))
+        .process((ctx) -> {
+          try {
+            Thread.sleep(1000);
+          } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+          }
+          received.add(Integer.parseInt(ctx.getId()));
+          return ctx;
+        })
         .build();
 
     //Act --------------------------------------------------------------------------------------------------------------
@@ -59,6 +57,6 @@ class PriorityQueueTest {
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(batchJobFinished).isFalse(); //here we needed to stop prematurely
 
-    assertThat(received).contains(1,2,3,4,5,6,7,8,9,10);
+    assertThat(received).contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
   }
 }

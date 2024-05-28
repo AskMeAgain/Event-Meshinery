@@ -6,7 +6,6 @@ import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.ErrorProcessor;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +42,9 @@ class ExceptionHandlingTest {
         .inputSource(mockInputSource)
         .outputSource(mockOutputSource)
         .read(executor, KEY)
-        .process((context, e) -> CompletableFuture.supplyAsync(() -> {
+        .process((context) -> {
           throw new RuntimeException("arg");
-        }))
+        })
         .write(KEY)
         .build();
 

@@ -34,14 +34,18 @@ public class ProcessorTimingDecorator<I extends MeshineryDataContext, O extends 
     var summary = MeshineryMonitoringService.REQUEST_TIME_SUMMARY.labels(taskName, processorName);
     var inProcessingCounter = MeshineryMonitoringService.IN_PROCESSING_COUNTER.labels(taskName);
 
-    return (context, executor) -> {
+    return context -> {
       inProcessingCounter.inc();
       var begin = Instant.now();
-      return processor.processAsync(context, executor).whenComplete((c1, exception) -> {
+
+      try {
+        return processor.processAsync(context);
+      } finally {
         var diff = Duration.between(begin, Instant.now());
         inProcessingCounter.dec();
         summary.observe(diff.toMillis());
-      });
+      }
+
     };
   }
 }

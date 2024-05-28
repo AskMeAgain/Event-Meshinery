@@ -4,8 +4,6 @@ import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +21,10 @@ public class BranchProcessor<C extends MeshineryDataContext> implements Meshiner
   }
 
   @Override
-  public CompletableFuture<C> processAsync(C context, Executor executor) {
+  public C processAsync(C context) {
     for (int i = 0; i < processorList.size(); i++) {
       if (predicateList.get(i).test(context)) {
-        return processorList.get(i).processAsync(context, executor);
+        return processorList.get(i).processAsync(context);
       }
     }
 

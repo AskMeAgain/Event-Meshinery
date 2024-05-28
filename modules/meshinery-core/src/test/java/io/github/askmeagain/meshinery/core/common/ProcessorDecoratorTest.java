@@ -34,11 +34,11 @@ class ProcessorDecoratorTest {
           MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> processor
       ) {
 
-        return (c, executor) -> {
+        return (c) -> {
           var context = (TestContext) c;
           return processor.processAsync(context.toBuilder()
               .index(context.getIndex() + 1)
-              .build(), executor);
+              .build());
         };
       }
     };
@@ -84,9 +84,9 @@ class ProcessorDecoratorTest {
       public MeshineryProcessor<TestContext, TestContext> wrap(
           MeshineryProcessor<TestContext, TestContext> processor
       ) {
-        return (context, executor) -> processor.processAsync(context.toBuilder()
+        return (context) -> processor.processAsync(context.toBuilder()
             .index(context.getIndex() + 1)
-            .build(), executor);
+            .build());
       }
     };
 

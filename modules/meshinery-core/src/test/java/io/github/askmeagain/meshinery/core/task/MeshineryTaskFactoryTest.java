@@ -2,7 +2,6 @@ package io.github.askmeagain.meshinery.core.task;
 
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
-import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,8 +18,8 @@ class MeshineryTaskFactoryTest {
         .connector(memoryConnector);
 
     //Act ------------------------------------------------------------------------------------
-    var task1 = baseTask.process((c, e) -> CompletableFuture.completedFuture(c)).build();
-    var task2 = baseTask.process((c, e) -> CompletableFuture.completedFuture(c)).build();
+    var task1 = baseTask.process((c) -> c).build();
+    var task2 = baseTask.process((c) -> c).build();
 
     //Assert ---------------------------------------------------------------------------------
     //an internal processor is created aswell

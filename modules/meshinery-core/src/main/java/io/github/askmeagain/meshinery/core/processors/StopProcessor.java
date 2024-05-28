@@ -2,8 +2,6 @@ package io.github.askmeagain.meshinery.core.processors;
 
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 
 /**
@@ -15,12 +13,12 @@ import java.util.function.Predicate;
 public record StopProcessor<C extends MeshineryDataContext>(Predicate<C> stopIf) implements MeshineryProcessor<C, C> {
 
   @Override
-  public CompletableFuture<C> processAsync(C context, Executor executor) {
+  public C processAsync(C context) {
 
     if (stopIf.test(context)) {
-      return CompletableFuture.completedFuture(null);
+      return null;
     }
 
-    return CompletableFuture.completedFuture(context);
+    return context;
   }
 }

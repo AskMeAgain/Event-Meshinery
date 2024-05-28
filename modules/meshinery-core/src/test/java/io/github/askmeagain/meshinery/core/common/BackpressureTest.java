@@ -49,6 +49,6 @@ class BackpressureTest {
 
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(batchJobFinished).isFalse(); //here we needed to stop prematurely
-    Mockito.verify(processor, times(10)).processAsync(any(), any());
+    Mockito.verify(processor, times(10)).processAsync(any());
   }
 }

@@ -10,8 +10,6 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -104,12 +102,12 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
         .process(new MeshineryProcessor<>() {
           @SneakyThrows
           @Override
-          public CompletableFuture<MeshineryDataContext> processAsync(MeshineryDataContext context, Executor executor) {
+          public MeshineryDataContext processAsync(MeshineryDataContext context) {
             var response = methodHandle.invoke(unproxiedObject, context);
             if (MeshineryDataContext.class.isAssignableFrom(responseType)) {
-              return CompletableFuture.completedFuture((MeshineryDataContext) response);
+              return (MeshineryDataContext) response;
             } else {
-              return CompletableFuture.completedFuture(null);
+              return null;
             }
           }
         })
