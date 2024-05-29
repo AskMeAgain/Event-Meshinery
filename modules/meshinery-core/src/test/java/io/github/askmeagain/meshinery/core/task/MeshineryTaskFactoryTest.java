@@ -13,7 +13,7 @@ class MeshineryTaskFactoryTest {
     //Arrange --------------------------------------------------------------------------------
     var memoryConnector = new MemoryConnector<String, TestContext>();
     var baseTask = MeshineryTaskFactory.<String, TestContext>builder()
-        .read(null, "abc")
+        .read("abc")
         .taskName("basename")
         .connector(memoryConnector);
 

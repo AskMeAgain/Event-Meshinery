@@ -29,7 +29,7 @@ class ThrowingOutputTest extends AbstractLogTestBase {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(new ThrowingOutputSource())
-        .read(executor, KEY)
+        .read(KEY)
         .write("")
         .build();
 
@@ -37,6 +37,8 @@ class ThrowingOutputTest extends AbstractLogTestBase {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
+        .gracefulShutdownOnError(true)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(500, TimeUnit.MILLISECONDS);
@@ -45,7 +47,8 @@ class ThrowingOutputTest extends AbstractLogTestBase {
     assertThat(batchJobFinished).isTrue();
     assertThatLogContainsMessage(
         output,
-        "Error while preparing/processing processor 'DynamicOutputProcessor'. Shutting down gracefully"
+        "Error while preparing/processing processor 'io.github.askmeagain.meshinery.core.processors" +
+            ".DynamicOutputProcessor'. Shutting down gracefully"
     );
   }
 }

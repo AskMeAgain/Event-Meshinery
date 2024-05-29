@@ -65,11 +65,11 @@ class TaskReplayFactoryTest {
     var memoryConnector = new MemoryConnector<String, TestContext>();
     var task1 = MeshineryTaskFactory.<String, TestContext>builder()
         .connector(memoryConnector)
-        .read(null, KEY)
+        .read(KEY)
         .build();
     var task2 = MeshineryTaskFactory.<String, TestContext>builder()
         .connector(memoryConnector)
-        .read(null, KEY)
+        .read(KEY)
         .taskName(TASK_2)
         .build();
 

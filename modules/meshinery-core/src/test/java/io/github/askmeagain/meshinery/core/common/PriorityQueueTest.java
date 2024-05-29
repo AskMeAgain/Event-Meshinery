@@ -34,7 +34,7 @@ class PriorityQueueTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(new TestOutputSource())
-        .read(executor, "")
+        .read("")
         .process((ctx) -> {
           try {
             Thread.sleep(1000);
@@ -50,6 +50,7 @@ class PriorityQueueTest {
     RoundRobinScheduler.<String, TestContext>builder()
         .properties(properties)
         .task(task)
+        .executorService(executor)
         .backpressureLimit(10000)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(1500, TimeUnit.MILLISECONDS);

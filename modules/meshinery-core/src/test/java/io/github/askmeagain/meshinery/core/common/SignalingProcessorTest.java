@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.core.common;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import java.util.concurrent.Executors;
@@ -56,12 +57,12 @@ class SignalingProcessorTest {
 
     var signalContext = new TestContext(1).withIndex(100);
 
-    memoryInputSource.writeOutput("Ignored", new TestContext(0));
-    memoryInputSource.writeOutput("Test", signalContext);
+    memoryInputSource.writeOutput("Ignored", new TestContext(0), new TaskData());
+    memoryInputSource.writeOutput("Test", signalContext, new TaskData());
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
-        .read(executor, "")
+        .read("")
         .outputSource(outputSource)
         .readNewInput("Test", memoryInputSource, joinMethod)
         .write("Output")
@@ -71,6 +72,7 @@ class SignalingProcessorTest {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(1500, TimeUnit.MILLISECONDS);

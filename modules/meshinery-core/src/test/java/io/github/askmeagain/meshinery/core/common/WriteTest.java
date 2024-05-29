@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.core.common;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import java.util.concurrent.Executors;
@@ -29,18 +30,18 @@ class WriteTest {
     var executor = Executors.newSingleThreadExecutor();
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .connector(memoryConnector)
-        .read(executor, "input")
+        .read("input")
         .write("abc", c -> c.getId().equals("1"))
         .write("abc2", c -> c.getId().equals("0"))
         .build();
 
-
     //Act ------------------------------------------------------------------------------------
-    memoryConnector.writeOutput("input", context);
+    memoryConnector.writeOutput("input", context, new TaskData());
 
     RoundRobinScheduler.builder()
         .gracePeriodMilliseconds(100)
         .task(task)
+        .executorService(executor)
         .isBatchJob(true)
         .buildAndStart();
 
@@ -68,7 +69,7 @@ class WriteTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
         .outputSource(defaultOutputSource)
-        .read(executor, KEY)
+        .read(KEY)
         .write(KEY, mockOutputSource)
         .write(KEY, KEY)
         .build();
@@ -77,6 +78,7 @@ class WriteTest {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(100, TimeUnit.MILLISECONDS);

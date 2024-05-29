@@ -26,13 +26,14 @@ class ThrowingInputTest extends AbstractLogTestBase {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(new TestOutputSource())
-        .read(executor, KEY)
+        .read(KEY)
         .build();
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(1000, TimeUnit.MILLISECONDS);

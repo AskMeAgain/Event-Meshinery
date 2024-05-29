@@ -63,7 +63,7 @@ class MonitoringApiControllerTest {
         .registerStartupHook(List.of(config.executorRegistration()))
         .task(MeshineryTaskFactory.<String, TestContext>builder()
             .taskName("cool-task-name")
-            .read(executor, "test")
+            .read("test")
             .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 1, 0, 0))
             .process((c) -> {
               wait3Sec();
@@ -73,7 +73,7 @@ class MonitoringApiControllerTest {
             .build())
         .task(MeshineryTaskFactory.<String, TestContext>builder()
             .taskName("cool-task-name-2")
-            .read(executor, "test2")
+            .read("test2")
             .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 1, 0, 0))
             .process((c) -> {
               wait3Sec();

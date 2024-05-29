@@ -11,7 +11,6 @@ import io.github.askmeagain.meshinery.monitoring.decorators.OtelInputSourceTimin
 import io.github.askmeagain.meshinery.monitoring.decorators.OtelProcessorDecorator;
 import io.github.askmeagain.meshinery.monitoring.decorators.ProcessorTimingDecorator;
 import io.github.askmeagain.meshinery.monitoring.grafanapush.MeshineryPushProperties;
-import io.github.askmeagain.meshinery.monitoring.utils.MeshineryMonitoringSpringUtils;
 import io.opentelemetry.api.OpenTelemetry;
 import io.prometheus.client.Gauge;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -21,8 +20,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
-import static io.github.askmeagain.meshinery.monitoring.utils.MeshineryMonitoringSpringUtils.getNameByExecutorAndTasks;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Configuration
@@ -64,20 +61,6 @@ public class MeshineryMonitoringAutoConfiguration {
   CustomizeStartupHook executorRegistration() {
     return roundRobinScheduler -> {
 
-      var executorPerTaskMap = MeshineryMonitoringSpringUtils.createExecutorPerTaskMap(roundRobinScheduler.getTasks());
-
-      var executorAssignmentGauge = Gauge.build()
-          .name("executor")
-          .help("Executors and their registered tasks")
-          .labelNames("executor", "task_name")
-          .register(MeshineryMonitoringService.REGISTRY);
-
-      executorPerTaskMap.forEach((executor, tasks) -> {
-        tasks.forEach(task -> {
-          executorAssignmentGauge.labels(String.valueOf(executor.hashCode()), task.getTaskName());
-        });
-      });
-
       var maxThreadGauge = Gauge.build()
           .name("executor_max_threads")
           .help("Max number of threads on each executor")
@@ -106,7 +89,7 @@ public class MeshineryMonitoringAutoConfiguration {
               };
             }
 
-            var name = getNameByExecutorAndTasks(executorPerTaskMap, dataInjectingExecutorService);
+            var name = dataInjectingExecutorService.getName();
 
             maxThreadGauge.setChild(child, name);
           });
@@ -140,7 +123,7 @@ public class MeshineryMonitoringAutoConfiguration {
               };
             }
 
-            var name = getNameByExecutorAndTasks(executorPerTaskMap, dataInjectingExecutorService);
+            var name = dataInjectingExecutorService.getName();
 
             gauge.setChild(child, name);
           });

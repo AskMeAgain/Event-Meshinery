@@ -4,7 +4,6 @@ import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
-import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.scheduler.ConnectorKey;
 import java.time.Instant;
 import java.util.Collections;
@@ -36,7 +35,6 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
   @Getter private final MeshineryInputSource<K, C> inputConnector;
 
   @Getter private final MeshineryOutputSource<K, C> outputConnector;
-  @Getter private final DataInjectingExecutorService executorService;
   @Getter private final Function<Throwable, MeshineryDataContext> handleException;
   @Getter private final List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList;
   Instant nextExecution = Instant.now();
@@ -49,7 +47,6 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
       TaskData taskData,
       MeshineryInputSource<K, C> inputConnector,
       MeshineryOutputSource<K, C> outputConnector,
-      DataInjectingExecutorService executorService,
       Function<Throwable, MeshineryDataContext> handleException,
       List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList
   ) {
@@ -64,7 +61,6 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
 
     this.inputConnector = inputConnector;
     this.outputConnector = outputConnector;
-    this.executorService = executorService;
     this.handleException = handleException;
     this.processorList = processorList;
   }
@@ -115,7 +111,6 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
               .taskData(taskData)
               .id(input.getId())
               .future(CompletableFuture.completedFuture(input))
-              .executorService(getExecutorService())
               .queue(new LinkedList<>(getProcessorList()))
               .handleError(getHandleException())
               .build())

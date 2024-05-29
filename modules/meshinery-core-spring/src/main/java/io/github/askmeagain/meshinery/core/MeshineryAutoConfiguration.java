@@ -14,6 +14,7 @@ import io.github.askmeagain.meshinery.core.shutdown.ShutdownApiController;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -53,6 +54,12 @@ public class MeshineryAutoConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean
+  public ExecutorService executorService() {
+    return Executors.newVirtualThreadPerTaskExecutor();
+  }
+
+  @Bean
   public static DynamicMemoryConnectorRegistration dynamicMemoryConnectorRegistration(
       ApplicationContext applicationContext
   ) {
@@ -84,7 +91,8 @@ public class MeshineryAutoConfiguration {
       List<CustomizeStartupHook> startupHook,
       List<ProcessorDecorator<MeshineryDataContext, MeshineryDataContext>> processorDecorators,
       List<InputSourceDecoratorFactory> connectorDecoratorFactories,
-      MeshineryCoreProperties meshineryCoreProperties
+      MeshineryCoreProperties meshineryCoreProperties,
+      ExecutorService executorService
   ) {
     var appliedPropertyTasks = PropertyTaskInjection.injectProperties(tasks, meshineryCoreProperties);
 
@@ -97,6 +105,7 @@ public class MeshineryAutoConfiguration {
         .registerConnectorDecorators(connectorDecoratorFactories)
         .gracefulShutdownOnError(meshineryCoreProperties.isShutdownOnError())
         .gracePeriodMilliseconds(meshineryCoreProperties.getGracePeriodMilliseconds())
+        .executorService(executorService)
         .tasks(appliedPropertyTasks)
         .build();
   }

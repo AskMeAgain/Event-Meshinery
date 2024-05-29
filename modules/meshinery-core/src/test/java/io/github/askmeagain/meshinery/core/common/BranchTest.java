@@ -36,7 +36,7 @@ class BranchTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(defaultOutputSource)
-        .read(executor, KEY)
+        .read(KEY)
         .process(BranchProcessor.<TestContext>builder()
             .branch(new TestContextProcessor(1), x -> firstCondition)
             .branch(spyProcessor, x -> secondCondition))
@@ -47,6 +47,7 @@ class BranchTest {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(1500, TimeUnit.MILLISECONDS);

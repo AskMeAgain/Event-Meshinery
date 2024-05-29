@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.connectors.mysql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import org.junit.jupiter.api.Test;
 
@@ -24,9 +25,9 @@ class MysqlAccessingInputTest extends AbstractMysqlTestBase {
     var value2 = new TestContext(2);
 
     //Act ------------------------------------------------------------------------------------
-    output.writeOutput(STATE, value1);
-    output.writeOutput(STATE + "2", value1);
-    output.writeOutput(STATE, value2);
+    output.writeOutput(STATE, value1, new TaskData());
+    output.writeOutput(STATE + "2", value1, new TaskData());
+    output.writeOutput(STATE, value2, new TaskData());
 
     var specificResult1 = input.getContext(STATE, value1.getId());
     var specificResultEmpty = input.getContext(STATE, value1.getId());

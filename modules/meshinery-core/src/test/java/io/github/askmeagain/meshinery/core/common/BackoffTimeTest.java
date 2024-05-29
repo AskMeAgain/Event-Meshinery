@@ -4,7 +4,6 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.TestContextProcessor;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
-import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -15,9 +14,7 @@ class BackoffTimeTest {
 
   @Test
   void testBackoffTime() throws InterruptedException {
-
     //Arrange ----------------------------------------------------------------------------------------------------------
-    var executor = Executors.newFixedThreadPool(11);
     var processor = Mockito.spy(new TestContextProcessor(0));
     var inputSource = TestInputSource.<TestContext>builder()
         .todo(new TestContext(0))
@@ -28,7 +25,7 @@ class BackoffTimeTest {
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSourceSpy)
-        .read(executor, "")
+        .read("")
         .backoffTime(180)
         .process(processor)
         .build();

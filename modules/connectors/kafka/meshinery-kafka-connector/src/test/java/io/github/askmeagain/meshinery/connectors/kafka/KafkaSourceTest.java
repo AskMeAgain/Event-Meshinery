@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.connectors.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,7 @@ class KafkaSourceTest extends AbstractKafkaTest {
     var input = new TestContext(12);
 
     //Act -------------------------------------------------------------------------------------
-    connector.writeOutput(TOPIC, input);
+    connector.writeOutput(TOPIC, input, new TaskData());
 
     List<TestContext> result = Collections.emptyList();
     //this is to wait for metadata updates

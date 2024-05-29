@@ -69,40 +69,31 @@ class DrawTestApplication {
     }
 
     @Bean
-    MeshineryTask<String, TestContext> task1(
-        MemoryConnector<String, TestContext> memoryConnector,
-        ExecutorService executorService
-    ) {
+    MeshineryTask<String, TestContext> task1(MemoryConnector<String, TestContext> memoryConnector) {
       return MeshineryTaskFactory.<String, TestContext>builder()
           .connector(memoryConnector)
           .taskName("task1")
-          .read(executorService, "0/10 * * * * *")
+          .read("0/10 * * * * *")
           .write("Output1")
           .build();
     }
 
     @Bean
-    MeshineryTask<String, TestContext> task2(
-        MemoryConnector<String, TestContext> memoryConnector,
-        ExecutorService executorService
-    ) {
+    MeshineryTask<String, TestContext> task2(MemoryConnector<String, TestContext> memoryConnector) {
       return MeshineryTaskFactory.<String, TestContext>builder()
           .connector(memoryConnector)
           .taskName("task2")
-          .read(executorService, "Output1")
+          .read("Output1")
           .write("Output2")
           .build();
     }
 
     @Bean
-    MeshineryTask<String, TestContext> task3(
-        MemoryConnector<String, TestContext> memoryConnector,
-        ExecutorService executorService
-    ) {
+    MeshineryTask<String, TestContext> task3(MemoryConnector<String, TestContext> memoryConnector) {
       return MeshineryTaskFactory.<String, TestContext>builder()
           .connector(memoryConnector)
           .taskName("task3")
-          .read(executorService, "Output2")
+          .read("Output2")
           .write("Output1")
           .build();
     }

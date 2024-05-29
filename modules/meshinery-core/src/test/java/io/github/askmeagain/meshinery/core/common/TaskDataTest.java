@@ -35,7 +35,7 @@ class TaskDataTest extends AbstractTestBase {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
         .outputSource(defaultOutput)
-        .read(executor, INPUT_KEY)
+        .read(INPUT_KEY)
         .process(new TaskDataTestProcessor())
         .write(INPUT_KEY)
         .putData("test", "1234")
@@ -50,6 +50,7 @@ class TaskDataTest extends AbstractTestBase {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
 
@@ -58,6 +59,5 @@ class TaskDataTest extends AbstractTestBase {
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
     Mockito.verify(defaultOutput).writeOutput(any(), eq(expected), any());
-
   }
 }

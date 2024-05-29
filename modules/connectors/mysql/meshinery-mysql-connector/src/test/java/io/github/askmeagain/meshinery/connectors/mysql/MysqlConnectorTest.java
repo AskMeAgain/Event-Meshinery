@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.connectors.mysql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -19,8 +20,8 @@ class MysqlConnectorTest extends AbstractMysqlTestBase {
     var value2 = new TestContext(2);
 
     //Act ------------------------------------------------------------------------------------
-    mysqlConnector.writeOutput(STATE, value1);
-    mysqlConnector.writeOutput(STATE, value2);
+    mysqlConnector.writeOutput(STATE, value1, new TaskData());
+    mysqlConnector.writeOutput(STATE, value2, new TaskData());
 
     var result1 = mysqlConnector.getInputs(List.of(STATE));
     var result2 = mysqlConnector.getInputs(List.of(STATE));

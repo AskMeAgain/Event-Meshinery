@@ -44,8 +44,7 @@ public class E2eTestConfiguration {
   @Bean
   public MeshineryTask<String, TestContext> Task100Loop(
       MeshineryProcessor<TestContext, TestContext> processor,
-      MeshinerySourceConnector<String, TestContext> connector,
-      ExecutorService executorService
+      MeshinerySourceConnector<String, TestContext> connector
   ) {
     var arr = IntStream.range(0, NUMBER_OF_TOPICS)
         .mapToObj(i -> TOPIC_PREFIX + i)
@@ -55,7 +54,7 @@ public class E2eTestConfiguration {
         .outputSource(connector)
         .inputSource(connector)
         .taskName("Task3Loop")
-        .read(executorService, arr)
+        .read(arr)
         .process(processor)
         .process(((context) -> context.withIndex(context.getIndex() + 1)))
         .process(((context) -> {
@@ -75,10 +74,7 @@ public class E2eTestConfiguration {
   }
 
   @Bean
-  public MeshineryTask<String, TestContext> task1(
-      MeshinerySourceConnector<String, TestContext> connector,
-      ExecutorService executorService
-  ) {
+  public MeshineryTask<String, TestContext> task1(MeshinerySourceConnector<String, TestContext> connector) {
     var inputSource = TestInputSource.builder()
         .todo(TestContext.builder().build())
         .iterations(ITEMS)
@@ -88,7 +84,7 @@ public class E2eTestConfiguration {
         .outputSource(connector)
         .inputSource(inputSource)
         .taskName("InputSpawner")
-        .read(executorService, "Doesnt_matter")
+        .read("Doesnt_matter")
         .write(TOPIC_PREFIX + "0")
         .build();
   }

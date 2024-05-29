@@ -2,7 +2,6 @@ package io.github.askmeagain.meshinery.core.task;
 
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
-import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import java.time.Instant;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
@@ -25,8 +24,6 @@ public class TaskRun {
 
   @With
   CompletableFuture<MeshineryDataContext> future;
-
-  DataInjectingExecutorService executorService;
 
   Queue<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> queue;
 

@@ -27,8 +27,8 @@ class PostgresInputTest extends AbstractPostgresTestBase {
     var value2 = new TestContext(2);
 
     //Act ------------------------------------------------------------------------------------
-    output.writeOutput(STATE, value1);
-    output.writeOutput(STATE, value2);
+    output.writeOutput(STATE, value1, new TaskData());
+    output.writeOutput(STATE, value2, new TaskData());
 
     var result1 = input.getInputs(List.of(STATE));
     var result2 = input.getInputs(List.of(STATE));
@@ -55,11 +55,11 @@ class PostgresInputTest extends AbstractPostgresTestBase {
     var value2 = new TestContext(2);
 
     //Act ------------------------------------------------------------------------------------
-    output.writeOutput(STATE, value1);
+    output.writeOutput(STATE, value1, new TaskData());
     var result1 = input.getInputs(List.of(STATE));
 
     TaskData.setTaskData(new TaskData().with(MeshineryPostgresProperties.POSTGRES_OVERRIDE_EXISTING, ""));
-    output.writeOutput(STATE, value2);
+    output.writeOutput(STATE, value2, new TaskData());
     var result2 = input.getInputs(List.of(STATE));
 
     //Assert ---------------------------------------------------------------------------------
@@ -81,10 +81,10 @@ class PostgresInputTest extends AbstractPostgresTestBase {
     var value1 = new TestContext(1);
 
     //Act ------------------------------------------------------------------------------------
-    output.writeOutput(STATE, value1);
+    output.writeOutput(STATE, value1, new TaskData());
 
     //Assert ---------------------------------------------------------------------------------
-    assertThatThrownBy(() -> output.writeOutput(STATE, value1))
+    assertThatThrownBy(() -> output.writeOutput(STATE, value1, new TaskData()))
         .isInstanceOf(UnableToExecuteStatementException.class);
   }
 }

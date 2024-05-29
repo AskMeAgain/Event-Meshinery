@@ -10,7 +10,6 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,6 @@ import org.springframework.core.ResolvableType;
 public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcessor {
 
   private final ApplicationContext applicationContext;
-  private final ExecutorService executorService;
 
   private static ResolvableType getTargetType(Class<?> contextClazz) {
     return ResolvableType.forClassWithGenerics(MeshineryTask.class, String.class, contextClazz);
@@ -59,7 +57,6 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
               () -> buildMeshineryJob(
                   m,
                   applicationContext.getBean(proxiedBeanName),
-                  executorService,
                   applicationContext.getBeanProvider(ResolvableType.forClassWithGenerics(
                       MeshinerySourceConnector.class,
                       String.class,
@@ -77,7 +74,6 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
   private static MeshineryTask<String, MeshineryDataContext> buildMeshineryJob(
       Method methodHandle,
       Object beanInstance,
-      ExecutorService executorService,
       ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider
   ) {
     var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
@@ -98,7 +94,7 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
         .connector(provider.getObject())
         .taskName(annotation.taskName().equals("-") ? "dynamic-job-" + readEvent.toLowerCase() : annotation.taskName())
         .putData(List.of(properties))
-        .read(executorService, readEvent)
+        .read(readEvent)
         .process(new MeshineryProcessor<>() {
           @SneakyThrows
           @Override

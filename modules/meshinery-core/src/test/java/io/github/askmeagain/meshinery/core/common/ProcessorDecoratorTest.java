@@ -46,7 +46,7 @@ class ProcessorDecoratorTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(mockOutputSource)
-        .read(executor, "")
+        .read("")
         .process(new TestContextProcessor(1))
         .write("")
         .build();
@@ -55,6 +55,7 @@ class ProcessorDecoratorTest {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
         .registerProcessorDecorators(List.of(decorator))
         .gracePeriodMilliseconds(0)
         .buildAndStart();
@@ -93,7 +94,7 @@ class ProcessorDecoratorTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(mockOutputSource)
-        .read(executor, "")
+        .read("")
         .registerDecorator(decorator)
         .process(new TestContextProcessor(1))
         .write("")
@@ -103,6 +104,7 @@ class ProcessorDecoratorTest {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(2, TimeUnit.SECONDS);

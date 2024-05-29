@@ -33,7 +33,7 @@ class StopIfTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(outputSource)
-        .read(executor, KEY)
+        .read(KEY)
         .stopIf(x -> x.getIndex() == 0)
         .write(KEY)
         .build();
@@ -42,6 +42,7 @@ class StopIfTest {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(2, TimeUnit.SECONDS);

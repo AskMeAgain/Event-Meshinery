@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.core.common;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.decorators.TestInputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.utils.processor.TestContextProcessor;
@@ -22,14 +23,14 @@ class ConnectorDecoratorTest {
   void decoraterTest() throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
     var connector = new MemoryConnector<String, TestContext>();
-    connector.writeOutput("Abc", TestContext.builder().id("A").build());
+    connector.writeOutput("Abc", TestContext.builder().id("A").build(), new TaskData());
 
     var inputCounter = new AtomicInteger();
     var executor = Executors.newSingleThreadExecutor();
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("Test")
-        .read(executor, "Abc")
+        .read("Abc")
         .connector(connector)
         .process(new TestContextProcessor(1))
         .write("Def", "def2")
@@ -42,6 +43,7 @@ class ConnectorDecoratorTest {
         .task(task)
         .registerConnectorDecorators(List.of(spyDecorator))
         .isBatchJob(true)
+        .executorService(executor)
         .gracePeriodMilliseconds(500)
         .buildAndStart();
 

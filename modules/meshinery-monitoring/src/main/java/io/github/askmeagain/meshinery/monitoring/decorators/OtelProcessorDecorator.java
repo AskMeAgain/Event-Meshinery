@@ -5,12 +5,6 @@ import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringUtils;
 import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.SpanContext;
-import io.opentelemetry.api.trace.SpanId;
-import io.opentelemetry.api.trace.TraceFlags;
-import io.opentelemetry.api.trace.TraceId;
-import io.opentelemetry.api.trace.TraceState;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 import java.util.Map;
@@ -37,16 +31,7 @@ public class OtelProcessorDecorator<I extends MeshineryDataContext, O extends Me
     var tracer = tracerMap.computeIfAbsent(processorName, openTelemetry::getTracer);
 
     return context -> {
-      var otelContext = SpanContext.create(
-          TraceId.fromBytes(context.getId().getBytes()),
-          SpanId.fromBytes(processorName.getBytes()),
-          TraceFlags.getDefault(),
-          TraceState.getDefault()
-      );
-
-      var wrap = Span.wrap(otelContext);
-
-      var with = Context.current().with(wrap);
+      var with = Context.current();
       var span = tracer.spanBuilder(taskName).setParent(with).startSpan();
 
       try {

@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.core.source;
 
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -18,18 +19,18 @@ class SignalingInputSourceTest {
 
     var signalSource = new SignalingInputSource<>(false, "signal", signal, resultSource, KEY);
 
-    resultSource.writeOutput(KEY, new TestContext(1));
-    resultSource.writeOutput("1", new TestContext(0));
+    resultSource.writeOutput(KEY, new TestContext(1), new TaskData());
+    resultSource.writeOutput("1", new TestContext(0), new TaskData());
 
     //Act ------------------------------------------------------------------------------------
     var empty1 = signalSource.getInputs(List.of(KEY));
 
-    signal.writeOutput(KEY, new TestContext(1234));
+    signal.writeOutput(KEY, new TestContext(1234), new TaskData());
 
     var result = signalSource.getInputs(List.of(KEY));
     var empty2 = signalSource.getInputs(List.of(KEY));
 
-    signal.writeOutput(KEY, new TestContext(1234));
+    signal.writeOutput(KEY, new TestContext(1234), new TaskData());
 
     var empty3 = signalSource.getInputs(List.of(KEY));
 
@@ -49,28 +50,28 @@ class SignalingInputSourceTest {
 
     var signalSource = new SignalingInputSource<>(true, "signal", signal, resultSource, KEY);
 
-    resultSource.writeOutput(KEY, new TestContext(1));
+    resultSource.writeOutput(KEY, new TestContext(1), new TaskData());
 
 
     //Act ------------------------------------------------------------------------------------
     var empty1 = signalSource.getInputs(List.of(KEY));
-    signal.writeOutput(KEY, new TestContext(1234));
+    signal.writeOutput(KEY, new TestContext(1234), new TaskData());
 
     var result1 = signalSource.getInputs(List.of(KEY));
 
-    resultSource.writeOutput(KEY, new TestContext(2));
+    resultSource.writeOutput(KEY, new TestContext(2), new TaskData());
     var result2 = signalSource.getInputs(List.of(KEY));
 
-    resultSource.writeOutput(KEY, new TestContext(3));
+    resultSource.writeOutput(KEY, new TestContext(3), new TaskData());
     var result3 = signalSource.getInputs(List.of(KEY));
 
-    resultSource.writeOutput(KEY, new TestContext(4));
+    resultSource.writeOutput(KEY, new TestContext(4), new TaskData());
     var result4 = signalSource.getInputs(List.of(KEY));
 
-    resultSource.writeOutput("1", new TestContext(0));
+    resultSource.writeOutput("1", new TestContext(0), new TaskData());
     var empty2 = signalSource.getInputs(List.of(KEY));
 
-    signal.writeOutput(KEY, new TestContext(1234));
+    signal.writeOutput(KEY, new TestContext(1234), new TaskData());
 
     var empty3 = signalSource.getInputs(List.of(KEY));
 

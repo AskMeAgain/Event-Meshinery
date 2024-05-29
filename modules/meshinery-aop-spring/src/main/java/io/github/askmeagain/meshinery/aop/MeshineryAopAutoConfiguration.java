@@ -5,7 +5,6 @@ import io.github.askmeagain.meshinery.aop.config.DynamicJobAopRegistrar;
 import io.github.askmeagain.meshinery.aop.properties.MeshineryAopProperties;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
-import java.util.concurrent.ExecutorService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -29,10 +28,7 @@ public class MeshineryAopAutoConfiguration {
   }
 
   @Bean
-  public static DynamicJobAopRegistrar dynamicJobRegistrar(
-      ApplicationContext applicationContext,
-      ExecutorService executorService
-  ) {
-    return new DynamicJobAopRegistrar(applicationContext, executorService);
+  public static DynamicJobAopRegistrar dynamicJobRegistrar(ApplicationContext applicationContext) {
+    return new DynamicJobAopRegistrar(applicationContext);
   }
 }

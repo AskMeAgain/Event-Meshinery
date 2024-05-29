@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.core.source;
 import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -32,7 +33,7 @@ class DynamicKeyConnectorTest {
 
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .connector(dynamicConnector)
-        .read(executor, "outer key")
+        .read("outer key")
         .write("result")
         .build();
 
@@ -44,13 +45,14 @@ class DynamicKeyConnectorTest {
         .id("inner context")
         .build();
 
-    innerConnector.writeOutput("outer key", trigger);
-    innerConnector.writeOutput("inner key", innerContext);
+    innerConnector.writeOutput("outer key", trigger, new TaskData());
+    innerConnector.writeOutput("inner key", innerContext, new TaskData());
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
         .gracePeriodMilliseconds(1000)
         .buildAndStart();
 

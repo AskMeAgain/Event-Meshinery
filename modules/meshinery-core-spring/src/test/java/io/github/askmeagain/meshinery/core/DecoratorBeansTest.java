@@ -6,9 +6,9 @@ import io.github.askmeagain.meshinery.core.setup.AbstractCoreSpringTestBase;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.decorators.TestInputSourceDecoratorFactory;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -36,7 +36,7 @@ class DecoratorBeansTest extends AbstractCoreSpringTestBase {
     //Arrange ----------------------------------------------------------------------------------------------------------
     connector.writeOutput("Abc", TestContext.builder()
         .id("a")
-        .build());
+        .build(), new TaskData());
 
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ class DecoratorBeansTest extends AbstractCoreSpringTestBase {
     @Bean
     public MeshineryTask<String, TestContext> task(MemoryConnector<String, TestContext> connector) {
       return MeshineryTaskFactory.<String, TestContext>builder()
-          .read(Executors.newSingleThreadExecutor(), "Abc")
+          .read("Abc")
           .connector(connector)
           .write("Def")
           .build();

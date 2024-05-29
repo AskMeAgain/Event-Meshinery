@@ -7,7 +7,6 @@ import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
-import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.processors.DynamicOutputProcessor;
 import io.github.askmeagain.meshinery.core.processors.SignalingProcessor;
@@ -16,7 +15,6 @@ import io.github.askmeagain.meshinery.core.source.JoinedInnerInputSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -39,7 +37,6 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
   private long backoffTime;
   private MeshineryInputSource<K, C> inputConnector;
   private MeshineryOutputSource<K, C> outputConnector;
-  private DataInjectingExecutorService executorService;
   private Function<Throwable, MeshineryDataContext> handleException = e -> null;
 
   private TaskData taskData = new TaskData().with(TaskDataProperties.TASK_NAME, taskName);
@@ -52,7 +49,6 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
       String name,
       MeshineryInputSource inputConnector,
       MeshineryOutputSource outputConnector,
-      DataInjectingExecutorService executorService,
       List<K> eventKeys,
       TaskData taskData,
       Function<Throwable, MeshineryDataContext> handleException,
@@ -66,7 +62,6 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
     this.processorList = newProcessorList;
     this.inputConnector = inputConnector;
     this.outputConnector = outputConnector;
-    this.executorService = executorService;
     this.inputKeys = eventKeys;
     this.taskData = taskData;
     this.handleException = handleException;
@@ -111,15 +106,13 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
   /**
    * Reads from the inputsource with the provided key. Uses the executorService to query the inputData.
    *
-   * @param executorService The executorService to be used in the Inputsource
    * @param inputKeys       The Key to be used in the Inputsource
    * @return returns itself for builder pattern
    */
   @SafeVarargs
-  public final MeshineryTaskFactory<K, C> read(ExecutorService executorService, K... inputKeys) {
+  public final MeshineryTaskFactory<K, C> read(K... inputKeys) {
     return toBuilder()
         .inputKeys(List.of(inputKeys))
-        .executorService(new DataInjectingExecutorService(joinEventKeys(inputKeys) + "-executor", executorService))
         .taskData(taskData.with(TaskDataProperties.GRAPH_INPUT_KEY, joinEventKeys(inputKeys)))
         .build();
   }
@@ -401,7 +394,6 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
         taskName,
         inputConnector,
         outputConnector,
-        executorService,
         inputKeys,
         taskData,
         handleException,
@@ -415,7 +407,7 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<K, C> build() {
     var finalProcessorList = new ArrayList<>(processorList);
-    finalProcessorList.add((context) -> (MeshineryDataContext) inputConnector.commit((C) context));
+    finalProcessorList.add(context -> inputConnector.commit((C) context));
 
     return new MeshineryTask<>(
         backoffTime,
@@ -424,7 +416,6 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
         taskData,
         inputConnector,
         outputConnector,
-        executorService,
         handleException,
         finalProcessorList
     );

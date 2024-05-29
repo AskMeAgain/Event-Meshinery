@@ -50,6 +50,7 @@ public class RoundRobinScheduler {
   private final Queue<ConnectorKey> inputQueue = new ConcurrentLinkedQueue<>();
 
   private final Map<ConnectorKey, MeshineryTask<?, ?>> taskRunLookupMap = new HashMap<>();
+  private final ExecutorService taskExecutorService;
   private final Set<ExecutorService> executorServices = new HashSet<>();
   private boolean gracefulShutdownTriggered = false;
   private Instant lastInputEntry;
@@ -62,8 +63,8 @@ public class RoundRobinScheduler {
   @SneakyThrows
   public RoundRobinScheduler start() {
     //setup
-    tasks.forEach(task -> executorServices.add(task.getExecutorService()));
     createLookupMap();
+    executorServices.add(taskExecutorService);
 
     //the producer
     var inputExecutor = new DataInjectingExecutorService("input-executor", Executors.newSingleThreadExecutor());
@@ -251,10 +252,10 @@ public class RoundRobinScheduler {
       MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> nextProcessor,
       MeshineryDataContext context
   ) {
-    TaskData.setTaskData(run.getTaskData());
     var decoratedProc = MeshineryUtils.applyDecorators(nextProcessor, processorDecorator);
     return CompletableFuture.supplyAsync(() -> {
       try {
+        TaskData.setTaskData(run.getTaskData());
         return decoratedProc.processAsync(context);
       } catch (Exception exception) {
         if (gracefulShutdownOnError) {
@@ -267,7 +268,9 @@ public class RoundRobinScheduler {
           return null;
         }
         throw exception;
+      } finally {
+        TaskData.clearTaskData();
       }
-    }, run.getExecutorService());
+    }, taskExecutorService);
   }
 }

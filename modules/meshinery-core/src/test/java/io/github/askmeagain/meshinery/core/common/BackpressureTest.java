@@ -36,7 +36,7 @@ class BackpressureTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(new TestOutputSource())
-        .read(executor, "")
+        .read("")
         .process(processor)
         .build();
 
@@ -44,6 +44,7 @@ class BackpressureTest {
     RoundRobinScheduler.<String, TestContext>builder()
         .properties(properties)
         .task(task)
+        .executorService(executor)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(500, TimeUnit.MILLISECONDS);
 

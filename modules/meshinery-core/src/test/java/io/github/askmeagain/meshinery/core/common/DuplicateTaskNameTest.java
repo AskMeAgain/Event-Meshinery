@@ -9,7 +9,6 @@ import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 
 import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_IGNORE_DUPLICATE_READ_KEY;
@@ -23,7 +22,7 @@ class DuplicateTaskNameTest {
     var duplicateTask = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("duplicateTask")
         .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
-        .read(Executors.newSingleThreadExecutor(), "")
+        .read("")
         .build();
 
     //Act --------------------------------------------------------------------------------------------------------------
@@ -41,14 +40,14 @@ class DuplicateTaskNameTest {
     var duplicateTask1 = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("task1")
         .inputSource(inputSource)
-        .read(null, "abc")
+        .read("abc")
         .outputSource(outputSource)
         .build();
     var duplicateTask2 = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("task2")
         .inputSource(inputSource)
         .outputSource(outputSource)
-        .read(null, "abc")
+        .read("abc")
         .build();
 
     //Act --------------------------------------------------------------------------------------------------------------
@@ -66,14 +65,14 @@ class DuplicateTaskNameTest {
     var duplicateTask1 = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("task1")
         .inputSource(inputSource)
-        .read(null, "abc")
+        .read("abc")
         .outputSource(outputSource)
         .build();
     var duplicateTask2 = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("task2")
         .inputSource(inputSource)
         .outputSource(outputSource)
-        .read(null, "abc")
+        .read("abc")
         .putData(TASK_IGNORE_DUPLICATE_READ_KEY)
         .build();
 
@@ -90,14 +89,14 @@ class DuplicateTaskNameTest {
     var duplicateTask1 = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("task1")
         .inputSource(inputSource)
-        .read(null, "abc")
+        .read("abc")
         .outputSource(outputSource)
         .build();
     var duplicateTask2 = MeshineryTaskFactory.<String, TestContext>builder()
         .taskName("task2")
         .inputSource(inputSource)
         .outputSource(outputSource)
-        .read(null, "abc")
+        .read("abc")
         .build();
 
     //Act --------------------------------------------------------------------------------------------------------------

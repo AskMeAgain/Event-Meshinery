@@ -41,7 +41,7 @@ class ExceptionHandlingTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
         .outputSource(mockOutputSource)
-        .read(executor, KEY)
+        .read(KEY)
         .process((context) -> {
           throw new RuntimeException("arg");
         })
@@ -52,6 +52,7 @@ class ExceptionHandlingTest {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
 
@@ -80,7 +81,7 @@ class ExceptionHandlingTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
         .outputSource(mockOutputSource)
-        .read(executor, KEY)
+        .read(KEY)
         .process(new ErrorProcessor())
         .exceptionHandler(exception -> {
           log.info("Error Handling");
@@ -93,6 +94,8 @@ class ExceptionHandlingTest {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
+        .gracefulShutdownOnError(false)
+        .executorService(executor)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
 

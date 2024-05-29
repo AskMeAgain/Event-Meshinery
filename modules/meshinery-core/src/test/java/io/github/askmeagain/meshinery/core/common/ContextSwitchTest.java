@@ -44,7 +44,7 @@ class ContextSwitchTest extends AbstractTestBase {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(mockInputSource)
         .outputSource(defaultOutput)
-        .read(executor, INPUT_KEY)
+        .read(INPUT_KEY)
         .process(processorA)
         .write(INPUT_KEY + "asd")
         .contextSwitch(contextOutput, this::map)
@@ -60,6 +60,7 @@ class ContextSwitchTest extends AbstractTestBase {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
 

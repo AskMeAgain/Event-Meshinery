@@ -32,7 +32,7 @@ class BatchJobTest {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(mockOutputSource)
-        .read(executor, KEY)
+        .read(KEY)
         .write("")
         .build();
 
@@ -40,6 +40,7 @@ class BatchJobTest {
     RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
     var batchJobFinished = executor.awaitTermination(500, TimeUnit.MILLISECONDS);

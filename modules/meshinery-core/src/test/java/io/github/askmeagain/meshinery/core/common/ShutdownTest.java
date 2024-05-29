@@ -36,7 +36,7 @@ class ShutdownTest extends AbstractTestBase {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(new TestOutputSource())
-        .read(executor, "")
+        .read("")
         .process(new TestContextProcessor(1))
         .write("")
         .build();
@@ -45,6 +45,7 @@ class ShutdownTest extends AbstractTestBase {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
+        .executorService(executor)
         .gracePeriodMilliseconds(0)
         .registerShutdownHook(List.of(scheduler -> flag.set(true)))
         .buildAndStart();
@@ -77,7 +78,7 @@ class ShutdownTest extends AbstractTestBase {
     var task = MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(outputSource)
-        .read(executor, "")
+        .read("")
         .process(new TestContextProcessor(1))
         .write("")
         .build();
@@ -86,6 +87,7 @@ class ShutdownTest extends AbstractTestBase {
     var scheduler = RoundRobinScheduler.builder()
         .isBatchJob(false)
         .task(task)
+        .executorService(executor)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
 

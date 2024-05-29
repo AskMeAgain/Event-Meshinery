@@ -25,7 +25,7 @@ public class SimpleApplication {
   }
 
   @Bean
-  MeshineryTask<String, TestContext> task1(ExecutorService executorService) {
+  MeshineryTask<String, TestContext> task1() {
     var cronSource = new CronInputSource<>(CronType.SPRING, () -> new TestContext(0));
     var memoryConnector = new MemoryConnector<String, TestContext>();
     var atomicInt = new AtomicInteger();
@@ -33,7 +33,7 @@ public class SimpleApplication {
         .inputSource(cronSource)
         .taskName("task1")
         .outputSource(memoryConnector)
-        .read(executorService, "0/1 * * * * *")
+        .read("0/1 * * * * *")
         .process(c -> c.withId("" + atomicInt.getAndIncrement()))
         .write("Next-Step")
         .build();
@@ -45,27 +45,27 @@ public class SimpleApplication {
   }
 
   @Bean
-  MeshineryTask<String, TestContext> task2(ExecutorService executorService) {
+  MeshineryTask<String, TestContext> task2() {
     var memoryConnector = new MemoryConnector<String, TestContext>();
 
     return MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(memoryConnector)
         .taskName("task2")
         .outputSource(memoryConnector)
-        .read(executorService, "Next-Step")
+        .read("Next-Step")
         .write("Next-Step-2")
         .build();
   }
 
   @Bean
-  MeshineryTask<String, TestContext> task3(ExecutorService executorService) {
+  MeshineryTask<String, TestContext> task3() {
     var memoryConnector = new MemoryConnector<String, TestContext>();
 
     return MeshineryTaskFactory.<String, TestContext>builder()
         .inputSource(memoryConnector)
         .taskName("task3")
         .outputSource(memoryConnector)
-        .read(executorService, "Next-Step-2")
+        .read("Next-Step-2")
         .write("End-Step")
         .build();
   }

@@ -10,6 +10,7 @@ import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import lombok.SneakyThrows;
 
@@ -22,6 +23,7 @@ public class RoundRobinSchedulerBuilder {
   List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
   int backpressureLimit = 200;
   int gracePeriodMilliseconds = 2000;
+  private ExecutorService executorService;
   boolean isBatchJob;
   List<MeshineryTask<?, ? extends MeshineryDataContext>> tasks = new ArrayList<>();
   boolean gracefulShutdownOnError = true;
@@ -41,6 +43,11 @@ public class RoundRobinSchedulerBuilder {
 
   public RoundRobinSchedulerBuilder backpressureLimit(int backpressureLimit) {
     this.backpressureLimit = backpressureLimit;
+    return this;
+  }
+
+  public RoundRobinSchedulerBuilder executorService(ExecutorService executorService) {
+    this.executorService = executorService;
     return this;
   }
 
@@ -111,6 +118,10 @@ public class RoundRobinSchedulerBuilder {
 
     var fixedTasks = MeshineryUtils.decorateMeshineryTasks(tasks, connectorDecoratorFactories);
 
+    if (executorService == null) {
+      throw new RuntimeException("arg");
+    }
+
     return new RoundRobinScheduler(
         (List<MeshineryTask<?, ?>>) fixedTasks,
         backpressureLimit,
@@ -119,7 +130,8 @@ public class RoundRobinSchedulerBuilder {
         startupHook,
         processorDecorators,
         gracefulShutdownOnError,
-        gracePeriodMilliseconds
+        gracePeriodMilliseconds,
+        executorService
     );
   }
 }

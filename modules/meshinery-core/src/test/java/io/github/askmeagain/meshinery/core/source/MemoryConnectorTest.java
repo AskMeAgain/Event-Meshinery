@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.core.source;
 
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ class MemoryConnectorTest {
     var input = new TestContext(2);
 
     //Act -------------------------------------------------------------------------------------
-    inputOutput.writeOutput(TEST_KEY, input);
+    inputOutput.writeOutput(TEST_KEY, input, new TaskData());
     var resultEmpty = inputOutput.getInputs(List.of("TestKey2"));
     var result = inputOutput.getInputs(List.of(TEST_KEY));
     var resultEmpty2 = inputOutput.getInputs(List.of(TEST_KEY));
@@ -38,10 +39,10 @@ class MemoryConnectorTest {
     var input4 = new TestContext(4);
 
     //Act -------------------------------------------------------------------------------------
-    connector.writeOutput(TEST_KEY, input1);
-    connector.writeOutput(TEST_KEY, input2);
-    connector.writeOutput(TEST_KEY, input3);
-    connector.writeOutput(TEST_KEY, input4);
+    connector.writeOutput(TEST_KEY, input1, new TaskData());
+    connector.writeOutput(TEST_KEY, input2, new TaskData());
+    connector.writeOutput(TEST_KEY, input3, new TaskData());
+    connector.writeOutput(TEST_KEY, input4, new TaskData());
 
     var result = connector.getContext(TEST_KEY, "3");
     var empty = connector.getContext(TEST_KEY, "5");
