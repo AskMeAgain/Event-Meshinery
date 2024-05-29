@@ -94,7 +94,7 @@ class ExceptionHandlingTest {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
-        .gracefulShutdownOnError(false)
+        .gracefulShutdownOnError(false) //TODO this should not be needed
         .executorService(executor)
         .gracePeriodMilliseconds(0)
         .buildAndStart();
