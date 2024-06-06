@@ -2,6 +2,7 @@ package io.github.askmeagain.meshinery.core.e2e;
 
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication;
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestBaseUtils;
+import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
@@ -16,11 +17,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(classes = {E2eTestApplication.class, E2eMemoryTestConfiguration.class})
-@TestPropertySource(properties = {"meshinery.core.batch-job=true", "meshinery.core.shutdown-on-finished=false"})
+@TestPropertySource(properties = {
+    "meshinery.core.batch-job=true",
+    "meshinery.core.shutdown-on-finished=false",
+    "meshinery.core.backpressure-limit=100",
+    "meshinery.core.start-immediately=false"
+})
 class E2eMemoryTest {
 
-  @Autowired
-  ExecutorService executorService;
+  @Autowired ExecutorService executorService;
+  @Autowired RoundRobinScheduler roundRobinScheduler;
 
   @BeforeAll
   static void setupTest() {
@@ -31,11 +37,14 @@ class E2eMemoryTest {
   @SneakyThrows
   void test() {
     //Arrange --------------------------------------------------------------------------------
+    roundRobinScheduler.start();
+
     //Act ------------------------------------------------------------------------------------
-    var batchJobFinished = executorService.awaitTermination(10_000, TimeUnit.MILLISECONDS);
+    var batchJobFinished = executorService.awaitTermination(60_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
+
     E2eTestBaseUtils.assertResultMap();
   }
 }

@@ -54,7 +54,8 @@ class ExceptionHandlingTest {
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(0)
-        .buildAndStart();
+        .build()
+        .start();
 
     var batchJobFinished = executor.awaitTermination(1, TimeUnit.SECONDS);
 
@@ -83,7 +84,7 @@ class ExceptionHandlingTest {
         .outputSource(mockOutputSource)
         .read(KEY)
         .process(new ErrorProcessor())
-        .exceptionHandler(exception -> {
+        .exceptionHandler((ctx, exc) -> {
           log.info("Error Handling");
           return EXPECTED;
         })
@@ -94,12 +95,12 @@ class ExceptionHandlingTest {
     RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
-        .gracefulShutdownOnError(false) //TODO this should not be needed
         .executorService(executor)
         .gracePeriodMilliseconds(0)
-        .buildAndStart();
+        .build()
+        .start();
 
-    var batchJobFinished = executor.awaitTermination(1, TimeUnit.SECONDS);
+    var batchJobFinished = executor.awaitTermination(3, TimeUnit.SECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();

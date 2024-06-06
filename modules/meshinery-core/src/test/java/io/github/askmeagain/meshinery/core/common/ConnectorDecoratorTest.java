@@ -45,7 +45,8 @@ class ConnectorDecoratorTest {
         .isBatchJob(true)
         .executorService(executor)
         .gracePeriodMilliseconds(500)
-        .buildAndStart();
+        .build()
+        .start();
 
     var batchJobFinished = executor.awaitTermination(4000, TimeUnit.MILLISECONDS);
 
@@ -54,6 +55,4 @@ class ConnectorDecoratorTest {
     Mockito.verify(spyDecorator, Mockito.atLeastOnce()).decorate(any());
     assertThat(inputCounter).hasValueGreaterThan(1);
   }
-
-
 }

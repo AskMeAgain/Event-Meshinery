@@ -10,8 +10,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,7 +34,7 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
   @Getter private final MeshineryInputSource<K, C> inputConnector;
 
   @Getter private final MeshineryOutputSource<K, C> outputConnector;
-  @Getter private final Function<Throwable, MeshineryDataContext> handleException;
+  @Getter private final BiFunction<MeshineryDataContext, Throwable, MeshineryDataContext> handleException;
   @Getter private final List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList;
   Instant nextExecution = Instant.now();
 
@@ -47,7 +46,7 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
       TaskData taskData,
       MeshineryInputSource<K, C> inputConnector,
       MeshineryOutputSource<K, C> outputConnector,
-      Function<Throwable, MeshineryDataContext> handleException,
+      BiFunction<MeshineryDataContext, Throwable, MeshineryDataContext> handleException,
       List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList
   ) {
     if (inputConnector != null) {
@@ -109,10 +108,9 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
           .map(input -> TaskRun.builder()
               .taskName(getTaskName())
               .taskData(taskData)
-              .id(input.getId())
-              .future(CompletableFuture.completedFuture(input))
+              .context(input)
               .queue(new LinkedList<>(getProcessorList()))
-              .handleError(getHandleException())
+              .handleError(handleException)
               .build())
           .toList();
     } finally {

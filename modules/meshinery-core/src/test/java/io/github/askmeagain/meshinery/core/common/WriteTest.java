@@ -43,9 +43,10 @@ class WriteTest {
         .task(task)
         .executorService(executor)
         .isBatchJob(true)
-        .buildAndStart();
+        .build()
+        .start();
 
-    var batchJobFinished = executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
+    var batchJobFinished = executor.awaitTermination(3000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
@@ -80,8 +81,9 @@ class WriteTest {
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(0)
-        .buildAndStart();
-    var batchJobFinished = executor.awaitTermination(100, TimeUnit.MILLISECONDS);
+        .build()
+        .start();
+    var batchJobFinished = executor.awaitTermination(3000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();

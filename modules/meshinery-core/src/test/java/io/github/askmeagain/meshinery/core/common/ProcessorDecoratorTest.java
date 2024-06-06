@@ -58,7 +58,8 @@ class ProcessorDecoratorTest {
         .executorService(executor)
         .registerProcessorDecorators(List.of(decorator))
         .gracePeriodMilliseconds(0)
-        .buildAndStart();
+        .build()
+        .start();
     var batchJobFinished = executor.awaitTermination(2, TimeUnit.SECONDS);
 
     //Assert -----------------------------------------------------------------------------------------------------------
@@ -106,7 +107,8 @@ class ProcessorDecoratorTest {
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(0)
-        .buildAndStart();
+        .build()
+        .start();
     var batchJobFinished = executor.awaitTermination(2, TimeUnit.SECONDS);
 
     //Assert -----------------------------------------------------------------------------------------------------------

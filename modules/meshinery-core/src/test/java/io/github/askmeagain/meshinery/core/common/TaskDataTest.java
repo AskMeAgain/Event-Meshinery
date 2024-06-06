@@ -52,7 +52,8 @@ class TaskDataTest extends AbstractTestBase {
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(0)
-        .buildAndStart();
+        .build()
+        .start();
 
     var batchJobFinished = executor.awaitTermination(2, TimeUnit.SECONDS);
 

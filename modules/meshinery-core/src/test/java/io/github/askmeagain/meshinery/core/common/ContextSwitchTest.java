@@ -62,7 +62,8 @@ class ContextSwitchTest extends AbstractTestBase {
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(0)
-        .buildAndStart();
+        .build()
+        .start();
 
     var batchJobFinished = executor.awaitTermination(4000, TimeUnit.MILLISECONDS);
 

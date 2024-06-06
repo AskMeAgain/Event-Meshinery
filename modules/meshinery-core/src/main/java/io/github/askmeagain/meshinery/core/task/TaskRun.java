@@ -4,12 +4,10 @@ import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import java.time.Instant;
 import java.util.Queue;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
-import lombok.With;
 
 @Value
 @Builder
@@ -19,14 +17,13 @@ public class TaskRun {
 
   @Builder.Default
   Instant now = Instant.now();
-  String id;
   String taskName;
 
-  @With
-  CompletableFuture<MeshineryDataContext> future;
+  MeshineryDataContext context;
 
   Queue<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> queue;
 
-  Function<Throwable, MeshineryDataContext> handleError;
+  BiFunction<MeshineryDataContext, Throwable, MeshineryDataContext> handleError;
+
   TaskData taskData;
 }

@@ -82,7 +82,8 @@ class MonitoringApiControllerTest {
             .outputSource(new TestOutputSource())
             .build())
         .isBatchJob(false)
-        .buildAndStart();
+        .build()
+        .start();
 
     Thread.sleep(1500);
 

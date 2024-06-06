@@ -19,7 +19,12 @@ public class MeshineryCoreProperties {
 
   private boolean shutdownOnError = false;
 
+  /**
+   * This is used in a hook
+   */
   private boolean shutdownOnFinished = true;
+
+  private boolean startImmediately = true;
 
   private boolean shutdownApi = true;
 

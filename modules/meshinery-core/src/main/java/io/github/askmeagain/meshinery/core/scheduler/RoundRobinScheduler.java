@@ -2,7 +2,6 @@ package io.github.askmeagain.meshinery.core.scheduler;
 
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
-import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
@@ -12,27 +11,25 @@ import io.github.askmeagain.meshinery.core.task.TaskDataProperties;
 import io.github.askmeagain.meshinery.core.task.TaskRun;
 import java.time.Instant;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 
 @Slf4j
 @Getter
-@RequiredArgsConstructor(access = AccessLevel.MODULE)
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinScheduler {
 
@@ -46,40 +43,61 @@ public class RoundRobinScheduler {
   private final int gracePeriodMilliseconds;
 
   private final Queue<TaskRun> outputQueue = new ConcurrentLinkedQueue<>();
-  private final Queue<TaskRun> priorityQueue = new ConcurrentLinkedQueue<>();
   private final Queue<ConnectorKey> inputQueue = new ConcurrentLinkedQueue<>();
 
-  private final Map<ConnectorKey, MeshineryTask<?, ?>> taskRunLookupMap = new HashMap<>();
+  private final Map<ConnectorKey, MeshineryTask<?, ?>> taskRunLookupMap = new ConcurrentHashMap<>();
   private final ExecutorService taskExecutorService;
   private final Set<ExecutorService> executorServices = new HashSet<>();
-  private boolean gracefulShutdownTriggered = false;
+  private final DataInjectingExecutorService taskExecutor;
+  private final DataInjectingExecutorService inputExecutor;
+  private final AtomicBoolean gracefulShutdownTriggered = new AtomicBoolean();
   private Instant lastInputEntry;
 
-  public static RoundRobinSchedulerBuilder builder() {
-    return new RoundRobinSchedulerBuilder();
-  }
-
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @SneakyThrows
-  public RoundRobinScheduler start() {
+  RoundRobinScheduler(
+      List<MeshineryTask<?, ?>> tasks,
+      int backpressureLimit,
+      boolean isBatchJob,
+      List<? extends Consumer<RoundRobinScheduler>> shutdownHook,
+      List<? extends Consumer<RoundRobinScheduler>> startupHook,
+      List<ProcessorDecorator<MeshineryDataContext, MeshineryDataContext>> processorDecorator,
+      boolean gracefulShutdownOnError,
+      int gracePeriodMilliseconds,
+      ExecutorService taskExecutorService
+  ) {
+    this.tasks = tasks;
+    this.backpressureLimit = backpressureLimit;
+    this.isBatchJob = isBatchJob;
+    this.shutdownHook = shutdownHook;
+    this.startupHook = startupHook;
+    this.processorDecorator = processorDecorator;
+    this.gracefulShutdownOnError = gracefulShutdownOnError;
+    this.gracePeriodMilliseconds = gracePeriodMilliseconds;
+    this.taskExecutorService = taskExecutorService;
+
     //setup
     createLookupMap();
     executorServices.add(taskExecutorService);
 
     //the producer
-    var inputExecutor = new DataInjectingExecutorService("input-executor", Executors.newSingleThreadExecutor());
+    inputExecutor = new DataInjectingExecutorService("input-executor", Executors.newSingleThreadExecutor());
     executorServices.add(inputExecutor);
 
     //the worker
-    var taskExecutor = new DataInjectingExecutorService("output-executor", Executors.newSingleThreadExecutor());
+    taskExecutor = new DataInjectingExecutorService("output-executor", Executors.newSingleThreadExecutor());
     executorServices.add(taskExecutor);
+  }
 
+  public static RoundRobinSchedulerBuilder builder() {
+    return new RoundRobinSchedulerBuilder();
+  }
+
+  @SneakyThrows
+  public RoundRobinScheduler start() {
     startupHook.forEach(hook -> hook.accept(this));
-
     inputExecutor.execute(() -> createInputScheduler(inputExecutor));
     Thread.sleep(100);
     taskExecutor.execute(() -> runWorker(taskExecutor));
-
     return this;
   }
 
@@ -96,7 +114,7 @@ public class RoundRobinScheduler {
 
   public void gracefulShutdown() {
     log.info("Graceful shutdown triggered. Shutting down all threads");
-    gracefulShutdownTriggered = true;
+    gracefulShutdownTriggered.set(true);
   }
 
   @SneakyThrows
@@ -107,10 +125,10 @@ public class RoundRobinScheduler {
     inputQueue.addAll(fillQueueFromTasks());
     lastInputEntry = Instant.now();
 
-    var queuesHaveWorkTodo = ((!outputQueue.isEmpty() || !priorityQueue.isEmpty()) || !inputQueue.isEmpty());
+    var queuesHaveWorkTodo = ((!outputQueue.isEmpty() || !inputQueue.isEmpty()));
 
-    while (!executor.isShutdown() && !gracefulShutdownTriggered && queuesHaveWorkTodo) {
-      if (backpressureLimit <= outputQueue.size() + priorityQueue.size()) {
+    while (!executor.isShutdown() && !gracefulShutdownTriggered.get() && queuesHaveWorkTodo) {
+      if (backpressureLimit <= outputQueue.size()) {
         log.info("Waiting because of backpressure");
         Thread.sleep(1000);
         continue;
@@ -126,9 +144,9 @@ public class RoundRobinScheduler {
       }
 
       if (isBatchJob) {
-        if (outputQueue.isEmpty() && priorityQueue.isEmpty()) {
+        if (outputQueue.isEmpty()) {
           if (lastInputEntry.plusMillis(gracePeriodMilliseconds).isBefore(Instant.now())) {
-            log.info("Grace period in input thread done.");
+            Thread.sleep(1000);
             gracefulShutdown();
             break;
           }
@@ -167,8 +185,6 @@ public class RoundRobinScheduler {
     }
   }
 
-  private boolean usePriorityQueue = false;
-
   @SneakyThrows
   private void runWorker(ExecutorService executor) {
     Thread.currentThread().setName("meshinery-output");
@@ -178,62 +194,17 @@ public class RoundRobinScheduler {
     newTask:
     while (!executor.isShutdown()) {
 
-      //toggle between queues, when priority queue is full
-      usePriorityQueue = !priorityQueue.isEmpty() && !usePriorityQueue;
+      var taskRun = outputQueue.poll();
 
-      var queueToUse = usePriorityQueue ? priorityQueue : outputQueue;
-
-      var currentTask = queueToUse.peek();
-
-      if (currentTask == null) {
-        var otherQueue = !usePriorityQueue ? priorityQueue : outputQueue;
-        if (otherQueue.isEmpty() && gracefulShutdownTriggered) {
+      if (taskRun == null) {
+        if (gracefulShutdownTriggered.get()) {
           //we shutdown in case we had a graceful shutdown
           break;
         }
         continue;
       }
 
-      while (currentTask.getFuture().isDone()) {
-
-        var queue = currentTask.getQueue();
-
-        //we stop if we reached the end of the queue
-        if (queue.isEmpty()) {
-          queueToUse.remove();
-          continue newTask;
-        }
-
-        if (currentTask.getFuture().isCompletedExceptionally()) {
-          currentTask.getFuture().whenComplete((context, ex) -> log.error("Processor completed with error", ex));
-          var handleError = currentTask.getHandleError();
-          var handledFuture = currentTask.getFuture()
-              .handle((context, throwable) -> handleError.apply(throwable));
-
-          currentTask = currentTask.withFuture(handledFuture);
-        }
-
-        var context = currentTask.getFuture().get();
-
-        //we stop if the context is null
-        if (context == null) {
-          queueToUse.remove();
-          continue newTask;
-        }
-
-        MDC.clear();
-        MDC.put(TaskDataProperties.TASK_NAME, currentTask.getTaskName());
-        MDC.put(TaskDataProperties.TASK_ID, currentTask.getId());
-
-        var resultFuture = getResultFuture(currentTask, queue.remove(), context);
-
-        currentTask = currentTask.withFuture(resultFuture);
-      }
-
-      //we add to priority queue, because this package got not processed
-      //this order, so we have always atleast 1 item in queue to signal we have work to do
-      priorityQueue.add(currentTask);
-      queueToUse.remove();
+      getResultFuture(taskRun);
     }
 
     for (var executorService : executorServices) {
@@ -247,29 +218,39 @@ public class RoundRobinScheduler {
     shutdownHook.forEach(hook -> hook.accept(this));
   }
 
-  private CompletableFuture<MeshineryDataContext> getResultFuture(
-      TaskRun run,
-      MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> nextProcessor,
-      MeshineryDataContext context
-  ) {
-    var decoratedProc = MeshineryUtils.applyDecorators(nextProcessor, processorDecorator);
-    return CompletableFuture.supplyAsync(() -> {
+  private final Set<String> currentTasks = new HashSet<>();
+  private final Map<Integer, List<Integer>> mapIntegerListInteger = new ConcurrentHashMap<>();
+
+  private void getResultFuture(TaskRun run) {
+    CompletableFuture.runAsync(() -> {
+      var contextId = run.getContext().getId();
       try {
+        currentTasks.add(contextId);
+        MDC.put(TaskDataProperties.TASK_NAME, run.getTaskName());
+        MDC.put(TaskDataProperties.TASK_ID, contextId);
         TaskData.setTaskData(run.getTaskData());
-        return decoratedProc.processAsync(context);
+        var context = run.getContext();
+        while (!run.getQueue().isEmpty()) {
+          var processor = run.getQueue().remove();
+          var decoratedProc = MeshineryUtils.applyDecorators(processor, processorDecorator);
+
+          try {
+            context = decoratedProc.processAsync(context);
+          } catch (Exception e) {
+            context = run.getHandleError().apply(context, e);
+          }
+        }
       } catch (Exception exception) {
         if (gracefulShutdownOnError) {
-          log.error(
-              "Error while preparing/processing processor '{}'. Shutting down gracefully",
-              nextProcessor.getClass().getName(),
-              exception
-          );
+          log.error("Error while processing. Shutting down gracefully", exception);
           gracefulShutdown();
-          return null;
         }
+        log.error("Processor completed with error", exception);
         throw exception;
       } finally {
+        currentTasks.remove(contextId);
         TaskData.clearTaskData();
+        MDC.clear();
       }
     }, taskExecutorService);
   }

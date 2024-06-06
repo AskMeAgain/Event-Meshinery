@@ -52,7 +52,8 @@ class PriorityQueueTest {
         .task(task)
         .executorService(executor)
         .backpressureLimit(10000)
-        .buildAndStart();
+        .build()
+        .start();
     var batchJobFinished = executor.awaitTermination(1500, TimeUnit.MILLISECONDS);
 
     //Assert -----------------------------------------------------------------------------------------------------------

@@ -37,7 +37,12 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
   private long backoffTime;
   private MeshineryInputSource<K, C> inputConnector;
   private MeshineryOutputSource<K, C> outputConnector;
-  private Function<Throwable, MeshineryDataContext> handleException = e -> null;
+  private BiFunction<MeshineryDataContext, Throwable, MeshineryDataContext> handleException = (context, exc) -> {
+    if (exc != null) {
+      throw new RuntimeException(exc);
+    }
+    return context;
+  };
 
   private TaskData taskData = new TaskData().with(TaskDataProperties.TASK_NAME, taskName);
   private List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList = new ArrayList<>();
@@ -51,7 +56,7 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
       MeshineryOutputSource outputConnector,
       List<K> eventKeys,
       TaskData taskData,
-      Function<Throwable, MeshineryDataContext> handleException,
+      BiFunction<MeshineryDataContext, Throwable, MeshineryDataContext> handleException,
       long backoffTime
   ) {
     var newProcessorList = new ArrayList<>(oldProcessorList);
@@ -367,7 +372,9 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
    * @param handleError The method which will be passed to the .handle() method of completable future
    * @return returns itself for builder pattern
    */
-  public final MeshineryTaskFactory<K, C> exceptionHandler(Function<Throwable, MeshineryDataContext> handleError) {
+  public final MeshineryTaskFactory<K, C> exceptionHandler(
+      BiFunction<MeshineryDataContext, Throwable, MeshineryDataContext> handleError
+  ) {
     return toBuilder()
         .handleException(handleError)
         .build();

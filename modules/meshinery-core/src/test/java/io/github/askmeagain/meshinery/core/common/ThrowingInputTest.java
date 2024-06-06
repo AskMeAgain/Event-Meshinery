@@ -35,7 +35,8 @@ class ThrowingInputTest extends AbstractLogTestBase {
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(0)
-        .buildAndStart();
+        .build()
+        .start();
     var batchJobFinished = executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------

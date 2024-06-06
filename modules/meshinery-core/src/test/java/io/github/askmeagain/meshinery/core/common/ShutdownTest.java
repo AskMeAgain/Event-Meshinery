@@ -48,7 +48,8 @@ class ShutdownTest extends AbstractTestBase {
         .executorService(executor)
         .gracePeriodMilliseconds(0)
         .registerShutdownHook(List.of(scheduler -> flag.set(true)))
-        .buildAndStart();
+        .build()
+        .start();
 
     Thread.sleep(2000);
 
@@ -89,7 +90,8 @@ class ShutdownTest extends AbstractTestBase {
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(0)
-        .buildAndStart();
+        .build()
+        .start();
 
     Thread.sleep(1300);
 

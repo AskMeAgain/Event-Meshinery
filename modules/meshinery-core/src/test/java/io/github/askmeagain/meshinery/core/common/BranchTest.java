@@ -49,7 +49,8 @@ class BranchTest {
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(0)
-        .buildAndStart();
+        .build()
+        .start();
     var batchJobFinished = executor.awaitTermination(1500, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------

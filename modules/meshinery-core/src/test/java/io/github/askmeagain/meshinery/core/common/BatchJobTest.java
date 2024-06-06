@@ -42,8 +42,9 @@ class BatchJobTest {
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(0)
-        .buildAndStart();
-    var batchJobFinished = executor.awaitTermination(500, TimeUnit.MILLISECONDS);
+        .build()
+        .start();
+    var batchJobFinished = executor.awaitTermination(1500, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();

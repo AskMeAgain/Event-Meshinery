@@ -3,7 +3,6 @@ package io.github.askmeagain.meshinery.core.utils.sources;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -30,14 +29,11 @@ public class TestInputSource implements MeshinerySourceConnector<String, TestCon
 
   @Override
   public List<TestContext> getInputs(List<String> keys) {
-    return keys.stream()
-        .map(this::getInputs)
-        .flatMap(Collection::stream)
-        .toList();
+    return getInputs("");
   }
 
   @SneakyThrows
-  private List<TestContext> getInputs(String key) {
+  private synchronized List<TestContext> getInputs(String key) {
     if (iterations == 0) {
       iterations--;
       log.info("Stopping TestInputSource");
@@ -54,10 +50,10 @@ public class TestInputSource implements MeshinerySourceConnector<String, TestCon
 
     iterations--;
     var maxValue = 1 + (internalCounter / todos.size() + iterations);
-    log.info("Iteration '{}' out of '{}'", maxValue - iterations, maxValue);
+    //log.info("Iteration '{}' out of '{}'", maxValue - iterations, maxValue);
     return todos.stream()
         .map(testContext -> testContext.withId((++internalCounter) + ""))
-        .peek(x -> log.info("Input: " + x.getId()))
+        //.peek(x -> log.info("Input: " + x.getId()))
         .toList();
   }
 

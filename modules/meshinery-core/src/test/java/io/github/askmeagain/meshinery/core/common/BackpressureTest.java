@@ -45,7 +45,8 @@ class BackpressureTest {
         .properties(properties)
         .task(task)
         .executorService(executor)
-        .buildAndStart();
+        .build()
+        .start();
     var batchJobFinished = executor.awaitTermination(500, TimeUnit.MILLISECONDS);
 
     //Assert -----------------------------------------------------------------------------------------------------------

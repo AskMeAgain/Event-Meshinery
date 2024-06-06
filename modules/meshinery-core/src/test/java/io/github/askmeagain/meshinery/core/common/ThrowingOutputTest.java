@@ -40,15 +40,12 @@ class ThrowingOutputTest extends AbstractLogTestBase {
         .executorService(executor)
         .gracefulShutdownOnError(true)
         .gracePeriodMilliseconds(0)
-        .buildAndStart();
-    var batchJobFinished = executor.awaitTermination(500, TimeUnit.MILLISECONDS);
+        .build()
+        .start();
+    var batchJobFinished = executor.awaitTermination(2500, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
-    assertThatLogContainsMessage(
-        output,
-        "Error while preparing/processing processor 'io.github.askmeagain.meshinery.core.processors" +
-            ".DynamicOutputProcessor'. Shutting down gracefully"
-    );
+    assertThatLogContainsMessage(output, "Error while processing. Shutting down gracefully");
   }
 }

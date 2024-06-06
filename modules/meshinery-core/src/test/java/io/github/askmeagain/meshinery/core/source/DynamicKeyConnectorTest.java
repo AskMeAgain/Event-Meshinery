@@ -54,7 +54,8 @@ class DynamicKeyConnectorTest {
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(1000)
-        .buildAndStart();
+        .build()
+        .start();
 
     var batchJobFinished = executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
 

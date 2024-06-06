@@ -5,6 +5,7 @@ import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.utils.AbstractLogTestBase;
 import io.github.askmeagain.meshinery.core.utils.sources.OutputCapture;
 import java.util.List;
+import java.util.concurrent.Executors;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,15 +20,18 @@ class BatchJobTimingHooksExecutionTest extends AbstractLogTestBase {
     //Arrange --------------------------------------------------------------------------------
     var applicationTimeHook = Mockito.spy(new BatchJobTimingHooks());
     var roundRobinScheduler = RoundRobinScheduler.builder()
+        .executorService(Executors.newSingleThreadExecutor())
         .registerStartupHook(List.of(applicationTimeHook))
         .registerShutdownHook(List.of(applicationTimeHook))
         .gracePeriodMilliseconds(1000)
-        .buildAndStart();
+        .build()
+        .start();
 
     //Act ------------------------------------------------------------------------------------
     Thread.sleep(3000);
     roundRobinScheduler.gracefulShutdown();
     Thread.sleep(1500);
+
     //Assert ---------------------------------------------------------------------------------
     Mockito.verify(applicationTimeHook, Mockito.times(2)).accept(any());
     assertThatLogContainsMessage(output, "Scheduler ran for 3 seconds", "Starting Batch job at");
