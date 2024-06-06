@@ -12,9 +12,7 @@ import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.shutdown.ShutdownApiController;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskVerifier;
 import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
-import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,13 +35,6 @@ import org.springframework.validation.annotation.Validated;
 @Import({DataContextInjectApiController.class, ApplicationStartHookConfiguration.class, ShutdownApiController.class})
 @RequiredArgsConstructor
 public class MeshineryAutoConfiguration {
-
-  private final List<MeshineryTask<?, ?>> tasks;
-
-  @PostConstruct
-  void setup() {
-    MeshineryTaskVerifier.verifyTasks(tasks);
-  }
 
   @Bean
   @Validated

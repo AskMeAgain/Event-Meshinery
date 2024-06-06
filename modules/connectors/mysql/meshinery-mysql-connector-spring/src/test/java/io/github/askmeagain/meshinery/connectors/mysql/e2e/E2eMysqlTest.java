@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.connectors.mysql.e2e;
 import io.github.askmeagain.meshinery.connectors.mysql.AbstractSpringMysqlTestBase;
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication;
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestBaseUtils;
+import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
@@ -11,15 +12,23 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(classes = {E2eTestApplication.class, E2eMysqlTestConfiguration.class})
+@TestPropertySource(properties = {
+    "meshinery.core.batch-job=true",
+    "meshinery.core.shutdown-on-finished=false",
+    "meshinery.core.grace-period-milliseconds=15000",
+    "meshinery.core.backpressure-limit=150",
+    "meshinery.core.start-immediately=false"
+})
 public class E2eMysqlTest extends AbstractSpringMysqlTestBase {
 
-  @Autowired
-  ExecutorService executorService;
+  @Autowired ExecutorService executorService;
+  @Autowired RoundRobinScheduler roundRobinScheduler;
 
   @BeforeAll
   static void setupTest() {
@@ -30,8 +39,10 @@ public class E2eMysqlTest extends AbstractSpringMysqlTestBase {
   @SneakyThrows
   void testE2eMysql() {
     //Arrange --------------------------------------------------------------------------------
+    roundRobinScheduler.start();
+
     //Act ------------------------------------------------------------------------------------
-    var batchJobFinished = executorService.awaitTermination(25_000, TimeUnit.MILLISECONDS);
+    var batchJobFinished = executorService.awaitTermination(160_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();

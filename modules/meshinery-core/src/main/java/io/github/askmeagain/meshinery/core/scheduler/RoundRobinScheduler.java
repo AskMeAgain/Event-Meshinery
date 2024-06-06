@@ -123,7 +123,7 @@ public class RoundRobinScheduler {
     log.info("Starting input worker thread");
 
     inputQueue.addAll(fillQueueFromTasks());
-    lastInputEntry = Instant.now();
+    lastInputEntry = Instant.MAX;
 
     var queuesHaveWorkTodo = ((!outputQueue.isEmpty() || !inputQueue.isEmpty()));
 
@@ -146,7 +146,6 @@ public class RoundRobinScheduler {
       if (isBatchJob) {
         if (outputQueue.isEmpty()) {
           if (lastInputEntry.plusMillis(gracePeriodMilliseconds).isBefore(Instant.now())) {
-            Thread.sleep(1000);
             gracefulShutdown();
             break;
           }

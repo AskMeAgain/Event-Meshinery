@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
-import io.github.askmeagain.meshinery.core.other.Blocking;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -60,9 +59,8 @@ public class MysqlInputSource<C extends MeshineryDataContext> implements Accessi
   @Override
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public Optional<C> getContext(String key, String id) {
-    return jdbi.inTransaction(handle -> Blocking.byKey(
-        key,
-        () -> {
+    //TODO block by key
+    return jdbi.inTransaction(handle -> {
           var firstResult = handle.createQuery(SPECIFIC_SELECT_QUERY)
               .bind("state", key)
               .define("TABLE", simpleName)
@@ -90,16 +88,14 @@ public class MysqlInputSource<C extends MeshineryDataContext> implements Accessi
             }
           });
         }
-    ));
-
+    );
   }
 
   @Override
   @SneakyThrows
   public List<C> getInputs(List<String> keys) {
-    return jdbi.withHandle(handle -> Blocking.byKey(
-        keys.toArray(String[]::new),
-        () -> {
+    //TODO block by keys
+    return jdbi.withHandle(handle -> {
           var result = handle.createQuery(SELECT_QUERY)
               .define("TABLE", clazz.getSimpleName())
               .define("SCHEMA", mysqlProperties.getSchema())
@@ -137,7 +133,6 @@ public class MysqlInputSource<C extends MeshineryDataContext> implements Accessi
 
           return finalResult;
         }
-    ));
+    );
   }
 }
-

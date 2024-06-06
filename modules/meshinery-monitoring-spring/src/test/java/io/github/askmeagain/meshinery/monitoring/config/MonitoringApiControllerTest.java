@@ -93,15 +93,13 @@ class MonitoringApiControllerTest {
         .andExpect(status()
             .isOk())
         .andExpect(content()
-            .string(containsString("executor_max_threads{executor=\"executor-%s\",} 3.0"
-                .formatted(executor.hashCode()))))
+            .string(containsString("executor_max_threads{executor=\"default-virtual-thread-pool\",} 1.0")))
         .andExpect(content()
             .string(containsString("executor_max_threads{executor=\"input-executor\",} 1.0")))
         .andExpect(content()
             .string(containsString("executor_max_threads{executor=\"output-executor\",} 1.0")))
         .andExpect(content()
-            .string(containsString("executor_active_threads{executor=\"executor-%s\",} 2.0"
-                .formatted(executor.hashCode()))))
+            .string(containsString("executor_active_threads{executor=\"default-virtual-thread-pool\",} 1.0")))
         .andExpect(content()
             .string(containsString("executor_active_threads{executor=\"input-executor\",} 1.0")))
         .andExpect(content()
