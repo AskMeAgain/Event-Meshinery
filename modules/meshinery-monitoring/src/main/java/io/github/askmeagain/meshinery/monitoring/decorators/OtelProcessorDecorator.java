@@ -3,12 +3,9 @@ package io.github.askmeagain.meshinery.monitoring.decorators;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
-import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringUtils;
-import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.context.Context;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,19 +17,19 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_N
 public class OtelProcessorDecorator<I extends MeshineryDataContext, O extends MeshineryDataContext>
     implements ProcessorDecorator<I, O> {
 
-  private final OpenTelemetry openTelemetry;
-
-  private final Map<String, Tracer> tracerMap = new ConcurrentHashMap<>();
 
   public MeshineryProcessor<I, O> wrap(MeshineryProcessor<I, O> processor) {
     var taskName = getTaskData().getSingle(TASK_NAME);
-    var processorName = MeshineryMonitoringUtils.convertLambdaProcessorName(processor.getClass());
-
-    var tracer = tracerMap.computeIfAbsent(processorName, openTelemetry::getTracer);
+    //var processorName = MeshineryMonitoringUtils.convertLambdaProcessorName(processor.getClass());
 
     return context -> {
-      var with = Context.current();
-      var span = tracer.spanBuilder(taskName).setParent(with).startSpan();
+      SpanContext parentContext = OtelContextManager.span.get().getSpanContext();
+
+      var span = OtelContextManager.tracer.get().spanBuilder(taskName)
+          .setAttribute("task_name", taskName)
+          .setAttribute("step", processor.getClass().getSimpleName())
+          .setParent(Context.current().with(Span.wrap(parentContext)))
+          .startSpan();
 
       try {
         return processor.processAsync(context);

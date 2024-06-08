@@ -38,6 +38,9 @@ public class RoundRobinScheduler {
   private final boolean isBatchJob;
   private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
   private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
+  private final List<? extends Consumer<MeshineryDataContext>> listPreTaskRunHook;
+  private final List<? extends Consumer<MeshineryDataContext>> listPostTaskRunHook;
+
   private final List<ProcessorDecorator<MeshineryDataContext, MeshineryDataContext>> processorDecorator;
   private final boolean gracefulShutdownOnError;
   private final int gracePeriodMilliseconds;
@@ -47,7 +50,7 @@ public class RoundRobinScheduler {
 
   private final Map<ConnectorKey, MeshineryTask<?, ?>> taskRunLookupMap = new ConcurrentHashMap<>();
   private final ExecutorService taskExecutorService;
-  private final Set<ExecutorService> executorServices = new HashSet<>();
+  private final Set<DataInjectingExecutorService> executorServices = new HashSet<>();
   private final DataInjectingExecutorService taskExecutor;
   private final DataInjectingExecutorService inputExecutor;
   private final AtomicBoolean gracefulShutdownTriggered = new AtomicBoolean();
@@ -60,12 +63,16 @@ public class RoundRobinScheduler {
       boolean isBatchJob,
       List<? extends Consumer<RoundRobinScheduler>> shutdownHook,
       List<? extends Consumer<RoundRobinScheduler>> startupHook,
+      List<? extends Consumer<MeshineryDataContext>> preTaskRunHook,
+      List<? extends Consumer<MeshineryDataContext>> postTaskRunHook,
       List<ProcessorDecorator<MeshineryDataContext, MeshineryDataContext>> processorDecorator,
       boolean gracefulShutdownOnError,
       int gracePeriodMilliseconds,
-      ExecutorService taskExecutorService
+      DataInjectingExecutorService taskExecutorService
   ) {
     this.tasks = tasks;
+    this.listPostTaskRunHook = postTaskRunHook;
+    this.listPreTaskRunHook = preTaskRunHook;
     this.backpressureLimit = backpressureLimit;
     this.isBatchJob = isBatchJob;
     this.shutdownHook = shutdownHook;
@@ -228,6 +235,9 @@ public class RoundRobinScheduler {
         MDC.put(TaskDataProperties.TASK_NAME, run.getTaskName());
         MDC.put(TaskDataProperties.TASK_ID, contextId);
         TaskData.setTaskData(run.getTaskData());
+
+        listPreTaskRunHook.forEach(con -> con.accept(run.getContext()));
+
         var context = run.getContext();
         while (!run.getQueue().isEmpty()) {
           var processor = run.getQueue().remove();
@@ -239,6 +249,9 @@ public class RoundRobinScheduler {
             context = run.getHandleError().apply(context, e);
           }
         }
+
+        listPostTaskRunHook.forEach(con -> con.accept(run.getContext()));
+
       } catch (Exception exception) {
         if (gracefulShutdownOnError) {
           log.error("Error while processing. Shutting down gracefully", exception);

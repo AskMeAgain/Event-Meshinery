@@ -1,12 +1,15 @@
 package io.github.askmeagain.meshinery.monitoring.config;
 
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.hooks.CustomizePostTaskRunHook;
+import io.github.askmeagain.meshinery.core.hooks.CustomizePreTaskRunHook;
 import io.github.askmeagain.meshinery.core.hooks.CustomizeStartupHook;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
 import io.github.askmeagain.meshinery.monitoring.apis.DrawerApiController;
 import io.github.askmeagain.meshinery.monitoring.apis.MonitoringApiController;
 import io.github.askmeagain.meshinery.monitoring.decorators.InputSourceTimingDecoratorFactory;
+import io.github.askmeagain.meshinery.monitoring.decorators.OtelContextManager;
 import io.github.askmeagain.meshinery.monitoring.decorators.OtelInputSourceTimingDecoratorFactory;
 import io.github.askmeagain.meshinery.monitoring.decorators.OtelProcessorDecorator;
 import io.github.askmeagain.meshinery.monitoring.decorators.ProcessorTimingDecorator;
@@ -46,10 +49,23 @@ public class MeshineryMonitoringAutoConfiguration {
 
   @Bean
   @ConditionalOnBean(OpenTelemetry.class)
-  OtelProcessorDecorator<MeshineryDataContext, MeshineryDataContext> otelProcessorFactory(
-      OpenTelemetry openTelemetry
-  ) {
-    return new OtelProcessorDecorator<>(openTelemetry);
+  OtelProcessorDecorator<MeshineryDataContext, MeshineryDataContext> otelProcessorFactory() {
+    return new OtelProcessorDecorator<>();
+  }
+
+  @Bean
+  public CustomizePreTaskRunHook preTaskRunHook(OtelContextManager otelContextManager) {
+    return otelContextManager::setup;
+  }
+
+  @Bean
+  public CustomizePostTaskRunHook postTaskRunHook(OtelContextManager otelContextManager) {
+    return otelContextManager::cleanup;
+  }
+
+  @Bean
+  public OtelContextManager otelContextManager(OpenTelemetry openTelemetry) {
+    return new OtelContextManager(openTelemetry);
   }
 
   @Bean

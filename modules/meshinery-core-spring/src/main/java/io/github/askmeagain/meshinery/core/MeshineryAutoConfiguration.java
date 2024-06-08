@@ -5,6 +5,8 @@ import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.hooks.BatchJobTimingHooks;
+import io.github.askmeagain.meshinery.core.hooks.CustomizePostTaskRunHook;
+import io.github.askmeagain.meshinery.core.hooks.CustomizePreTaskRunHook;
 import io.github.askmeagain.meshinery.core.hooks.CustomizeShutdownHook;
 import io.github.askmeagain.meshinery.core.hooks.CustomizeStartupHook;
 import io.github.askmeagain.meshinery.core.injecting.DataContextInjectApiController;
@@ -91,6 +93,8 @@ public class MeshineryAutoConfiguration {
       List<MeshineryTask<?, ?>> tasks,
       List<CustomizeShutdownHook> shutdownHook,
       List<CustomizeStartupHook> startupHook,
+      List<CustomizePostTaskRunHook> postTaskRunHooks,
+      List<CustomizePreTaskRunHook> preTaskRunHooks,
       List<ProcessorDecorator<MeshineryDataContext, MeshineryDataContext>> processorDecorators,
       List<InputSourceDecoratorFactory> connectorDecoratorFactories,
       MeshineryCoreProperties meshineryCoreProperties,
@@ -103,6 +107,8 @@ public class MeshineryAutoConfiguration {
         .isBatchJob(meshineryCoreProperties.isBatchJob())
         .registerShutdownHook(shutdownHook)
         .registerStartupHook(startupHook)
+        .registerPostTaskRunHook(postTaskRunHooks)
+        .registerPreTaskRunHook(preTaskRunHooks)
         .registerProcessorDecorators(processorDecorators)
         .registerConnectorDecorators(connectorDecoratorFactories)
         .gracefulShutdownOnError(meshineryCoreProperties.isShutdownOnError())

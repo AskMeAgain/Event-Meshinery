@@ -23,9 +23,12 @@ public class RoundRobinSchedulerBuilder {
   List<ProcessorDecorator<MeshineryDataContext, MeshineryDataContext>> processorDecorators = Collections.emptyList();
   List<InputSourceDecoratorFactory> connectorDecoratorFactories = Collections.emptyList();
   List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
+  List<? extends Consumer<MeshineryDataContext>> preTaskRunHooks = Collections.emptyList();
+  List<? extends Consumer<MeshineryDataContext>> postTaskRunHooks = Collections.emptyList();
+
   int backpressureLimit = 200;
   int gracePeriodMilliseconds = 2000;
-  private ExecutorService executorService = new DataInjectingExecutorService(
+  private DataInjectingExecutorService executorService = new DataInjectingExecutorService(
       "default-virtual-thread-pool",
       Executors.newVirtualThreadPerTaskExecutor()
   );
@@ -52,7 +55,7 @@ public class RoundRobinSchedulerBuilder {
   }
 
   public RoundRobinSchedulerBuilder executorService(ExecutorService executorService) {
-    this.executorService = executorService;
+    this.executorService = new DataInjectingExecutorService("custom-executor-service", executorService);
     return this;
   }
 
@@ -94,6 +97,20 @@ public class RoundRobinSchedulerBuilder {
     return this;
   }
 
+  public RoundRobinSchedulerBuilder registerPreTaskRunHook(
+      List<? extends Consumer<MeshineryDataContext>> preTaskRunHooks
+  ) {
+    this.preTaskRunHooks = preTaskRunHooks;
+    return this;
+  }
+
+  public RoundRobinSchedulerBuilder registerPostTaskRunHook(
+      List<? extends Consumer<MeshineryDataContext>> postTaskRunHooks
+  ) {
+    this.postTaskRunHooks = postTaskRunHooks;
+    return this;
+  }
+
   public RoundRobinSchedulerBuilder gracefulShutdownOnError(boolean gracefulShutdownOnError) {
     this.gracefulShutdownOnError = gracefulShutdownOnError;
     return this;
@@ -124,6 +141,8 @@ public class RoundRobinSchedulerBuilder {
         isBatchJob,
         shutdownHook,
         startupHook,
+        preTaskRunHooks,
+        postTaskRunHooks,
         processorDecorators,
         gracefulShutdownOnError,
         gracePeriodMilliseconds,
