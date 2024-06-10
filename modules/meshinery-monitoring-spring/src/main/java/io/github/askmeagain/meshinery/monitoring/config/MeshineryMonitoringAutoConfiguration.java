@@ -49,8 +49,8 @@ public class MeshineryMonitoringAutoConfiguration {
 
   @Bean
   @ConditionalOnBean(OpenTelemetry.class)
-  OtelProcessorDecorator<MeshineryDataContext, MeshineryDataContext> otelProcessorFactory() {
-    return new OtelProcessorDecorator<>();
+  OtelProcessorDecorator<MeshineryDataContext, MeshineryDataContext> otelProcessorFactory(OpenTelemetry openTelemetry) {
+    return new OtelProcessorDecorator<>(openTelemetry);
   }
 
   @Bean

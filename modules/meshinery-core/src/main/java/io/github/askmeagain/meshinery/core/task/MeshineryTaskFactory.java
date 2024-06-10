@@ -407,7 +407,7 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
         backoffTime
     ).toBuilder()
         .taskData(newProcessor.addToTaskData(
-            taskData.with(TaskDataProperties.GRAPH_PROCESSOR, newProcessor.getClass().getSimpleName())))
+            taskData.with(TaskDataProperties.GRAPH_PROCESSOR, newProcessor.getClass().getName())))
         .build();
   }
 
