@@ -60,43 +60,41 @@ public class DataContextInjectApiController {
     }
   }
 
-  //TODO fix this
-  //  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  //  @SneakyThrows
-  //  @PostMapping("/inject/{contextType}/{taskName}")
-  //  public ResponseEntity<String> injectContext(
-  //      @PathVariable("taskName") String taskName,
-  //      @PathVariable("contextType") String contextType,
-  //      @RequestBody String context
-  //  ) {
-  //    try {
-  //      var entity = (MeshineryDataContext) objectMapper.readValue(context, classMap.get(contextType));
-  //      var resultBody = taskReplayFactory.injectData(taskName, entity);
-  //
-  //      return ResponseEntity.ok(objectMapper.writeValueAsString(resultBody));
-  //    } catch (Exception ex) {
-  //      return ResponseEntity.internalServerError().body(ex.getMessage());
-  //    }
-  //  }
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  @SneakyThrows
+  @PostMapping("/inject/{contextType}/{taskName}")
+  public ResponseEntity<String> injectContext(
+      @PathVariable("taskName") String taskName,
+      @PathVariable("contextType") String contextType,
+      @RequestBody String context
+  ) {
+    try {
+      var entity = (MeshineryDataContext) objectMapper.readValue(context, classMap.get(contextType));
+      var resultBody = taskReplayFactory.injectData(taskName, entity);
 
-  //TODO fix this
-  //  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  //  @SneakyThrows
-  //  @PostMapping("/inject/{contextType}/{taskName}/async")
-  //  public ResponseEntity<String> injectContextAsync(
-  //      @PathVariable("taskName") String taskName,
-  //      @PathVariable("contextType") String contextType,
-  //      @RequestBody String context
-  //  ) {
-  //    try {
-  //      var entity = (MeshineryDataContext) objectMapper.readValue(context, classMap.get(contextType));
-  //      taskReplayFactory.injectDataAsync(taskName, entity);
-  //
-  //      return ResponseEntity.accepted().body("Accepted");
-  //    } catch (Exception ex) {
-  //      return ResponseEntity.internalServerError().body(ex.getMessage());
-  //    }
-  //  }
+      return ResponseEntity.ok(objectMapper.writeValueAsString(resultBody));
+    } catch (Exception ex) {
+      return ResponseEntity.internalServerError().body(ex.getMessage());
+    }
+  }
+
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  @SneakyThrows
+  @PostMapping("/inject/{contextType}/{taskName}/async")
+  public ResponseEntity<String> injectContextAsync(
+      @PathVariable("taskName") String taskName,
+      @PathVariable("contextType") String contextType,
+      @RequestBody String context
+  ) {
+    try {
+      var entity = (MeshineryDataContext) objectMapper.readValue(context, classMap.get(contextType));
+      taskReplayFactory.injectDataAsync(taskName, entity);
+
+      return ResponseEntity.accepted().body("Accepted");
+    } catch (Exception ex) {
+      return ResponseEntity.internalServerError().body(ex.getMessage());
+    }
+  }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @SneakyThrows

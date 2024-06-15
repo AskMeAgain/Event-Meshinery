@@ -3,11 +3,12 @@ package io.github.askmeagain.meshinery.core.task;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.exceptions.OutputSourceMissingException;
+import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -20,18 +21,13 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_N
 public class TaskReplayFactory {
 
   private final Map<String, MeshineryTask<?, ? extends MeshineryDataContext>> taskMap;
-  private final ExecutorService executorService;
 
   /**
    * Creates a new TaskReplayFactory.
    *
-   * @param tasks           list of tasks to choose from
-   * @param executorService the executorService which should be used
+   * @param tasks list of tasks to choose from
    */
-  public TaskReplayFactory(
-      List<MeshineryTask<?, ? extends MeshineryDataContext>> tasks, ExecutorService executorService
-  ) {
-    this.executorService = executorService;
+  public TaskReplayFactory(List<MeshineryTask<?, ? extends MeshineryDataContext>> tasks) {
     this.taskMap = tasks.stream()
         .collect(Collectors.toMap(MeshineryTask::getTaskName, Function.identity()));
   }
@@ -42,19 +38,16 @@ public class TaskReplayFactory {
    * @param taskName to use
    * @param context  to use
    * @param <C>      type of the context
-   * @throws ExecutionException   throws execution exception
-   * @throws InterruptedException throws interrupted exception
    */
-  //TODO
-  //  public <C extends MeshineryDataContext> MeshineryDataContext injectData(String taskName, C context)
-  //      throws ExecutionException, InterruptedException, MeshineryTaskNotFoundException {
-  //
-  //    var result = createTaskInjection(taskName, context).get();
-  //
-  //    MDC.clear();
-  //
-  //    return result;
-  //  }
+  public <C extends MeshineryDataContext> MeshineryDataContext injectData(String taskName, C context)
+      throws MeshineryTaskNotFoundException {
+
+    var result = createTaskInjection(taskName, context).get();
+
+    MDC.clear();
+
+    return result;
+  }
 
   /**
    * Injects a new data context into a task, by name, asynchronous.
@@ -63,20 +56,19 @@ public class TaskReplayFactory {
    * @param context  to use
    * @param <C>      type of the context
    */
-  //TODO
-  //  public <C extends MeshineryDataContext> CompletableFuture<C> injectDataAsync(String taskName, C context)
-  //      throws MeshineryTaskNotFoundException {
-  //
-  //    MDC.put(TASK_NAME, taskName);
-  //    MDC.put(TASK_ID, context.getId());
-  //    log.info("Replaying a new Context asynchronous");
-  //
-  //    var result = createTaskInjection(taskName, context);
-  //
-  //    MDC.clear();
-  //
-  //    return result;
-  //  }
+  public <C extends MeshineryDataContext> CompletableFuture<C> injectDataAsync(String taskName, C context)
+      throws MeshineryTaskNotFoundException {
+
+    MDC.put(TASK_NAME, taskName);
+    MDC.put(TASK_ID, context.getId());
+    log.info("Replaying a new Context asynchronous");
+
+    var result = createTaskInjection(taskName, context);
+
+    MDC.clear();
+
+    return CompletableFuture.supplyAsync(result);
+  }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public <C extends MeshineryDataContext> void replayData(String taskName, C context)
@@ -111,30 +103,29 @@ public class TaskReplayFactory {
     return (MeshineryTask<Object, C>) taskMap.get(replacedTaskName);
   }
 
-  //  private <C extends MeshineryDataContext> CompletableFuture<C> createTaskInjection(String taskName, C context)
-  //      throws MeshineryTaskNotFoundException {
-  //
-  //    var replacedTaskName = taskName.replace('_', ' ');
-  //
-  //    MDC.put(TASK_NAME, replacedTaskName);
-  //    MDC.put(TASK_ID, context.getId());
-  //
-  //    log.info("Injecting a new Context synchronous");
-  //
-  //    if (!taskMap.containsKey(replacedTaskName)) {
-  //      throw new MeshineryTaskNotFoundException("Could not find Task with name '%s' in [%s]"
-  //          .formatted(replacedTaskName, String.join(", ", taskMap.keySet())));
-  //    }
-  //
-  //    var task = taskMap.get(replacedTaskName);
-  //
-  //    return MeshineryUtils.combineProcessors(
-  //        task.getProcessorList(),
-  //        context,
-  //        executorService,
-  //        MDC.getCopyOfContextMap(),
-  //        task.getTaskData()
-  //    );
-  //  }
+  private <C extends MeshineryDataContext> Supplier<C> createTaskInjection(String taskName, C context)
+      throws MeshineryTaskNotFoundException {
+
+    var replacedTaskName = taskName.replace('_', ' ');
+
+    MDC.put(TASK_NAME, replacedTaskName);
+    MDC.put(TASK_ID, context.getId());
+
+    log.info("Injecting a new Context synchronous");
+
+    if (!taskMap.containsKey(replacedTaskName)) {
+      throw new MeshineryTaskNotFoundException("Could not find Task with name '%s' in [%s]"
+          .formatted(replacedTaskName, String.join(", ", taskMap.keySet())));
+    }
+
+    var task = taskMap.get(replacedTaskName);
+
+    return (Supplier<C>) MeshineryUtils.combineProcessors(
+        task.getProcessorList(),
+        context,
+        MDC.getCopyOfContextMap(),
+        task.getTaskData()
+    );
+  }
 
 }

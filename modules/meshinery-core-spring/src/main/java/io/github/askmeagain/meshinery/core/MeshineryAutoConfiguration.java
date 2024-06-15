@@ -48,7 +48,7 @@ public class MeshineryAutoConfiguration {
   @Lazy
   @Bean
   public TaskReplayFactory taskReplayFactory(List<MeshineryTask<?, ?>> tasks) {
-    return new TaskReplayFactory(tasks, Executors.newSingleThreadExecutor());
+    return new TaskReplayFactory(tasks);
   }
 
   @Bean
