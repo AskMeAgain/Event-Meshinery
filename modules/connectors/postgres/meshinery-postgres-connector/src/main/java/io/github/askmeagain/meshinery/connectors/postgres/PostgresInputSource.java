@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
-import io.github.askmeagain.meshinery.core.other.Blocking;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -74,32 +73,28 @@ public class PostgresInputSource<C extends MeshineryDataContext> implements Acce
   @Override
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public Optional<C> getContext(String key, String id) {
-    return jdbi.inTransaction(handle -> Blocking.byKey(
-        key,
-        () -> handle.createQuery(SPECIFIC_SELECT_QUERY)
-            .bind("state", key)
-            .define("TABLE", simpleName)
-            .define("SCHEMA", postgresProperties.getSchema())
-            .bind("id", id)
-            .mapToBean(InternalWrapper.class)
-            .findFirst()
-            .map(x -> {
-              try {
-                return objectMapper.readValue(x.getContext(), clazz);
-              } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                return null;
-              }
-            })
-    ));
+    return jdbi.inTransaction(handle -> handle.createQuery(SPECIFIC_SELECT_QUERY)
+        .bind("state", key)
+        .define("TABLE", simpleName)
+        .define("SCHEMA", postgresProperties.getSchema())
+        .bind("id", id)
+        .mapToBean(InternalWrapper.class)
+        .findFirst()
+        .map(x -> {
+          try {
+            return objectMapper.readValue(x.getContext(), clazz);
+          } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+          }
+        })
+    );
   }
 
   @Override
   @SneakyThrows
   public List<C> getInputs(List<String> keys) {
-    return jdbi.withHandle(handle -> Blocking.byKey(
-        keys.toArray(String[]::new),
-        () -> {
+    return jdbi.withHandle(handle -> {
           var result = handle.createQuery(SELECT_QUERY)
               .define("TABLE", clazz.getSimpleName())
               .define("SCHEMA", postgresProperties.getSchema())
@@ -121,7 +116,7 @@ public class PostgresInputSource<C extends MeshineryDataContext> implements Acce
               .filter(Objects::nonNull)
               .toList();
         }
-    ));
+    );
   }
 }
 

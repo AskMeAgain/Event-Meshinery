@@ -42,7 +42,7 @@ public class E2ePostgresTest extends AbstractSpringPostgresTestBase {
 
     //Act ------------------------------------------------------------------------------------
     var batchJobFinished = executorService.awaitTermination(25_000, TimeUnit.MILLISECONDS);
-
+    //TODO fix this
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
     E2eTestBaseUtils.assertResultMap();
