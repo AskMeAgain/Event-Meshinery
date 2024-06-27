@@ -59,7 +59,6 @@ public class MysqlInputSource<C extends MeshineryDataContext> implements Accessi
   @Override
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public Optional<C> getContext(String key, String id) {
-    //TODO block by key
     return jdbi.inTransaction(handle -> {
           var firstResult = handle.createQuery(SPECIFIC_SELECT_QUERY)
               .bind("state", key)
@@ -94,8 +93,7 @@ public class MysqlInputSource<C extends MeshineryDataContext> implements Accessi
   @Override
   @SneakyThrows
   public List<C> getInputs(List<String> keys) {
-    //TODO block by keys
-    return jdbi.withHandle(handle -> {
+    return jdbi.inTransaction(handle -> {
           var result = handle.createQuery(SELECT_QUERY)
               .define("TABLE", clazz.getSimpleName())
               .define("SCHEMA", mysqlProperties.getSchema())
