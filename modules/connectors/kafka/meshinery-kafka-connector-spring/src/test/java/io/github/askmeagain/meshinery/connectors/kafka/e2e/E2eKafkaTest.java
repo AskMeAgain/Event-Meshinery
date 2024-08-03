@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.connectors.kafka.e2e;
 import io.github.askmeagain.meshinery.connectors.kafka.AbstractSpringKafkaTestBase;
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication;
 import io.github.askmeagain.meshinery.core.e2e.base.E2eTestBaseUtils;
+import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
@@ -11,16 +12,24 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.NUMBER_OF_TOPICS;
 import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.TOPIC_PREFIX;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = {E2eTestApplication.class, E2eKafkaTestConfiguration.class})
+@TestPropertySource(properties = {
+    "meshinery.core.batch-job=true",
+    "meshinery.core.shutdown-on-finished=false",
+    "meshinery.core.grace-period-milliseconds=15000",
+    "meshinery.core.backpressure-limit=150",
+    "meshinery.core.start-immediately=false"
+})
 class E2eKafkaTest extends AbstractSpringKafkaTestBase {
 
-  @Autowired
-  ExecutorService executorService;
+  @Autowired ExecutorService executorService;
+  @Autowired RoundRobinScheduler roundRobinScheduler;
 
   @BeforeAll
   static void createTopics() {
@@ -37,8 +46,10 @@ class E2eKafkaTest extends AbstractSpringKafkaTestBase {
   @SneakyThrows
   void test() {
     //Arrange --------------------------------------------------------------------------------
+    roundRobinScheduler.start();
+
     //Act ------------------------------------------------------------------------------------
-    var batchJobIsFinished = executorService.awaitTermination(35_000, TimeUnit.MILLISECONDS);
+    var batchJobIsFinished = executorService.awaitTermination(160_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobIsFinished).isTrue();

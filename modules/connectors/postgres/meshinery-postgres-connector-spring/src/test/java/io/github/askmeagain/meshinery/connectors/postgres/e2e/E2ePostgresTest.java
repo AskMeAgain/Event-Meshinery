@@ -21,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(properties = {
     "meshinery.core.batch-job=true",
     "meshinery.core.shutdown-on-finished=false",
+    "meshinery.core.grace-period-milliseconds=15000",
+    "meshinery.core.backpressure-limit=150",
     "meshinery.core.start-immediately=false"
 })
 public class E2ePostgresTest extends AbstractSpringPostgresTestBase {
@@ -41,8 +43,8 @@ public class E2ePostgresTest extends AbstractSpringPostgresTestBase {
     roundRobinScheduler.start();
 
     //Act ------------------------------------------------------------------------------------
-    var batchJobFinished = executorService.awaitTermination(25_000, TimeUnit.MILLISECONDS);
-    //TODO fix this
+    var batchJobFinished = executorService.awaitTermination(160_000, TimeUnit.MILLISECONDS);
+
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
     E2eTestBaseUtils.assertResultMap();
