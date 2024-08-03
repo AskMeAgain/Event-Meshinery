@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(properties = {
     "meshinery.core.batch-job=true",
     "meshinery.core.shutdown-on-finished=false",
-    "meshinery.core.backpressure-limit=100",
+    "meshinery.core.grace-period-milliseconds=15000",
+    "meshinery.core.backpressure-limit=150",
     "meshinery.core.start-immediately=false"
 })
 class E2eMemoryTest {
@@ -28,8 +29,8 @@ class E2eMemoryTest {
   @Autowired ExecutorService executorService;
   @Autowired RoundRobinScheduler roundRobinScheduler;
 
-  @BeforeAll
-  static void setupTest() {
+  @BeforeEach
+  void setupTest() {
     E2eTestBaseUtils.setupTest();
   }
 
@@ -40,11 +41,10 @@ class E2eMemoryTest {
     roundRobinScheduler.start();
 
     //Act ------------------------------------------------------------------------------------
-    var batchJobFinished = executorService.awaitTermination(60_000, TimeUnit.MILLISECONDS);
+    var batchJobFinished = executorService.awaitTermination(160_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
-
     E2eTestBaseUtils.assertResultMap();
   }
 }

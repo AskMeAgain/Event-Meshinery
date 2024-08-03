@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,8 +31,8 @@ public class E2ePostgresTest extends AbstractSpringPostgresTestBase {
   ExecutorService executorService;
   @Autowired RoundRobinScheduler roundRobinScheduler;
 
-  @BeforeAll
-  static void setupTest() {
+  @BeforeEach
+  void setupTest() {
     E2eTestBaseUtils.setupTest();
   }
 

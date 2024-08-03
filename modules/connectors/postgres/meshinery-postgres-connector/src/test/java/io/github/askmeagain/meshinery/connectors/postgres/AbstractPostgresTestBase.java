@@ -29,7 +29,6 @@ public abstract class AbstractPostgresTestBase {
   }
 
   protected Jdbi jdbi() {
-
     var jdbi = Jdbi.create(
         getConnectingString(),
         postgresContainer.getUsername(),
