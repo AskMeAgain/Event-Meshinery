@@ -1,11 +1,14 @@
 package io.github.askmeagain.meshinery.core.common;
 
+import io.github.askmeagain.meshinery.core.processors.FluidProcessor;
 import io.github.askmeagain.meshinery.core.processors.ParallelProcessor;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.AbstractTestBase;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.TestContextProcessor;
+import io.github.askmeagain.meshinery.core.utils.processor.ToTestContext2Processor;
+import io.github.askmeagain.meshinery.core.utils.processor.ToTestContextProcessor;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +38,9 @@ class ComplexParallelizationTest extends AbstractTestBase {
           .outputSource(outputMock)
           .process(ParallelProcessor.<TestContext>builder()
               .executor(executor)
+              .parallel(FluidProcessor.<TestContext>builder()
+                  .process(new ToTestContext2Processor(1))
+                  .process(new ToTestContextProcessor(2)))
               .parallel(new TestContextProcessor(30))
               .parallel(new TestContextProcessor(30))
               .parallel(new TestContextProcessor(30))
@@ -53,7 +59,7 @@ class ComplexParallelizationTest extends AbstractTestBase {
       var batchJobFinished = executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
 
       //Assert ----------------------------------------------------------------------------------
-      Mockito.verify(outputMock).writeOutput(eq(""), argThat(x -> x.getIndex() == 90), any());
+      Mockito.verify(outputMock).writeOutput(eq(""), argThat(x -> x.getIndex() == 93), any());
       assertThat(batchJobFinished).isTrue();
     }
   }
