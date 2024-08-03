@@ -55,6 +55,8 @@ public class RoundRobinScheduler {
   private final DataInjectingExecutorService inputExecutor;
   private final AtomicBoolean gracefulShutdownTriggered = new AtomicBoolean();
   private Instant lastInputEntry;
+  private final Set<String> currentTasks = new HashSet<>();
+  private final Map<Integer, List<Integer>> mapIntegerListInteger = new ConcurrentHashMap<>();
 
   @SneakyThrows
   RoundRobinScheduler(
@@ -196,8 +198,6 @@ public class RoundRobinScheduler {
     Thread.currentThread().setName("meshinery-output");
     log.info("Starting processing worker thread");
 
-    //we use this label to break out of the task in case we cant work on it (not done or returns null)
-    newTask:
     while (!executor.isShutdown()) {
 
       var taskRun = outputQueue.poll();
@@ -214,18 +214,13 @@ public class RoundRobinScheduler {
     }
 
     for (var executorService : executorServices) {
-      if (!executorService.isShutdown()) {
-        executorService.shutdown();
-      }
+      executorService.shutdown();
     }
 
     log.info("Output scheduler shutting down now");
 
     shutdownHook.forEach(hook -> hook.accept(this));
   }
-
-  private final Set<String> currentTasks = new HashSet<>();
-  private final Map<Integer, List<Integer>> mapIntegerListInteger = new ConcurrentHashMap<>();
 
   private void getResultFuture(TaskRun run) {
     CompletableFuture.runAsync(() -> {

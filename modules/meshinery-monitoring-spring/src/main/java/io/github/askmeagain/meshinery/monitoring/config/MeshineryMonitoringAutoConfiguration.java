@@ -150,36 +150,26 @@ public class MeshineryMonitoringAutoConfiguration {
   @Bean
   public CustomizeStartupHook taskMonitoringInformation() {
     return scheduler -> {
-      //TODO
-      //      MeshineryMonitoringService.createGauge(
-      //          "priority_queue",
-      //          "Number of currently waiting tasks in queue.",
-      //          () -> (double) scheduler.getPriorityQueue().size()
-      //      );
-      //      MeshineryMonitoringService.createGauge(
-      //          "todo_queue",
-      //          "Number of currently waiting tasks in queue.",
-      //          () -> (double) scheduler.getOutputQueue().size() + scheduler.getPriorityQueue().size()
-      //      );
-      //      MeshineryMonitoringService.createGauge(
-      //          "todo_queue_open_capacity",
-      //          "Number of possible items in todo queue.",
-      //          () -> (double) scheduler.getBackpressureLimit()
-      //              - scheduler.getOutputQueue().size()
-      //              - scheduler.getPriorityQueue().size()
-      //      );
+      MeshineryMonitoringService.createGauge(
+          "queue",
+          "Number of currently waiting tasks in queue.",
+          () -> (double) scheduler.getOutputQueue().size()
+      );
+      MeshineryMonitoringService.createGauge(
+          "queue_open_capacity",
+          "Number of possible items in todo queue.",
+          () -> (double) scheduler.getBackpressureLimit() - scheduler.getOutputQueue().size()
+      );
       MeshineryMonitoringService.createGauge(
           "registered_tasks",
           "Number of registered tasks.",
           () -> (double) scheduler.getTasks().size()
       );
-
       var processorListGauge = MeshineryMonitoringService.createGauge(
           "processors_per_task",
           "Number of registered processors.",
           "task_name"
       );
-
       scheduler.getTasks().forEach(task -> {
         var size = (double) task.getProcessorList().size();
         processorListGauge.labels(task.getTaskName())

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
 /**
@@ -19,12 +19,12 @@ public class ParallelProcessor<C extends MeshineryDataContext> implements Meshin
 
   List<MeshineryProcessor<C, C>> processorList;
   Function<List<C>, C> combine;
-  Executor executor;
+  ExecutorService executor;
 
   private ParallelProcessor(
       List<MeshineryProcessor<C, C>> processorList,
       Function<List<C>, C> function,
-      Executor executor
+      ExecutorService executor
   ) {
     this.executor = executor;
     this.processorList = processorList;
@@ -45,9 +45,9 @@ public class ParallelProcessor<C extends MeshineryDataContext> implements Meshin
     try {
       return allOf(futures).thenApply(combine).get();
     } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
       throw new RuntimeException(e);
     } catch (ExecutionException e) {
-      Thread.currentThread().interrupt();
       throw new RuntimeException(e);
     }
   }
@@ -67,7 +67,7 @@ public class ParallelProcessor<C extends MeshineryDataContext> implements Meshin
   public static class Builder<O extends MeshineryDataContext> {
 
     List<MeshineryProcessor<O, O>> processorList;
-    Executor executor;
+    ExecutorService executor;
 
     public Builder() {
       processorList = new ArrayList<>();
@@ -78,7 +78,19 @@ public class ParallelProcessor<C extends MeshineryDataContext> implements Meshin
       return this;
     }
 
+    public ParallelProcessor.Builder<O> executor(ExecutorService executor) {
+      this.executor = executor;
+      return this;
+    }
+
     public ParallelProcessor<O> combine(Function<List<O>, O> function) {
+      if (executor == null) {
+        throw new RuntimeException("Executor cannot be null");
+      }
+      if (function == null) {
+        throw new RuntimeException("Function cannot be null");
+      }
+
       return new ParallelProcessor<>(processorList, function, executor);
     }
   }

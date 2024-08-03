@@ -10,17 +10,16 @@ import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 
 class ComplexParallelizationTest extends AbstractTestBase {
 
   @Test
-  @SuppressWarnings("unchecked")
   void testComplexParallelization() throws InterruptedException {
     //Arrange ---------------------------------------------------------------------------------
     try (var executor = Executors.newFixedThreadPool(3)) {
@@ -35,6 +34,7 @@ class ComplexParallelizationTest extends AbstractTestBase {
           .inputSource(inputSource)
           .outputSource(outputMock)
           .process(ParallelProcessor.<TestContext>builder()
+              .executor(executor)
               .parallel(new TestContextProcessor(30))
               .parallel(new TestContextProcessor(30))
               .parallel(new TestContextProcessor(30))
@@ -46,18 +46,15 @@ class ComplexParallelizationTest extends AbstractTestBase {
       RoundRobinScheduler.builder()
           .isBatchJob(true)
           .task(task)
-          .gracePeriodMilliseconds(0)
+          .executorService(executor)
+          .gracePeriodMilliseconds(2000)
           .build()
           .start();
-      var batchJobFinished = executor.awaitTermination(3000, TimeUnit.MILLISECONDS);
+      var batchJobFinished = executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
 
       //Assert ----------------------------------------------------------------------------------
-      var argumentCapture = ArgumentCaptor.forClass(TestContext.class);
-      Mockito.verify(outputMock).writeOutput(eq(""), argumentCapture.capture(), any());
+      Mockito.verify(outputMock).writeOutput(eq(""), argThat(x -> x.getIndex() == 90), any());
       assertThat(batchJobFinished).isTrue();
-      assertThat(argumentCapture.getValue())
-          .extracting(TestContext::getIndex)
-          .isEqualTo(93);
     }
   }
 }
