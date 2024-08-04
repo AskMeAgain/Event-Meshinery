@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.connectors.pubsub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.DefaultPubSubNameResolver;
 import io.github.askmeagain.meshinery.core.task.TaskData;
+import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ class PubSubConnectorTest extends AbstractPubSubTestBase {
     pubSubProperties.setProjectId(getProjectId());
 
     var pubSubConnector = new PubSubConnector<>(
-        PubSubTestContext.class,
+        TestContext.class,
         new ObjectMapper(),
         pubSubProperties,
         getTransportChannelProvider(),
@@ -26,8 +27,8 @@ class PubSubConnectorTest extends AbstractPubSubTestBase {
         new DefaultPubSubNameResolver()
     );
 
-    var value1 = new PubSubTestContext(1);
-    var value2 = new PubSubTestContext(2);
+    var value1 = new TestContext(1);
+    var value2 = new TestContext(2);
 
     //Act ------------------------------------------------------------------------------------
     pubSubConnector.writeOutput(TOPIC, value1, new TaskData());
@@ -38,11 +39,11 @@ class PubSubConnectorTest extends AbstractPubSubTestBase {
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(result1)
-        .extracting(PubSubTestContext::getId)
+        .extracting(TestContext::getId)
         .hasSize(1)
         .contains("1");
     assertThat(result2)
-        .extracting(PubSubTestContext::getId)
+        .extracting(TestContext::getId)
         .hasSize(1)
         .contains("2");
 

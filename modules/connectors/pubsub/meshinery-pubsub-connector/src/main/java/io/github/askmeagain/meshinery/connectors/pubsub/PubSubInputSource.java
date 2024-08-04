@@ -11,6 +11,7 @@ import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PullRequest;
 import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.PubSubNameResolver;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,9 +21,11 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import static io.github.askmeagain.meshinery.connectors.pubsub.MeshineryPubSubProperties.PUBSUB_ACK_METADATA_FIELD_NAME;
+
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class PubSubInputSource<C extends PubSubContext> implements MeshineryInputSource<String, C> {
+public class PubSubInputSource<C extends MeshineryDataContext> implements MeshineryInputSource<String, C> {
 
   @Getter
   private final String name;
@@ -86,7 +89,7 @@ public class PubSubInputSource<C extends PubSubContext> implements MeshineryInpu
       try {
         var json = message.getMessage().getData().toStringUtf8();
         var contextWithoutAckId = objectMapper.readValue(json, clazz);
-        var pubSubContext = contextWithoutAckId.withAckId(message.getAckId());
+        var pubSubContext = contextWithoutAckId.setMetadata(PUBSUB_ACK_METADATA_FIELD_NAME, message.getAckId());
         list.add((C) pubSubContext);
         ackIds.add(message.getAckId());
       } catch (JsonProcessingException e) {
@@ -108,7 +111,7 @@ public class PubSubInputSource<C extends PubSubContext> implements MeshineryInpu
   @Override
   public C commit(C id) {
     //TODO fix this
-    log.info("Committing message with id {}", id.getAckId());
+    log.info("Committing message with id {}", id.getMetadata(PUBSUB_ACK_METADATA_FIELD_NAME));
     return id;
   }
 }

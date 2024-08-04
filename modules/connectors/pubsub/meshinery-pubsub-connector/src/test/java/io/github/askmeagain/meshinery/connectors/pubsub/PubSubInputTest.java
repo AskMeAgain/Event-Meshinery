@@ -3,6 +3,7 @@ package io.github.askmeagain.meshinery.connectors.pubsub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.DefaultPubSubNameResolver;
 import io.github.askmeagain.meshinery.core.task.TaskData;
+import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +25,7 @@ class PubSubInputTest extends AbstractPubSubTestBase {
     var input = new PubSubInputSource<>(
         "default",
         objectMapper,
-        PubSubTestContext.class,
+        TestContext.class,
         pubSubProperties,
         transportChannelProvider,
         credentialProvider,
@@ -38,8 +39,8 @@ class PubSubInputTest extends AbstractPubSubTestBase {
         credentialProvider
     );
 
-    var value1 = new PubSubTestContext(1);
-    var value2 = new PubSubTestContext(2);
+    var value1 = new TestContext(1);
+    var value2 = new TestContext(2);
 
     //Act ------------------------------------------------------------------------------------
     output.writeOutput(TOPIC, value1, new TaskData());
@@ -51,11 +52,11 @@ class PubSubInputTest extends AbstractPubSubTestBase {
     //Assert ---------------------------------------------------------------------------------
     assertThat(result1)
         .hasSize(1)
-        .allMatch(x -> x.getAckId() != null)
+        .allMatch(x -> x.getMetadata(MeshineryPubSubProperties.PUBSUB_ACK_METADATA_FIELD_NAME) != null)
         .allMatch(x -> x.getId().equals("1"));
     assertThat(result2)
         .hasSize(1)
-        .allMatch(x -> x.getAckId() != null)
+        .allMatch(x -> x.getMetadata(MeshineryPubSubProperties.PUBSUB_ACK_METADATA_FIELD_NAME) != null)
         .allMatch(x -> x.getId().equals("2"));
 
     output.close();

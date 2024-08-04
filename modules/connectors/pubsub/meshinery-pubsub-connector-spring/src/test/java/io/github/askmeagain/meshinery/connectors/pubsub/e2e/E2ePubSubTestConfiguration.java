@@ -7,13 +7,14 @@ import com.google.api.gax.rpc.FixedTransportChannelProvider;
 import com.google.api.gax.rpc.TransportChannelProvider;
 import io.github.askmeagain.meshinery.connectors.pubsub.EnableMeshineryPubSub;
 import io.github.askmeagain.meshinery.connectors.pubsub.MeshineryPubSubProperties;
+import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.grpc.ManagedChannelBuilder;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
 @TestConfiguration
-@EnableMeshineryPubSub(context = TestPubSubContext.class)
+@EnableMeshineryPubSub(context = TestContext.class)
 public class E2ePubSubTestConfiguration {
 
   @Bean

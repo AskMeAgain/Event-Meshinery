@@ -8,6 +8,8 @@ import lombok.Data;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryPubSubProperties {
 
+  public static final String PUBSUB_ACK_METADATA_FIELD_NAME = "pubsub-ack-id";
+
   @Positive
   private int limit = 10;
 

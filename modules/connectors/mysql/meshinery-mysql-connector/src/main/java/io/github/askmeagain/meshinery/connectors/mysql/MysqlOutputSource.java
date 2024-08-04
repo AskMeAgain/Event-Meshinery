@@ -45,7 +45,7 @@ public class MysqlOutputSource<C extends MeshineryDataContext> implements Meshin
 
   @Override
   @SneakyThrows
-  public void writeOutput(String key, C output, TaskData taskData) {
+  public synchronized void writeOutput(String key, C output, TaskData taskData) {
     var insertOverride = taskData.has(MeshineryMysqlProperties.MYSQL_OVERRIDE_EXISTING);
     var insertStatement = insertOverride ? OVERRIDE : INSERT;
 

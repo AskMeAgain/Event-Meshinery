@@ -7,22 +7,22 @@ import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Slf4j
+@DirtiesContext
 @SpringBootTest(classes = {E2eTestApplication.class, E2eMysqlTestConfiguration.class})
 @TestPropertySource(properties = {
     "meshinery.core.batch-job=true",
     "meshinery.core.shutdown-on-finished=false",
-    "meshinery.core.grace-period-milliseconds=15000",
-    "meshinery.core.backpressure-limit=150",
+    "meshinery.core.grace-period-milliseconds=25000",
+    "meshinery.core.backpressure-limit=300",
     "meshinery.core.start-immediately=false"
 })
 public class E2eMysqlTest extends AbstractSpringMysqlTestBase {

@@ -11,16 +11,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
+@DirtiesContext
 @SpringBootTest(classes = {E2eTestApplication.class, E2eMemoryTestConfiguration.class})
 @TestPropertySource(properties = {
     "meshinery.core.batch-job=true",
     "meshinery.core.shutdown-on-finished=false",
-    "meshinery.core.grace-period-milliseconds=15000",
+    "meshinery.core.grace-period-milliseconds=5000",
     "meshinery.core.backpressure-limit=150",
     "meshinery.core.start-immediately=false"
 })

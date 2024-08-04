@@ -11,4 +11,8 @@ public interface MeshineryDataContext {
    * @return id
    */
   String getId();
+
+  String getMetadata(String key);
+
+  MeshineryDataContext setMetadata(String key, String value);
 }

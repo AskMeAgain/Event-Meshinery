@@ -23,6 +23,7 @@ public class MysqlInputSource<C extends MeshineryDataContext> implements Accessi
       WHERE processed = 0 AND state IN (<STATES>)
       ORDER BY eid ASC
       LIMIT :limit
+      FOR UPDATE
       """;
 
   private static final String SPECIFIC_SELECT_QUERY = """
@@ -58,7 +59,7 @@ public class MysqlInputSource<C extends MeshineryDataContext> implements Accessi
 
   @Override
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public Optional<C> getContext(String key, String id) {
+  public synchronized Optional<C> getContext(String key, String id) {
     return jdbi.inTransaction(handle -> {
           var firstResult = handle.createQuery(SPECIFIC_SELECT_QUERY)
               .bind("state", key)
@@ -92,7 +93,7 @@ public class MysqlInputSource<C extends MeshineryDataContext> implements Accessi
 
   @Override
   @SneakyThrows
-  public List<C> getInputs(List<String> keys) {
+  public synchronized List<C> getInputs(List<String> keys) {
     return jdbi.inTransaction(handle -> {
           var result = handle.createQuery(SELECT_QUERY)
               .define("TABLE", clazz.getSimpleName())
