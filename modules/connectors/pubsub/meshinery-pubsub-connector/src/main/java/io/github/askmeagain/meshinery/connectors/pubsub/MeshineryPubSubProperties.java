@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.connectors.pubsub;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import lombok.Data;
 public class MeshineryPubSubProperties {
 
   public static final String PUBSUB_ACK_METADATA_FIELD_NAME = "pubsub-ack-id";
+  public static final String PUBSUB_EVENT_KEY_METADATA_FIELD_NAME = "pubsub-event-key-id";
 
   @Positive
   private int limit = 10;
@@ -17,4 +19,7 @@ public class MeshineryPubSubProperties {
   private String projectId;
 
   private String emulatorEndpoint;
+
+  @NotNull
+  private Boolean ackImmediatly;
 }

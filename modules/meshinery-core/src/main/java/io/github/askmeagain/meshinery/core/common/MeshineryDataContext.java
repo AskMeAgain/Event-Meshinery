@@ -14,5 +14,5 @@ public interface MeshineryDataContext {
 
   String getMetadata(String key);
 
-  MeshineryDataContext setMetadata(String key, String value);
+  <C extends MeshineryDataContext> C setMetadata(String key, String value);
 }

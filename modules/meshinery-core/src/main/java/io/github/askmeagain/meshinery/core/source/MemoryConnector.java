@@ -21,8 +21,7 @@ public class MemoryConnector<K, C extends MeshineryDataContext> implements Acces
 
   @Getter
   private String name = "default-memory-connector";
-  private final ConcurrentHashMap<K, List<C>> map = new ConcurrentHashMap<>();
-  private final int batchSize = 100;
+  private final ConcurrentHashMap<K, ConcurrentHashMap<String, C>> map = new ConcurrentHashMap<>();
 
   public MemoryConnector(String name) {
     this.name = name;
@@ -39,7 +38,8 @@ public class MemoryConnector<K, C extends MeshineryDataContext> implements Acces
   @SneakyThrows
   private synchronized List<C> getInputs(K key) {
     if (map.containsKey(key)) {
-      return map.remove(key);
+      var remove = map.remove(key);
+      return new ArrayList<>(remove.values());
     }
     return Collections.emptyList();
   }
@@ -47,21 +47,18 @@ public class MemoryConnector<K, C extends MeshineryDataContext> implements Acces
   @Override
   public synchronized void writeOutput(K key, C output, TaskData unused) {
     if (map.containsKey(key)) {
-      map.get(key).add(output);
+      map.get(key).put(output.getId(), output);
     } else {
-      var innerMap = new ArrayList<C>();
-      innerMap.add(output);
+      var innerMap = new ConcurrentHashMap<String, C>();
+      innerMap.put(output.getId(), output);
       map.put(key, innerMap);
     }
   }
 
   @Override
-  public Optional<C> getContext(K key, String id) {
-    var list = map.getOrDefault(key, Collections.emptyList());
+  public synchronized Optional<C> getContext(K key, String id) {
+    var mapOfState = map.getOrDefault(key, new ConcurrentHashMap<>());
 
-    //TODO make this more efficient
-    return list.stream()
-        .filter(x -> x.getId().equals(id))
-        .findFirst();
+    return Optional.ofNullable(mapOfState.get(id));
   }
 }

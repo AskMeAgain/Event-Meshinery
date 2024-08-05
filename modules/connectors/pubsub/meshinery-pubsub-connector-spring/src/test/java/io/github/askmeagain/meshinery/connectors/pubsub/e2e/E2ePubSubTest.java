@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = {E2eTestApplication.class, E2ePubSubTestConfiguration.class})
 @TestPropertySource(properties = {
     "meshinery.core.batch-job=true",
+    "meshinery.connectors.pubsub.ack-immediatly=false",
     "meshinery.core.shutdown-on-finished=false",
     "meshinery.core.grace-period-milliseconds=5000",
     "meshinery.core.backpressure-limit=150",

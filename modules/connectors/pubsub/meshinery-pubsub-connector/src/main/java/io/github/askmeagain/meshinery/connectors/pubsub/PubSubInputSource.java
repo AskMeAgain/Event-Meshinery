@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import static io.github.askmeagain.meshinery.connectors.pubsub.MeshineryPubSubProperties.PUBSUB_ACK_METADATA_FIELD_NAME;
+import static io.github.askmeagain.meshinery.connectors.pubsub.MeshineryPubSubProperties.PUBSUB_EVENT_KEY_METADATA_FIELD_NAME;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
@@ -89,8 +90,9 @@ public class PubSubInputSource<C extends MeshineryDataContext> implements Meshin
       try {
         var json = message.getMessage().getData().toStringUtf8();
         var contextWithoutAckId = objectMapper.readValue(json, clazz);
-        var pubSubContext = contextWithoutAckId.setMetadata(PUBSUB_ACK_METADATA_FIELD_NAME, message.getAckId());
-        list.add((C) pubSubContext);
+        var pubSubContextTemp1 = contextWithoutAckId.<C>setMetadata(PUBSUB_ACK_METADATA_FIELD_NAME, message.getAckId());
+        var pubSubContext = pubSubContextTemp1.<C>setMetadata(PUBSUB_EVENT_KEY_METADATA_FIELD_NAME, key);
+        list.add(pubSubContext);
         ackIds.add(message.getAckId());
       } catch (JsonProcessingException e) {
         //do nothing
@@ -98,20 +100,37 @@ public class PubSubInputSource<C extends MeshineryDataContext> implements Meshin
       }
     }
 
-    var acknowledgeRequest = AcknowledgeRequest.newBuilder()
-        .setSubscription(ProjectSubscriptionName.format(meshineryPubSubProperties.getProjectId(), resolvedKey))
-        .addAllAckIds(ackIds)
-        .build();
-
-    subscriber.acknowledgeCallable().call(acknowledgeRequest);
+    if (meshineryPubSubProperties.getAckImmediatly()) {
+      var acknowledgeRequest = AcknowledgeRequest.newBuilder()
+          .setSubscription(ProjectSubscriptionName.format(meshineryPubSubProperties.getProjectId(), resolvedKey))
+          .addAllAckIds(ackIds)
+          .build();
+      subscriber.acknowledgeCallable().call(acknowledgeRequest);
+    }
 
     return list;
   }
 
+  @SneakyThrows
   @Override
-  public C commit(C id) {
-    //TODO fix this
-    log.info("Committing message with id {}", id.getMetadata(PUBSUB_ACK_METADATA_FIELD_NAME));
-    return id;
+  public C commit(C context) {
+    if (meshineryPubSubProperties.getAckImmediatly()) {
+      return context;
+    }
+
+    var key = context.getMetadata(PUBSUB_EVENT_KEY_METADATA_FIELD_NAME);
+    var resolvedKey = pubSubNameResolver.resolveSubscriptionNameFromKey(key);
+    var ackId = context.getMetadata(PUBSUB_ACK_METADATA_FIELD_NAME);
+    log.info("Committing message with id {}", ackId);
+    var acknowledgeRequest = AcknowledgeRequest.newBuilder()
+        .setSubscription(ProjectSubscriptionName.format(meshineryPubSubProperties.getProjectId(), resolvedKey))
+        .addAllAckIds(List.of(ackId))
+        .build();
+
+    try (var subscriber = GrpcSubscriberStub.create(subscriberStubSettings)) {
+      subscriber.acknowledgeCallable().call(acknowledgeRequest);
+    }
+
+    return context;
   }
 }
