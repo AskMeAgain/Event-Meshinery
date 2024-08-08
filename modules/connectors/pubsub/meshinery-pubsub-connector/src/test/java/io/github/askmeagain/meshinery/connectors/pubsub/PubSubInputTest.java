@@ -15,6 +15,7 @@ class PubSubInputTest extends AbstractPubSubTestBase {
   void testInputOutput() throws Exception {
     //Arrange --------------------------------------------------------------------------------
     var pubSubProperties = new MeshineryPubSubProperties();
+    pubSubProperties.setAckImmediatly(true);
     pubSubProperties.setLimit(1);
     pubSubProperties.setProjectId(getProjectId());
 
