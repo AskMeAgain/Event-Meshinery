@@ -36,6 +36,11 @@ public class SignalingInputSource<K extends Comparable<K>, C extends MeshineryDa
   }
 
   @Override
+  public C commit(C context) {
+    return context;
+  }
+
+  @Override
   public List<C> getInputs(List<K> keys) {
     return keys.stream()
         .map(this::getInputs)

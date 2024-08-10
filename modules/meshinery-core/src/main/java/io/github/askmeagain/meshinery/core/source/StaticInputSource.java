@@ -19,4 +19,9 @@ public class StaticInputSource<K, C extends MeshineryDataContext> implements Mes
   public List<C> getInputs(List<K> keys) {
     return staticInput.apply(keys);
   }
+
+  @Override
+  public C commit(C context) {
+    return context;
+  }
 }

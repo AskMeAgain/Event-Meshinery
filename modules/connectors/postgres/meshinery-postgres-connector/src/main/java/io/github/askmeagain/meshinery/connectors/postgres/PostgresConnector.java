@@ -68,6 +68,11 @@ public class PostgresConnector<C extends MeshineryDataContext> implements Access
   }
 
   @Override
+  public C commit(C context) {
+    return postgresInputSource.commit(context);
+  }
+
+  @Override
   public Optional<C> getContext(String key, String id) {
     return postgresInputSource.getContext(key, id);
   }

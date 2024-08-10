@@ -92,6 +92,11 @@ public class MysqlInputSource<C extends MeshineryDataContext> implements Accessi
   }
 
   @Override
+  public C commit(C context) {
+    return context;
+  }
+
+  @Override
   @SneakyThrows
   public synchronized List<C> getInputs(List<String> keys) {
     return jdbi.inTransaction(handle -> {

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.rpc.TransportChannelProvider;
 import com.google.cloud.pubsub.v1.stub.GrpcSubscriberStub;
-import com.google.cloud.pubsub.v1.stub.SubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
 import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.ProjectSubscriptionName;
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +35,7 @@ public class PubSubInputSource<C extends MeshineryDataContext> implements Meshin
   private final PubSubNameResolver pubSubNameResolver;
   private final MeshineryPubSubProperties meshineryPubSubProperties;
   private final SubscriberStubSettings subscriberStubSettings;
+  private GrpcSubscriberStub subscriber;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @SneakyThrows
@@ -56,20 +57,21 @@ public class PubSubInputSource<C extends MeshineryDataContext> implements Meshin
         .setTransportChannelProvider(transportChannelProvider)
         .setCredentialsProvider(credentialsProvider)
         .build();
+    this.subscriber = GrpcSubscriberStub.create(subscriberStubSettings);
   }
+
+  private ConcurrentHashMap<String, GrpcSubscriberStub> map = new ConcurrentHashMap<>();
 
   @Override
   @SneakyThrows
   public List<C> getInputs(List<String> keys) {
-    try (var subscriber = GrpcSubscriberStub.create(subscriberStubSettings)) {
-      return keys.stream()
-          .map(key -> createDataRequest(subscriber, key))
-          .flatMap(Collection::stream)
-          .toList();
-    }
+    return keys.stream()
+        .map(this::createDataRequest)
+        .flatMap(Collection::stream)
+        .toList();
   }
 
-  private List<C> createDataRequest(SubscriberStub subscriber, String key) {
+  private List<C> createDataRequest(String key) {
     var resolvedKey = pubSubNameResolver.resolveSubscriptionNameFromKey(key);
     var pullRequest = PullRequest.newBuilder()
         .setMaxMessages(meshineryPubSubProperties.getLimit())
@@ -111,9 +113,9 @@ public class PubSubInputSource<C extends MeshineryDataContext> implements Meshin
     return list;
   }
 
-  @SneakyThrows
   @Override
   public C commit(C context) {
+    log.error("From inside pubsub input source");
     if (meshineryPubSubProperties.getAckImmediatly()) {
       return context;
     }
@@ -127,9 +129,7 @@ public class PubSubInputSource<C extends MeshineryDataContext> implements Meshin
         .addAllAckIds(List.of(ackId))
         .build();
 
-    try (var subscriber = GrpcSubscriberStub.create(subscriberStubSettings)) {
-      subscriber.acknowledgeCallable().call(acknowledgeRequest);
-    }
+    subscriber.acknowledgeCallable().call(acknowledgeRequest);
 
     return context;
   }

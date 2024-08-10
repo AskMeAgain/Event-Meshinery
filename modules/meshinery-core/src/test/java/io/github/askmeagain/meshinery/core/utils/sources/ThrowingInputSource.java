@@ -21,4 +21,9 @@ public class ThrowingInputSource implements MeshinerySourceConnector<String, Tes
   public List<TestContext> getInputs(List<String> key) {
     throw new RuntimeException("Error!");
   }
+
+  @Override
+  public TestContext commit(TestContext context) {
+    return context;
+  }
 }

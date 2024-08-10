@@ -44,5 +44,10 @@ public class TestInputSourceDecoratorFactory implements InputSourceDecoratorFact
       atomicInteger.addAndGet(key.size());
       return innerInputSource.getInputs(key);
     }
+
+    @Override
+    public MeshineryDataContext commit(MeshineryDataContext context) {
+      return context;
+    }
   }
 }

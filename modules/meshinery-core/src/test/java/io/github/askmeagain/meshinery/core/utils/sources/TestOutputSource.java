@@ -18,4 +18,9 @@ public class TestOutputSource implements MeshinerySourceConnector<String, TestCo
   public List<TestContext> getInputs(List<String> key) {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public TestContext commit(TestContext context) {
+    return context;
+  }
 }

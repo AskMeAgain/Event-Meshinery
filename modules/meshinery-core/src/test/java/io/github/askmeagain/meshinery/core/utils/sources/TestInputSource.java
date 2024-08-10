@@ -61,4 +61,9 @@ public class TestInputSource implements MeshinerySourceConnector<String, TestCon
   public void writeOutput(String key, TestContext output, TaskData taskData) {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public TestContext commit(TestContext context) {
+    return context;
+  }
 }

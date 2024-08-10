@@ -38,4 +38,9 @@ public class DynamicKeyConnector<K, C extends MeshineryDataContext> implements M
   public void writeOutput(K key, C output, TaskData taskData) {
     innerOutputSource.writeOutput(key, output, taskData);
   }
+
+  @Override
+  public C commit(C context) {
+    return context;
+  }
 }

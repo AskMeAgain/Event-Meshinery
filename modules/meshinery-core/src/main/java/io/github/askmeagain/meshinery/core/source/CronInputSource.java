@@ -87,4 +87,9 @@ public class CronInputSource<C extends MeshineryDataContext> implements Meshiner
 
     nextExecutions.put(cron, nextExecution.get());
   }
+
+  @Override
+  public C commit(C context) {
+    return context;
+  }
 }

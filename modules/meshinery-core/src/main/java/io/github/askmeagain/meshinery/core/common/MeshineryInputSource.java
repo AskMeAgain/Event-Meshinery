@@ -23,8 +23,6 @@ public interface MeshineryInputSource<K, I extends MeshineryDataContext> {
     return taskData;
   }
 
-  default I commit(I context) {
-    return context;
-  }
+  I commit(I context);
 
 }

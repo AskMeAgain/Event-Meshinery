@@ -69,4 +69,9 @@ public class KafkaConnector<C extends MeshineryDataContext>
     inputSource.close();
     outputSource.close();
   }
+
+  @Override
+  public C commit(C context) {
+    return inputSource.commit(context);
+  }
 }

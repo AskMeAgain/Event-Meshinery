@@ -23,9 +23,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
+import lombok.extern.slf4j.Slf4j;
 
 import static io.github.askmeagain.meshinery.core.other.MeshineryUtils.joinEventKeys;
 
+@Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Builder(toBuilder = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -52,7 +54,7 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
       MeshineryProcessor<I, C> newProcessor,
       List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> oldProcessorList,
       String name,
-      MeshineryInputSource inputConnector,
+      MeshineryInputSource<K, C> inputConnector,
       MeshineryOutputSource outputConnector,
       List<K> eventKeys,
       TaskData taskData,
@@ -395,17 +397,18 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
   private <N extends MeshineryDataContext> MeshineryTaskFactory<K, N> addNewProcessor(
       MeshineryProcessor<C, N> newProcessor
   ) {
-    return new MeshineryTaskFactory<>(
-        newProcessor,
+    MeshineryTaskFactory<K, N> meshineryTaskFactory = new MeshineryTaskFactory<K, N>(
+        (MeshineryProcessor<N, N>) newProcessor,
         processorList,
         taskName,
-        inputConnector,
+        (MeshineryInputSource<K, N>) inputConnector,
         outputConnector,
         inputKeys,
         taskData,
         handleException,
         backoffTime
-    ).toBuilder()
+    );
+    return meshineryTaskFactory.toBuilder()
         .taskData(newProcessor.addToTaskData(
             taskData.with(TaskDataProperties.GRAPH_PROCESSOR, newProcessor.getClass().getName())))
         .build();
@@ -414,7 +417,9 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<K, C> build() {
     var finalProcessorList = new ArrayList<>(processorList);
-    finalProcessorList.add(context -> inputConnector.commit((C) context));
+    finalProcessorList.add(context -> {
+      return inputConnector.commit((C) context);
+    });
 
     return new MeshineryTask<>(
         backoffTime,

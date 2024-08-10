@@ -28,6 +28,11 @@ public class InputSourceTimingDecoratorFactory implements InputSourceDecoratorFa
     private final String name = innerConnector.getName();
 
     @Override
+    public MeshineryDataContext commit(MeshineryDataContext context) {
+      return context;
+    }
+
+    @Override
     public List<MeshineryDataContext> getInputs(List<Object> keys) {
       var connectorName = innerConnector.getName();
       var keyNames = MeshineryUtils.joinEventKeys(keys);

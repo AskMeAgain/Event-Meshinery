@@ -92,6 +92,11 @@ public class PostgresInputSource<C extends MeshineryDataContext> implements Acce
   }
 
   @Override
+  public C commit(C context) {
+    return context;
+  }
+
+  @Override
   @SneakyThrows
   public List<C> getInputs(List<String> keys) {
     return jdbi.withHandle(handle -> {

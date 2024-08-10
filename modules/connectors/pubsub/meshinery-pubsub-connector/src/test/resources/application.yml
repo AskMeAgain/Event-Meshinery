@@ -8,6 +8,7 @@ meshinery:
     pubsub:
       limit: 1
       projectId: "test"
+      ackImmediatly: true
 
 spring:
   main:

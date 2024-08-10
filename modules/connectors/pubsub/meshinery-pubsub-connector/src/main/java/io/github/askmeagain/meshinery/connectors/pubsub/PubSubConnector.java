@@ -72,6 +72,11 @@ public class PubSubConnector<C extends MeshineryDataContext>
   }
 
   @Override
+  public C commit(C context) {
+    return pubsubInputSource.commit(context);
+  }
+
+  @Override
   public void writeOutput(String key, C output, TaskData taskData) {
     pubsubOutputSource.writeOutput(key, output, taskData);
   }

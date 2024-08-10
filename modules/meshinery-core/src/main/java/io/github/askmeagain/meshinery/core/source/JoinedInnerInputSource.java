@@ -103,4 +103,9 @@ public class JoinedInnerInputSource<K, C extends MeshineryDataContext> implement
 
     return new PassiveExpiringMap<>(expirationPolicy);
   }
+
+  @Override
+  public C commit(C context) {
+    return context;
+  }
 }

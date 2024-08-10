@@ -61,4 +61,9 @@ public class MemoryConnector<K, C extends MeshineryDataContext> implements Acces
 
     return Optional.ofNullable(mapOfState.get(id));
   }
+
+  @Override
+  public C commit(C context) {
+    return context;
+  }
 }

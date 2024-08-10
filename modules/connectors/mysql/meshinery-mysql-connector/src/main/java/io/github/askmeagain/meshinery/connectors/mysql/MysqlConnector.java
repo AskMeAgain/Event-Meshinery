@@ -81,4 +81,9 @@ public class MysqlConnector<C extends MeshineryDataContext> implements Accessing
   public List<C> getInputs(List<String> keys) {
     return mysqlInputSource.getInputs(keys);
   }
+
+  @Override
+  public C commit(C context) {
+    return mysqlInputSource.commit(context);
+  }
 }

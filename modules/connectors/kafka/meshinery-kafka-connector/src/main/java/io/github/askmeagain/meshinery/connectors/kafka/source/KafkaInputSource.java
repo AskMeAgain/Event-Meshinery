@@ -50,4 +50,9 @@ public class KafkaInputSource<C extends MeshineryDataContext>
   public void close() {
     kafkaConsumerFactory.close();
   }
+
+  @Override
+  public C commit(C context) {
+    return context;
+  }
 }

@@ -22,4 +22,8 @@ public class ThrowingOutputSource implements MeshinerySourceConnector<String, Te
     throw new UnsupportedOperationException();
   }
 
+  @Override
+  public TestContext commit(TestContext context) {
+    return context;
+  }
 }
