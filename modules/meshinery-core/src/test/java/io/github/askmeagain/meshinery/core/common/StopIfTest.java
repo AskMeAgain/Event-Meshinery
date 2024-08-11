@@ -4,6 +4,7 @@ import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ import static org.mockito.ArgumentMatchers.eq;
 class StopIfTest {
 
   public static final String KEY = "Test";
-  public static final TestContext EXPECTED = new TestContext("2", 1);
+  public static final TestContext EXPECTED = new TestContext("2", 1, new ConcurrentHashMap<>());
 
   @Test
   @SuppressWarnings("unchecked")

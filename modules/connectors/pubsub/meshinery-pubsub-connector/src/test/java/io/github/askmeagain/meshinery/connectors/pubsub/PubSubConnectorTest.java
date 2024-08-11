@@ -17,6 +17,7 @@ class PubSubConnectorTest extends AbstractPubSubTestBase {
     var pubSubProperties = new MeshineryPubSubProperties();
     pubSubProperties.setLimit(1);
     pubSubProperties.setProjectId(getProjectId());
+    pubSubProperties.setAckImmediatly(true);
 
     var pubSubConnector = new PubSubConnector<>(
         TestContext.class,

@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     "meshinery.core.batch-job=true",
     "meshinery.core.shutdown-on-finished=false",
     "meshinery.core.grace-period-milliseconds=5000",
-    "meshinery.core.backpressure-limit=150",
+    "meshinery.core.backpressure-limit=1500",
     "meshinery.core.start-immediately=false"
 })
 class E2eMemoryTest {

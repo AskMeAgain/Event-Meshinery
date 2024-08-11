@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Import;
 @Import(E2eTestConfiguration.class)
 public class E2eTestApplication {
 
-  public static final int NUMBER_OF_TOPICS = 20;
-  public static final int ITEMS = 20;
+  public static final int NUMBER_OF_TOPICS = 100;
+  public static final int ITEMS = 100;
   public static final int SLEEP_IN_PROCESSOR = 5;
 
   public static final Map<String, Boolean> RESULT_MAP_0 = new ConcurrentHashMap<>();

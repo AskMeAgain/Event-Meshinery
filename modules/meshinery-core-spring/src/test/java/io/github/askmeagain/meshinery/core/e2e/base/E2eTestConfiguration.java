@@ -49,7 +49,9 @@ public class E2eTestConfiguration {
         .taskName("Task3Loop")
         .read(arr)
         .process(processor)
-        .process(context -> context.withIndex(context.getIndex() + 1))
+        .process(context -> {
+          return context.withIndex(context.getIndex() + 1);
+        })
         .process(context -> {
           if (context.getIndex() == 0) {
             RESULT_MAP_0.put(context.getId(), true);
@@ -73,7 +75,7 @@ public class E2eTestConfiguration {
   @Bean
   public MeshineryTask<String, TestContext> task1(MeshinerySourceConnector<String, TestContext> connector) {
     var inputSource = TestInputSource.builder()
-        .todo(TestContext.builder().build())
+        .todo(new TestContext(0))
         .iterations(ITEMS)
         .build();
 

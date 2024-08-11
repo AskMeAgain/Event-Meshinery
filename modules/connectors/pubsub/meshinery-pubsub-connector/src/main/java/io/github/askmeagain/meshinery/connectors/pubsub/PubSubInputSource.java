@@ -115,7 +115,6 @@ public class PubSubInputSource<C extends MeshineryDataContext> implements Meshin
 
   @Override
   public C commit(C context) {
-    log.error("From inside pubsub input source");
     if (meshineryPubSubProperties.getAckImmediatly()) {
       return context;
     }
@@ -123,7 +122,7 @@ public class PubSubInputSource<C extends MeshineryDataContext> implements Meshin
     var key = context.getMetadata(PUBSUB_EVENT_KEY_METADATA_FIELD_NAME);
     var resolvedKey = pubSubNameResolver.resolveSubscriptionNameFromKey(key);
     var ackId = context.getMetadata(PUBSUB_ACK_METADATA_FIELD_NAME);
-    log.info("Committing message with id {}", ackId);
+    log.debug("Committing message with id {}", ackId);
     var acknowledgeRequest = AcknowledgeRequest.newBuilder()
         .setSubscription(ProjectSubscriptionName.format(meshineryPubSubProperties.getProjectId(), resolvedKey))
         .addAllAckIds(List.of(ackId))

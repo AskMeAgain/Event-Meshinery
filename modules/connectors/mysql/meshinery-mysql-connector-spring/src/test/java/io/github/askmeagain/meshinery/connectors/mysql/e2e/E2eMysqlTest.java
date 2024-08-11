@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     "meshinery.core.batch-job=true",
     "meshinery.core.shutdown-on-finished=false",
     "meshinery.core.grace-period-milliseconds=25000",
-    "meshinery.core.backpressure-limit=300",
+    "meshinery.core.backpressure-limit=1500",
     "meshinery.core.start-immediately=false"
 })
 public class E2eMysqlTest extends AbstractSpringMysqlTestBase {

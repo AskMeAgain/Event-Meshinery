@@ -43,12 +43,15 @@ class PubSubInputTest extends AbstractPubSubTestBase {
     var value1 = new TestContext(1);
     var value2 = new TestContext(2);
 
-    //Act ------------------------------------------------------------------------------------
-    output.writeOutput(TOPIC, value1, new TaskData());
-    output.writeOutput(TOPIC, value2, new TaskData());
+    createTopic(TOPIC + "_abc");
+    createSubscription(TOPIC + "_abc", TOPIC + "_abc_subscription");
 
-    var result1 = input.getInputs(List.of(TOPIC));
-    var result2 = input.getInputs(List.of(TOPIC));
+    //Act ------------------------------------------------------------------------------------
+    output.writeOutput(TOPIC + "_abc", value1, new TaskData());
+    output.writeOutput(TOPIC + "_abc", value2, new TaskData());
+
+    var result1 = input.getInputs(List.of(TOPIC + "_abc"));
+    var result2 = input.getInputs(List.of(TOPIC + "_abc"));
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(result1)
