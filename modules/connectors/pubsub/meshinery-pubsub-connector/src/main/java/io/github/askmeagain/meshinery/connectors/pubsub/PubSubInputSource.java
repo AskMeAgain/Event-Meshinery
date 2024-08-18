@@ -92,9 +92,9 @@ public class PubSubInputSource<C extends MeshineryDataContext> implements Meshin
       try {
         var json = message.getMessage().getData().toStringUtf8();
         var contextWithoutAckId = objectMapper.readValue(json, clazz);
-        var pubSubContextTemp1 = contextWithoutAckId.<C>setMetadata(PUBSUB_ACK_METADATA_FIELD_NAME, message.getAckId());
-        var pubSubContext = pubSubContextTemp1.<C>setMetadata(PUBSUB_EVENT_KEY_METADATA_FIELD_NAME, key);
-        list.add(pubSubContext);
+        var pubSubContextTemp1 = contextWithoutAckId.setMetadata(PUBSUB_ACK_METADATA_FIELD_NAME, message.getAckId());
+        var pubSubContext = pubSubContextTemp1.setMetadata(PUBSUB_EVENT_KEY_METADATA_FIELD_NAME, key);
+        list.add(clazz.cast(pubSubContext));
         ackIds.add(message.getAckId());
       } catch (JsonProcessingException e) {
         //do nothing
