@@ -5,6 +5,9 @@ import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanContext;
+import io.opentelemetry.api.trace.TraceFlags;
+import io.opentelemetry.api.trace.TraceState;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +29,16 @@ public class OtelProcessorDecorator<I extends MeshineryDataContext, O extends Me
     var processorName = getTaskData().getSingle(TASK_NAME);
 
     return context -> {
-      var parentContext = OtelContextManager.span.get().getSpanContext();
+      var remoteContext = SpanContext.createFromRemoteParent(
+          context.getMetadata("otel-trace-id"),
+          context.getMetadata("otel-span-id"),
+          TraceFlags.getSampled(),
+          TraceState.getDefault()
+      );
 
       var span = tracer.spanBuilder(processor.getClass().getName())
-          .setAttribute("task_name", processorName)
-          .setParent(Context.current().with(Span.wrap(parentContext)))
+          .setAttribute("task_name", processorName) //TODO resolve correct name here
+          .setParent(Context.current().with(Span.wrap(remoteContext)))
           .startSpan();
 
       try {

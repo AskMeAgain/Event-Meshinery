@@ -121,11 +121,21 @@ public class MeshineryUtils {
       List<MeshineryTask<?, ? extends MeshineryDataContext>> tasks,
       List<InputSourceDecoratorFactory> connectorDecoratorFactories
   ) {
+    //TODO this is bad
     return tasks.stream()
         .map(task -> {
-          var decoratedInput = MeshineryUtils.applyDecorator(task.getInputConnector(), connectorDecoratorFactories);
+          var decoratedInput = (MeshineryInputSource<?, MeshineryDataContext>) MeshineryUtils.applyDecorator(
+              task.getInputConnector(),
+              connectorDecoratorFactories
+          );
 
-          return task.withNewInputConnector(decoratedInput);
+          var meshineryTask = task.withNewInputConnector(decoratedInput);
+          meshineryTask.getProcessorList().add(
+              context -> {
+                return decoratedInput.commit(context);
+              }
+          );
+          return meshineryTask;
         }).toList();
   }
 }
