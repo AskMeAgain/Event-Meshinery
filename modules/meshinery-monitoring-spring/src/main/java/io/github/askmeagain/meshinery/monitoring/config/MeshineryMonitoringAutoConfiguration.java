@@ -7,7 +7,8 @@ import io.github.askmeagain.meshinery.monitoring.MeshineryMonitoringService;
 import io.github.askmeagain.meshinery.monitoring.apis.DrawerApiController;
 import io.github.askmeagain.meshinery.monitoring.apis.MonitoringApiController;
 import io.github.askmeagain.meshinery.monitoring.decorators.InputSourceTimingDecoratorFactory;
-import io.github.askmeagain.meshinery.monitoring.decorators.OtelInputSourceTimingDecoratorFactory;
+import io.github.askmeagain.meshinery.monitoring.decorators.OtelInputSourceDecoratorFactory;
+import io.github.askmeagain.meshinery.monitoring.decorators.OtelOutputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.monitoring.decorators.OtelProcessorDecorator;
 import io.github.askmeagain.meshinery.monitoring.decorators.ProcessorTimingDecorator;
 import io.github.askmeagain.meshinery.monitoring.grafanapush.MeshineryPushProperties;
@@ -45,8 +46,14 @@ public class MeshineryMonitoringAutoConfiguration {
 
   @Bean
   @ConditionalOnBean(OpenTelemetry.class)
-  OtelInputSourceTimingDecoratorFactory otelTracerFactory(OpenTelemetry openTelemetry) {
-    return new OtelInputSourceTimingDecoratorFactory(openTelemetry);
+  OtelInputSourceDecoratorFactory otelTracerFactory(OpenTelemetry openTelemetry) {
+    return new OtelInputSourceDecoratorFactory(openTelemetry);
+  }
+
+  @Bean
+  @ConditionalOnBean(OpenTelemetry.class)
+  OtelOutputSourceDecoratorFactory otelOutputFactory(OpenTelemetry openTelemetry) {
+    return new OtelOutputSourceDecoratorFactory(openTelemetry);
   }
 
   @Bean

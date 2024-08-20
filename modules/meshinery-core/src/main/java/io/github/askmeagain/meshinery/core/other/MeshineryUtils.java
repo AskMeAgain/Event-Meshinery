@@ -89,14 +89,14 @@ public class MeshineryUtils {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static MeshineryOutputSource<?, ? extends MeshineryDataContext> applyDecorator(
-      MeshineryOutputSource<?, ? extends MeshineryDataContext> connector,
+  public static <K, V extends MeshineryDataContext> MeshineryOutputSource<?, ? extends MeshineryDataContext> applyDecorator(
+      MeshineryOutputSource<K, V> connector,
       List<OutputSourceDecoratorFactory> connectorDecoratorFactories
   ) {
     var innerConnector = connector;
 
     for (var decorator : connectorDecoratorFactories) {
-      innerConnector = decorator.decorate(innerConnector);
+      innerConnector = (MeshineryOutputSource<K, V>) decorator.decorate(innerConnector);
     }
 
     return innerConnector;

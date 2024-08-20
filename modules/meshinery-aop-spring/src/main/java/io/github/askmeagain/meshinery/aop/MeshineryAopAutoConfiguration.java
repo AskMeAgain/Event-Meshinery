@@ -4,7 +4,10 @@ import io.github.askmeagain.meshinery.aop.aspect.DynamicMeshineryReadJobAspect;
 import io.github.askmeagain.meshinery.aop.config.DynamicJobAopRegistrar;
 import io.github.askmeagain.meshinery.aop.properties.MeshineryAopProperties;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
-import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
+import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
+import io.github.askmeagain.meshinery.core.common.OutputSourceDecoratorFactory;
+import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
+import java.util.List;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -21,10 +24,12 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 public class MeshineryAopAutoConfiguration {
 
   @Bean
-  public DynamicMeshineryReadJobAspect dynamicMeshineryReadJobAspect(
-      MeshinerySourceConnector<String, ? extends MeshineryDataContext> connector
+  public <V extends MeshineryDataContext> DynamicMeshineryReadJobAspect dynamicMeshineryReadJobAspect(
+      MeshineryOutputSource<String, V> connector,
+      List<OutputSourceDecoratorFactory> decorators
   ) {
-    return new DynamicMeshineryReadJobAspect((MeshinerySourceConnector<String, MeshineryDataContext>) connector);
+    var decoratedSource = MeshineryUtils.applyDecorator(connector, decorators);
+    return new DynamicMeshineryReadJobAspect((MeshineryOutputSource<String, MeshineryDataContext>) decoratedSource);
   }
 
   @Bean

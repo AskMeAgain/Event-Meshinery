@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
-public class OtelInputSourceTimingDecoratorFactory implements InputSourceDecoratorFactory {
+public class OtelInputSourceDecoratorFactory implements InputSourceDecoratorFactory {
 
   private final OpenTelemetry openTelemetry;
 
@@ -62,12 +62,16 @@ public class OtelInputSourceTimingDecoratorFactory implements InputSourceDecorat
             var spanId = ctx.getMetadata("otel-span-id");
 
             if (traceId == null) {
-              var span = tracer.spanBuilder(ctx.getId() + " " + joinedKeys).startSpan();
+              var span = tracer.spanBuilder(ctx.getId()).startSpan();
+              tracer.spanBuilder("Job: " + joinedKeys)
+                  .setParent(Context.current().with(span))
+                  .startSpan().end();
               //so we can end the span later
               map.put(span.getSpanContext().getSpanId(), span);
 
-              var tmp1 = ctx.setMetadata("otel-trace-id", span.getSpanContext().getTraceId());
-              return tmp1.setMetadata("otel-span-id", span.getSpanContext().getSpanId());
+              return ctx
+                  .setMetadata("otel-trace-id", span.getSpanContext().getTraceId())
+                  .setMetadata("otel-span-id", span.getSpanContext().getSpanId());
             } else {
               var remoteContext = SpanContext.createFromRemoteParent(
                   traceId,
@@ -75,12 +79,15 @@ public class OtelInputSourceTimingDecoratorFactory implements InputSourceDecorat
                   TraceFlags.getSampled(),
                   TraceState.getDefault()
               );
-              var span = tracer.spanBuilder(joinedKeys)
+              var span = tracer.spanBuilder("Job: " + joinedKeys)
                   .setParent(Context.current().with(Span.wrap(remoteContext)))
                   .startSpan();
+
               map.put(span.getSpanContext().getSpanId(), span);
-              var tmp1 = ctx.setMetadata("otel-trace-id", span.getSpanContext().getTraceId());
-              return tmp1.setMetadata("otel-span-id", span.getSpanContext().getSpanId());
+
+              return ctx
+                  .setMetadata("otel-trace-id", span.getSpanContext().getTraceId())
+                  .setMetadata("otel-span-id", span.getSpanContext().getSpanId());
             }
           })
           .toList();

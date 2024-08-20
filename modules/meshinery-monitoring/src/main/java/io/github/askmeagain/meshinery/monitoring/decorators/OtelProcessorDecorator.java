@@ -36,7 +36,7 @@ public class OtelProcessorDecorator<I extends MeshineryDataContext, O extends Me
           TraceState.getDefault()
       );
 
-      var span = tracer.spanBuilder(processor.getClass().getName())
+      var span = tracer.spanBuilder("Processor: " + processor.getClass().getName())
           .setAttribute("task_name", processorName) //TODO resolve correct name here
           .setParent(Context.current().with(Span.wrap(remoteContext)))
           .startSpan();
