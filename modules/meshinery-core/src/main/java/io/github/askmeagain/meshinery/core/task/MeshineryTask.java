@@ -4,8 +4,10 @@ import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
+import io.github.askmeagain.meshinery.core.processors.CommitProcessor;
 import io.github.askmeagain.meshinery.core.scheduler.ConnectorKey;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,11 +34,20 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
   @Getter private TaskData taskData;
   @With(AccessLevel.PRIVATE)
   @Getter private final MeshineryInputSource<K, C> inputConnector;
-
   @Getter private final MeshineryOutputSource<K, C> outputConnector;
+
   @Getter private final BiFunction<MeshineryDataContext, Throwable, MeshineryDataContext> handleException;
-  @Getter private final List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList;
+  private final List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorListInternal;
+  @Getter(lazy = true)
+  private final List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList =
+      getProcessorListDecorated();
   Instant nextExecution = Instant.now();
+
+  public List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> getProcessorListDecorated() {
+    var finalList = new ArrayList<>(processorListInternal);
+    finalList.add(new CommitProcessor<>(() -> inputConnector));
+    return finalList;
+  }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask(
@@ -61,7 +72,7 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
     this.inputConnector = inputConnector;
     this.outputConnector = outputConnector;
     this.handleException = handleException;
-    this.processorList = processorList;
+    this.processorListInternal = processorList;
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
