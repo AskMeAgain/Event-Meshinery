@@ -416,8 +416,6 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public MeshineryTask<K, C> build() {
-    var finalProcessorList = new ArrayList<>(processorList);
-
     return new MeshineryTask<>(
         backoffTime,
         inputKeys,
@@ -426,7 +424,7 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
         inputConnector,
         outputConnector,
         handleException,
-        finalProcessorList
+        processorList
     );
   }
 }

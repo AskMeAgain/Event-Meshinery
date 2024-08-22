@@ -135,6 +135,8 @@ public class RoundRobinSchedulerBuilder {
 
     var fixedTasks = MeshineryUtils.decorateMeshineryTasks(tasks, connectorDecoratorFactories);
 
+    //TODO apply decorators here (input+output+processor)
+
     return new RoundRobinScheduler(
         (List<MeshineryTask<?, ?>>) fixedTasks,
         backpressureLimit,

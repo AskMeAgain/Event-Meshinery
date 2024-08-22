@@ -7,6 +7,7 @@ import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.OutputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
+import io.github.askmeagain.meshinery.core.processors.CommitProcessor;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.Arrays;
@@ -121,7 +122,7 @@ public class MeshineryUtils {
       List<MeshineryTask<?, ? extends MeshineryDataContext>> tasks,
       List<InputSourceDecoratorFactory> connectorDecoratorFactories
   ) {
-    //TODO this is bad
+    //TODO fix this
     return tasks.stream()
         .map(task -> {
           var decoratedInput = (MeshineryInputSource<?, MeshineryDataContext>) MeshineryUtils.applyDecorator(
@@ -131,9 +132,7 @@ public class MeshineryUtils {
 
           var meshineryTask = task.withNewInputConnector(decoratedInput);
           meshineryTask.getProcessorList().add(
-              context -> {
-                return decoratedInput.commit(context);
-              }
+              new CommitProcessor<>(() -> decoratedInput)
           );
           return meshineryTask;
         }).toList();
