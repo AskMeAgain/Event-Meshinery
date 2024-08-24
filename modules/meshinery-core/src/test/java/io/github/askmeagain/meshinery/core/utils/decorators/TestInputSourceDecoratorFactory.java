@@ -11,22 +11,21 @@ import lombok.RequiredArgsConstructor;
 
 
 @RequiredArgsConstructor
-public class TestInputSourceDecoratorFactory implements InputSourceDecoratorFactory {
+public class TestInputSourceDecoratorFactory<K, C extends MeshineryDataContext>
+    implements InputSourceDecoratorFactory<K, C> {
 
   private final AtomicInteger atomicInteger;
 
   @Override
-  public MeshinerySourceConnector<?, MeshineryDataContext> decorate(
-      MeshineryInputSource<?, ? extends MeshineryDataContext> inputConnector
-  ) {
-    return new TestConnectorDecorator(
-        (MeshinerySourceConnector<Object, MeshineryDataContext>) inputConnector, atomicInteger);
+  public MeshinerySourceConnector<K, C> decorate(MeshineryInputSource<K, C> inputConnector) {
+    return new TestConnectorDecorator<>(inputConnector, atomicInteger);
   }
 
   @RequiredArgsConstructor
-  public static class TestConnectorDecorator implements MeshinerySourceConnector<Object, MeshineryDataContext> {
+  public static class TestConnectorDecorator<K, C extends MeshineryDataContext>
+      implements MeshinerySourceConnector<K, C> {
 
-    private final MeshineryInputSource<Object, MeshineryDataContext> innerInputSource;
+    private final MeshineryInputSource<K, C> innerInputSource;
     private final AtomicInteger atomicInteger;
 
     @Override
@@ -35,18 +34,18 @@ public class TestInputSourceDecoratorFactory implements InputSourceDecoratorFact
     }
 
     @Override
-    public void writeOutput(Object key, MeshineryDataContext output, TaskData taskData) {
+    public void writeOutput(K key, C output, TaskData taskData) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<MeshineryDataContext> getInputs(List<Object> key) {
+    public List<C> getInputs(List<K> key) {
       atomicInteger.addAndGet(key.size());
       return innerInputSource.getInputs(key);
     }
 
     @Override
-    public MeshineryDataContext commit(MeshineryDataContext context) {
+    public C commit(C context) {
       return context;
     }
   }

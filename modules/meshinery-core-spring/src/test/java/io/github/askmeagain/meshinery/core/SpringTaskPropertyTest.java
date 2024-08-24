@@ -59,7 +59,7 @@ class SpringTaskPropertyTest extends AbstractCoreSpringTestBase {
         .build();
 
     //dirty cast
-    List<MeshineryTask<?, ?>> taskList = List.of(testTask1, testTask2);
+    var taskList = List.<MeshineryTask>of(testTask1, testTask2);
 
     //Act ------------------------------------------------------------------------------------
     var result = PropertyTaskInjection.injectProperties(taskList, properties);

@@ -26,7 +26,7 @@ class ShutdownApiControllerTest {
   MockMvc mockMvc;
 
   @MockBean
-  RoundRobinScheduler roundRobinScheduler;
+  RoundRobinScheduler<?, ?> roundRobinScheduler;
 
   @Test
   void testShutdown() throws Exception {

@@ -14,12 +14,10 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_N
 /**
  * Adds a timing metric to a prometheus registry. Uses TASK_NAME of the taskData properties to label the metric
  *
- * @param <I> Input Context Type
- * @param <O> Output Context Type
+ * @param <C> Context Type
  */
 @Slf4j
-public class ProcessorTimingDecorator<I extends MeshineryDataContext, O extends MeshineryDataContext>
-    implements ProcessorDecorator<I, O> {
+public class ProcessorTimingDecorator<C extends MeshineryDataContext> implements ProcessorDecorator<C> {
 
   /**
    * Wraps a processor and adds a monitoring around it.
@@ -27,7 +25,7 @@ public class ProcessorTimingDecorator<I extends MeshineryDataContext, O extends 
    * @param processor The processor to wrap
    * @return the new wrapped/decorated processor
    */
-  public MeshineryProcessor<I, O> wrap(MeshineryProcessor<I, O> processor) {
+  public MeshineryProcessor<C, C> wrap(MeshineryProcessor<C, C> processor) {
     var taskName = getTaskData().getSingle(TASK_NAME);
     var processorName = MeshineryMonitoringUtils.convertLambdaProcessorName(processor.getClass());
 

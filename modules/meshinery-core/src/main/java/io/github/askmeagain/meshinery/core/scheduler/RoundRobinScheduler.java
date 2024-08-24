@@ -1,10 +1,7 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
-import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
-import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.task.TaskDataProperties;
@@ -31,24 +28,23 @@ import org.slf4j.MDC;
 @Slf4j
 @Getter
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class RoundRobinScheduler {
+public class RoundRobinScheduler<K, C extends MeshineryDataContext> {
 
-  private final List<MeshineryTask<?, ?>> tasks;
+  private final List<MeshineryTask> tasks;
   private final int backpressureLimit;
   private final boolean isBatchJob;
-  private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
-  private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
-  private final List<? extends Consumer<MeshineryDataContext>> listPreTaskRunHook;
-  private final List<? extends Consumer<MeshineryDataContext>> listPostTaskRunHook;
+  private final List<? extends Consumer<RoundRobinScheduler<K, C>>> shutdownHook;
+  private final List<? extends Consumer<RoundRobinScheduler<K, C>>> startupHook;
+  private final List<? extends Consumer<C>> listPreTaskRunHook;
+  private final List<? extends Consumer<C>> listPostTaskRunHook;
 
-  private final List<ProcessorDecorator<MeshineryDataContext, MeshineryDataContext>> processorDecorator;
   private final boolean gracefulShutdownOnError;
   private final int gracePeriodMilliseconds;
 
-  private final Queue<TaskRun> outputQueue = new ConcurrentLinkedQueue<>();
+  private final Queue<TaskRun<C>> outputQueue = new ConcurrentLinkedQueue<>();
   private final Queue<ConnectorKey> inputQueue = new ConcurrentLinkedQueue<>();
 
-  private final Map<ConnectorKey, MeshineryTask<?, ?>> taskRunLookupMap = new ConcurrentHashMap<>();
+  private final Map<ConnectorKey, MeshineryTask<K, C>> taskRunLookupMap = new ConcurrentHashMap<>();
   private final ExecutorService taskExecutorService;
   private final Set<DataInjectingExecutorService> executorServices = new HashSet<>();
   private final DataInjectingExecutorService taskExecutor;
@@ -60,14 +56,13 @@ public class RoundRobinScheduler {
 
   @SneakyThrows
   RoundRobinScheduler(
-      List<MeshineryTask<?, ?>> tasks,
+      List<MeshineryTask> tasks,
       int backpressureLimit,
       boolean isBatchJob,
-      List<? extends Consumer<RoundRobinScheduler>> shutdownHook,
-      List<? extends Consumer<RoundRobinScheduler>> startupHook,
-      List<? extends Consumer<MeshineryDataContext>> preTaskRunHook,
-      List<? extends Consumer<MeshineryDataContext>> postTaskRunHook,
-      List<ProcessorDecorator<MeshineryDataContext, MeshineryDataContext>> processorDecorator,
+      List<? extends Consumer<RoundRobinScheduler<K, C>>> shutdownHook,
+      List<? extends Consumer<RoundRobinScheduler<K, C>>> startupHook,
+      List<? extends Consumer<C>> preTaskRunHook,
+      List<? extends Consumer<C>> postTaskRunHook,
       boolean gracefulShutdownOnError,
       int gracePeriodMilliseconds,
       DataInjectingExecutorService taskExecutorService
@@ -79,7 +74,6 @@ public class RoundRobinScheduler {
     this.isBatchJob = isBatchJob;
     this.shutdownHook = shutdownHook;
     this.startupHook = startupHook;
-    this.processorDecorator = processorDecorator;
     this.gracefulShutdownOnError = gracefulShutdownOnError;
     this.gracePeriodMilliseconds = gracePeriodMilliseconds;
     this.taskExecutorService = taskExecutorService;
@@ -97,12 +91,12 @@ public class RoundRobinScheduler {
     executorServices.add(taskExecutor);
   }
 
-  public static RoundRobinSchedulerBuilder builder() {
-    return new RoundRobinSchedulerBuilder();
+  public static <K, C extends MeshineryDataContext> RoundRobinSchedulerBuilder<K, C> builder() {
+    return new RoundRobinSchedulerBuilder<K, C>();
   }
 
   @SneakyThrows
-  public RoundRobinScheduler start() {
+  public RoundRobinScheduler<K, C> start() {
     startupHook.forEach(hook -> hook.accept(this));
     inputExecutor.execute(() -> createInputScheduler(inputExecutor));
     Thread.sleep(100);
@@ -112,8 +106,8 @@ public class RoundRobinScheduler {
 
   private void createLookupMap() {
     for (var task : tasks) {
-      var connectorKey = ConnectorKey.builder()
-          .connector((MeshineryInputSource<Object, MeshineryDataContext>) task.getInputConnector())
+      var connectorKey = ConnectorKey.<K, C>builder()
+          .connector(task.getInputConnector())
           .key(task.getInputKeys())
           .build();
 
@@ -176,8 +170,10 @@ public class RoundRobinScheduler {
         .toList();
   }
 
-  private List<TaskRun> queryTaskRuns(ConnectorKey work) {
+  private List<TaskRun<C>> queryTaskRuns(ConnectorKey work) {
     try {
+      var work2 = work;
+      var compare = taskRunLookupMap.entrySet().iterator().next();
       if (!taskRunLookupMap.containsKey(work)) {
         return Collections.emptyList();
       }
@@ -222,7 +218,7 @@ public class RoundRobinScheduler {
     shutdownHook.forEach(hook -> hook.accept(this));
   }
 
-  private void getResultFuture(TaskRun run) {
+  private void getResultFuture(TaskRun<C> run) {
     CompletableFuture.runAsync(() -> {
       var contextId = run.getContext().getId();
       try {
@@ -235,11 +231,10 @@ public class RoundRobinScheduler {
 
         var context = run.getContext();
         while (!run.getQueue().isEmpty()) {
-          var processor = run.getQueue().remove();
-          var decoratedProc = MeshineryUtils.applyDecorators(processor, processorDecorator);
-
           try {
-            context = decoratedProc.processAsync(context);
+            context = run.getQueue()
+                .remove()
+                .processAsync(context);
           } catch (Exception e) {
             context = run.getHandleError().apply(context, e);
           }

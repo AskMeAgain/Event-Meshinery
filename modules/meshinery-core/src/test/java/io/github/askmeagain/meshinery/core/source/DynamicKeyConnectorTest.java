@@ -49,7 +49,7 @@ class DynamicKeyConnectorTest {
     innerConnector.writeOutput("inner key", innerContext, new TaskData());
 
     //Act ------------------------------------------------------------------------------------
-    RoundRobinScheduler.builder()
+    RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
         .executorService(executor)

@@ -7,7 +7,6 @@ import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.OutputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
-import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.Arrays;
 import java.util.List;
@@ -52,18 +51,9 @@ public class MeshineryUtils {
     };
   }
 
-  /**
-   * Applies all decorators to a processor.
-   *
-   * @param nextProcessor      the processor to be decorated
-   * @param processorDecorator list of decorators
-   * @param <I>                input type of the context
-   * @param <O>                output type of the context
-   * @return a new processor which will be decorated
-   */
-  public static <I extends MeshineryDataContext, O extends MeshineryDataContext> MeshineryProcessor<I, O> applyDecorators(
-      MeshineryProcessor<I, O> nextProcessor,
-      List<ProcessorDecorator<I, O>> processorDecorator
+  public static <C extends MeshineryDataContext> MeshineryProcessor<C, C> applyDecorators(
+      MeshineryProcessor<C, C> nextProcessor,
+      List<ProcessorDecorator<C>> processorDecorator
   ) {
     var innerProcessor = nextProcessor;
 
@@ -75,9 +65,9 @@ public class MeshineryUtils {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static MeshineryInputSource<?, ? extends MeshineryDataContext> applyDecorator(
-      MeshineryInputSource<?, ? extends MeshineryDataContext> connector,
-      List<InputSourceDecoratorFactory> connectorDecoratorFactories
+  public static <K, C extends MeshineryDataContext> MeshineryInputSource<K, C> applyDecorator(
+      MeshineryInputSource<K, C> connector,
+      List<InputSourceDecoratorFactory<K, C>> connectorDecoratorFactories
   ) {
     var innerConnector = connector;
 
@@ -114,20 +104,5 @@ public class MeshineryUtils {
     return Arrays.stream(inputKeys)
         .map(Object::toString)
         .collect(Collectors.joining("-"));
-  }
-
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static List<? extends MeshineryTask<?, ? extends MeshineryDataContext>> decorateMeshineryTasks(
-      List<MeshineryTask<?, ? extends MeshineryDataContext>> tasks,
-      List<InputSourceDecoratorFactory> connectorDecoratorFactories
-  ) {
-    return tasks.stream()
-        .map(task -> {
-          var decoratedInput = (MeshineryInputSource<?, MeshineryDataContext>) MeshineryUtils.applyDecorator(
-              task.getInputConnector(),
-              connectorDecoratorFactories
-          );
-          return task.withNewInputConnector(decoratedInput);
-        }).toList();
   }
 }

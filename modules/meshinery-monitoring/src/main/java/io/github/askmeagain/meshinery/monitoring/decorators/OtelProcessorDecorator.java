@@ -16,8 +16,7 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_N
 
 
 @Slf4j
-public class OtelProcessorDecorator<I extends MeshineryDataContext, O extends MeshineryDataContext>
-    implements ProcessorDecorator<I, O> {
+public class OtelProcessorDecorator<C extends MeshineryDataContext> implements ProcessorDecorator<C> {
 
   private final Tracer tracer;
 
@@ -25,7 +24,7 @@ public class OtelProcessorDecorator<I extends MeshineryDataContext, O extends Me
     this.tracer = openTelemetry.getTracer("OtelProcessorDecorator");
   }
 
-  public MeshineryProcessor<I, O> wrap(MeshineryProcessor<I, O> processor) {
+  public MeshineryProcessor<C, C> wrap(MeshineryProcessor<C, C> processor) {
     var processorName = getTaskData().getSingle(TASK_NAME);
 
     return context -> {

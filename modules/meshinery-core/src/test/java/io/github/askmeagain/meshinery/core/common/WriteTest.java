@@ -38,7 +38,7 @@ class WriteTest {
     //Act ------------------------------------------------------------------------------------
     memoryConnector.writeOutput("input", context, new TaskData());
 
-    RoundRobinScheduler.builder()
+    RoundRobinScheduler.<String, TestContext>builder()
         .gracePeriodMilliseconds(100)
         .task(task)
         .executorService(executor)
@@ -76,7 +76,7 @@ class WriteTest {
         .build();
 
     //Act ------------------------------------------------------------------------------------
-    RoundRobinScheduler.builder()
+    RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
         .executorService(executor)

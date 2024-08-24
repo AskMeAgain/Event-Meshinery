@@ -21,7 +21,7 @@ class MonitoringTest {
     //Arrange ----------------------------------------------------------------------------------------------------------
     TaskData.setTaskData(new TaskData().with(TASK_NAME, TASK_NAME_VALUE));
     MDC.put("", "");
-    var decorator = new ProcessorTimingDecorator<TestContext, TestContext>();
+    var decorator = new ProcessorTimingDecorator<TestContext>();
     var decoratedProcessor = decorator.wrap(this::wait);
 
     //Act --------------------------------------------------------------------------------------------------------------

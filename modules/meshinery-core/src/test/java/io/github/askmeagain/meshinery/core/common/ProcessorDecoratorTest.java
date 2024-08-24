@@ -28,18 +28,14 @@ class ProcessorDecoratorTest {
     var executor = Executors.newSingleThreadExecutor();
     MeshinerySourceConnector<String, TestContext> mockOutputSource = Mockito.mock(MeshinerySourceConnector.class);
 
-    var decorator = new ProcessorDecorator<>() {
+    var decorator = new ProcessorDecorator<TestContext>() {
       @Override
-      public MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> wrap(
-          MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> processor
+      public MeshineryProcessor<TestContext, TestContext> wrap(
+          MeshineryProcessor<TestContext, TestContext> processor
       ) {
-
-        return (c) -> {
-          var context = (TestContext) c;
-          return processor.processAsync(context.toBuilder()
-              .index(context.getIndex() + 1)
-              .build());
-        };
+        return (TestContext c) -> processor.processAsync(c.toBuilder()
+            .index(c.getIndex() + 1)
+            .build());
       }
     };
 
@@ -52,7 +48,7 @@ class ProcessorDecoratorTest {
         .build();
 
     //Act --------------------------------------------------------------------------------------------------------------
-    RoundRobinScheduler.builder()
+    RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
         .executorService(executor)
@@ -81,7 +77,7 @@ class ProcessorDecoratorTest {
     var executor = Executors.newSingleThreadExecutor();
     MeshinerySourceConnector<String, TestContext> mockOutputSource = Mockito.mock(MeshinerySourceConnector.class);
 
-    var decorator = new ProcessorDecorator<TestContext, TestContext>() {
+    var decorator = new ProcessorDecorator<TestContext>() {
       @Override
       public MeshineryProcessor<TestContext, TestContext> wrap(
           MeshineryProcessor<TestContext, TestContext> processor
@@ -96,13 +92,13 @@ class ProcessorDecoratorTest {
         .inputSource(inputSource)
         .outputSource(mockOutputSource)
         .read("")
-        .registerDecorator(decorator)
+        .registerProcessorDecorator(decorator)
         .process(new TestContextProcessor(1))
         .write("")
         .build();
 
     //Act --------------------------------------------------------------------------------------------------------------
-    RoundRobinScheduler.builder()
+    RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
         .executorService(executor)

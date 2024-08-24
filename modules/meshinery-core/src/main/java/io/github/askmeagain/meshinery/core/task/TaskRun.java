@@ -13,17 +13,17 @@ import lombok.Value;
 @Builder
 @RequiredArgsConstructor
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class TaskRun {
+public class TaskRun<C extends MeshineryDataContext> {
 
   @Builder.Default
   Instant now = Instant.now();
   String taskName;
 
-  MeshineryDataContext context;
+  C context;
 
-  Queue<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> queue;
+  Queue<MeshineryProcessor<C, C>> queue;
 
-  BiFunction<MeshineryDataContext, Throwable, MeshineryDataContext> handleError;
+  BiFunction<C, Throwable, C> handleError;
 
   TaskData taskData;
 }

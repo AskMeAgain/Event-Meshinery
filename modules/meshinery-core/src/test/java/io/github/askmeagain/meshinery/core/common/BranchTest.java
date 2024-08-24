@@ -44,7 +44,7 @@ class BranchTest {
         .build();
 
     //Act ------------------------------------------------------------------------------------
-    RoundRobinScheduler.builder()
+    RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(true)
         .task(task)
         .executorService(executor)

@@ -77,6 +77,9 @@ public class TaskData {
   }
 
   public String getSingle(String key) {
+    if (!properties.containsKey(key)) {
+      return null;
+    }
     var list = (List<String>) properties.get(key);
     return list.get(0);
   }

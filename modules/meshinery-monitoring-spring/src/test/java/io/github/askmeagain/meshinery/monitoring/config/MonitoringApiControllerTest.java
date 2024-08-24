@@ -7,7 +7,6 @@ import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
 import io.github.askmeagain.meshinery.monitoring.apis.MonitoringApiController;
 import java.util.List;
-import java.util.concurrent.Executors;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
@@ -57,7 +56,6 @@ class MonitoringApiControllerTest {
     //Arrange --------------------------------------------------------------------------------
     MDC.put("", "");
     var config = new MeshineryMonitoringAutoConfiguration();
-    var executor = Executors.newFixedThreadPool(3);
 
     RoundRobinScheduler.builder()
         .registerStartupHook(List.of(config.executorRegistration()))

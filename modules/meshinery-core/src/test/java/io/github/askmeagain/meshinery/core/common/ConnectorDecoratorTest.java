@@ -36,10 +36,10 @@ class ConnectorDecoratorTest {
         .write("Def", "def2")
         .build();
 
-    var spyDecorator = Mockito.spy(new TestInputSourceDecoratorFactory(inputCounter));
+    var spyDecorator = Mockito.spy(new TestInputSourceDecoratorFactory<String, TestContext>(inputCounter));
 
     //Act ------------------------------------------------------------------------------------
-    RoundRobinScheduler.builder()
+    RoundRobinScheduler.<String, TestContext>builder()
         .task(task)
         .registerConnectorDecorators(List.of(spyDecorator))
         .isBatchJob(true)

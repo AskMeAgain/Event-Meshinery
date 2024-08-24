@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.core.task;
 
 import io.github.askmeagain.meshinery.core.common.AccessingInputSource;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
@@ -13,7 +14,6 @@ import io.github.askmeagain.meshinery.core.processors.SignalingProcessor;
 import io.github.askmeagain.meshinery.core.processors.StopProcessor;
 import io.github.askmeagain.meshinery.core.source.JoinedInnerInputSource;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -39,7 +39,7 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
   private long backoffTime;
   private MeshineryInputSource<K, C> inputConnector;
   private MeshineryOutputSource<K, C> outputConnector;
-  private BiFunction<MeshineryDataContext, Throwable, MeshineryDataContext> handleException = (context, exc) -> {
+  private BiFunction<C, Throwable, C> handleException = (context, exc) -> {
     if (exc != null) {
       throw new RuntimeException(exc);
     }
@@ -47,22 +47,24 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
   };
 
   private TaskData taskData = new TaskData().with(TaskDataProperties.TASK_NAME, taskName);
-  private List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> processorList = new ArrayList<>();
-  @Singular private List<ProcessorDecorator<C, C>> decorators = new ArrayList<>();
+  private List<MeshineryProcessor<C, C>> processorList = new ArrayList<>();
 
-  private <I extends MeshineryDataContext> MeshineryTaskFactory(
-      MeshineryProcessor<I, C> newProcessor,
-      List<MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>> oldProcessorList,
+  @Singular private List<ProcessorDecorator<C>> decorators = new ArrayList<>();
+  @Singular private List<InputSourceDecoratorFactory<K, C>> inputSourceDecorators = new ArrayList<>();
+
+  private MeshineryTaskFactory(
+      MeshineryProcessor<C, C> newProcessor,
+      List<MeshineryProcessor<C, C>> oldProcessorList,
       String name,
       MeshineryInputSource<K, C> inputConnector,
-      MeshineryOutputSource outputConnector,
+      MeshineryOutputSource<K, C> outputConnector,
       List<K> eventKeys,
       TaskData taskData,
-      BiFunction<MeshineryDataContext, Throwable, MeshineryDataContext> handleException,
+      BiFunction<C, Throwable, C> handleException,
       long backoffTime
   ) {
     var newProcessorList = new ArrayList<>(oldProcessorList);
-    newProcessorList.add((MeshineryProcessor<MeshineryDataContext, MeshineryDataContext>) newProcessor);
+    newProcessorList.add(newProcessor);
 
     taskName = name;
     this.backoffTime = backoffTime;
@@ -113,7 +115,7 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
   /**
    * Reads from the inputsource with the provided key. Uses the executorService to query the inputData.
    *
-   * @param inputKeys       The Key to be used in the Inputsource
+   * @param inputKeys The Key to be used in the Inputsource
    * @return returns itself for builder pattern
    */
   @SafeVarargs
@@ -197,48 +199,6 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
   }
 
   /**
-   * Context switch in a task. Needs a mapping method and a new defaultOutputsource to write to.
-   *
-   * @param newOutputSource new Outputsource to be used further down in the processor list
-   * @param map             mapping function from one Context to another
-   * @return returns itself for builder pattern
-   */
-  public <N extends MeshineryDataContext> MeshineryTaskFactory<K, N> contextSwitch(
-      MeshinerySourceConnector<K, N> newOutputSource,
-      Function<C, N> map
-  ) {
-    return contextSwitch(newOutputSource, map, Collections.emptyList());
-  }
-
-  /**
-   * Context switch in a task. Needs a mapping method and a new defaultOutputsource to write to.
-   *
-   * @param newOutputSource new Outputsource to be used further down in the processor list
-   * @param map             mapping function from one Context to another
-   * @param <N>             Type of the new Context
-   * @return returns itself for builder pattern
-   */
-  public <N extends MeshineryDataContext> MeshineryTaskFactory<K, N> contextSwitch(
-      MeshinerySourceConnector<K, N> newOutputSource,
-      Function<C, N> map,
-      List<ProcessorDecorator<N, N>> decorators
-  ) {
-    MeshineryProcessor<C, N> newProcessor = map::apply;
-
-    var newTaskData = inputConnector.addToTaskData(
-        taskData.with(TaskDataProperties.GRAPH_OUTPUT_SOURCE, newOutputSource.getName())
-    );
-
-    return addNewProcessor(newProcessor)
-        .toBuilder()
-        .outputConnector(newOutputSource)
-        .clearDecorators()
-        .decorators(decorators)
-        .taskData(newTaskData)
-        .build();
-  }
-
-  /**
    * Adds a processor to a MeshineryTask, which stops the processing of a single event when the provided Predicate
    * returns true. Equivalent to Java Streams .filter() method
    *
@@ -256,15 +216,23 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
    * @return returns itself for builder pattern
    */
   public MeshineryTaskFactory<K, C> process(MeshineryProcessor<C, C> processor) {
-    var decorated = MeshineryUtils.applyDecorators(processor, decorators);
+    var decorated = MeshineryUtils.<C>applyDecorators(processor, decorators);
 
     return addNewProcessor(decorated);
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public MeshineryTaskFactory<K, C> registerDecorator(ProcessorDecorator<C, C> decorator) {
+  public MeshineryTaskFactory<K, C> registerProcessorDecorator(
+      ProcessorDecorator<C> decorator
+  ) {
     return toBuilder()
         .decorator(decorator)
+        .build();
+  }
+
+  public MeshineryTaskFactory<K, C> registerInputSourceDecorator(InputSourceDecoratorFactory decorator) {
+    return toBuilder()
+        .inputSourceDecorator(decorator)
         .build();
   }
 
@@ -375,7 +343,7 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
    * @return returns itself for builder pattern
    */
   public final MeshineryTaskFactory<K, C> exceptionHandler(
-      BiFunction<MeshineryDataContext, Throwable, MeshineryDataContext> handleError
+      BiFunction<C, Throwable, C> handleError
   ) {
     return toBuilder()
         .handleException(handleError)
@@ -394,14 +362,12 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
         .build();
   }
 
-  private <N extends MeshineryDataContext> MeshineryTaskFactory<K, N> addNewProcessor(
-      MeshineryProcessor<C, N> newProcessor
-  ) {
-    MeshineryTaskFactory<K, N> meshineryTaskFactory = new MeshineryTaskFactory<K, N>(
-        (MeshineryProcessor<N, N>) newProcessor,
+  private MeshineryTaskFactory<K, C> addNewProcessor(MeshineryProcessor<C, C> newProcessor) {
+    MeshineryTaskFactory<K, C> meshineryTaskFactory = new MeshineryTaskFactory<K, C>(
+        newProcessor,
         processorList,
         taskName,
-        (MeshineryInputSource<K, N>) inputConnector,
+        inputConnector,
         outputConnector,
         inputKeys,
         taskData,
@@ -424,7 +390,9 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
         inputConnector,
         outputConnector,
         handleException,
-        processorList
+        processorList,
+        inputSourceDecorators,
+        decorators
     );
   }
 }

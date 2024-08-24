@@ -1,6 +1,5 @@
 package io.github.askmeagain.meshinery.core;
 
-import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
@@ -12,12 +11,12 @@ import java.util.Optional;
 public class PropertyTaskInjection {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static List<MeshineryTask<?, ? extends MeshineryDataContext>> injectProperties(
-      List<MeshineryTask<?, ? extends MeshineryDataContext>> tasks,
+  public static List<MeshineryTask> injectProperties(
+      List<MeshineryTask> tasks,
       MeshineryCoreProperties coreProperties
   ) {
 
-    var newList = new ArrayList<MeshineryTask<?, ? extends MeshineryDataContext>>();
+    var newList = new ArrayList<MeshineryTask>();
 
     for (var task : tasks) {
       if (coreProperties.getTaskProperties().containsKey(task.getTaskName())) {

@@ -8,12 +8,12 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class CommitProcessor<C extends MeshineryDataContext>
-    implements MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> {
+    implements MeshineryProcessor<C, C> {
 
   private final Supplier<MeshineryInputSource<?, C>> meshineryInputSource;
 
   @Override
-  public MeshineryDataContext processAsync(MeshineryDataContext context) {
-    return meshineryInputSource.get().commit((C) context);
+  public C processAsync(C context) {
+    return meshineryInputSource.get().commit(context);
   }
 }

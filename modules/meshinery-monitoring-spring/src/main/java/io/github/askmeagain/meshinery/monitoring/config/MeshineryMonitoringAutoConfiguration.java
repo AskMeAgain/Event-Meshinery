@@ -40,7 +40,7 @@ public class MeshineryMonitoringAutoConfiguration {
   }
 
   //@Bean
-  ProcessorTimingDecorator<MeshineryDataContext, MeshineryDataContext> timingDecorator() {
+  ProcessorTimingDecorator<MeshineryDataContext> timingDecorator() {
     return new ProcessorTimingDecorator<>();
   }
 
@@ -58,7 +58,7 @@ public class MeshineryMonitoringAutoConfiguration {
 
   @Bean
   @ConditionalOnBean(OpenTelemetry.class)
-  OtelProcessorDecorator<MeshineryDataContext, MeshineryDataContext> otelProcessorFactory(OpenTelemetry openTelemetry) {
+  OtelProcessorDecorator<MeshineryDataContext> otelProcessorFactory(OpenTelemetry openTelemetry) {
     return new OtelProcessorDecorator<>(openTelemetry);
   }
 

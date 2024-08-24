@@ -21,35 +21,32 @@ import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
-public class OtelInputSourceDecoratorFactory implements InputSourceDecoratorFactory {
+public class OtelInputSourceDecoratorFactory<K, C extends MeshineryDataContext>
+    implements InputSourceDecoratorFactory<K, C> {
 
   private final OpenTelemetry openTelemetry;
 
   @Override
-  public MeshineryInputSource<?, MeshineryDataContext> decorate(
-      MeshineryInputSource<?, ? extends MeshineryDataContext> inputConnector
-  ) {
+  public MeshineryInputSource<K, C> decorate(MeshineryInputSource<K, C> inputConnector) {
     var tracer = openTelemetry.getTracer(inputConnector.getClass().getName());
 
-    return new ConnectorTimingDecorator(
-        tracer,
-        (MeshineryInputSource<Object, MeshineryDataContext>) inputConnector
-    );
+    return new ConnectorTimingDecorator<>(tracer, inputConnector);
   }
 
   @Slf4j
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-  public static class ConnectorTimingDecorator implements MeshineryInputSource<Object, MeshineryDataContext> {
+  public static class ConnectorTimingDecorator<K, C extends MeshineryDataContext>
+      implements MeshineryInputSource<K, C> {
 
     private final Tracer tracer;
-    private final MeshineryInputSource<Object, MeshineryDataContext> innerConnector;
+    private final MeshineryInputSource<K, C> innerConnector;
     @Getter(lazy = true)
     private final String name = innerConnector.getName();
 
     private final Map<String, Span> map = new ConcurrentHashMap<>();
 
     @Override
-    public List<MeshineryDataContext> getInputs(List<Object> keys) {
+    public List<C> getInputs(List<K> keys) {
       var joinedKeys = keys.stream()
           .map(Object::toString)
           .collect(Collectors.joining("-"));
@@ -86,15 +83,15 @@ public class OtelInputSourceDecoratorFactory implements InputSourceDecoratorFact
               map.put(span.getSpanContext().getSpanId(), span);
 
               return ctx
-                  .setMetadata("otel-trace-id", span.getSpanContext().getTraceId())
-                  .setMetadata("otel-span-id", span.getSpanContext().getSpanId());
+                  .<C>setMetadata("otel-trace-id", span.getSpanContext().getTraceId())
+                  .<C>setMetadata("otel-span-id", span.getSpanContext().getSpanId());
             }
           })
           .toList();
     }
 
     @Override
-    public MeshineryDataContext commit(MeshineryDataContext context) {
+    public C commit(C context) {
       var removedSpan = map.remove(context.getMetadata("otel-span-id"));
       if (removedSpan != null) {
         removedSpan.end();

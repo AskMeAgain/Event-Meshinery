@@ -85,7 +85,7 @@ class ShutdownTest extends AbstractTestBase {
         .build();
 
     //Act ------------------------------------------------------------------------------------
-    var scheduler = RoundRobinScheduler.builder()
+    var scheduler = RoundRobinScheduler.<String, TestContext>builder()
         .isBatchJob(false)
         .task(task)
         .executorService(executor)

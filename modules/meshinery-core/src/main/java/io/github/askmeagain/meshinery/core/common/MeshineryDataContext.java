@@ -26,5 +26,5 @@ public interface MeshineryDataContext {
    * @param value
    * @return
    */
-  MeshineryDataContext setMetadata(String key, String value);
+  <C extends MeshineryDataContext> C setMetadata(String key, String value);
 }

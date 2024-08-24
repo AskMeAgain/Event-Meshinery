@@ -118,10 +118,12 @@ public class TaskReplayFactory {
           .formatted(replacedTaskName, String.join(", ", taskMap.keySet())));
     }
 
-    var task = taskMap.get(replacedTaskName);
+    var task = (MeshineryTask<?, MeshineryDataContext>) taskMap.get(replacedTaskName);
+
+    var processorList = task.getProcessorList();
 
     return (Supplier<C>) MeshineryUtils.combineProcessors(
-        task.getProcessorList(),
+        processorList,
         context,
         MDC.getCopyOfContextMap(),
         task.getTaskData()

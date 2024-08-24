@@ -11,29 +11,29 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class InputSourceTimingDecoratorFactory implements InputSourceDecoratorFactory {
+public class InputSourceTimingDecoratorFactory<K, C extends MeshineryDataContext>
+    implements InputSourceDecoratorFactory<K, C> {
 
   @Override
-  public MeshineryInputSource<?, MeshineryDataContext> decorate(
-      MeshineryInputSource<?, ? extends MeshineryDataContext> inputConnector
-  ) {
-    return new ConnectorTimingDecorator((MeshineryInputSource<Object, MeshineryDataContext>) inputConnector);
+  public MeshineryInputSource<K, C> decorate(MeshineryInputSource<K, C> inputConnector) {
+    return new ConnectorTimingDecorator<>(inputConnector);
   }
 
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-  public static class ConnectorTimingDecorator implements MeshineryInputSource<Object, MeshineryDataContext> {
+  public static class ConnectorTimingDecorator<K, C extends MeshineryDataContext>
+      implements MeshineryInputSource<K, C> {
 
-    private final MeshineryInputSource<Object, MeshineryDataContext> innerConnector;
+    private final MeshineryInputSource<K, C> innerConnector;
     @Getter(lazy = true)
     private final String name = innerConnector.getName();
 
     @Override
-    public MeshineryDataContext commit(MeshineryDataContext context) {
+    public C commit(C context) {
       return context;
     }
 
     @Override
-    public List<MeshineryDataContext> getInputs(List<Object> keys) {
+    public List<C> getInputs(List<K> keys) {
       var connectorName = innerConnector.getName();
       var keyNames = MeshineryUtils.joinEventKeys(keys);
       var summary = MeshineryMonitoringService.CONNECTOR_HISTOGRAM_IN.labels(connectorName, keyNames);
