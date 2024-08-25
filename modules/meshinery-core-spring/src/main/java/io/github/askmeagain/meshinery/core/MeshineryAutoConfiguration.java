@@ -89,13 +89,13 @@ public class MeshineryAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public RoundRobinScheduler<?, ?> roundRobinScheduler(
+  public RoundRobinScheduler roundRobinScheduler(
       List<MeshineryTask> tasks,
       List<CustomizeShutdownHook> shutdownHook,
       List<CustomizeStartupHook> startupHook,
       List<CustomizePostTaskRunHook> postTaskRunHooks,
       List<CustomizePreTaskRunHook> preTaskRunHooks,
-      List<ProcessorDecorator<MeshineryDataContext>> processorDecorators,
+      List<ProcessorDecorator<? extends MeshineryDataContext>> processorDecorators,
       List<InputSourceDecoratorFactory> connectorDecoratorFactories,
       MeshineryCoreProperties meshineryCoreProperties,
       ExecutorService executorService

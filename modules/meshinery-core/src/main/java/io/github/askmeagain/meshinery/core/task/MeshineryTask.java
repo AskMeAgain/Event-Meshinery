@@ -126,7 +126,7 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
    *
    * @return returns TaskRuns
    */
-  public List<TaskRun<C>> getNewTaskRuns() {
+  public List<TaskRun> getNewTaskRuns() {
     var now = Instant.now();
 
     if (!now.isAfter(nextExecution)) {
@@ -139,13 +139,17 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
       return getInputConnector()
           .getInputs(inputKeys)
           .stream()
-          .map(input -> TaskRun.<C>builder()
-              .taskName(getTaskName())
-              .taskData(taskData)
-              .context(input)
-              .queue(new LinkedList<MeshineryProcessor<C, C>>(getProcessorList()))
-              .handleError(handleException)
-              .build())
+          .map(input -> {
+            var processorList1 = getProcessorList();
+            var queue = new LinkedList<MeshineryProcessor>(processorList1);
+            return TaskRun.builder()
+                .taskName(getTaskName())
+                .taskData(taskData)
+                .context(input)
+                .handleError((BiFunction<MeshineryDataContext, Throwable, MeshineryDataContext>) handleException)
+                .queue(queue)
+                .build();
+          })
           .toList();
     } finally {
       TaskData.clearTaskData();

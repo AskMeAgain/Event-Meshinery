@@ -28,23 +28,23 @@ import org.slf4j.MDC;
 @Slf4j
 @Getter
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class RoundRobinScheduler<K, C extends MeshineryDataContext> {
+public class RoundRobinScheduler {
 
   private final List<MeshineryTask> tasks;
   private final int backpressureLimit;
   private final boolean isBatchJob;
-  private final List<? extends Consumer<RoundRobinScheduler<K, C>>> shutdownHook;
-  private final List<? extends Consumer<RoundRobinScheduler<K, C>>> startupHook;
-  private final List<? extends Consumer<C>> listPreTaskRunHook;
-  private final List<? extends Consumer<C>> listPostTaskRunHook;
+  private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
+  private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
+  private final List<? extends Consumer<MeshineryDataContext>> listPreTaskRunHook;
+  private final List<? extends Consumer<MeshineryDataContext>> listPostTaskRunHook;
 
   private final boolean gracefulShutdownOnError;
   private final int gracePeriodMilliseconds;
 
-  private final Queue<TaskRun<C>> outputQueue = new ConcurrentLinkedQueue<>();
+  private final Queue<TaskRun> outputQueue = new ConcurrentLinkedQueue<>();
   private final Queue<ConnectorKey> inputQueue = new ConcurrentLinkedQueue<>();
 
-  private final Map<ConnectorKey, MeshineryTask<K, C>> taskRunLookupMap = new ConcurrentHashMap<>();
+  private final Map<ConnectorKey, MeshineryTask> taskRunLookupMap = new ConcurrentHashMap<>();
   private final ExecutorService taskExecutorService;
   private final Set<DataInjectingExecutorService> executorServices = new HashSet<>();
   private final DataInjectingExecutorService taskExecutor;
@@ -58,10 +58,10 @@ public class RoundRobinScheduler<K, C extends MeshineryDataContext> {
       List<MeshineryTask> tasks,
       int backpressureLimit,
       boolean isBatchJob,
-      List<? extends Consumer<RoundRobinScheduler<K, C>>> shutdownHook,
-      List<? extends Consumer<RoundRobinScheduler<K, C>>> startupHook,
-      List<? extends Consumer<C>> preTaskRunHook,
-      List<? extends Consumer<C>> postTaskRunHook,
+      List<? extends Consumer<RoundRobinScheduler>> shutdownHook,
+      List<? extends Consumer<RoundRobinScheduler>> startupHook,
+      List<? extends Consumer<MeshineryDataContext>> preTaskRunHook,
+      List<? extends Consumer<MeshineryDataContext>> postTaskRunHook,
       boolean gracefulShutdownOnError,
       int gracePeriodMilliseconds,
       DataInjectingExecutorService taskExecutorService
@@ -90,12 +90,12 @@ public class RoundRobinScheduler<K, C extends MeshineryDataContext> {
     executorServices.add(taskExecutor);
   }
 
-  public static <K, C extends MeshineryDataContext> RoundRobinSchedulerBuilder<K, C> builder() {
-    return new RoundRobinSchedulerBuilder<K, C>();
+  public static RoundRobinSchedulerBuilder builder() {
+    return new RoundRobinSchedulerBuilder();
   }
 
   @SneakyThrows
-  public RoundRobinScheduler<K, C> start() {
+  public RoundRobinScheduler start() {
     startupHook.forEach(hook -> hook.accept(this));
     inputExecutor.execute(() -> createInputScheduler(inputExecutor));
     Thread.sleep(100);
@@ -105,7 +105,7 @@ public class RoundRobinScheduler<K, C extends MeshineryDataContext> {
 
   private void createLookupMap() {
     for (var task : tasks) {
-      var connectorKey = ConnectorKey.<K, C>builder()
+      var connectorKey = ConnectorKey.builder()
           .connector(task.getInputConnector())
           .key(task.getInputKeys())
           .build();
@@ -169,7 +169,7 @@ public class RoundRobinScheduler<K, C extends MeshineryDataContext> {
         .toList();
   }
 
-  private List<TaskRun<C>> queryTaskRuns(ConnectorKey work) {
+  private List<TaskRun> queryTaskRuns(ConnectorKey work) {
     try {
       if (!taskRunLookupMap.containsKey(work)) {
         return Collections.emptyList();
@@ -215,7 +215,7 @@ public class RoundRobinScheduler<K, C extends MeshineryDataContext> {
     shutdownHook.forEach(hook -> hook.accept(this));
   }
 
-  private void getResultFuture(TaskRun<C> run) {
+  private void getResultFuture(TaskRun run) {
     CompletableFuture.runAsync(() -> {
       var contextId = run.getContext().getId();
       try {

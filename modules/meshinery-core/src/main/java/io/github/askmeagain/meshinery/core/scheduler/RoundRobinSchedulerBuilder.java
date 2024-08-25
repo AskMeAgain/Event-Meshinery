@@ -16,14 +16,14 @@ import java.util.function.Consumer;
 import lombok.SneakyThrows;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class RoundRobinSchedulerBuilder<K, C extends MeshineryDataContext> {
+public class RoundRobinSchedulerBuilder {
 
-  List<? extends Consumer<RoundRobinScheduler<K, C>>> shutdownHook = Collections.emptyList();
-  List<ProcessorDecorator<C>> processorDecorators = Collections.emptyList();
+  List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
+  List<ProcessorDecorator<? extends MeshineryDataContext>> processorDecorators = Collections.emptyList();
   List<InputSourceDecoratorFactory> connectorDecoratorFactories = Collections.emptyList();
-  List<? extends Consumer<RoundRobinScheduler<K, C>>> startupHook = Collections.emptyList();
-  List<? extends Consumer<C>> preTaskRunHooks = Collections.emptyList();
-  List<? extends Consumer<C>> postTaskRunHooks = Collections.emptyList();
+  List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
+  List<? extends Consumer<MeshineryDataContext>> preTaskRunHooks = Collections.emptyList();
+  List<? extends Consumer<MeshineryDataContext>> postTaskRunHooks = Collections.emptyList();
 
   int backpressureLimit = 200;
   int gracePeriodMilliseconds = 2000;
@@ -36,35 +36,35 @@ public class RoundRobinSchedulerBuilder<K, C extends MeshineryDataContext> {
   boolean gracefulShutdownOnError = true;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public RoundRobinSchedulerBuilder<K, C> properties(MeshineryCoreProperties meshineryCoreProperties) {
+  public RoundRobinSchedulerBuilder properties(MeshineryCoreProperties meshineryCoreProperties) {
     return backpressureLimit(meshineryCoreProperties.getBackpressureLimit())
         .gracefulShutdownOnError(meshineryCoreProperties.isShutdownOnError())
         .gracePeriodMilliseconds(meshineryCoreProperties.getGracePeriodMilliseconds())
         .isBatchJob(meshineryCoreProperties.isBatchJob());
   }
 
-  public RoundRobinSchedulerBuilder<K, C> task(MeshineryTask task) {
+  public RoundRobinSchedulerBuilder task(MeshineryTask task) {
     tasks.add(task);
     return this;
   }
 
-  public RoundRobinSchedulerBuilder<K, C> backpressureLimit(int backpressureLimit) {
+  public RoundRobinSchedulerBuilder backpressureLimit(int backpressureLimit) {
     this.backpressureLimit = backpressureLimit;
     return this;
   }
 
-  public RoundRobinSchedulerBuilder<K, C> executorService(ExecutorService executorService) {
+  public RoundRobinSchedulerBuilder executorService(ExecutorService executorService) {
     this.executorService = new DataInjectingExecutorService("custom-executor-service", executorService);
     return this;
   }
 
-  public RoundRobinSchedulerBuilder<K, C> tasks(List<MeshineryTask> task) {
+  public RoundRobinSchedulerBuilder tasks(List<MeshineryTask> task) {
     tasks.addAll(task);
     return this;
   }
 
-  public RoundRobinSchedulerBuilder<K, C> registerProcessorDecorators(
-      List<ProcessorDecorator<C>> processorDecorators
+  public RoundRobinSchedulerBuilder registerProcessorDecorators(
+      List<ProcessorDecorator<? extends MeshineryDataContext>> processorDecorators
   ) {
     this.processorDecorators = processorDecorators;
     return this;
@@ -79,59 +79,59 @@ public class RoundRobinSchedulerBuilder<K, C extends MeshineryDataContext> {
    * @param connectorDecoratorFactories list of decorated factories
    * @return returns this
    */
-  public RoundRobinSchedulerBuilder<K, C> registerConnectorDecorators(
+  public RoundRobinSchedulerBuilder registerConnectorDecorators(
       List<InputSourceDecoratorFactory> connectorDecoratorFactories
   ) {
     this.connectorDecoratorFactories = connectorDecoratorFactories;
     return this;
   }
 
-  public RoundRobinSchedulerBuilder<K, C> registerShutdownHook(
-      List<? extends Consumer<RoundRobinScheduler<K, C>>> shutdownHook
+  public RoundRobinSchedulerBuilder registerShutdownHook(
+      List<? extends Consumer<RoundRobinScheduler>> shutdownHook
   ) {
     this.shutdownHook = shutdownHook;
     return this;
   }
 
-  public RoundRobinSchedulerBuilder<K, C> registerStartupHook(
-      List<? extends Consumer<RoundRobinScheduler<K, C>>> startupHook
+  public RoundRobinSchedulerBuilder registerStartupHook(
+      List<? extends Consumer<RoundRobinScheduler>> startupHook
   ) {
     this.startupHook = startupHook;
     return this;
   }
 
-  public RoundRobinSchedulerBuilder<K, C> registerPreTaskRunHook(
-      List<? extends Consumer<C>> preTaskRunHooks
+  public RoundRobinSchedulerBuilder registerPreTaskRunHook(
+      List<? extends Consumer<MeshineryDataContext>> preTaskRunHooks
   ) {
     this.preTaskRunHooks = preTaskRunHooks;
     return this;
   }
 
-  public RoundRobinSchedulerBuilder<K, C> registerPostTaskRunHook(
-      List<? extends Consumer<C>> postTaskRunHooks
+  public RoundRobinSchedulerBuilder registerPostTaskRunHook(
+      List<? extends Consumer<MeshineryDataContext>> postTaskRunHooks
   ) {
     this.postTaskRunHooks = postTaskRunHooks;
     return this;
   }
 
-  public RoundRobinSchedulerBuilder<K, C> gracefulShutdownOnError(boolean gracefulShutdownOnError) {
+  public RoundRobinSchedulerBuilder gracefulShutdownOnError(boolean gracefulShutdownOnError) {
     this.gracefulShutdownOnError = gracefulShutdownOnError;
     return this;
   }
 
-  public RoundRobinSchedulerBuilder<K, C> isBatchJob(boolean flag) {
+  public RoundRobinSchedulerBuilder isBatchJob(boolean flag) {
     isBatchJob = flag;
     return this;
   }
 
-  public RoundRobinSchedulerBuilder<K, C> gracePeriodMilliseconds(int gracePeriodMilliseconds) {
+  public RoundRobinSchedulerBuilder gracePeriodMilliseconds(int gracePeriodMilliseconds) {
     this.gracePeriodMilliseconds = gracePeriodMilliseconds;
     return this;
   }
 
   @SneakyThrows
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public RoundRobinScheduler<K, C> build() {
+  public RoundRobinScheduler build() {
 
     //verifying tasks
     tasks.forEach(MeshineryTask::verifyTask);
@@ -141,7 +141,7 @@ public class RoundRobinSchedulerBuilder<K, C extends MeshineryDataContext> {
         .map(task -> task.addProcessorDecorators(processorDecorators))
         .toList();
 
-    return new RoundRobinScheduler<>(
+    return new RoundRobinScheduler(
         fixedTasks,
         backpressureLimit,
         isBatchJob,

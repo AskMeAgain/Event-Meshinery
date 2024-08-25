@@ -48,7 +48,7 @@ class ProcessorDecoratorTest {
         .build();
 
     //Act --------------------------------------------------------------------------------------------------------------
-    RoundRobinScheduler.<String, TestContext>builder()
+    RoundRobinScheduler.builder()
         .isBatchJob(true)
         .task(task)
         .executorService(executor)
