@@ -96,7 +96,7 @@ public class MeshineryAutoConfiguration {
       List<CustomizePostTaskRunHook> postTaskRunHooks,
       List<CustomizePreTaskRunHook> preTaskRunHooks,
       List<ProcessorDecorator<? extends MeshineryDataContext>> processorDecorators,
-      List<InputSourceDecoratorFactory> connectorDecoratorFactories,
+      List<InputSourceDecoratorFactory<?, ? extends MeshineryDataContext>> connectorDecoratorFactories,
       MeshineryCoreProperties meshineryCoreProperties,
       ExecutorService executorService
   ) {

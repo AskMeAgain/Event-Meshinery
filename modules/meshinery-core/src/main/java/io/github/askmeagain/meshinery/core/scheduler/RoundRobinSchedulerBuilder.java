@@ -17,7 +17,7 @@ public class RoundRobinSchedulerBuilder {
 
   private List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
   private List<ProcessorDecorator<? extends MeshineryDataContext>> processorDecorators = Collections.emptyList();
-  private List<InputSourceDecoratorFactory> connectorDecoratorFactories = Collections.emptyList();
+  private List<InputSourceDecoratorFactory<?, ?>> connectorDecoratorFactories = Collections.emptyList();
   private List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
   private List<? extends Consumer<MeshineryDataContext>> preTaskRunHooks = Collections.emptyList();
   private List<? extends Consumer<MeshineryDataContext>> postTaskRunHooks = Collections.emptyList();
@@ -68,7 +68,9 @@ public class RoundRobinSchedulerBuilder {
     return this;
   }
 
-  public RoundRobinSchedulerBuilder registerDecorators(List<InputSourceDecoratorFactory> factories) {
+  public RoundRobinSchedulerBuilder registerDecorators(
+      List<InputSourceDecoratorFactory<?, ? extends MeshineryDataContext>> factories
+  ) {
     this.connectorDecoratorFactories = factories;
     return this;
   }

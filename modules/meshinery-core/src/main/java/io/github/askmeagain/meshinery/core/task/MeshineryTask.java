@@ -31,26 +31,32 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_I
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MeshineryTask<K, C extends MeshineryDataContext> {
 
+  @Getter
   private final long backoffTimeMilli;
-  @Getter private final List<K> inputKeys;
-  @Getter private final String taskName;
-  @Getter private TaskData taskData;
-
-  private final MeshineryInputSource<K, C> inputConnectorInternal;
-  private final List<MeshineryProcessor<C, C>> processorListInternal;
-
-  @Getter private final MeshineryOutputSource<K, C> outputConnector;
-
-  @Getter private final BiFunction<C, Throwable, C> handleException;
+  @Getter
+  private final List<K> inputKeys;
+  @Getter
+  private final String taskName;
+  @Getter
+  private TaskData taskData;
+  @Getter
+  private final MeshineryOutputSource<K, C> outputConnector;
+  @Getter
+  private final BiFunction<C, Throwable, C> handleException;
   @Getter(lazy = true)
   private final List<MeshineryProcessor<C, C>> processorList = getProcessorListDecorated();
   @Getter(lazy = true)
   private final MeshineryInputSource<K, C> inputConnector = getInputConnectorDecorated();
 
-  @With(AccessLevel.PRIVATE) private final List<InputSourceDecoratorFactory<K, C>> listInputSourceDecoratorFactories;
-  @With(AccessLevel.PRIVATE) private final List<ProcessorDecorator<C>> listProcessorDecorators;
+  @With(AccessLevel.PRIVATE)
+  private final List<InputSourceDecoratorFactory<K, C>> listInputSourceDecoratorFactories;
+  @With(AccessLevel.PRIVATE)
+  private final List<ProcessorDecorator<C>> listProcessorDecorators;
 
-  Instant nextExecution = Instant.now();
+  private final MeshineryInputSource<K, C> inputConnectorInternal;
+  private final List<MeshineryProcessor<C, C>> processorListInternal;
+
+  private Instant nextExecution = Instant.now();
 
   public MeshineryInputSource<K, C> getInputConnectorDecorated() {
     return MeshineryUtils.applyDecorator(
