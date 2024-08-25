@@ -1,6 +1,5 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
-import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
@@ -35,8 +34,6 @@ public class RoundRobinScheduler {
   private final boolean isBatchJob;
   private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
   private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
-  private final List<? extends Consumer<MeshineryDataContext>> listPreTaskRunHook;
-  private final List<? extends Consumer<MeshineryDataContext>> listPostTaskRunHook;
 
   private final boolean gracefulShutdownOnError;
   private final int gracePeriodMilliseconds;
@@ -60,15 +57,11 @@ public class RoundRobinScheduler {
       boolean isBatchJob,
       List<? extends Consumer<RoundRobinScheduler>> shutdownHook,
       List<? extends Consumer<RoundRobinScheduler>> startupHook,
-      List<? extends Consumer<MeshineryDataContext>> preTaskRunHook,
-      List<? extends Consumer<MeshineryDataContext>> postTaskRunHook,
       boolean gracefulShutdownOnError,
       int gracePeriodMilliseconds,
       DataInjectingExecutorService taskExecutorService
   ) {
     this.tasks = tasks;
-    this.listPostTaskRunHook = postTaskRunHook;
-    this.listPreTaskRunHook = preTaskRunHook;
     this.backpressureLimit = backpressureLimit;
     this.isBatchJob = isBatchJob;
     this.shutdownHook = shutdownHook;
@@ -224,8 +217,6 @@ public class RoundRobinScheduler {
         MDC.put(TaskDataProperties.TASK_ID, contextId);
         TaskData.setTaskData(run.getTaskData());
 
-        listPreTaskRunHook.forEach(con -> con.accept(run.getContext()));
-
         var context = run.getContext();
         while (!run.getQueue().isEmpty()) {
           try {
@@ -236,8 +227,6 @@ public class RoundRobinScheduler {
             context = run.getHandleError().apply(context, e);
           }
         }
-
-        listPostTaskRunHook.forEach(con -> con.accept(run.getContext()));
 
       } catch (Exception exception) {
         if (gracefulShutdownOnError) {

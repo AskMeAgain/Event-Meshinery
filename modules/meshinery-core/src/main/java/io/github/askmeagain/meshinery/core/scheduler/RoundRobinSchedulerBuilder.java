@@ -19,8 +19,6 @@ public class RoundRobinSchedulerBuilder {
   private List<ProcessorDecorator<? extends MeshineryDataContext>> processorDecorators = Collections.emptyList();
   private List<InputSourceDecoratorFactory<?, ?>> connectorDecoratorFactories = Collections.emptyList();
   private List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
-  private List<? extends Consumer<MeshineryDataContext>> preTaskRunHooks = Collections.emptyList();
-  private List<? extends Consumer<MeshineryDataContext>> postTaskRunHooks = Collections.emptyList();
 
   private int backpressureLimit = 200;
   private int gracePeriodMilliseconds = 2000;
@@ -85,16 +83,6 @@ public class RoundRobinSchedulerBuilder {
     return this;
   }
 
-  public RoundRobinSchedulerBuilder registerPreTaskRunHook(List<? extends Consumer<MeshineryDataContext>> hooks) {
-    this.preTaskRunHooks = hooks;
-    return this;
-  }
-
-  public RoundRobinSchedulerBuilder registerPostTaskRunHook(List<? extends Consumer<MeshineryDataContext>> hooks) {
-    this.postTaskRunHooks = hooks;
-    return this;
-  }
-
   public RoundRobinSchedulerBuilder gracefulShutdownOnError(boolean gracefulShutdownOnError) {
     this.gracefulShutdownOnError = gracefulShutdownOnError;
     return this;
@@ -126,8 +114,6 @@ public class RoundRobinSchedulerBuilder {
         isBatchJob,
         shutdownHook,
         startupHook,
-        preTaskRunHooks,
-        postTaskRunHooks,
         gracefulShutdownOnError,
         gracePeriodMilliseconds,
         executorService
