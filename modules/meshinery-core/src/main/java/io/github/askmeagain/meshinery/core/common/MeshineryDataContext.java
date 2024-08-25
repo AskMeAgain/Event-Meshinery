@@ -22,9 +22,9 @@ public interface MeshineryDataContext {
 
   /**
    * Add key/value to metadata for each context
-   * @param key
-   * @param value
-   * @return
+   * @param key metadata key
+   * @param value metadata value
+   * @return returns a new version with the updated metadata
    */
   <C extends MeshineryDataContext> C setMetadata(String key, String value);
 }

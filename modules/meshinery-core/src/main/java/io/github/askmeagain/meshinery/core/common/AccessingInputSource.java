@@ -8,7 +8,6 @@ import java.util.Optional;
  * @param <K> The key
  * @param <C> The id
  */
-@SuppressWarnings("checkstyle:MissingJavadocType")
 public interface AccessingInputSource<K, C extends MeshineryDataContext> extends MeshineryInputSource<K, C> {
 
   /**

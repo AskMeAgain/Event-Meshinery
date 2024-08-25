@@ -6,5 +6,7 @@ package io.github.askmeagain.meshinery.core.common;
  * decorated{@link MeshineryInputSource}.
  */
 public interface InputSourceDecoratorFactory<K, C extends MeshineryDataContext> {
+
   MeshineryInputSource<K, C> decorate(MeshineryInputSource<K, C> inputConnector);
+
 }

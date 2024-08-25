@@ -40,6 +40,9 @@ public class DynamicPubSubConnectorRegistration implements BeanDefinitionRegistr
 
     for (var tuple : beanNamesForAnnotation.entrySet()) {
       var result = applicationContext.findAnnotationOnBean(tuple.getKey(), EnableMeshineryPubSub.class);
+      if (result == null) {
+        continue;
+      }
       Arrays.stream(result.context())
           .forEach(clazz -> {
             var beanDefinition = new RootBeanDefinition(

@@ -141,7 +141,7 @@ public class RoundRobinSchedulerBuilder<K, C extends MeshineryDataContext> {
         .map(task -> task.addProcessorDecorators(processorDecorators))
         .toList();
 
-    return new RoundRobinScheduler<K, C>(
+    return new RoundRobinScheduler<>(
         fixedTasks,
         backpressureLimit,
         isBatchJob,
