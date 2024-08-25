@@ -54,7 +54,6 @@ public class RoundRobinScheduler<K, C extends MeshineryDataContext> {
   private final Set<String> currentTasks = new HashSet<>();
   private final Map<Integer, List<Integer>> mapIntegerListInteger = new ConcurrentHashMap<>();
 
-  @SneakyThrows
   RoundRobinScheduler(
       List<MeshineryTask> tasks,
       int backpressureLimit,
@@ -172,8 +171,6 @@ public class RoundRobinScheduler<K, C extends MeshineryDataContext> {
 
   private List<TaskRun<C>> queryTaskRuns(ConnectorKey work) {
     try {
-      var work2 = work;
-      var compare = taskRunLookupMap.entrySet().iterator().next();
       if (!taskRunLookupMap.containsKey(work)) {
         return Collections.emptyList();
       }
