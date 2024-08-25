@@ -49,7 +49,7 @@ class ProcessorDecoratorTest {
 
     //Act --------------------------------------------------------------------------------------------------------------
     RoundRobinScheduler.builder()
-        .isBatchJob(true)
+        .batchJob(true)
         .task(task)
         .executorService(executor)
         .registerProcessorDecorators(List.of(decorator))
@@ -99,7 +99,7 @@ class ProcessorDecoratorTest {
 
     //Act --------------------------------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()
-        .isBatchJob(true)
+        .batchJob(true)
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(0)

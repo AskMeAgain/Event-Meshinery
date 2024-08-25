@@ -35,7 +35,7 @@ class ThrowingOutputTest extends AbstractLogTestBase {
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()
-        .isBatchJob(true)
+        .batchJob(true)
         .task(task)
         .executorService(executor)
         .gracefulShutdownOnError(true)

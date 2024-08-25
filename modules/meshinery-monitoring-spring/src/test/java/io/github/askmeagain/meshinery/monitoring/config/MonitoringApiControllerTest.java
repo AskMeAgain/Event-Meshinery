@@ -79,7 +79,7 @@ class MonitoringApiControllerTest {
             })
             .outputSource(new TestOutputSource())
             .build())
-        .isBatchJob(false)
+        .batchJob(false)
         .build()
         .start();
 

@@ -11,12 +11,11 @@ import java.util.Optional;
 public class PropertyTaskInjection {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static List<MeshineryTask> injectProperties(
-      List<MeshineryTask> tasks,
+  public static List<MeshineryTask<?, ?>> injectProperties(
+      List<MeshineryTask<?, ?>> tasks,
       MeshineryCoreProperties coreProperties
   ) {
-
-    var newList = new ArrayList<MeshineryTask>();
+    var newList = new ArrayList<MeshineryTask<?, ?>>();
 
     for (var task : tasks) {
       if (coreProperties.getTaskProperties().containsKey(task.getTaskName())) {

@@ -25,10 +25,18 @@ public class E2eTestBaseUtils {
 
   public void assertResultMap() {
     var resultSet = getResultSet();
-    assertThat(RESULT_MAP_0).containsKeys(resultSet.toArray(String[]::new));
-    assertThat(RESULT_MAP_1).containsKeys(resultSet.toArray(String[]::new));
-    assertThat(RESULT_MAP_2).containsKeys(resultSet.toArray(String[]::new));
-    assertThat(RESULT_MAP_3).containsKeys(resultSet.toArray(String[]::new));
+    assertThat(RESULT_MAP_0)
+        .isNotEmpty()
+        .containsKeys(resultSet.toArray(String[]::new));
+    assertThat(RESULT_MAP_1)
+        .isNotEmpty()
+        .containsKeys(resultSet.toArray(String[]::new));
+    assertThat(RESULT_MAP_2)
+        .isNotEmpty()
+        .containsKeys(resultSet.toArray(String[]::new));
+    assertThat(RESULT_MAP_3)
+        .isNotEmpty()
+        .containsKeys(resultSet.toArray(String[]::new));
   }
 
   private List<String> getResultSet() {

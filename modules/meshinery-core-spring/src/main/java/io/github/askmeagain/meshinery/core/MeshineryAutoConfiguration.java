@@ -90,7 +90,7 @@ public class MeshineryAutoConfiguration {
   @ConditionalOnMissingBean
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public RoundRobinScheduler roundRobinScheduler(
-      List<MeshineryTask> tasks,
+      List<MeshineryTask<?, ?>> tasks,
       List<CustomizeShutdownHook> shutdownHook,
       List<CustomizeStartupHook> startupHook,
       List<CustomizePostTaskRunHook> postTaskRunHooks,
@@ -104,14 +104,14 @@ public class MeshineryAutoConfiguration {
 
     return RoundRobinScheduler.builder()
         .backpressureLimit(meshineryCoreProperties.getBackpressureLimit())
-        .isBatchJob(meshineryCoreProperties.isBatchJob())
+        .batchJob(meshineryCoreProperties.isBatchJob())
         .registerShutdownHook(shutdownHook)
         .registerStartupHook(startupHook)
         .registerPostTaskRunHook(postTaskRunHooks)
         .registerPreTaskRunHook(preTaskRunHooks)
         .registerProcessorDecorators(processorDecorators)
         .tasks(appliedPropertyTasks)
-        .registerConnectorDecorators(connectorDecoratorFactories)
+        .registerDecorators(connectorDecoratorFactories)
         .gracefulShutdownOnError(meshineryCoreProperties.isShutdownOnError())
         .gracePeriodMilliseconds(meshineryCoreProperties.getGracePeriodMilliseconds())
         .executorService(executorService)

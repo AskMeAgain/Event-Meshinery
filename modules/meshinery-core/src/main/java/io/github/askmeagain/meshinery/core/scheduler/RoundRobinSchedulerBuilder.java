@@ -2,8 +2,6 @@ package io.github.askmeagain.meshinery.core.scheduler;
 
 import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
-import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
@@ -13,34 +11,34 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import lombok.SneakyThrows;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinSchedulerBuilder {
 
-  List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
-  List<ProcessorDecorator<? extends MeshineryDataContext>> processorDecorators = Collections.emptyList();
-  List<InputSourceDecoratorFactory> connectorDecoratorFactories = Collections.emptyList();
-  List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
-  List<? extends Consumer<MeshineryDataContext>> preTaskRunHooks = Collections.emptyList();
-  List<? extends Consumer<MeshineryDataContext>> postTaskRunHooks = Collections.emptyList();
+  private List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
+  private List<ProcessorDecorator<? extends MeshineryDataContext>> processorDecorators = Collections.emptyList();
+  private List<InputSourceDecoratorFactory> connectorDecoratorFactories = Collections.emptyList();
+  private List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
+  private List<? extends Consumer<MeshineryDataContext>> preTaskRunHooks = Collections.emptyList();
+  private List<? extends Consumer<MeshineryDataContext>> postTaskRunHooks = Collections.emptyList();
 
-  int backpressureLimit = 200;
-  int gracePeriodMilliseconds = 2000;
+  private int backpressureLimit = 200;
+  private int gracePeriodMilliseconds = 2000;
+  private boolean isBatchJob;
+  private boolean gracefulShutdownOnError = true;
+  private List<MeshineryTask> tasks = new ArrayList<>();
+
   private DataInjectingExecutorService executorService = new DataInjectingExecutorService(
       "default-virtual-thread-pool",
       Executors.newVirtualThreadPerTaskExecutor()
   );
-  boolean isBatchJob;
-  List<MeshineryTask> tasks = new ArrayList<>();
-  boolean gracefulShutdownOnError = true;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public RoundRobinSchedulerBuilder properties(MeshineryCoreProperties meshineryCoreProperties) {
     return backpressureLimit(meshineryCoreProperties.getBackpressureLimit())
         .gracefulShutdownOnError(meshineryCoreProperties.isShutdownOnError())
         .gracePeriodMilliseconds(meshineryCoreProperties.getGracePeriodMilliseconds())
-        .isBatchJob(meshineryCoreProperties.isBatchJob());
+        .batchJob(meshineryCoreProperties.isBatchJob());
   }
 
   public RoundRobinSchedulerBuilder task(MeshineryTask task) {
@@ -58,59 +56,40 @@ public class RoundRobinSchedulerBuilder {
     return this;
   }
 
-  public RoundRobinSchedulerBuilder tasks(List<MeshineryTask> task) {
+  public RoundRobinSchedulerBuilder tasks(List<MeshineryTask<?, ?>> task) {
     tasks.addAll(task);
     return this;
   }
 
   public RoundRobinSchedulerBuilder registerProcessorDecorators(
-      List<ProcessorDecorator<? extends MeshineryDataContext>> processorDecorators
+      List<ProcessorDecorator<? extends MeshineryDataContext>> decorators
   ) {
-    this.processorDecorators = processorDecorators;
+    this.processorDecorators = decorators;
     return this;
   }
 
-  /**
-   * Connector Decorators registered via this method will only be applied to the
-   * {@link MeshineryInputSource}
-   * part of the connector due to technical limits. The
-   * {@link MeshineryOutputSource} WONT be decorated.
-   *
-   * @param connectorDecoratorFactories list of decorated factories
-   * @return returns this
-   */
-  public RoundRobinSchedulerBuilder registerConnectorDecorators(
-      List<InputSourceDecoratorFactory> connectorDecoratorFactories
-  ) {
-    this.connectorDecoratorFactories = connectorDecoratorFactories;
+  public RoundRobinSchedulerBuilder registerDecorators(List<InputSourceDecoratorFactory> factories) {
+    this.connectorDecoratorFactories = factories;
     return this;
   }
 
-  public RoundRobinSchedulerBuilder registerShutdownHook(
-      List<? extends Consumer<RoundRobinScheduler>> shutdownHook
-  ) {
+  public RoundRobinSchedulerBuilder registerShutdownHook(List<? extends Consumer<RoundRobinScheduler>> shutdownHook) {
     this.shutdownHook = shutdownHook;
     return this;
   }
 
-  public RoundRobinSchedulerBuilder registerStartupHook(
-      List<? extends Consumer<RoundRobinScheduler>> startupHook
-  ) {
+  public RoundRobinSchedulerBuilder registerStartupHook(List<? extends Consumer<RoundRobinScheduler>> startupHook) {
     this.startupHook = startupHook;
     return this;
   }
 
-  public RoundRobinSchedulerBuilder registerPreTaskRunHook(
-      List<? extends Consumer<MeshineryDataContext>> preTaskRunHooks
-  ) {
-    this.preTaskRunHooks = preTaskRunHooks;
+  public RoundRobinSchedulerBuilder registerPreTaskRunHook(List<? extends Consumer<MeshineryDataContext>> hooks) {
+    this.preTaskRunHooks = hooks;
     return this;
   }
 
-  public RoundRobinSchedulerBuilder registerPostTaskRunHook(
-      List<? extends Consumer<MeshineryDataContext>> postTaskRunHooks
-  ) {
-    this.postTaskRunHooks = postTaskRunHooks;
+  public RoundRobinSchedulerBuilder registerPostTaskRunHook(List<? extends Consumer<MeshineryDataContext>> hooks) {
+    this.postTaskRunHooks = hooks;
     return this;
   }
 
@@ -119,7 +98,7 @@ public class RoundRobinSchedulerBuilder {
     return this;
   }
 
-  public RoundRobinSchedulerBuilder isBatchJob(boolean flag) {
+  public RoundRobinSchedulerBuilder batchJob(boolean flag) {
     isBatchJob = flag;
     return this;
   }
@@ -129,8 +108,6 @@ public class RoundRobinSchedulerBuilder {
     return this;
   }
 
-  @SneakyThrows
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public RoundRobinScheduler build() {
 
     //verifying tasks

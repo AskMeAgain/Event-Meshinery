@@ -43,7 +43,7 @@ class ShutdownTest extends AbstractTestBase {
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()
-        .isBatchJob(true)
+        .batchJob(true)
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(0)
@@ -86,7 +86,7 @@ class ShutdownTest extends AbstractTestBase {
 
     //Act ------------------------------------------------------------------------------------
     var scheduler = RoundRobinScheduler.<String, TestContext>builder()
-        .isBatchJob(false)
+        .batchJob(false)
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(0)

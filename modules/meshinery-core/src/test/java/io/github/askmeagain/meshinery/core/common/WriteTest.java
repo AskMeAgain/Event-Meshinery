@@ -42,7 +42,7 @@ class WriteTest {
         .gracePeriodMilliseconds(100)
         .task(task)
         .executorService(executor)
-        .isBatchJob(true)
+        .batchJob(true)
         .build()
         .start();
 
@@ -77,7 +77,7 @@ class WriteTest {
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()
-        .isBatchJob(true)
+        .batchJob(true)
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(0)

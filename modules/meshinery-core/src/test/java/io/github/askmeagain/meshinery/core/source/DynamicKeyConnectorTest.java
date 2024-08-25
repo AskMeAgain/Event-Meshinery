@@ -50,7 +50,7 @@ class DynamicKeyConnectorTest {
 
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()
-        .isBatchJob(true)
+        .batchJob(true)
         .task(task)
         .executorService(executor)
         .gracePeriodMilliseconds(1000)
