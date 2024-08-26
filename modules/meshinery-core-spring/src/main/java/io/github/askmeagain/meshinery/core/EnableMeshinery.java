@@ -18,7 +18,6 @@ public @interface EnableMeshinery {
    */
   Class<? extends MeshineryDataContext>[] injection() default {};
 
-
   /**
    * Takes a list of keyvalue entries and creates a memory connector on startup
    */

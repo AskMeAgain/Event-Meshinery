@@ -28,6 +28,9 @@ public class OtelProcessorDecorator<C extends MeshineryDataContext> implements P
     var processorName = getTaskData().getSingle(TASK_NAME);
 
     return context -> {
+      if (context == null) {
+        return null;
+      }
       var remoteContext = SpanContext.createFromRemoteParent(
           context.getMetadata("otel-trace-id"),
           context.getMetadata("otel-span-id"),
