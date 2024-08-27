@@ -4,14 +4,12 @@ import io.github.askmeagain.meshinery.aop.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
 import io.github.askmeagain.meshinery.aop.exception.MeshineryAopWrongMethodParameterType;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import java.lang.reflect.Method;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
@@ -35,10 +33,6 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
     return ResolvableType.forClassWithGenerics(MeshineryTask.class, String.class, contextClazz);
   }
 
-  private static String getBeanName(Class<?> clazz) {
-    return clazz.getSimpleName() + "-dynamic-meshinery-aop-job";
-  }
-
   @Override
   public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
     for (var proxiedBeanName : applicationContext.getBeanDefinitionNames()) {
@@ -48,15 +42,17 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
       }
 
       for (var m : clazz.getDeclaredMethods()) {
-        var targetType = getTargetType(clazz);
-        var newBeanName = getBeanName(clazz);
-
         if (m.isAnnotationPresent(MeshineryTaskBridge.class)) {
+          var targetType = getTargetType(clazz);
+          var annotation = m.getAnnotation(MeshineryTaskBridge.class);
+          var newBeanName = annotation.taskName() + "Bean";
+
           var beanDefinition = new RootBeanDefinition(
               MeshineryTask.class,
               () -> buildMeshineryJob(
                   m,
                   applicationContext.getBean(proxiedBeanName),
+                  annotation,
                   applicationContext.getBeanProvider(ResolvableType.forClassWithGenerics(
                       MeshinerySourceConnector.class,
                       String.class,
@@ -74,11 +70,11 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
   private static MeshineryTask<String, MeshineryDataContext> buildMeshineryJob(
       Method methodHandle,
       Object beanInstance,
+      MeshineryTaskBridge annotation,
       ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider
   ) {
     var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
 
-    var annotation = methodHandle.getAnnotation(MeshineryTaskBridge.class);
     var properties = annotation.properties();
     var readEvent = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
     var writeEvent = annotation.write().equals("-") ? new String[0] : new String[]{annotation.write()};
@@ -95,18 +91,7 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
         .taskName(annotation.taskName().equals("-") ? "dynamic-job-" + readEvent.toLowerCase() : annotation.taskName())
         .putData(List.of(properties))
         .read(readEvent)
-        .process(new MeshineryProcessor<>() {
-          @SneakyThrows
-          @Override
-          public MeshineryDataContext processAsync(MeshineryDataContext context) {
-            var response = methodHandle.invoke(unproxiedObject, context);
-            if (MeshineryDataContext.class.isAssignableFrom(responseType)) {
-              return (MeshineryDataContext) response;
-            } else {
-              return null;
-            }
-          }
-        })
+        .process(new AopJobReceiverProcessor(methodHandle, unproxiedObject, responseType))
         .write(writeEvent)
         .build();
   }
@@ -115,4 +100,5 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
   public void postProcessBeanFactory(ConfigurableListableBeanFactory factory) throws BeansException {
     //empty
   }
+
 }
