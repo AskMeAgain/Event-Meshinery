@@ -21,10 +21,10 @@ public class BranchProcessor<C extends MeshineryDataContext> implements Meshiner
   }
 
   @Override
-  public C processAsync(C context) {
+  public C process(C context) {
     for (int i = 0; i < processorList.size(); i++) {
       if (predicateList.get(i).test(context)) {
-        return processorList.get(i).processAsync(context);
+        return processorList.get(i).process(context);
       }
     }
 

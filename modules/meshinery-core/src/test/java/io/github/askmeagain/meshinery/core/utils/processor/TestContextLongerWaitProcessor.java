@@ -13,7 +13,7 @@ public class TestContextLongerWaitProcessor implements MeshineryProcessor<TestCo
   private final int index;
 
   @Override
-  public TestContext processAsync(TestContext context) {
+  public TestContext process(TestContext context) {
       log.info("Computing stuff");
       return wait(context);
   }

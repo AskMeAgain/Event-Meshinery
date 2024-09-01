@@ -12,7 +12,7 @@ public class ToTestContextProcessor implements MeshineryProcessor<TestContext2, 
   private final int index;
 
   @Override
-  public TestContext processAsync(TestContext2 context) {
+  public TestContext process(TestContext2 context) {
     return wait(context);
   }
 

@@ -55,8 +55,8 @@ class TaskReplayFactoryTest {
     taskReplayFactory.injectData("test", new TestContext(3));
 
     //Assert -----------------------------------------------------------------------------------------------------------
-    Mockito.verify(processorA).processAsync(any());
-    Mockito.verify(processorB).processAsync(any());
+    Mockito.verify(processorA).process(any());
+    Mockito.verify(processorB).process(any());
     Mockito.verify(outputSource).writeOutput(eq("OutputKey"), eq(new TestContext(61234)), any());
   }
 

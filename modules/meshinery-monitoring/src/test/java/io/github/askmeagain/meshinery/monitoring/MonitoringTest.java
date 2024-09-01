@@ -27,7 +27,7 @@ class MonitoringTest {
     //Act --------------------------------------------------------------------------------------------------------------
     var context = new TestContext(1);
 
-    var future = CompletableFuture.runAsync(() -> decoratedProcessor.processAsync(context));
+    var future = CompletableFuture.runAsync(() -> decoratedProcessor.process(context));
 
     Thread.sleep(100);
 

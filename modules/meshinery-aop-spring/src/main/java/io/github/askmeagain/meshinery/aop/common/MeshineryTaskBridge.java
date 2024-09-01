@@ -9,11 +9,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MeshineryTaskBridge {
 
-  String event() default "-";
+  String event() default "";
 
-  String write() default "-";
+  String write() default "";
 
-  String taskName() default "-";
+  String taskName() default "";
 
   String[] properties() default {};
 

@@ -44,7 +44,7 @@ public class OtelProcessorDecorator<C extends MeshineryDataContext> implements P
           .startSpan();
 
       try {
-        return processor.processAsync(context);
+        return processor.process(context);
       } catch (Exception e) {
         span.recordException(e);
         throw e;

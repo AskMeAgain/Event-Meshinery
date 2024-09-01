@@ -8,7 +8,7 @@ import lombok.experimental.UtilityClass;
 public class MeshineryAopUtils {
 
   public static String calculateEventName(MeshineryTaskBridge annotation, Method methodHandle, Object unproxiedObject) {
-    if (!annotation.event().equals("-")) {
+    if (!annotation.event().isEmpty()) {
       return annotation.event();
     }
     return unproxiedObject.getClass().getSimpleName() + "-" + methodHandle.getName();

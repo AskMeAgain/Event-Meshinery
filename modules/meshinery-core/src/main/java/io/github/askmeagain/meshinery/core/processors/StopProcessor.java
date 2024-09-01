@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 public record StopProcessor<C extends MeshineryDataContext>(Predicate<C> stopIf) implements MeshineryProcessor<C, C> {
 
   @Override
-  public C processAsync(C context) {
+  public C process(C context) {
 
     if (stopIf.test(context)) {
       return null;

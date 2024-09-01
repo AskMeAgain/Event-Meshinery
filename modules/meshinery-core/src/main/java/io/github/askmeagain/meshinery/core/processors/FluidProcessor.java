@@ -51,7 +51,7 @@ public class FluidProcessor<I extends MeshineryDataContext, O extends MeshineryD
   }
 
   @Override
-  public O processAsync(I context) {
+  public O process(I context) {
     var result = MeshineryUtils.combineProcessors(
         processorList,
         context,

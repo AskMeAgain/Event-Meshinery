@@ -14,7 +14,7 @@ class AopJobReceiverProcessor implements MeshineryProcessor<MeshineryDataContext
 
   @SneakyThrows
   @Override
-  public MeshineryDataContext processAsync(MeshineryDataContext context) {
+  public MeshineryDataContext process(MeshineryDataContext context) {
     var response = methodHandle.invoke(unproxiedObject, context);
     if (MeshineryDataContext.class.isAssignableFrom(responseType)) {
       return (MeshineryDataContext) response;

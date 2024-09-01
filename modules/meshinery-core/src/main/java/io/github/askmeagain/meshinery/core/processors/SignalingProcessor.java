@@ -25,7 +25,7 @@ public class SignalingProcessor<K, C extends MeshineryDataContext> implements Me
   }
 
   @Override
-  public C processAsync(C context) {
+  public C process(C context) {
     return inputSource.getContext(key, context.getId())
         .map(c -> join.apply(context, c))
         .orElse(null);

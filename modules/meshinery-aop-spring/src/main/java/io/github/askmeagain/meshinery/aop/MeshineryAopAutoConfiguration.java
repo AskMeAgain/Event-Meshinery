@@ -24,8 +24,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 public class MeshineryAopAutoConfiguration {
 
   @Bean
-  public <V extends MeshineryDataContext> DynamicMeshineryReadJobAspect dynamicMeshineryReadJobAspect(
-      MeshineryOutputSource<String, V> connector,
+  public DynamicMeshineryReadJobAspect dynamicMeshineryReadJobAspect(
+      MeshineryOutputSource<String, ? extends MeshineryDataContext> connector,
       List<OutputSourceDecoratorFactory> decorators
   ) {
     var decoratedSource = MeshineryUtils.applyDecorator(connector, decorators);

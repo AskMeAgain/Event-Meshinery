@@ -10,7 +10,7 @@ import static io.github.askmeagain.meshinery.core.e2e.base.E2eTestApplication.SL
 @Slf4j
 public class E2eTestProcessor implements MeshineryProcessor<TestContext, TestContext> {
   @Override
-  public TestContext processAsync(TestContext context) {
+  public TestContext process(TestContext context) {
     wait1Sec();
     return context;
   }

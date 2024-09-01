@@ -12,7 +12,7 @@ public class CommitProcessor<C extends MeshineryDataContext> implements Meshiner
   private final Supplier<MeshineryInputSource<?, C>> meshineryInputSource;
 
   @Override
-  public C processAsync(C context) {
+  public C process(C context) {
     return meshineryInputSource.get().commit(context);
   }
 }

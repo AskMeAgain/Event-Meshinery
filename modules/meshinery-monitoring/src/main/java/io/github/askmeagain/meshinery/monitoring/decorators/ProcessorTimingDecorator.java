@@ -37,7 +37,7 @@ public class ProcessorTimingDecorator<C extends MeshineryDataContext> implements
       var begin = Instant.now();
 
       try {
-        return processor.processAsync(context);
+        return processor.process(context);
       } finally {
         var diff = Duration.between(begin, Instant.now());
         inProcessingCounter.dec();

@@ -36,10 +36,10 @@ public class ParallelProcessor<C extends MeshineryDataContext> implements Meshin
   }
 
   @Override
-  public C processAsync(C context) {
+  public C process(C context) {
 
     var futures = processorList.stream()
-        .map(x -> CompletableFuture.supplyAsync(() -> x.processAsync(context), executor))
+        .map(x -> CompletableFuture.supplyAsync(() -> x.process(context), executor))
         .toList();
 
     try {

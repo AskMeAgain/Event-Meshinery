@@ -41,22 +41,22 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
         clazz = AopUtils.getTargetClass(clazz);
       }
 
-      for (var m : clazz.getDeclaredMethods()) {
-        if (m.isAnnotationPresent(MeshineryTaskBridge.class)) {
+      for (var methodHandle : clazz.getDeclaredMethods()) {
+        if (methodHandle.isAnnotationPresent(MeshineryTaskBridge.class)) {
           var targetType = getTargetType(clazz);
-          var annotation = m.getAnnotation(MeshineryTaskBridge.class);
-          var newBeanName = annotation.taskName() + "Bean";
+          var annotation = methodHandle.getAnnotation(MeshineryTaskBridge.class);
+          var newBeanName = getBeanName(annotation, methodHandle);
 
           var beanDefinition = new RootBeanDefinition(
               MeshineryTask.class,
               () -> buildMeshineryJob(
-                  m,
+                  methodHandle,
                   applicationContext.getBean(proxiedBeanName),
                   annotation,
                   applicationContext.getBeanProvider(ResolvableType.forClassWithGenerics(
                       MeshinerySourceConnector.class,
                       String.class,
-                      m.getParameterTypes()[0]
+                      methodHandle.getParameterTypes()[0]
                   ))
               )
           );
@@ -65,6 +65,13 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
         }
       }
     }
+  }
+
+  private static String getBeanName(MeshineryTaskBridge annotation, Method methodHandle) {
+    if (annotation.taskName().isBlank()) {
+      return methodHandle.getName();
+    }
+    return annotation.taskName() + "Bean";
   }
 
   private static MeshineryTask<String, MeshineryDataContext> buildMeshineryJob(
@@ -77,7 +84,7 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
 
     var properties = annotation.properties();
     var readEvent = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
-    var writeEvent = annotation.write().equals("-") ? new String[0] : new String[]{annotation.write()};
+    var writeEvent = annotation.write().isEmpty() ? new String[0] : new String[]{annotation.write()};
 
     var contextClazz = methodHandle.getParameterTypes()[0];
     var responseType = methodHandle.getReturnType();
@@ -88,12 +95,16 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
 
     return MeshineryTaskFactory.<String, MeshineryDataContext>builder()
         .connector(provider.getObject())
-        .taskName(annotation.taskName().equals("-") ? "dynamic-job-" + readEvent.toLowerCase() : annotation.taskName())
+        .taskName(calculateTaskName(annotation, readEvent))
         .putData(List.of(properties))
         .read(readEvent)
         .process(new AopJobReceiverProcessor(methodHandle, unproxiedObject, responseType))
         .write(writeEvent)
         .build();
+  }
+
+  private static String calculateTaskName(MeshineryTaskBridge annotation, String readEvent) {
+    return annotation.taskName().isEmpty() ? "dynamic-aop-job-" + readEvent.toLowerCase() : annotation.taskName();
   }
 
   @Override

@@ -19,7 +19,7 @@ public record DynamicOutputProcessor<K, C extends MeshineryDataContext>(
 ) implements MeshineryProcessor<C, C> {
 
   @Override
-  public C processAsync(C context) {
+  public C process(C context) {
     if (writeIf.test(context)) {
       outputSource.writeOutput(keyMethod.apply(context), context, getTaskData());
     }

@@ -45,7 +45,7 @@ public class MeshineryUtils {
       MDC.setContextMap(mdc);
       TaskData.setTaskData(taskData);
       for (MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> newProcessor : processorList) {
-        temp = newProcessor.processAsync(temp);
+        temp = newProcessor.process(temp);
       }
       return temp;
     };

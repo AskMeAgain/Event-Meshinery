@@ -33,7 +33,7 @@ class ProcessorDecoratorTest {
       public MeshineryProcessor<TestContext, TestContext> wrap(
           MeshineryProcessor<TestContext, TestContext> processor
       ) {
-        return (TestContext c) -> processor.processAsync(c.toBuilder()
+        return (TestContext c) -> processor.process(c.toBuilder()
             .index(c.getIndex() + 1)
             .build());
       }
@@ -82,7 +82,7 @@ class ProcessorDecoratorTest {
       public MeshineryProcessor<TestContext, TestContext> wrap(
           MeshineryProcessor<TestContext, TestContext> processor
       ) {
-        return (context) -> processor.processAsync(context.toBuilder()
+        return (context) -> processor.process(context.toBuilder()
             .index(context.getIndex() + 1)
             .build());
       }

@@ -13,7 +13,7 @@ import io.github.askmeagain.meshinery.core.task.TaskData;
 @FunctionalInterface
 public interface MeshineryProcessor<I extends MeshineryDataContext, O extends MeshineryDataContext> {
 
-  O processAsync(I context);
+  O process(I context);
 
   default TaskData addToTaskData(TaskData taskData) {
     return taskData;

@@ -222,7 +222,7 @@ public class RoundRobinScheduler {
           try {
             context = run.getQueue()
                 .remove()
-                .processAsync(context);
+                .process(context);
           } catch (Exception e) {
             context = run.getHandleError().apply(context, e);
           }
