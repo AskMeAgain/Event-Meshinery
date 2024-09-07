@@ -52,5 +52,23 @@ class E2eAopTest {
     assertThat(connector.getInputs(List.of("test"))).isEmpty();
     assertThat(batchJobFinished).isTrue();
   }
+
+  @Test
+  @SneakyThrows
+  void retryTest() {
+    //Arrange --------------------------------------------------------------------------------
+    var context = TestContext.builder()
+        .id("abc")
+        .build();
+
+    //Act ------------------------------------------------------------------------------------
+    roundRobinScheduler.start();
+    var response = service.retry3TimesTest(context);
+    var batchJobFinished = executorService.awaitTermination(10_000, TimeUnit.MILLISECONDS);
+
+    //Assert ---------------------------------------------------------------------------------
+    assertThat(connector.getInputs(List.of("test"))).isEmpty();
+    assertThat(batchJobFinished).isTrue();
+  }
 }
 

@@ -4,6 +4,7 @@ import io.github.askmeagain.meshinery.aop.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
 import io.github.askmeagain.meshinery.aop.exception.MeshineryAopWrongMethodParameterType;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
@@ -98,9 +99,34 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
         .taskName(calculateTaskName(annotation, readEvent))
         .putData(List.of(properties))
         .read(readEvent)
-        .process(new AopJobReceiverProcessor(methodHandle, unproxiedObject, responseType))
+        .process(getProcessor(methodHandle, annotation, unproxiedObject, responseType))
         .write(writeEvent)
         .build();
+  }
+
+  private static MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> getProcessor(
+      Method methodHandle,
+      MeshineryTaskBridge annotation,
+      Object unproxiedObject,
+      Class<?> responseType
+  ) {
+    if (annotation.inMemoryRetry()) {
+      return new AopJobReceiverInMemoryRetryProcessor(
+          annotation.retryOnException(),
+          annotation.retryCount(),
+          methodHandle,
+          unproxiedObject,
+          responseType
+      );
+    } else {
+      return new AopJobReceiverEventRetryProcessor(
+          annotation.retryOnException(),
+          annotation.retryCount(),
+          methodHandle,
+          unproxiedObject,
+          responseType
+      );
+    }
   }
 
   private static String calculateTaskName(MeshineryTaskBridge annotation, String readEvent) {
