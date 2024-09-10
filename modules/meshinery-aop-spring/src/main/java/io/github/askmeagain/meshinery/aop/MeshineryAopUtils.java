@@ -11,6 +11,6 @@ public class MeshineryAopUtils {
     if (!annotation.event().isEmpty()) {
       return annotation.event();
     }
-    return unproxiedObject.getClass().getSimpleName() + "-" + methodHandle.getName();
+    return methodHandle.getName();
   }
 }

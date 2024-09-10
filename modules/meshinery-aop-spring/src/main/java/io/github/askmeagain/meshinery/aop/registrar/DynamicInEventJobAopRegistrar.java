@@ -1,10 +1,10 @@
-package io.github.askmeagain.meshinery.aop.config;
+package io.github.askmeagain.meshinery.aop.registrar;
 
 import io.github.askmeagain.meshinery.aop.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
+import io.github.askmeagain.meshinery.aop.config.AopJobReceiverEventRetryProcessor;
 import io.github.askmeagain.meshinery.aop.exception.MeshineryAopWrongMethodParameterType;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
-import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
@@ -26,7 +26,7 @@ import org.springframework.core.ResolvableType;
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
-public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcessor {
+public class DynamicInEventJobAopRegistrar implements BeanDefinitionRegistryPostProcessor {
 
   private final ApplicationContext applicationContext;
 
@@ -44,8 +44,11 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
 
       for (var methodHandle : clazz.getDeclaredMethods()) {
         if (methodHandle.isAnnotationPresent(MeshineryTaskBridge.class)) {
-          var targetType = getTargetType(clazz);
           var annotation = methodHandle.getAnnotation(MeshineryTaskBridge.class);
+          if (annotation.inMemoryRetry()) {
+            continue;
+          }
+          var targetType = getTargetType(clazz);
           var newBeanName = getBeanName(annotation, methodHandle);
 
           var beanDefinition = new RootBeanDefinition(
@@ -99,34 +102,13 @@ public class DynamicJobAopRegistrar implements BeanDefinitionRegistryPostProcess
         .taskName(calculateTaskName(annotation, readEvent))
         .putData(List.of(properties))
         .read(readEvent)
-        .process(getProcessor(methodHandle, annotation, unproxiedObject, responseType))
+        .process(new AopJobReceiverEventRetryProcessor(
+            methodHandle,
+            unproxiedObject,
+            responseType
+        ))
         .write(writeEvent)
         .build();
-  }
-
-  private static MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> getProcessor(
-      Method methodHandle,
-      MeshineryTaskBridge annotation,
-      Object unproxiedObject,
-      Class<?> responseType
-  ) {
-    if (annotation.inMemoryRetry()) {
-      return new AopJobReceiverInMemoryRetryProcessor(
-          annotation.retryOnException(),
-          annotation.retryCount(),
-          methodHandle,
-          unproxiedObject,
-          responseType
-      );
-    } else {
-      return new AopJobReceiverEventRetryProcessor(
-          annotation.retryOnException(),
-          annotation.retryCount(),
-          methodHandle,
-          unproxiedObject,
-          responseType
-      );
-    }
   }
 
   private static String calculateTaskName(MeshineryTaskBridge annotation, String readEvent) {

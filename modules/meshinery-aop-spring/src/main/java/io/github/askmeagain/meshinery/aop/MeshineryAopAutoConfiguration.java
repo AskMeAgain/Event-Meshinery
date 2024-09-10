@@ -1,8 +1,9 @@
 package io.github.askmeagain.meshinery.aop;
 
 import io.github.askmeagain.meshinery.aop.aspect.DynamicMeshineryReadJobAspect;
-import io.github.askmeagain.meshinery.aop.config.DynamicJobAopRegistrar;
 import io.github.askmeagain.meshinery.aop.properties.MeshineryAopProperties;
+import io.github.askmeagain.meshinery.aop.registrar.DynamicInEventJobAopRegistrar;
+import io.github.askmeagain.meshinery.aop.registrar.DynamicInMemoryJobAopRegistrar;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.OutputSourceDecoratorFactory;
@@ -33,7 +34,12 @@ public class MeshineryAopAutoConfiguration {
   }
 
   @Bean
-  public static DynamicJobAopRegistrar dynamicJobRegistrar(ApplicationContext applicationContext) {
-    return new DynamicJobAopRegistrar(applicationContext);
+  public static DynamicInEventJobAopRegistrar dynamicJobRegistrar(ApplicationContext applicationContext) {
+    return new DynamicInEventJobAopRegistrar(applicationContext);
+  }
+
+  @Bean
+  public static DynamicInMemoryJobAopRegistrar dynamicInMemoryJobAopRegistrar(ApplicationContext applicationContext) {
+    return new DynamicInMemoryJobAopRegistrar(applicationContext);
   }
 }

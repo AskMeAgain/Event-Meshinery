@@ -1,4 +1,4 @@
-package io.github.askmeagain.meshinery.aop.config;
+package io.github.askmeagain.meshinery.aop.processor;
 
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
@@ -10,9 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-class AopJobReceiverInMemoryRetryProcessor implements MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> {
-  private final Class<Exception> retryOnException;
-  private final int retryCount;
+public class AopJobReceiverEventRetryProcessor
+    implements MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> {
   private final Method methodHandle;
   private final Object unproxiedObject;
   private final Class<?> responseType;
@@ -20,22 +19,7 @@ class AopJobReceiverInMemoryRetryProcessor implements MeshineryProcessor<Meshine
   @SneakyThrows
   @Override
   public MeshineryDataContext process(MeshineryDataContext context) {
-    var i = 0;
-    while (true) {
-      i++;
-      try {
-        return executeMethod(context);
-      } catch (InvocationTargetException e) {
-        if (i > retryCount) {
-          throw e;
-        }
-        if (retryOnException.isAssignableFrom(e.getTargetException().getClass())) {
-          log.error("Retrying {}/{}", i, retryCount, e);
-          continue;
-        }
-        throw e;
-      }
-    }
+    return executeMethod(context);
   }
 
   private MeshineryDataContext executeMethod(MeshineryDataContext context)
