@@ -13,7 +13,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
@@ -71,10 +70,7 @@ public class DynamicInEventJobAopRegistrar implements BeanDefinitionRegistryPost
     var beginningJob = new RootBeanDefinition(
         MeshineryTask.class,
         () -> {
-          var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
-          if (unproxiedObject == null) {
-            unproxiedObject = beanInstance;
-          }
+          var unproxiedObject = MeshineryAopUtils.tryUnproxyingObject(beanInstance);
           var readEvent = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
           return buildMeshineryJob(
               readEvent,
@@ -99,10 +95,7 @@ public class DynamicInEventJobAopRegistrar implements BeanDefinitionRegistryPost
       var intermediateJob = new RootBeanDefinition(
           MeshineryTask.class,
           () -> {
-            var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
-            if (unproxiedObject == null) {
-              unproxiedObject = beanInstance;
-            }
+            var unproxiedObject = MeshineryAopUtils.tryUnproxyingObject(beanInstance);
             var readEvent = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
             return buildMeshineryJob(
                 readEvent + "-" + (finalI - 1),
@@ -126,10 +119,7 @@ public class DynamicInEventJobAopRegistrar implements BeanDefinitionRegistryPost
     var endJob = new RootBeanDefinition(
         MeshineryTask.class,
         () -> {
-          var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
-          if (unproxiedObject == null) {
-            unproxiedObject = beanInstance;
-          }
+          var unproxiedObject = MeshineryAopUtils.tryUnproxyingObject(beanInstance);
           var readEvent = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
           return buildMeshineryJob(
               readEvent + "-" + (annotation.retryCount() - 1),

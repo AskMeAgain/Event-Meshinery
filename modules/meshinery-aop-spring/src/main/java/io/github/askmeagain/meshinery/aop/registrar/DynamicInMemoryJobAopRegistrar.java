@@ -12,7 +12,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
@@ -96,10 +95,7 @@ public class DynamicInMemoryJobAopRegistrar implements BeanDefinitionRegistryPos
       MeshineryTaskBridge annotation,
       ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider
   ) {
-    var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
-    if (unproxiedObject == null) {
-      unproxiedObject = beanInstance;
-    }
+    var unproxiedObject = MeshineryAopUtils.tryUnproxyingObject(beanInstance);
 
     var properties = annotation.properties();
     var readEvent = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
