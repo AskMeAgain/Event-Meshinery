@@ -48,27 +48,39 @@ public class DynamicInMemoryJobAopRegistrar implements BeanDefinitionRegistryPos
           if (!annotation.inMemoryRetry()) {
             continue;
           }
-          var targetType = getTargetType(clazz);
-          var newBeanName = getBeanName(annotation, methodHandle);
-
-          var beanDefinition = new RootBeanDefinition(
-              MeshineryTask.class,
-              () -> buildMeshineryJob(
-                  methodHandle,
-                  applicationContext.getBean(proxiedBeanName),
-                  annotation,
-                  applicationContext.getBeanProvider(ResolvableType.forClassWithGenerics(
-                      MeshinerySourceConnector.class,
-                      String.class,
-                      methodHandle.getParameterTypes()[0]
-                  ))
-              )
-          );
-          beanDefinition.setTargetType(targetType);
-          registry.registerBeanDefinition(newBeanName, beanDefinition);
+          try {
+            doStuff(registry, proxiedBeanName, methodHandle, clazz, annotation);
+          } catch (Exception e) {
+            log.error("Failed to create aop job");
+            throw new RuntimeException(e);
+          }
         }
       }
     }
+  }
+
+  private void doStuff(
+      BeanDefinitionRegistry registry, String proxiedBeanName, Method methodHandle, Class<?> clazz,
+      MeshineryTaskBridge annotation
+  ) {
+    var targetType = getTargetType(clazz);
+    var newBeanName = getBeanName(annotation, methodHandle);
+
+    var beanDefinition = new RootBeanDefinition(
+        MeshineryTask.class,
+        () -> buildMeshineryJob(
+            methodHandle,
+            applicationContext.getBean(proxiedBeanName),
+            annotation,
+            applicationContext.getBeanProvider(ResolvableType.forClassWithGenerics(
+                MeshinerySourceConnector.class,
+                String.class,
+                methodHandle.getParameterTypes()[0]
+            ))
+        )
+    );
+    beanDefinition.setTargetType(targetType);
+    registry.registerBeanDefinition(newBeanName, beanDefinition);
   }
 
   private static String getBeanName(MeshineryTaskBridge annotation, Method methodHandle) {
@@ -85,6 +97,9 @@ public class DynamicInMemoryJobAopRegistrar implements BeanDefinitionRegistryPos
       ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider
   ) {
     var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
+    if (unproxiedObject == null) {
+      unproxiedObject = beanInstance;
+    }
 
     var properties = annotation.properties();
     var readEvent = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);

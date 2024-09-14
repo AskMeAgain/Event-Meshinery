@@ -10,6 +10,7 @@ dependencies {
     api "org.hibernate.validator:hibernate-validator"
 
     implementation "org.apache.commons:commons-collections4:${commons_collections4_version}"
+    implementation "org.apache.commons:commons-lang3:${commons_lang_version}"
 
     testImplementation "com.fasterxml.jackson.core:jackson-databind"
 }

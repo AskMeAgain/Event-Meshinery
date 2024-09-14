@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_IGNORE_DUPLICATE_READ_KEY;
 
@@ -86,6 +87,9 @@ public class MeshineryTaskVerifier {
       if (!VALID_LETTERS.contains(String.valueOf(letter).toLowerCase())) {
         throw new TaskNameInvalidException(
             "Task '%s' contains '%s', but only %s is allowed".formatted(name, letter, VALID_LETTERS));
+      }
+      if (StringUtils.isBlank(name)) {
+        throw new TaskNameInvalidException("Taskname cannot be blank");
       }
     }
     return name;

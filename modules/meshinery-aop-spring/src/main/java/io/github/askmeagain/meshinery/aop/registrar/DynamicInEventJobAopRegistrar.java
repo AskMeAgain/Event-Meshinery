@@ -2,12 +2,13 @@ package io.github.askmeagain.meshinery.aop.registrar;
 
 import io.github.askmeagain.meshinery.aop.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
-import io.github.askmeagain.meshinery.aop.config.AopJobReceiverEventRetryProcessor;
 import io.github.askmeagain.meshinery.aop.exception.MeshineryAopWrongMethodParameterType;
+import io.github.askmeagain.meshinery.aop.processor.AopJobReceiverEventRetryProcessor;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.lang.reflect.Method;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -48,27 +49,105 @@ public class DynamicInEventJobAopRegistrar implements BeanDefinitionRegistryPost
           if (annotation.inMemoryRetry()) {
             continue;
           }
-          var targetType = getTargetType(clazz);
-          var newBeanName = getBeanName(annotation, methodHandle);
-
-          var beanDefinition = new RootBeanDefinition(
-              MeshineryTask.class,
-              () -> buildMeshineryJob(
-                  methodHandle,
-                  applicationContext.getBean(proxiedBeanName),
-                  annotation,
-                  applicationContext.getBeanProvider(ResolvableType.forClassWithGenerics(
-                      MeshinerySourceConnector.class,
-                      String.class,
-                      methodHandle.getParameterTypes()[0]
-                  ))
-              )
-          );
-          beanDefinition.setTargetType(targetType);
-          registry.registerBeanDefinition(newBeanName, beanDefinition);
+          try {
+            doStuff(registry, proxiedBeanName, methodHandle, clazz, annotation);
+          } catch (Exception e) {
+            log.error("Failed to create aop job");
+            throw new RuntimeException(e);
+          }
         }
       }
     }
+  }
+
+  private void doStuff(
+      BeanDefinitionRegistry registry, String proxiedBeanName, Method methodHandle, Class<?> clazz,
+      MeshineryTaskBridge annotation
+  ) {
+    var targetType = getTargetType(clazz);
+    var newBeanName = getBeanName(annotation, methodHandle);
+    var beanInstance = applicationContext.getBean(proxiedBeanName);
+
+    var beginningJob = new RootBeanDefinition(
+        MeshineryTask.class,
+        () -> {
+          var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
+          if (unproxiedObject == null) {
+            unproxiedObject = beanInstance;
+          }
+          var readEvent = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
+          return buildMeshineryJob(
+              readEvent,
+              readEvent + "-0",
+              annotation.write(),
+              methodHandle,
+              unproxiedObject,
+              annotation,
+              applicationContext.getBeanProvider(ResolvableType.forClassWithGenerics(
+                  MeshinerySourceConnector.class,
+                  String.class,
+                  methodHandle.getParameterTypes()[0]
+              ))
+          );
+        }
+    );
+    beginningJob.setTargetType(targetType);
+    registry.registerBeanDefinition(newBeanName + "-0", beginningJob);
+
+    for (var i = 1; i < annotation.retryCount(); i++) {
+      int finalI = i;
+      var intermediateJob = new RootBeanDefinition(
+          MeshineryTask.class,
+          () -> {
+            var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
+            if (unproxiedObject == null) {
+              unproxiedObject = beanInstance;
+            }
+            var readEvent = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
+            return buildMeshineryJob(
+                readEvent + "-" + (finalI - 1),
+                readEvent + "-" + (finalI),
+                annotation.write(),
+                methodHandle,
+                unproxiedObject,
+                annotation,
+                applicationContext.getBeanProvider(ResolvableType.forClassWithGenerics(
+                    MeshinerySourceConnector.class,
+                    String.class,
+                    methodHandle.getParameterTypes()[0]
+                ))
+            );
+          }
+      );
+      intermediateJob.setTargetType(targetType);
+      registry.registerBeanDefinition(newBeanName + "-" + i, intermediateJob);
+    }
+
+    var endJob = new RootBeanDefinition(
+        MeshineryTask.class,
+        () -> {
+          var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
+          if (unproxiedObject == null) {
+            unproxiedObject = beanInstance;
+          }
+          var readEvent = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
+          return buildMeshineryJob(
+              readEvent + "-" + (annotation.retryCount() - 1),
+              null,
+              annotation.write(),
+              methodHandle,
+              unproxiedObject,
+              annotation,
+              applicationContext.getBeanProvider(ResolvableType.forClassWithGenerics(
+                  MeshinerySourceConnector.class,
+                  String.class,
+                  methodHandle.getParameterTypes()[0]
+              ))
+          );
+        }
+    );
+    endJob.setTargetType(targetType);
+    registry.registerBeanDefinition(newBeanName + "-end", endJob);
   }
 
   private static String getBeanName(MeshineryTaskBridge annotation, Method methodHandle) {
@@ -79,16 +158,16 @@ public class DynamicInEventJobAopRegistrar implements BeanDefinitionRegistryPost
   }
 
   private static MeshineryTask<String, MeshineryDataContext> buildMeshineryJob(
+      String readEvent,
+      String onErrorEvent,
+      String onSuccessEvent,
       Method methodHandle,
-      Object beanInstance,
+      Object unproxiedObject,
       MeshineryTaskBridge annotation,
       ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider
   ) {
-    var unproxiedObject = AopProxyUtils.getSingletonTarget(beanInstance);
-
+    log.error("Created job: {}->{}", readEvent, onErrorEvent);
     var properties = annotation.properties();
-    var readEvent = MeshineryAopUtils.calculateEventName(annotation, methodHandle, unproxiedObject);
-    var writeEvent = annotation.write().isEmpty() ? new String[0] : new String[]{annotation.write()};
 
     var contextClazz = methodHandle.getParameterTypes()[0];
     var responseType = methodHandle.getReturnType();
@@ -97,17 +176,22 @@ public class DynamicInEventJobAopRegistrar implements BeanDefinitionRegistryPost
       throw new MeshineryAopWrongMethodParameterType(methodHandle);
     }
 
+    var connector = provider.getObject();
+
     return MeshineryTaskFactory.<String, MeshineryDataContext>builder()
-        .connector(provider.getObject())
-        .taskName(calculateTaskName(annotation, readEvent))
+        .connector(connector)
+        .taskName(onErrorEvent + onSuccessEvent)
         .putData(List.of(properties))
         .read(readEvent)
-        .process(new AopJobReceiverEventRetryProcessor(
-            methodHandle,
-            unproxiedObject,
-            responseType
-        ))
-        .write(writeEvent)
+        .process(new AopJobReceiverEventRetryProcessor(methodHandle, unproxiedObject, responseType))
+        .exceptionHandler((ctx, exc) -> {
+          if (onErrorEvent != null) {
+            connector.writeOutput(onErrorEvent, ctx, new TaskData());
+            return null;
+          }
+          return ctx;
+        })
+        .write(onSuccessEvent)
         .build();
   }
 
