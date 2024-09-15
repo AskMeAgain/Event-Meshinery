@@ -2,7 +2,6 @@ package io.github.askmeagain.meshinery.aop;
 
 import io.github.askmeagain.meshinery.aop.aspect.DynamicMeshineryReadJobAspect;
 import io.github.askmeagain.meshinery.aop.properties.MeshineryAopProperties;
-import io.github.askmeagain.meshinery.aop.registrar.DynamicInEventJobAopRegistrar;
 import io.github.askmeagain.meshinery.aop.registrar.DynamicInMemoryJobAopRegistrar;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
@@ -31,11 +30,6 @@ public class MeshineryAopAutoConfiguration {
   ) {
     var decoratedSource = MeshineryUtils.applyDecorator(connector, decorators);
     return new DynamicMeshineryReadJobAspect((MeshineryOutputSource<String, MeshineryDataContext>) decoratedSource);
-  }
-
-  @Bean
-  public static DynamicInEventJobAopRegistrar dynamicJobRegistrar(ApplicationContext applicationContext) {
-    return new DynamicInEventJobAopRegistrar(applicationContext);
   }
 
   @Bean

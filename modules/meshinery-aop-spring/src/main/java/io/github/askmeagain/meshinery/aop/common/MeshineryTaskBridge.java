@@ -17,11 +17,10 @@ public @interface MeshineryTaskBridge {
 
   String[] properties() default {};
 
-
   Class<Exception> retryOnException() default Exception.class;
 
-  int retryCount() default -1;
+  int retryCount() default 0;
 
-  boolean inMemoryRetry() default true;
+  RetryType inMemoryRetry() default RetryType.NONE;
 
 }

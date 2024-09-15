@@ -8,7 +8,7 @@ import org.springframework.aop.framework.AopProxyUtils;
 @UtilityClass
 public class MeshineryAopUtils {
 
-  public static String calculateEventName(MeshineryTaskBridge annotation, Method methodHandle, Object unproxiedObject) {
+  public static String calculateNewEventName(MeshineryTaskBridge annotation, Method methodHandle) {
     if (!annotation.event().isEmpty()) {
       return annotation.event();
     }
