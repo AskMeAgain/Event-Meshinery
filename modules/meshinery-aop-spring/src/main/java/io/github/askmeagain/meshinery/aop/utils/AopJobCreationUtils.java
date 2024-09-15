@@ -99,13 +99,23 @@ public class AopJobCreationUtils {
 
     var connector = provider.getObject();
 
+    var name = "aop-" + readEvent + "-" + iteration + "-of-" + annotation.retryCount();
+    if (onErrorEvent == null) {
+      name = "aop-" + onSuccessEvent;
+    }
     return MeshineryTaskFactory.<String, MeshineryDataContext>builder()
         .connector(connector)
-        .taskName("aop-" + onErrorEvent + onSuccessEvent)
+        .taskName(name)
         .putData(List.of(properties))
         .read(readEvent)
         .process(new AopJobReceiverEventRetryProcessor(methodHandle, unproxiedObject, responseType))
         .exceptionHandler((ctx, exc) -> {
+          log.error("{}/{}", iteration, annotation.retryCount());
+          if (annotation.retryCount() == iteration - 1) {
+            //throw new RuntimeException(exc);
+            log.error("returning null");
+            return null;
+          }
           if (onErrorEvent != null) {
             log.info("Retrying {}/{}", iteration, annotation.retryCount());
             connector.writeOutput(onErrorEvent, ctx, new TaskData());
