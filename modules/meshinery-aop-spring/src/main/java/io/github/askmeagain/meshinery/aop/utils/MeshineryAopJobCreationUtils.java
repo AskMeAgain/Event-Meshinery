@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.aop.utils;
 
-import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
+import io.github.askmeagain.meshinery.aop.common.MeshineryAopTask;
 import io.github.askmeagain.meshinery.aop.exception.MeshineryAopWrongMethodParameterType;
 import io.github.askmeagain.meshinery.aop.processor.AopJobReceiverEventRetryProcessor;
 import io.github.askmeagain.meshinery.aop.processor.AopJobReceiverInMemoryRetryProcessor;
@@ -14,14 +14,16 @@ import java.lang.reflect.Method;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.ResolvableType;
 
 @Slf4j
-public class AopJobCreationUtils {
+public class MeshineryAopJobCreationUtils {
 
   public static MeshineryTask<String, MeshineryDataContext> buildInMemoryRetryJob(
       Method methodHandle,
       Object beanInstance,
-      MeshineryTaskBridge annotation,
+      MeshineryAopTask annotation,
       ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider
   ) {
     var unproxiedObject = MeshineryAopUtils.tryUnproxyingObject(beanInstance);
@@ -54,7 +56,7 @@ public class AopJobCreationUtils {
   public static MeshineryTask<String, MeshineryDataContext> buildSimpleJob(
       Method methodHandle,
       Object beanInstance,
-      MeshineryTaskBridge annotation,
+      MeshineryAopTask annotation,
       ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider
   ) {
     var unproxiedObject = MeshineryAopUtils.tryUnproxyingObject(beanInstance);
@@ -84,13 +86,21 @@ public class AopJobCreationUtils {
       String onErrorEvent,
       String onSuccessEvent,
       Method methodHandle,
-      Object unproxiedObject,
-      MeshineryTaskBridge annotation,
-      ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider
+      String proxiedBeanName,
+      ApplicationContext applicationContext,
+      MeshineryAopTask annotation
   ) {
+    var beanInstance = applicationContext.getBean(proxiedBeanName);
+    var unproxiedObject = MeshineryAopUtils.tryUnproxyingObject(beanInstance);
     var properties = annotation.properties();
     var contextClazz = methodHandle.getParameterTypes()[0];
     var responseType = methodHandle.getReturnType();
+    var provider = applicationContext.<MeshinerySourceConnector<String, MeshineryDataContext>>getBeanProvider(
+        ResolvableType.forClassWithGenerics(
+            MeshinerySourceConnector.class,
+            String.class,
+            methodHandle.getParameterTypes()[0]
+        ));
 
     if (!MeshineryDataContext.class.isAssignableFrom(contextClazz)) {
       throw new MeshineryAopWrongMethodParameterType(methodHandle);
@@ -125,7 +135,7 @@ public class AopJobCreationUtils {
         .build();
   }
 
-  private static String calculateTaskName(MeshineryTaskBridge annotation, String readEvent) {
+  private static String calculateTaskName(MeshineryAopTask annotation, String readEvent) {
     return annotation.taskName().isEmpty() ? "aop-" + readEvent.toLowerCase() : annotation.taskName();
   }
 }

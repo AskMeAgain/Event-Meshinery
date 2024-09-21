@@ -1,7 +1,7 @@
-package io.github.askmeagain.meshinery.aop.retry;
+package io.github.askmeagain.meshinery.aop;
 
 import io.github.askmeagain.meshinery.aop.common.EnableMeshineryAop;
-import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
+import io.github.askmeagain.meshinery.aop.common.MeshineryAopTask;
 import io.github.askmeagain.meshinery.aop.common.RetryType;
 import io.github.askmeagain.meshinery.core.EnableMeshinery;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
@@ -26,11 +26,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = {
-    AopRetryTest.E2eAopTestApplication.class,
-    AopRetryTest.AopRetryTestService.class,
-    //AnnotationAwareAspectJAutoProxyCreator.class
-})
+@SpringBootTest(classes = {AopRetryTest.E2eAopTestApplication.class, AopRetryTest.AopRetryTestService.class})
 @TestPropertySource(properties = {
     "meshinery.core.batch-job=true",
     "meshinery.aop.enabled=true",
@@ -64,7 +60,7 @@ public class AopRetryTest extends AbstractLogTestBase {
         .first()
         .extracting(TestContext::getIndex)
         .isEqualTo(1);
-    assertThatLogContainsMessage(output, "It worked!!! abc", "Retrying 2/6");
+    assertThatLogContainsMessage(output, "It worked!!! abc on thread virtual-", "Retrying 2/6");
   }
 
   @Test
@@ -87,19 +83,18 @@ public class AopRetryTest extends AbstractLogTestBase {
         .first()
         .extracting(TestContext::getIndex)
         .isEqualTo(1);
-    assertThatLogContainsMessage(output, "It worked!!! abc", "Retrying 2/6");
+    assertThatLogContainsMessage(output, "It worked!!! abc on thread virtual-", "Retrying 2/6");
   }
 
   @EnableMeshineryAop
   @TestConfiguration
   @EnableMeshinery(connector = {@EnableMeshinery.KeyDataContext(key = String.class, context = TestContext.class)})
   public static class E2eAopTestApplication {
-
     @Bean
     public ExecutorService executorService() {
-      return Executors.newFixedThreadPool(1);
+      var factory = Thread.ofVirtual().name("virtual-", 0).factory();
+      return Executors.newThreadPerTaskExecutor(factory);
     }
-
   }
 
   @Slf4j
@@ -108,7 +103,7 @@ public class AopRetryTest extends AbstractLogTestBase {
 
     private final AtomicInteger flag = new AtomicInteger();
 
-    @MeshineryTaskBridge(write = "retryEnd", retryCount = 6, inMemoryRetry = RetryType.EVENT)
+    @MeshineryAopTask(write = "retryEnd", retryCount = 6, inMemoryRetry = RetryType.EVENT)
     public TestContext retryInEvent(TestContext context) {
       log.info("starting with retry now: {}", context.getId());
       if (flag.incrementAndGet() < 3) {
@@ -120,7 +115,7 @@ public class AopRetryTest extends AbstractLogTestBase {
           .build();
     }
 
-    @MeshineryTaskBridge(write = "retryEnd", retryCount = 6, inMemoryRetry = RetryType.MEMORY)
+    @MeshineryAopTask(write = "retryEnd", retryCount = 6, inMemoryRetry = RetryType.MEMORY)
     public TestContext retryInMemory(TestContext context) {
       log.info("starting with retry now: {}", context.getId());
       if (flag.incrementAndGet() < 3) {
@@ -132,9 +127,9 @@ public class AopRetryTest extends AbstractLogTestBase {
           .build();
     }
 
-    @MeshineryTaskBridge(write = "test-result")
+    @MeshineryAopTask(write = "test-result")
     public TestContext retryEnd(TestContext context) {
-      log.info("It worked!!! {}", context.getId());
+      log.info("It worked!!! {} on thread {}", context.getId(), Thread.currentThread().getName());
       return context;
     }
   }

@@ -20,8 +20,9 @@ public class MeshineryCoreProperties {
   private boolean shutdownOnError = false;
 
   /**
-   * This is used in a hook
+   * This is used in a hook, io.github.askmeagain.meshinery.core.MeshineryAutoConfiguration#shutdownHook
    */
+  //TODO remove this
   private boolean shutdownOnFinished = true;
 
   private boolean startImmediately = true;

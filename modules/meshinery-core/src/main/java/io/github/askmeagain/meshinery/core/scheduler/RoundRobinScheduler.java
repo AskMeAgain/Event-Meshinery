@@ -120,9 +120,7 @@ public class RoundRobinScheduler {
     inputQueue.addAll(fillQueueFromTasks());
     lastInputEntry = Instant.now();
 
-    var queuesHaveWorkTodo = ((!outputQueue.isEmpty() || !inputQueue.isEmpty()));
-
-    while (!executor.isShutdown() && !gracefulShutdownTriggered.get() && queuesHaveWorkTodo) {
+    while (!executor.isShutdown() && !gracefulShutdownTriggered.get()) {
       if (backpressureLimit <= outputQueue.size()) {
         log.info("Waiting because of backpressure");
         Thread.sleep(1000);

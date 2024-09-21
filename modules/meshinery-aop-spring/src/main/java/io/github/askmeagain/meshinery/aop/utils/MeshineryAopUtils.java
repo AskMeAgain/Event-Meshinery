@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.aop.utils;
 
-import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
+import io.github.askmeagain.meshinery.aop.common.MeshineryAopTask;
 import java.lang.reflect.Method;
 import lombok.experimental.UtilityClass;
 import org.springframework.aop.framework.AopProxyUtils;
@@ -8,7 +8,7 @@ import org.springframework.aop.framework.AopProxyUtils;
 @UtilityClass
 public class MeshineryAopUtils {
 
-  public static String calculateNewEventName(MeshineryTaskBridge annotation, Method methodHandle) {
+  public static String calculateNewEventName(MeshineryAopTask annotation, Method methodHandle) {
     if (!annotation.event().isEmpty()) {
       return annotation.event();
     }
