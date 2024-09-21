@@ -1,29 +1,35 @@
 package io.github.askmeagain.meshinery.aop.retry;
 
-import io.github.askmeagain.meshinery.aop.base.AopRetryTestService;
-import io.github.askmeagain.meshinery.aop.base.E2eAopTestApplication;
+import io.github.askmeagain.meshinery.aop.common.EnableMeshineryAop;
+import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
+import io.github.askmeagain.meshinery.aop.common.RetryType;
+import io.github.askmeagain.meshinery.core.EnableMeshinery;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
-import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.AbstractLogTestBase;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.OutputCapture;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestComponent;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = {
-    E2eAopTestApplication.class,
-    AopRetryTestService.class,
-    AnnotationAwareAspectJAutoProxyCreator.class
+    AopRetryTest.E2eAopTestApplication.class,
+    AopRetryTest.AopRetryTestService.class,
+    //AnnotationAwareAspectJAutoProxyCreator.class
 })
 @TestPropertySource(properties = {
     "meshinery.core.batch-job=true",
@@ -71,7 +77,7 @@ public class AopRetryTest extends AbstractLogTestBase {
 
     //Act ------------------------------------------------------------------------------------
     roundRobinScheduler.start();
-    connector.writeOutput("retryInEvent", context, new TaskData());
+    aopRetryTestService.retryInEvent(context);
     var batchJobFinished = executorService.awaitTermination(10_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
@@ -82,5 +88,54 @@ public class AopRetryTest extends AbstractLogTestBase {
         .extracting(TestContext::getIndex)
         .isEqualTo(1);
     assertThatLogContainsMessage(output, "It worked!!! abc", "Retrying 2/6");
+  }
+
+  @EnableMeshineryAop
+  @TestConfiguration
+  @EnableMeshinery(connector = {@EnableMeshinery.KeyDataContext(key = String.class, context = TestContext.class)})
+  public static class E2eAopTestApplication {
+
+    @Bean
+    public ExecutorService executorService() {
+      return Executors.newFixedThreadPool(1);
+    }
+
+  }
+
+  @Slf4j
+  @TestComponent
+  public static class AopRetryTestService {
+
+    private final AtomicInteger flag = new AtomicInteger();
+
+    @MeshineryTaskBridge(write = "retryEnd", retryCount = 6, inMemoryRetry = RetryType.EVENT)
+    public TestContext retryInEvent(TestContext context) {
+      log.info("starting with retry now: {}", context.getId());
+      if (flag.incrementAndGet() < 3) {
+        log.error("error in between");
+        throw new RuntimeException("err");
+      }
+      return context.toBuilder()
+          .index(context.getIndex() + 1)
+          .build();
+    }
+
+    @MeshineryTaskBridge(write = "retryEnd", retryCount = 6, inMemoryRetry = RetryType.MEMORY)
+    public TestContext retryInMemory(TestContext context) {
+      log.info("starting with retry now: {}", context.getId());
+      if (flag.incrementAndGet() < 3) {
+        log.error("error in between");
+        throw new RuntimeException("err");
+      }
+      return context.toBuilder()
+          .index(context.getIndex() + 1)
+          .build();
+    }
+
+    @MeshineryTaskBridge(write = "test-result")
+    public TestContext retryEnd(TestContext context) {
+      log.info("It worked!!! {}", context.getId());
+      return context;
+    }
   }
 }
