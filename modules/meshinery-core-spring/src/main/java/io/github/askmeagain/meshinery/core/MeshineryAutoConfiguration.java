@@ -62,10 +62,8 @@ public class MeshineryAutoConfiguration {
   }
 
   @Bean
-  public static DynamicMemoryConnectorRegistration dynamicMemoryConnectorRegistration(
-      ApplicationContext applicationContext
-  ) {
-    return new DynamicMemoryConnectorRegistration(applicationContext);
+  public static DynamicMemoryConnectorRegistration dynamicMemoryConnectorRegistration(ApplicationContext appContext) {
+    return new DynamicMemoryConnectorRegistration(appContext);
   }
 
   @Bean

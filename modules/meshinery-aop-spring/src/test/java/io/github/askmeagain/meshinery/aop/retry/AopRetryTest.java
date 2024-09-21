@@ -1,16 +1,18 @@
-package io.github.askmeagain.meshinery.aop.e2e;
+package io.github.askmeagain.meshinery.aop.retry;
 
+import io.github.askmeagain.meshinery.aop.base.AopRetryTestService;
 import io.github.askmeagain.meshinery.aop.base.E2eAopTestApplication;
-import io.github.askmeagain.meshinery.aop.base.E2eTestService;
-import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
+import io.github.askmeagain.meshinery.core.task.TaskData;
+import io.github.askmeagain.meshinery.core.utils.AbstractLogTestBase;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
+import io.github.askmeagain.meshinery.core.utils.sources.OutputCapture;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -18,24 +20,27 @@ import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = {E2eAopTestApplication.class, E2eTestService.class})
+@SpringBootTest(classes = {
+    E2eAopTestApplication.class,
+    AopRetryTestService.class,
+    AnnotationAwareAspectJAutoProxyCreator.class
+})
 @TestPropertySource(properties = {
     "meshinery.core.batch-job=true",
     "meshinery.aop.enabled=true",
     "meshinery.core.shutdown-on-finished=false",
     "meshinery.core.start-immediately=false"
 })
-class E2eAopTest {
+public class AopRetryTest extends AbstractLogTestBase {
 
+  @Autowired AopRetryTestService aopRetryTestService;
   @Autowired RoundRobinScheduler roundRobinScheduler;
   @Autowired ExecutorService executorService;
-  @Autowired E2eTestService service;
-  @Autowired MeshinerySourceConnector<String, ? extends MeshineryDataContext> connector;
+  @Autowired MeshinerySourceConnector<String, TestContext> connector;
 
   @Test
   @DirtiesContext
-  @SneakyThrows
-  void test() {
+  void InMemoryRetry(OutputCapture output) throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
     var context = TestContext.builder()
         .id("abc")
@@ -43,18 +48,22 @@ class E2eAopTest {
 
     //Act ------------------------------------------------------------------------------------
     roundRobinScheduler.start();
-    service.executeViaJob(context);
+    aopRetryTestService.retryInMemory(context);
     var batchJobFinished = executorService.awaitTermination(10_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
-    assertThat(connector.getInputs(List.of("test"))).isEmpty();
     assertThat(batchJobFinished).isTrue();
+    assertThat(connector.getInputs(List.of("test-result")))
+        .hasSize(1)
+        .first()
+        .extracting(TestContext::getIndex)
+        .isEqualTo(1);
+    assertThatLogContainsMessage(output, "It worked!!! abc", "Retrying 2/6");
   }
 
   @Test
   @DirtiesContext
-  @SneakyThrows
-  void retryTest() {
+  void InEventRetry(OutputCapture output) throws InterruptedException {
     //Arrange --------------------------------------------------------------------------------
     var context = TestContext.builder()
         .id("abc")
@@ -62,11 +71,16 @@ class E2eAopTest {
 
     //Act ------------------------------------------------------------------------------------
     roundRobinScheduler.start();
-    var response = service.retry3TimesTest(context);
+    connector.writeOutput("retryInEvent", context, new TaskData());
     var batchJobFinished = executorService.awaitTermination(10_000, TimeUnit.MILLISECONDS);
 
     //Assert ---------------------------------------------------------------------------------
-    assertThat(connector.getInputs(List.of("test"))).isEmpty();
     assertThat(batchJobFinished).isTrue();
+    assertThat(connector.getInputs(List.of("test-result")))
+        .hasSize(1)
+        .first()
+        .extracting(TestContext::getIndex)
+        .isEqualTo(1);
+    assertThatLogContainsMessage(output, "It worked!!! abc", "Retrying 2/6");
   }
 }

@@ -220,9 +220,11 @@ public class RoundRobinScheduler {
         var context = run.getContext();
         while (!run.getQueue().isEmpty()) {
           try {
-            context = run.getQueue()
-                .remove()
-                .process(context);
+            var processor = run.getQueue().remove();
+            if (context == null) {
+              break;
+            }
+            context = processor.process(context);
           } catch (Exception e) {
             context = run.getHandleError().apply(context, e);
           }

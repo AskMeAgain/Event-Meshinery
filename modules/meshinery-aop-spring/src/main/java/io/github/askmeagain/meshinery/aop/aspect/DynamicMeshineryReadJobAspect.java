@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.aop.aspect;
 
-import io.github.askmeagain.meshinery.aop.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
+import io.github.askmeagain.meshinery.aop.utils.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.task.TaskData;
@@ -27,6 +27,7 @@ public class DynamicMeshineryReadJobAspect {
     var arg = proceedingJoinPoint.getArgs()[0];
     var event = MeshineryAopUtils.calculateNewEventName(annotation, method);
 
+    log.error("Writing to: {}", event);
     outputSource.writeOutput(event, (MeshineryDataContext) arg, TaskData.ofPropertyList(annotation.properties()));
   }
 }

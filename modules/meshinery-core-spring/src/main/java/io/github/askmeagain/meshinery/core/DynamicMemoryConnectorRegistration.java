@@ -1,7 +1,6 @@
 package io.github.askmeagain.meshinery.core;
 
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
-import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -31,15 +30,14 @@ public class DynamicMemoryConnectorRegistration implements BeanDefinitionRegistr
 
     for (var tuple : beanNamesForAnnotation.entrySet()) {
       var result = applicationContext.findAnnotationOnBean(tuple.getKey(), EnableMeshinery.class);
-      Arrays.stream(result.connector())
-          .forEach(container -> {
-            var beanDefinition = new RootBeanDefinition(
-                MemoryConnector.class,
-                () -> new MemoryConnector<>(getBeanName(container))
-            );
-            beanDefinition.setTargetType(getTargetType(container));
-            registry.registerBeanDefinition(getBeanName(container), beanDefinition);
-          });
+      for (var container : result.connector()) {
+        var beanDefinition = new RootBeanDefinition(
+            MemoryConnector.class,
+            () -> new MemoryConnector<>(getBeanName(container))
+        );
+        beanDefinition.setTargetType(getTargetType(container));
+        registry.registerBeanDefinition(getBeanName(container), beanDefinition);
+      }
     }
   }
 

@@ -1,6 +1,5 @@
 package io.github.askmeagain.meshinery.aop.utils;
 
-import io.github.askmeagain.meshinery.aop.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.aop.common.MeshineryTaskBridge;
 import io.github.askmeagain.meshinery.aop.exception.MeshineryAopWrongMethodParameterType;
 import io.github.askmeagain.meshinery.aop.processor.AopJobReceiverEventRetryProcessor;
@@ -110,7 +109,6 @@ public class AopJobCreationUtils {
         .read(readEvent)
         .process(new AopJobReceiverEventRetryProcessor(methodHandle, unproxiedObject, responseType))
         .exceptionHandler((ctx, exc) -> {
-          log.error("{}/{}", iteration, annotation.retryCount());
           if (annotation.retryCount() == iteration - 1) {
             //throw new RuntimeException(exc);
             log.error("returning null");
