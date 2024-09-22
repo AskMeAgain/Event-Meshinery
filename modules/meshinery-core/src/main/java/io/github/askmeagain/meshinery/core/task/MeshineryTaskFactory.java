@@ -35,6 +35,7 @@ import static io.github.askmeagain.meshinery.core.other.MeshineryUtils.joinEvent
 public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
 
   private List<K> inputKeys;
+  private List<K> outputKeys;
   private String taskName = "default-task-" + hashCode();
   private long backoffTime;
   private MeshineryInputSource<K, C> inputConnector;
@@ -273,9 +274,11 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
   public final MeshineryTaskFactory<K, C> write(K key, Predicate<C> writeIf, MeshineryOutputSource<K, C> outputSource) {
     var newTaskData = taskData.with(TaskDataProperties.GRAPH_OUTPUT_SOURCE, outputSource.getName())
         .with(TaskDataProperties.GRAPH_OUTPUT_KEY, key.toString());
+    outputKeys.add(key);
 
     return addNewProcessor(new DynamicOutputProcessor<>(writeIf, c -> key, outputSource))
         .toBuilder()
+        .outputKeys(outputKeys)
         .taskData(newTaskData)
         .build();
   }
@@ -288,8 +291,10 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
    * @return returns itself for builder pattern
    */
   public final MeshineryTaskFactory<K, C> write(K key, Predicate<C> writeIf) {
+    outputKeys.add(key);
     return addNewProcessor(new DynamicOutputProcessor<>(writeIf, c -> key, outputConnector))
         .toBuilder()
+        .outputKeys(outputKeys)
         .taskData(taskData.with(TaskDataProperties.GRAPH_OUTPUT_KEY, key.toString()))
         .build();
   }
@@ -385,6 +390,7 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
     return new MeshineryTask<>(
         backoffTime,
         inputKeys,
+        outputKeys,
         taskName,
         taskData,
         inputConnector,

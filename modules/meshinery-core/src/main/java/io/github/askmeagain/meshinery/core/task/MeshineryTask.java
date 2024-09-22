@@ -36,6 +36,8 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
   @Getter
   private final List<K> inputKeys;
   @Getter
+  private final List<K> outputKeys;
+  @Getter
   private final String taskName;
   @Getter
   private TaskData taskData;
@@ -77,6 +79,7 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
   public MeshineryTask(
       long backoffTimeMilli,
       List<K> inputKeys,
+      List<K> outputKeys,
       String taskName,
       TaskData taskData,
       MeshineryInputSource<K, C> inputConnector,
@@ -92,6 +95,7 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
 
     this.backoffTimeMilli = backoffTimeMilli;
     this.inputKeys = inputKeys;
+    this.outputKeys = outputKeys;
     this.taskName = taskName;
     this.taskData = taskData;
 

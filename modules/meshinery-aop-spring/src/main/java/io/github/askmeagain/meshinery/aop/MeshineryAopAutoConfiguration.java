@@ -27,11 +27,12 @@ public class MeshineryAopAutoConfiguration {
       List<OutputSourceDecoratorFactory> decorators
   ) {
     var decoratedSource = MeshineryUtils.applyDecorator(connector, decorators);
+
     return new DynamicMeshineryReadJobAspect((MeshineryOutputSource<String, MeshineryDataContext>) decoratedSource);
   }
 
   @Bean
-  public static MeshineryAopJobRegistrar abc(ApplicationContext applicationContext) {
+  public static MeshineryAopJobRegistrar meshineryAopJobRegistrar(ApplicationContext applicationContext) {
     return new MeshineryAopJobRegistrar(applicationContext);
   }
 }

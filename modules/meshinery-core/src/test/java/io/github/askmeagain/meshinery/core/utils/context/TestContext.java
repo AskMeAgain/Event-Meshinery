@@ -17,18 +17,27 @@ public class TestContext implements MeshineryDataContext {
 
   @With String id;
   @With int index;
-
   @Getter(AccessLevel.PRIVATE) Map<String, String> metadata;
+  @With boolean step1;
+  @With boolean step2;
+  @With boolean step3;
+
 
   public TestContext(int index) {
     this.id = String.valueOf(index);
     this.index = index;
+    this.step1 = false;
+    this.step2 = false;
+    this.step3 = false;
     this.metadata = new ConcurrentHashMap<>();
   }
 
-  public TestContext(String id, int index, Map<String, String> map) {
+  public TestContext(String id, int index, Map<String, String> map, boolean step1, boolean step2, boolean step3) {
     this.id = id;
     this.index = index;
+    this.step1 = step1;
+    this.step2 = step2;
+    this.step3 = step3;
     if (map == null) {
       map = new ConcurrentHashMap<>();
     }

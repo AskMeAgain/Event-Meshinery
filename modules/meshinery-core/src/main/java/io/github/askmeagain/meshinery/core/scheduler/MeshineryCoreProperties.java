@@ -22,7 +22,6 @@ public class MeshineryCoreProperties {
   /**
    * This is used in a hook, io.github.askmeagain.meshinery.core.MeshineryAutoConfiguration#shutdownHook
    */
-  //TODO remove this
   private boolean shutdownOnFinished = true;
 
   private boolean startImmediately = true;

@@ -17,7 +17,7 @@ import static org.mockito.ArgumentMatchers.eq;
 class StopIfTest {
 
   public static final String KEY = "Test";
-  public static final TestContext EXPECTED = new TestContext("2", 1, new ConcurrentHashMap<>());
+  public static final TestContext EXPECTED = new TestContext("2", 1, new ConcurrentHashMap<>(), false, false, false);
 
   @Test
   @SuppressWarnings("unchecked")

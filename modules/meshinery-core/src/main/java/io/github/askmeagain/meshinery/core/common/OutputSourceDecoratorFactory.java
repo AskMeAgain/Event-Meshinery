@@ -7,7 +7,7 @@ package io.github.askmeagain.meshinery.core.common;
  */
 public interface OutputSourceDecoratorFactory {
   MeshineryOutputSource<?, ? extends MeshineryDataContext> decorate(
-      MeshineryOutputSource<?, ? extends MeshineryDataContext> inputConnector
+      MeshineryOutputSource<?, ? extends MeshineryDataContext> outputSource
   );
 
 }

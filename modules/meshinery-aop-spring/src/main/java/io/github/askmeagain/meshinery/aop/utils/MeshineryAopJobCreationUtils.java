@@ -47,7 +47,8 @@ public class MeshineryAopJobCreationUtils {
             annotation.retryCount(),
             methodHandle,
             unproxiedObject,
-            responseType
+            responseType,
+            readEvent
         ))
         .write(writeEvent)
         .build();
@@ -75,7 +76,7 @@ public class MeshineryAopJobCreationUtils {
         .taskName(calculateTaskName(annotation, readEvent))
         .putData(List.of(properties))
         .read(readEvent)
-        .process(new AopSimpleJobProcessor(methodHandle, unproxiedObject, responseType))
+        .process(new AopSimpleJobProcessor(methodHandle, unproxiedObject, responseType, readEvent))
         .write(writeEvent)
         .build();
   }
