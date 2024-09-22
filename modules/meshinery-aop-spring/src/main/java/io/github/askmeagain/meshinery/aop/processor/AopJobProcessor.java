@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.aop.processor;
 
+import io.github.askmeagain.meshinery.aop.aspect.DynamicMeshineryReadJobAspect;
 import io.github.askmeagain.meshinery.aop.utils.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
@@ -19,12 +20,20 @@ public class AopJobProcessor implements MeshineryProcessor<MeshineryDataContext,
   @SneakyThrows
   @Override
   public MeshineryDataContext process(MeshineryDataContext context) {
-    return MeshineryAopUtils.executeMethodHandle(
-        context,
-        methodHandle,
-        unproxiedObject,
-        responseType,
-        inputKey
-    );
+    try {
+      return MeshineryAopUtils.executeMethodHandle(
+          context,
+          methodHandle,
+          unproxiedObject,
+          responseType,
+          inputKey
+      );
+    } catch (Exception e) {
+      var future = DynamicMeshineryReadJobAspect.FUTURES.remove(inputKey + "_" + context.getId());
+      if (future != null) {
+        future.completeExceptionally(e);
+      }
+      throw e;
+    }
   }
 }

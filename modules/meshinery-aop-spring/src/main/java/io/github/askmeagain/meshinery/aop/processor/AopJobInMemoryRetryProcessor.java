@@ -1,5 +1,6 @@
 package io.github.askmeagain.meshinery.aop.processor;
 
+import io.github.askmeagain.meshinery.aop.aspect.DynamicMeshineryReadJobAspect;
 import io.github.askmeagain.meshinery.aop.utils.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
@@ -12,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class AopJobInMemoryRetryProcessor implements MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> {
-  private final Class<Exception> retryOnException;
+  private final Class<? extends Exception> retryOnException;
   private final int retryCount;
   private final Method methodHandle;
   private final Object unproxiedObject;
@@ -29,13 +30,23 @@ public class AopJobInMemoryRetryProcessor implements MeshineryProcessor<Meshiner
         return MeshineryAopUtils.executeMethodHandle(context, methodHandle, unproxiedObject, responseType, inputKey);
       } catch (InvocationTargetException e) {
         if (i > retryCount) {
-          throw e;
+          log.error("Retry count reached, killing future exceptionally {}", inputKey);
+          var future = DynamicMeshineryReadJobAspect.FUTURES.get(inputKey + "_" + context.getId());
+          if (future != null) {
+            future.completeExceptionally(e);
+          }
+          throw e.getCause();
         }
         if (retryOnException.isAssignableFrom(e.getTargetException().getClass())) {
           log.error("Retrying {}/{}", i, retryCount, e);
           continue;
         }
-        throw e;
+        log.error("Not right exception type found: {}", inputKey);
+        var future = DynamicMeshineryReadJobAspect.FUTURES.get(inputKey + "_" + context.getId());
+        if (future != null) {
+          future.completeExceptionally(e);
+        }
+        throw e.getCause();
       }
     }
   }

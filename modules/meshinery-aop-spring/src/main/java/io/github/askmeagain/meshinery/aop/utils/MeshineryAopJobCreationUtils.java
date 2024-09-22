@@ -83,6 +83,7 @@ public class MeshineryAopJobCreationUtils {
 
   public static MeshineryTask<String, MeshineryDataContext> buildInEventRetryJob(
       int iteration,
+      String originalInputKey,
       String readEvent,
       String onErrorEvent,
       String onSuccessEvent,
@@ -118,11 +119,9 @@ public class MeshineryAopJobCreationUtils {
         .taskName(name)
         .putData(List.of(properties))
         .read(readEvent)
-        .process(new AopJopEventRetryProcessor(methodHandle, unproxiedObject, responseType, readEvent))
+        .process(new AopJopEventRetryProcessor(methodHandle, unproxiedObject, responseType, originalInputKey))
         .exceptionHandler((ctx, exc) -> {
           if (annotation.retryCount() == iteration - 1) {
-            //throw new RuntimeException(exc);
-            log.error("returning null");
             return null;
           }
           if (onErrorEvent != null) {

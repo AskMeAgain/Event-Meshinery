@@ -2,6 +2,7 @@ package io.github.askmeagain.meshinery.aop;
 
 import io.github.askmeagain.meshinery.aop.common.EnableMeshineryAop;
 import io.github.askmeagain.meshinery.aop.common.MeshineryAopTask;
+import io.github.askmeagain.meshinery.aop.common.RetryMethod;
 import io.github.askmeagain.meshinery.core.EnableMeshinery;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
@@ -100,7 +101,7 @@ class E2eAopTest {
       log.info("executed inside job? " + context.getId());
     }
 
-    @MeshineryAopTask(retryCount = 3)
+    @MeshineryAopTask(retryCount = 3, retryMethod = RetryMethod.MEMORY)
     public TestContext retry3TimesTest(TestContext context) {
       map.computeIfAbsent(context.getId(), k -> new AtomicInteger(0));
       var result = map.get(context.getId()).incrementAndGet();

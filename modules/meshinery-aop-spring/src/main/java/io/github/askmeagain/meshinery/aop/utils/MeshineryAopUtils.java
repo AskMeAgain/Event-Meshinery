@@ -6,9 +6,11 @@ import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopProxyUtils;
 
 @UtilityClass
+@Slf4j
 public class MeshineryAopUtils {
 
   public static String calculateNewEventName(MeshineryAopTask annotation, Method methodHandle) {
@@ -42,6 +44,7 @@ public class MeshineryAopUtils {
       responseCtx = (MeshineryDataContext) responseObj;
     }
 
+    log.error("Looking for key {}", inputKey);
     var future = DynamicMeshineryReadJobAspect.FUTURES.get(key);
     if (future != null) {
       future.complete(responseCtx);

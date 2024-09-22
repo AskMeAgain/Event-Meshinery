@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestComponent;
@@ -25,6 +26,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(classes = {AopRetryTest.E2eAopTestApplication.class, AopRetryTest.AopRetryTestService.class})
 @TestPropertySource(properties = {
@@ -61,6 +63,50 @@ public class AopRetryTest extends AbstractLogTestBase {
         .extracting(TestContext::getIndex)
         .isEqualTo(1);
     assertThatLogContainsMessage(output, "It worked!!! abc on thread virtual-", "Retrying 2/6");
+  }
+
+  @Test
+  @DirtiesContext
+  void onExceptionTypeCatch(OutputCapture output) throws InterruptedException {
+    //Arrange --------------------------------------------------------------------------------
+    var context = TestContext.builder()
+        .id("abc")
+        .build();
+
+    //Act ------------------------------------------------------------------------------------
+    roundRobinScheduler.start();
+    aopRetryTestService.throwSpecificException(context);
+    var batchJobFinished = executorService.awaitTermination(10_000, TimeUnit.MILLISECONDS);
+
+    //Assert ---------------------------------------------------------------------------------
+    assertThat(batchJobFinished).isTrue();
+    assertThat(connector.getInputs(List.of("test-result")))
+        .hasSize(1)
+        .first()
+        .extracting(TestContext::getIndex)
+        .isEqualTo(1);
+    assertThatLogContainsMessage(output, "It worked!!! abc on thread virtual-", "Retrying 2/6");
+  }
+
+  @Test
+  @DirtiesContext
+  void onExceptionTypeCatch_wrongType() throws InterruptedException {
+    //Arrange --------------------------------------------------------------------------------
+    var context = TestContext.builder()
+        .id("abc")
+        .build();
+
+    //Act ------------------------------------------------------------------------------------
+    roundRobinScheduler.start();
+
+    assertThatThrownBy(() -> aopRetryTestService.throwSpecificExceptionWrongType(context))
+        .isInstanceOf(RuntimeException.class)
+        .hasRootCauseInstanceOf(ArithmeticException.class);
+
+    var batchJobFinished = executorService.awaitTermination(10_000, TimeUnit.MILLISECONDS);
+
+    //Assert ---------------------------------------------------------------------------------
+    assertThat(batchJobFinished).isTrue();
   }
 
   @Test
@@ -121,6 +167,40 @@ public class AopRetryTest extends AbstractLogTestBase {
       if (flag.incrementAndGet() < 3) {
         log.error("error in between");
         throw new RuntimeException("err");
+      }
+      return context.toBuilder()
+          .index(context.getIndex() + 1)
+          .build();
+    }
+
+    @MeshineryAopTask(
+        write = "retryEnd",
+        retryOnException = ArithmeticException.class,
+        retryCount = 6,
+        retryMethod = RetryMethod.MEMORY
+    )
+    public TestContext throwSpecificException(TestContext context) {
+      log.info("starting with retry now: {}", context.getId());
+      if (flag.incrementAndGet() < 3) {
+        log.error("error in between");
+        throw new ArithmeticException("err");
+      }
+      return context.toBuilder()
+          .index(context.getIndex() + 1)
+          .build();
+    }
+
+    @MeshineryAopTask(
+        write = "retryEnd",
+        retryOnException = BeanCreationException.class,
+        retryCount = 6,
+        retryMethod = RetryMethod.MEMORY
+    )
+    public TestContext throwSpecificExceptionWrongType(TestContext context) {
+      log.info("starting with retry now: {}", context.getId());
+      if (flag.incrementAndGet() < 3) {
+        log.error("error in between");
+        throw new ArithmeticException("err");
       }
       return context.toBuilder()
           .index(context.getIndex() + 1)

@@ -87,6 +87,7 @@ public class MeshineryAopJobRegistrar implements BeanDefinitionRegistryPostProce
           () -> MeshineryAopJobCreationUtils.buildInEventRetryJob(
               1,
               readEvent,
+              readEvent,
               readEvent + "-0",
               annotation.write(),
               methodHandle,
@@ -103,6 +104,7 @@ public class MeshineryAopJobRegistrar implements BeanDefinitionRegistryPostProce
             MeshineryTask.class,
             () -> MeshineryAopJobCreationUtils.buildInEventRetryJob(
                 finalI + 1,
+                readEvent,
                 readEvent + "-" + (finalI - 1),
                 readEvent + "-" + (finalI),
                 annotation.write(),
@@ -119,6 +121,7 @@ public class MeshineryAopJobRegistrar implements BeanDefinitionRegistryPostProce
           MeshineryTask.class,
           () -> MeshineryAopJobCreationUtils.buildInEventRetryJob(
               annotation.retryCount(),
+              readEvent,
               readEvent + "-" + (annotation.retryCount() - 1),
               null,
               annotation.write(),

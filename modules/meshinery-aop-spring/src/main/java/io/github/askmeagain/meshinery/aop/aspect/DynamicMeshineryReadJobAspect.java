@@ -37,6 +37,7 @@ public class DynamicMeshineryReadJobAspect {
     var future = new CompletableFuture<MeshineryDataContext>();
 
     FUTURES.put(event + "_" + context.getId(), future);
+    log.error("Writing future {}", event);
 
     outputSource.writeOutput(event, context, TaskData.ofPropertyList(annotation.properties()));
 

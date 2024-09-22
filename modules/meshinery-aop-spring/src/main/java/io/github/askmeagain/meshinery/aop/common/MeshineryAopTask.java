@@ -17,7 +17,7 @@ public @interface MeshineryAopTask {
 
   String[] properties() default {};
 
-  Class<Exception> retryOnException() default Exception.class;
+  Class<? extends Exception> retryOnException() default Exception.class;
 
   int retryCount() default 0;
 

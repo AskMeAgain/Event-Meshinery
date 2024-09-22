@@ -9,6 +9,7 @@ import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -66,29 +67,6 @@ class E2eAopNestedMethodExecutionTest {
     assertThat(batchJobFinished).isTrue();
   }
 
-  @Test
-  @DirtiesContext
-  @SneakyThrows
-  void test_2() {
-    //Arrange --------------------------------------------------------------------------------
-    var context = TestContext.builder()
-        .id("abc")
-        .build();
-
-    //Act ------------------------------------------------------------------------------------
-    roundRobinScheduler.start();
-    var result = service.step1(context);
-    var batchJobFinished = executorService.awaitTermination(10_000, TimeUnit.MILLISECONDS);
-
-    //Assert ---------------------------------------------------------------------------------
-    assertThat(result)
-        .returns(true, TestContext::isStep1)
-        .returns(true, TestContext::isStep2)
-        .returns(true, TestContext::isStep4)
-        .returns(true, TestContext::isStep3);
-    assertThat(batchJobFinished).isTrue();
-  }
-
   @EnableMeshineryAop
   @TestConfiguration
   @EnableMeshinery(connector = {@EnableMeshinery.KeyDataContext(key = String.class, context = TestContext.class)})
@@ -120,10 +98,15 @@ class E2eAopNestedMethodExecutionTest {
   @RequiredArgsConstructor
   public static class E2eStep2Service {
     private final E2eStep3Service e2EStep3Service;
+    private final AtomicBoolean atomicBoolean = new AtomicBoolean();
 
-    @MeshineryAopTask
+    @MeshineryAopTask(retryCount = 3, retryMethod = RetryMethod.EVENT)
     public TestContext step2(TestContext context) {
       log.error("Step2");
+      if (!atomicBoolean.get()) {
+        atomicBoolean.set(true);
+        throw new RuntimeException("Arrg");
+      }
       var newContext = context.toBuilder()
           .step2(true)
           .build();
@@ -136,10 +119,15 @@ class E2eAopNestedMethodExecutionTest {
   @RequiredArgsConstructor
   public static class E2eStep3Service {
     private final E2eStep4Service e2EStep4Service;
+    private final AtomicBoolean atomicBoolean = new AtomicBoolean();
 
     @MeshineryAopTask(retryCount = 3, retryMethod = RetryMethod.MEMORY)
     public TestContext step3(TestContext context) {
       log.error("Step3");
+      if (!atomicBoolean.get()) {
+        atomicBoolean.set(true);
+        throw new RuntimeException("Arrg");
+      }
       var newContext = context.toBuilder()
           .step3(true)
           .build();
@@ -150,9 +138,15 @@ class E2eAopNestedMethodExecutionTest {
   @Slf4j
   @TestComponent
   public static class E2eStep4Service {
+    private final AtomicBoolean atomicBoolean = new AtomicBoolean();
+
     @MeshineryAopTask(retryCount = 3, retryMethod = RetryMethod.MEMORY)
     public TestContext step4(TestContext context) {
       log.error("Step4");
+      if (!atomicBoolean.get()) {
+        atomicBoolean.set(true);
+        throw new RuntimeException("Arrg");
+      }
       return context.toBuilder()
           .step4(true)
           .build();
