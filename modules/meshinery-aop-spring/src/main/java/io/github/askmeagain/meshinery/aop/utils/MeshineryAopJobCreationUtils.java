@@ -118,7 +118,7 @@ public class MeshineryAopJobCreationUtils {
         .taskName(name)
         .putData(List.of(properties))
         .read(readEvent)
-        .process(new AopJobReceiverEventRetryProcessor(methodHandle, unproxiedObject, responseType))
+        .process(new AopJobReceiverEventRetryProcessor(methodHandle, unproxiedObject, responseType, readEvent))
         .exceptionHandler((ctx, exc) -> {
           if (annotation.retryCount() == iteration - 1) {
             //throw new RuntimeException(exc);

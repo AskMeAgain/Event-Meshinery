@@ -2,6 +2,7 @@ package io.github.askmeagain.meshinery.aop;
 
 import io.github.askmeagain.meshinery.aop.common.EnableMeshineryAop;
 import io.github.askmeagain.meshinery.aop.common.MeshineryAopTask;
+import io.github.askmeagain.meshinery.aop.common.RetryType;
 import io.github.askmeagain.meshinery.core.EnableMeshinery;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
@@ -27,7 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
         E2eAopNestedMethodExecutionTest.E2eAopTestApplication.class,
         E2eAopNestedMethodExecutionTest.E2eStep1Service.class,
         E2eAopNestedMethodExecutionTest.E2eStep2Service.class,
-        E2eAopNestedMethodExecutionTest.E2eStep3Service.class
+        E2eAopNestedMethodExecutionTest.E2eStep3Service.class,
+        E2eAopNestedMethodExecutionTest.E2eStep4Service.class
     })
 @TestPropertySource(properties = {
     "meshinery.core.batch-job=true",
@@ -59,7 +61,8 @@ class E2eAopNestedMethodExecutionTest {
     assertThat(result)
         .returns(true, TestContext::isStep1)
         .returns(true, TestContext::isStep2)
-        .returns(true, TestContext::isStep3);
+        .returns(true, TestContext::isStep3)
+        .returns(true, TestContext::isStep4);
     assertThat(batchJobFinished).isTrue();
   }
 
@@ -81,6 +84,7 @@ class E2eAopNestedMethodExecutionTest {
     assertThat(result)
         .returns(true, TestContext::isStep1)
         .returns(true, TestContext::isStep2)
+        .returns(true, TestContext::isStep4)
         .returns(true, TestContext::isStep3);
     assertThat(batchJobFinished).isTrue();
   }
@@ -129,12 +133,28 @@ class E2eAopNestedMethodExecutionTest {
 
   @Slf4j
   @TestComponent
+  @RequiredArgsConstructor
   public static class E2eStep3Service {
-    @MeshineryAopTask
+    private final E2eStep4Service e2EStep4Service;
+
+    @MeshineryAopTask(retryCount = 3, retryMethod = RetryType.MEMORY)
     public TestContext step3(TestContext context) {
       log.error("Step3");
-      return context.toBuilder()
+      var newContext = context.toBuilder()
           .step3(true)
+          .build();
+      return e2EStep4Service.step4(newContext);
+    }
+  }
+
+  @Slf4j
+  @TestComponent
+  public static class E2eStep4Service {
+    @MeshineryAopTask(retryCount = 3, retryMethod = RetryType.MEMORY)
+    public TestContext step4(TestContext context) {
+      log.error("Step4");
+      return context.toBuilder()
+          .step4(true)
           .build();
     }
   }

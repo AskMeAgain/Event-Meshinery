@@ -35,7 +35,7 @@ import static io.github.askmeagain.meshinery.core.other.MeshineryUtils.joinEvent
 public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
 
   private List<K> inputKeys;
-  private List<K> outputKeys;
+  private List<K> outputKeys = new ArrayList<>();
   private String taskName = "default-task-" + hashCode();
   private long backoffTime;
   private MeshineryInputSource<K, C> inputConnector;
@@ -59,7 +59,8 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
       String name,
       MeshineryInputSource<K, C> inputConnector,
       MeshineryOutputSource<K, C> outputConnector,
-      List<K> eventKeys,
+      List<K> inputKeys,
+      List<K> outputKeys,
       TaskData taskData,
       BiFunction<C, Throwable, C> handleException,
       long backoffTime
@@ -72,7 +73,8 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
     this.processorList = newProcessorList;
     this.inputConnector = inputConnector;
     this.outputConnector = outputConnector;
-    this.inputKeys = eventKeys;
+    this.inputKeys = inputKeys;
+    this.outputKeys = outputKeys;
     this.taskData = taskData;
     this.handleException = handleException;
   }
@@ -375,6 +377,7 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
         inputConnector,
         outputConnector,
         inputKeys,
+        outputKeys,
         taskData,
         handleException,
         backoffTime

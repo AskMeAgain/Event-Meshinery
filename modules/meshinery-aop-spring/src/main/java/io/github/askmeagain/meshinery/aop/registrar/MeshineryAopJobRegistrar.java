@@ -65,7 +65,7 @@ public class MeshineryAopJobRegistrar implements BeanDefinitionRegistryPostProce
 
     var beans = new HashMap<String, RootBeanDefinition>();
 
-    if (annotation.inMemoryRetry() == RetryType.MEMORY) {
+    if (annotation.retryMethod() == RetryType.MEMORY) {
       var beanDefinition = new RootBeanDefinition(
           MeshineryTask.class,
           () -> MeshineryAopJobCreationUtils.buildInMemoryRetryJob(
@@ -80,7 +80,7 @@ public class MeshineryAopJobRegistrar implements BeanDefinitionRegistryPostProce
           )
       );
       beans.put(newBeanName, beanDefinition);
-    } else if (annotation.inMemoryRetry() == RetryType.EVENT) {
+    } else if (annotation.retryMethod() == RetryType.EVENT) {
       var readEvent = MeshineryAopUtils.calculateNewEventName(annotation, methodHandle);
       var beginningJob = new RootBeanDefinition(
           MeshineryTask.class,

@@ -103,7 +103,7 @@ public class AopRetryTest extends AbstractLogTestBase {
 
     private final AtomicInteger flag = new AtomicInteger();
 
-    @MeshineryAopTask(write = "retryEnd", retryCount = 6, inMemoryRetry = RetryType.EVENT)
+    @MeshineryAopTask(write = "retryEnd", retryCount = 6, retryMethod = RetryType.EVENT)
     public TestContext retryInEvent(TestContext context) {
       log.info("starting with retry now: {}", context.getId());
       if (flag.incrementAndGet() < 3) {
@@ -115,7 +115,7 @@ public class AopRetryTest extends AbstractLogTestBase {
           .build();
     }
 
-    @MeshineryAopTask(write = "retryEnd", retryCount = 6, inMemoryRetry = RetryType.MEMORY)
+    @MeshineryAopTask(write = "retryEnd", retryCount = 6, retryMethod = RetryType.MEMORY)
     public TestContext retryInMemory(TestContext context) {
       log.info("starting with retry now: {}", context.getId());
       if (flag.incrementAndGet() < 3) {

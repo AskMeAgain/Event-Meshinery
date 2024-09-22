@@ -21,6 +21,7 @@ public class TestContext implements MeshineryDataContext {
   @With boolean step1;
   @With boolean step2;
   @With boolean step3;
+  @With boolean step4;
 
 
   public TestContext(int index) {
@@ -29,15 +30,25 @@ public class TestContext implements MeshineryDataContext {
     this.step1 = false;
     this.step2 = false;
     this.step3 = false;
+    this.step4 = false;
     this.metadata = new ConcurrentHashMap<>();
   }
 
-  public TestContext(String id, int index, Map<String, String> map, boolean step1, boolean step2, boolean step3) {
+  public TestContext(
+      String id,
+      int index,
+      Map<String, String> map,
+      boolean step1,
+      boolean step2,
+      boolean step3,
+      boolean step4
+  ) {
     this.id = id;
     this.index = index;
     this.step1 = step1;
     this.step2 = step2;
     this.step3 = step3;
+    this.step4 = step4;
     if (map == null) {
       map = new ConcurrentHashMap<>();
     }
