@@ -10,7 +10,7 @@ public enum RetryMethod {
    */
   MEMORY,
   /**
-   * Uses internal event queue for retry. Will create new events & jobs internally
+   * Uses internal event queue for retry. Will create new events and jobs internally
    */
   EVENT,
   /**
