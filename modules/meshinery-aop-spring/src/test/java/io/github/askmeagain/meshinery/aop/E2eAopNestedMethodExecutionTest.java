@@ -2,7 +2,7 @@ package io.github.askmeagain.meshinery.aop;
 
 import io.github.askmeagain.meshinery.aop.common.EnableMeshineryAop;
 import io.github.askmeagain.meshinery.aop.common.MeshineryAopTask;
-import io.github.askmeagain.meshinery.aop.common.RetryType;
+import io.github.askmeagain.meshinery.aop.common.RetryMethod;
 import io.github.askmeagain.meshinery.core.EnableMeshinery;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
@@ -137,7 +137,7 @@ class E2eAopNestedMethodExecutionTest {
   public static class E2eStep3Service {
     private final E2eStep4Service e2EStep4Service;
 
-    @MeshineryAopTask(retryCount = 3, retryMethod = RetryType.MEMORY)
+    @MeshineryAopTask(retryCount = 3, retryMethod = RetryMethod.MEMORY)
     public TestContext step3(TestContext context) {
       log.error("Step3");
       var newContext = context.toBuilder()
@@ -150,7 +150,7 @@ class E2eAopNestedMethodExecutionTest {
   @Slf4j
   @TestComponent
   public static class E2eStep4Service {
-    @MeshineryAopTask(retryCount = 3, retryMethod = RetryType.MEMORY)
+    @MeshineryAopTask(retryCount = 3, retryMethod = RetryMethod.MEMORY)
     public TestContext step4(TestContext context) {
       log.error("Step4");
       return context.toBuilder()

@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.aop.registrar;
 
 import io.github.askmeagain.meshinery.aop.common.MeshineryAopTask;
-import io.github.askmeagain.meshinery.aop.common.RetryType;
+import io.github.askmeagain.meshinery.aop.common.RetryMethod;
 import io.github.askmeagain.meshinery.aop.utils.MeshineryAopJobCreationUtils;
 import io.github.askmeagain.meshinery.aop.utils.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
@@ -65,7 +65,7 @@ public class MeshineryAopJobRegistrar implements BeanDefinitionRegistryPostProce
 
     var beans = new HashMap<String, RootBeanDefinition>();
 
-    if (annotation.retryMethod() == RetryType.MEMORY) {
+    if (annotation.retryMethod() == RetryMethod.MEMORY) {
       var beanDefinition = new RootBeanDefinition(
           MeshineryTask.class,
           () -> MeshineryAopJobCreationUtils.buildInMemoryRetryJob(
@@ -80,7 +80,7 @@ public class MeshineryAopJobRegistrar implements BeanDefinitionRegistryPostProce
           )
       );
       beans.put(newBeanName, beanDefinition);
-    } else if (annotation.retryMethod() == RetryType.EVENT) {
+    } else if (annotation.retryMethod() == RetryMethod.EVENT) {
       var readEvent = MeshineryAopUtils.calculateNewEventName(annotation, methodHandle);
       var beginningJob = new RootBeanDefinition(
           MeshineryTask.class,

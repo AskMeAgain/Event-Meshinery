@@ -2,9 +2,9 @@ package io.github.askmeagain.meshinery.aop.utils;
 
 import io.github.askmeagain.meshinery.aop.common.MeshineryAopTask;
 import io.github.askmeagain.meshinery.aop.exception.MeshineryAopWrongMethodParameterType;
-import io.github.askmeagain.meshinery.aop.processor.AopJobReceiverEventRetryProcessor;
-import io.github.askmeagain.meshinery.aop.processor.AopJobReceiverInMemoryRetryProcessor;
-import io.github.askmeagain.meshinery.aop.processor.AopSimpleJobProcessor;
+import io.github.askmeagain.meshinery.aop.processor.AopJobInMemoryRetryProcessor;
+import io.github.askmeagain.meshinery.aop.processor.AopJobProcessor;
+import io.github.askmeagain.meshinery.aop.processor.AopJopEventRetryProcessor;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
@@ -42,7 +42,7 @@ public class MeshineryAopJobCreationUtils {
         .taskName(calculateTaskName(annotation, readEvent))
         .putData(List.of(properties))
         .read(readEvent)
-        .process(new AopJobReceiverInMemoryRetryProcessor(
+        .process(new AopJobInMemoryRetryProcessor(
             annotation.retryOnException(),
             annotation.retryCount(),
             methodHandle,
@@ -76,7 +76,7 @@ public class MeshineryAopJobCreationUtils {
         .taskName(calculateTaskName(annotation, readEvent))
         .putData(List.of(properties))
         .read(readEvent)
-        .process(new AopSimpleJobProcessor(methodHandle, unproxiedObject, responseType, readEvent))
+        .process(new AopJobProcessor(methodHandle, unproxiedObject, responseType, readEvent))
         .write(writeEvent)
         .build();
   }
@@ -118,7 +118,7 @@ public class MeshineryAopJobCreationUtils {
         .taskName(name)
         .putData(List.of(properties))
         .read(readEvent)
-        .process(new AopJobReceiverEventRetryProcessor(methodHandle, unproxiedObject, responseType, readEvent))
+        .process(new AopJopEventRetryProcessor(methodHandle, unproxiedObject, responseType, readEvent))
         .exceptionHandler((ctx, exc) -> {
           if (annotation.retryCount() == iteration - 1) {
             //throw new RuntimeException(exc);

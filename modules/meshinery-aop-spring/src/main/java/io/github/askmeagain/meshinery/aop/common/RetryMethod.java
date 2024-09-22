@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.aop.common;
 
-public enum RetryType {
+public enum RetryMethod {
 
   MEMORY,
   EVENT,

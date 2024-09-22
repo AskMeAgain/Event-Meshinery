@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.aop.processor;
 
-import io.github.askmeagain.meshinery.aop.aspect.DynamicMeshineryReadJobAspect;
+import io.github.askmeagain.meshinery.aop.utils.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import java.lang.reflect.InvocationTargetException;
@@ -11,8 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class AopJobReceiverInMemoryRetryProcessor
-    implements MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> {
+public class AopJobInMemoryRetryProcessor implements MeshineryProcessor<MeshineryDataContext, MeshineryDataContext> {
   private final Class<Exception> retryOnException;
   private final int retryCount;
   private final Method methodHandle;
@@ -27,7 +26,7 @@ public class AopJobReceiverInMemoryRetryProcessor
     while (true) {
       i++;
       try {
-        return executeMethod(context);
+        return MeshineryAopUtils.executeMethodHandle(context, methodHandle, unproxiedObject, responseType, inputKey);
       } catch (InvocationTargetException e) {
         if (i > retryCount) {
           throw e;
@@ -38,21 +37,6 @@ public class AopJobReceiverInMemoryRetryProcessor
         }
         throw e;
       }
-    }
-  }
-
-  private MeshineryDataContext executeMethod(MeshineryDataContext context)
-      throws InvocationTargetException, IllegalAccessException {
-    var responseObj = methodHandle.invoke(unproxiedObject, context);
-    if (MeshineryDataContext.class.isAssignableFrom(responseType)) {
-      var future = DynamicMeshineryReadJobAspect.FUTURES.get(inputKey + "_" + context.getId());
-      var responseCtx = (MeshineryDataContext) responseObj;
-      if (future != null) {
-        future.complete(responseCtx);
-      }
-      return responseCtx;
-    } else {
-      return null;
     }
   }
 }

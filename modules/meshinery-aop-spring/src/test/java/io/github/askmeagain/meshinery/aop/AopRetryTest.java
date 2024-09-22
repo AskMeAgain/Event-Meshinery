@@ -2,7 +2,7 @@ package io.github.askmeagain.meshinery.aop;
 
 import io.github.askmeagain.meshinery.aop.common.EnableMeshineryAop;
 import io.github.askmeagain.meshinery.aop.common.MeshineryAopTask;
-import io.github.askmeagain.meshinery.aop.common.RetryType;
+import io.github.askmeagain.meshinery.aop.common.RetryMethod;
 import io.github.askmeagain.meshinery.core.EnableMeshinery;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
@@ -103,7 +103,7 @@ public class AopRetryTest extends AbstractLogTestBase {
 
     private final AtomicInteger flag = new AtomicInteger();
 
-    @MeshineryAopTask(write = "retryEnd", retryCount = 6, retryMethod = RetryType.EVENT)
+    @MeshineryAopTask(write = "retryEnd", retryCount = 6, retryMethod = RetryMethod.EVENT)
     public TestContext retryInEvent(TestContext context) {
       log.info("starting with retry now: {}", context.getId());
       if (flag.incrementAndGet() < 3) {
@@ -115,7 +115,7 @@ public class AopRetryTest extends AbstractLogTestBase {
           .build();
     }
 
-    @MeshineryAopTask(write = "retryEnd", retryCount = 6, retryMethod = RetryType.MEMORY)
+    @MeshineryAopTask(write = "retryEnd", retryCount = 6, retryMethod = RetryMethod.MEMORY)
     public TestContext retryInMemory(TestContext context) {
       log.info("starting with retry now: {}", context.getId());
       if (flag.incrementAndGet() < 3) {

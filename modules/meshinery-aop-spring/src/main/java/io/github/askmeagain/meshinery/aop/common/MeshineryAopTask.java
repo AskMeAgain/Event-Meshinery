@@ -21,6 +21,6 @@ public @interface MeshineryAopTask {
 
   int retryCount() default 0;
 
-  RetryType retryMethod() default RetryType.NONE;
+  RetryMethod retryMethod() default RetryMethod.NONE;
 
 }
