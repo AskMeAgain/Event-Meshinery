@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.aop.utils;
 
-import io.github.askmeagain.meshinery.aop.aspect.DynamicMeshineryReadJobAspect;
 import io.github.askmeagain.meshinery.aop.common.MeshineryAopTask;
+import io.github.askmeagain.meshinery.aop.config.AopFutureHolderService;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,7 +33,8 @@ public class MeshineryAopUtils {
       Method methodHandle,
       Object unproxiedObject,
       Class<?> responseType,
-      String inputKey
+      String inputKey,
+      AopFutureHolderService aopFutureHolderService
   ) throws IllegalAccessException, InvocationTargetException {
 
     var responseObj = methodHandle.invoke(unproxiedObject, context);
@@ -44,8 +45,8 @@ public class MeshineryAopUtils {
       responseCtx = (MeshineryDataContext) responseObj;
     }
 
-    log.error("Looking for key {}", inputKey);
-    var future = DynamicMeshineryReadJobAspect.FUTURES.get(key);
+    log.trace("Looking for inputKey {}", inputKey);
+    var future = aopFutureHolderService.getFuture(key);
     if (future != null) {
       future.complete(responseCtx);
     }

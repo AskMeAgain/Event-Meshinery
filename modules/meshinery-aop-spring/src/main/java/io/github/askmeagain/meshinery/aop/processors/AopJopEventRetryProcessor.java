@@ -1,5 +1,6 @@
-package io.github.askmeagain.meshinery.aop.processor;
+package io.github.askmeagain.meshinery.aop.processors;
 
+import io.github.askmeagain.meshinery.aop.config.AopFutureHolderService;
 import io.github.askmeagain.meshinery.aop.utils.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
@@ -15,10 +16,18 @@ public class AopJopEventRetryProcessor implements MeshineryProcessor<MeshineryDa
   private final Object unproxiedObject;
   private final Class<?> responseType;
   private final String inputKey;
+  private final AopFutureHolderService aopFutureHolderService;
 
   @SneakyThrows
   @Override
   public MeshineryDataContext process(MeshineryDataContext context) {
-    return MeshineryAopUtils.executeMethodHandle(context, methodHandle, unproxiedObject, responseType, inputKey);
+    return MeshineryAopUtils.executeMethodHandle(
+        context,
+        methodHandle,
+        unproxiedObject,
+        responseType,
+        inputKey,
+        aopFutureHolderService
+    );
   }
 }

@@ -2,6 +2,7 @@ package io.github.askmeagain.meshinery.aop.registrar;
 
 import io.github.askmeagain.meshinery.aop.common.MeshineryAopTask;
 import io.github.askmeagain.meshinery.aop.common.RetryMethod;
+import io.github.askmeagain.meshinery.aop.config.AopFutureHolderService;
 import io.github.askmeagain.meshinery.aop.utils.MeshineryAopJobCreationUtils;
 import io.github.askmeagain.meshinery.aop.utils.MeshineryAopUtils;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
@@ -26,6 +27,7 @@ import org.springframework.core.ResolvableType;
 public class MeshineryAopJobRegistrar implements BeanDefinitionRegistryPostProcessor {
 
   private final ApplicationContext applicationContext;
+  private final AopFutureHolderService aopFutureHolderService;
 
   private static ResolvableType getTargetType(Class<?> contextClazz) {
     return ResolvableType.forClassWithGenerics(MeshineryTask.class, String.class, contextClazz);
@@ -76,7 +78,8 @@ public class MeshineryAopJobRegistrar implements BeanDefinitionRegistryPostProce
                   MeshinerySourceConnector.class,
                   String.class,
                   methodHandle.getParameterTypes()[0]
-              ))
+              )),
+              aopFutureHolderService
           )
       );
       beans.put(newBeanName, beanDefinition);
@@ -93,7 +96,8 @@ public class MeshineryAopJobRegistrar implements BeanDefinitionRegistryPostProce
               methodHandle,
               proxiedBeanName,
               applicationContext,
-              annotation
+              annotation,
+              aopFutureHolderService
           )
       );
       beans.put(newBeanName + "-0", beginningJob);
@@ -111,7 +115,8 @@ public class MeshineryAopJobRegistrar implements BeanDefinitionRegistryPostProce
                 methodHandle,
                 proxiedBeanName,
                 applicationContext,
-                annotation
+                annotation,
+                aopFutureHolderService
             )
         );
         beans.put(newBeanName + "-retry-" + i, intermediateJob);
@@ -128,7 +133,8 @@ public class MeshineryAopJobRegistrar implements BeanDefinitionRegistryPostProce
               methodHandle,
               proxiedBeanName,
               applicationContext,
-              annotation
+              annotation,
+              aopFutureHolderService
           )
       );
       beans.put(newBeanName + "-end", endJob);
@@ -143,7 +149,8 @@ public class MeshineryAopJobRegistrar implements BeanDefinitionRegistryPostProce
                   MeshinerySourceConnector.class,
                   String.class,
                   methodHandle.getParameterTypes()[0]
-              ))
+              )),
+              aopFutureHolderService
           )
       );
       beans.put(newBeanName, beanDefinition);

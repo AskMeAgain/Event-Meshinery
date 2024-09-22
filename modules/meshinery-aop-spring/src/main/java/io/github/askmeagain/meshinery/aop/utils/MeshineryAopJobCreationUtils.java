@@ -1,10 +1,11 @@
 package io.github.askmeagain.meshinery.aop.utils;
 
 import io.github.askmeagain.meshinery.aop.common.MeshineryAopTask;
+import io.github.askmeagain.meshinery.aop.config.AopFutureHolderService;
 import io.github.askmeagain.meshinery.aop.exception.MeshineryAopWrongMethodParameterType;
-import io.github.askmeagain.meshinery.aop.processor.AopJobInMemoryRetryProcessor;
-import io.github.askmeagain.meshinery.aop.processor.AopJobProcessor;
-import io.github.askmeagain.meshinery.aop.processor.AopJopEventRetryProcessor;
+import io.github.askmeagain.meshinery.aop.processors.AopJobMemoryRetryProcessor;
+import io.github.askmeagain.meshinery.aop.processors.AopJobNoRetryProcessor;
+import io.github.askmeagain.meshinery.aop.processors.AopJopEventRetryProcessor;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
@@ -24,7 +25,8 @@ public class MeshineryAopJobCreationUtils {
       Method methodHandle,
       Object beanInstance,
       MeshineryAopTask annotation,
-      ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider
+      ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider,
+      AopFutureHolderService aopFutureHolderService
   ) {
     var unproxiedObject = MeshineryAopUtils.tryUnproxyingObject(beanInstance);
     var properties = annotation.properties();
@@ -42,13 +44,14 @@ public class MeshineryAopJobCreationUtils {
         .taskName(calculateTaskName(annotation, readEvent))
         .putData(List.of(properties))
         .read(readEvent)
-        .process(new AopJobInMemoryRetryProcessor(
+        .process(new AopJobMemoryRetryProcessor(
             annotation.retryOnException(),
             annotation.retryCount(),
             methodHandle,
             unproxiedObject,
             responseType,
-            readEvent
+            readEvent,
+            aopFutureHolderService
         ))
         .write(writeEvent)
         .build();
@@ -58,7 +61,8 @@ public class MeshineryAopJobCreationUtils {
       Method methodHandle,
       Object beanInstance,
       MeshineryAopTask annotation,
-      ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider
+      ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider,
+      AopFutureHolderService aopFutureHolderService
   ) {
     var unproxiedObject = MeshineryAopUtils.tryUnproxyingObject(beanInstance);
     var properties = annotation.properties();
@@ -76,7 +80,8 @@ public class MeshineryAopJobCreationUtils {
         .taskName(calculateTaskName(annotation, readEvent))
         .putData(List.of(properties))
         .read(readEvent)
-        .process(new AopJobProcessor(methodHandle, unproxiedObject, responseType, readEvent))
+        .process(
+            new AopJobNoRetryProcessor(methodHandle, unproxiedObject, responseType, readEvent, aopFutureHolderService))
         .write(writeEvent)
         .build();
   }
@@ -90,7 +95,8 @@ public class MeshineryAopJobCreationUtils {
       Method methodHandle,
       String proxiedBeanName,
       ApplicationContext applicationContext,
-      MeshineryAopTask annotation
+      MeshineryAopTask annotation,
+      AopFutureHolderService aopFutureHolderService
   ) {
     var beanInstance = applicationContext.getBean(proxiedBeanName);
     var unproxiedObject = MeshineryAopUtils.tryUnproxyingObject(beanInstance);
@@ -119,7 +125,8 @@ public class MeshineryAopJobCreationUtils {
         .taskName(name)
         .putData(List.of(properties))
         .read(readEvent)
-        .process(new AopJopEventRetryProcessor(methodHandle, unproxiedObject, responseType, originalInputKey))
+        .process(new AopJopEventRetryProcessor(methodHandle, unproxiedObject, responseType, originalInputKey,
+            aopFutureHolderService))
         .exceptionHandler((ctx, exc) -> {
           if (annotation.retryCount() == iteration - 1) {
             return null;
