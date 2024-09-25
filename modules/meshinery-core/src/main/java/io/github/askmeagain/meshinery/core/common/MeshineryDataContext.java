@@ -13,7 +13,7 @@ public interface MeshineryDataContext {
   String getId();
 
   /**
-   * Returns the metadata value for a given key
+   * Returns the metadata value for a given key.
    *
    * @param key the key
    * @return returns the value if found, returns null if it doesnt
@@ -21,7 +21,7 @@ public interface MeshineryDataContext {
   String getMetadata(String key);
 
   /**
-   * Add key/value to metadata for each context
+   * Add key/value to metadata for each context.
    * @param key metadata key
    * @param value metadata value
    * @return returns a new version with the updated metadata

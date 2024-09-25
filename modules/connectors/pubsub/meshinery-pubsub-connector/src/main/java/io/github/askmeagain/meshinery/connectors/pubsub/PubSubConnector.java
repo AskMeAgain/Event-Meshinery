@@ -71,21 +71,47 @@ public class PubSubConnector<C extends MeshineryDataContext>
     );
   }
 
+  /**
+   * Commits the given context to google pubsub
+   *
+   * @param context
+   * @return
+   */
   @Override
   public C commit(C context) {
     return pubsubInputSource.commit(context);
   }
 
+  /**
+   * write a given message into a pubsub queue
+   *
+   * @param key      name of the input event. Uses
+   *                 the io.github.askmeagain.meshinery.connectors.pubsub.nameresolver.PubSubNameResolver.java
+   *                 class to resolve the event key to a subscription name
+   * @param output   the context
+   * @param taskData task data used for the pubsub source
+   */
   @Override
   public void writeOutput(String key, C output, TaskData taskData) {
     pubsubOutputSource.writeOutput(key, output, taskData);
   }
 
+  /**
+   * Given a list of input keys, will return a list of unprocessed contexts
+   *
+   * @param keys keys to be used
+   * @return list of unprocessed contexts
+   */
   @Override
   public List<C> getInputs(List<String> keys) {
     return pubsubInputSource.getInputs(keys);
   }
 
+  /**
+   * cleanup of the source
+   *
+   * @throws Exception
+   */
   @Override
   public void close() throws Exception {
     pubsubOutputSource.close();

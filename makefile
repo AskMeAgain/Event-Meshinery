@@ -4,6 +4,9 @@ test: ## run all tests
 publish-local: ## publish lib locally for testing
 	./gradlew publishToMavenLocal
 
+checkstyle:
+	./gradlew checkstyle
+
 help: ## show this help
 	@sed -ne "s/^##\(.*\)/\1/p" $(MAKEFILE_LIST)
 	@printf "────────────────────────`tput bold``tput setaf 2` Make Commands `tput sgr0`────────────────────────────────\n"

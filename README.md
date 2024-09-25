@@ -34,10 +34,11 @@ It is used as a way to **signal** the next processing step in your application, 
 behaviour. You describe the event and the resulting processing task, the framework will route the work to each
 processing step
 
-It can connect any event/signal imaginable with any processing task and any state store, all with an **asynchronous**
-api to make sure that your events are processed as fast as possible.
+It can connect any event/signal imaginable with any processing task and run on any state store,
+all with an **asynchronous** api to make sure that your events are processed as fast as possible.
 
-**Event-Meshinery assumes that the restricting resource is time/network io and **not** processing power or throughput.**
+The Event-Meshinery framework assumes that the restricting resource is
+time/network io and **not** processing power or throughput.
 
 ## Motivation <a name="Motivation"></a>
 
@@ -45,14 +46,15 @@ Doing long running (blocking) procedures (rest calls for example)
 via [Kafka Streams](https://kafka.apache.org/documentation/streams/) represents a challenge:
 
 **If you block a partition with a long running call, then you cannot process any other messages from this partition
-until the processing is unblocked.**
+until the processing is unblocked.** And since a thread is pinned to multiple partitions of different topics,
+these partitions are also blocked.
 
 This means that you can only scale in Kafka Streams as far as your Kafka Cluster (Partition count) allows:
 If your Kafka Cluster has 32 Partitions per topic, you can only have a max number of 32 running threads and can only run
 32 stream processor/message processing in parallel (for this topic).
 **Doing a restcall will block that partition for all other events.**
 
-To solve this problem, the Event-Meshinery framework removes a guarantee:
+To solve this problem, the Event-Meshinery framework removes a kafka stream guarantee:
 
 **Messages in a partition are not processed in order, but processed as they arrive.**
 
@@ -66,7 +68,7 @@ different state store), you are on your own. This framework is exactly for this 
 independent way.
 
 This framework was originally written to replace KafkaStreams in a specific usecase, but you can use this framework
-without Kafka.
+without Kafka (postgres, mysql, pubsub, anything is possible)
 
 ## Advantages of Event-Meshinery <a name="Advantages"></a>
 
@@ -119,9 +121,9 @@ without Kafka.
 
 The general building blocks of this framework consist of 5 ideas:
 
+* [DataContext](#Context)
 * [MeshineryProcessor](#Processor)
 * [MeshineryTask](#Task)
-* [DataContext](#Context)
 * [RoundRobinScheduler](#Scheduler)
 * [Input/OutputSources](#Sources)
 
@@ -129,7 +131,8 @@ The general building blocks of this framework consist of 5 ideas:
 
 [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-DataContext)
 
-A datacontext is literally the DTO which is passed between tasks/processors. Its the message body if you will.
+A datacontext is literally the DTO which is passed between tasks/processors.
+Its the message body if you will.
 
     public class TestContext implements DataContext {
         String id;
@@ -139,37 +142,36 @@ A datacontext is literally the DTO which is passed between tasks/processors. Its
     }
 
 The idea is that multiple Tasks all use the same dataContext, but enrich the data by putting their result
-additively to the context. You dont need to handle millions of dtos for each event, just 1 for each Business Case.
+**additively** to the context. You dont need to handle millions of dtos for each event, just 1 for each Business Case.
 
 If you add another task at the end of the processing pipeline, you have access to all the data which got processed
 before.
 
-**Each state store also contains a step by step log on how each context got filled**
+Resulting in: **Each state store also contains a step by step log on how each context got filled**
 
 ### Meshinery Processors <a name="Processor"></a>
 
 [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Processor)
 
-Meshinery Processors define the actual business work, like doing restcalls, calculating user information etc. They take
-in a DataContext and a thread Executor and return a **CompletableFuture**.
-You read data from the context, which was passed from an earlier processor, then do your computation, write the result
-back into the context for other processors downstream to use.
+Meshinery Processors define the actual business work, like doing restcalls,
+calculating user information etc. They take
+in a DataContext return a context.
+You read data from the context, which was passed from an earlier processor, then do your computation,
+write the result back into the context for other processors downstream to use.
 
     public class LongRunningRestcallProcessor implements MeshineryProcessor<TestContext, TestContext> {
     
         @Override
-        public CompletableFuture<TestContext> processAsync(TestContext context, Executor executor) {
-            return CompletableFuture.supplyAsync(() -> {
-            
-                var response = thisIsASuperLongRestCall(); //restcall is asynchronously called in the context of the app
-            
-                return context.toBuilder()
-                  .restCallResponseId(response.getId())
-                  .superImportantValue(response.getImportantValue())
-                  .build();
-            }, executor); //running on this thread executor
+        public TestContext process(TestContext context) {          //this is executed asynchronously
+            var response = thisIsASuperLongRestCall();             //some network io
+            return context.toBuilder()                             //enriching the existing executor
+              .restCallResponseId(response.getId())
+              .superImportantValue(response.getImportantValue())
+              .build();
         }
     }
+
+This code is completely async executed on the Scheduler
 
 ### MeshineryTasks <a name="Task"></a>
 
@@ -183,34 +185,30 @@ An input source takes an eventkey, which gets fed to the inputsource to produce 
 processors and multiple output sources, which spawn more events.
 
     var meshineryTask = MeshineryTaskFactory.<String, TestContext>builder()
-        .read("event-a", executorService) //Input event name & thread config
-        .outputSource(outputSource) //Kafka output source for example 
-        .process(processorA) //Processing step
-        .write("event-b") //Event "event-b" put to Kafka topic "event-b" with the result of processorA
-        .process(processorB) //Another Processing step
-        .write("event-c") //Event "event-c" put to Kafka topic "event-c with the result of processorB
+        .read("event-a", executorService)      //Input event name & thread config
+        .outputSource(outputSource)            //Kafka output source for example 
+        .process(processorA)                   //Processing step
+        .write("event-b")                      //Event "event-b" put to Kafka topic "event-b" with the result of processorA
+        .process(processorB)                   //Another Processing step
+        .write("event-c")                      //Event "event-c" put to Kafka topic "event-c with the result of processorB
         .build();
 
 A task can have any amount of processors and sub processing (via processors). This allows you to include some logic on
-how the pipeline should react. **The goal is that each tasks describes exactly WHAT processor and WHEN a processor is
-executed.** This allows for super transparent code which allows you to argue about the execution on a higher level. The
-specific implementation of the processors and the underlying state store is not important when arguing about the
-business case.
+how the pipeline should react.
 
 ### Round Robin Scheduler <a name="Scheduler"></a>
 
 [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Scheduler)
 
-The RoundRobinScheduler takes a list of tasks, creates small "work packages" (called TaskRuns)
-by calling the input source on each task continously, and executes them on all available threads.
+The RoundRobinScheduler takes a list of tasks, creates small "work packages" internally (called TaskRuns)
+by calling the input source on each task continuously, and executes them on all available threads.
 The scheduler has alot of configurations and can run in a continuous way or stop processing
-when all inputsources are exhausted.
+when all inputSources are exhausted (batch processing).
 
     RoundRobinScheduler.builder()
         .tasks(tasks)
         [..]
         .backpressureLimit(100)
-        .batchJob(true)
         .buildAndStart();
 
 ### Connectors
@@ -243,13 +241,12 @@ sources to a single InputSource for joins for example. There can be any amount o
 Here "result_topic" and "input_topic" are event-keys and passed to the Source:
 
     var task = MeshineryTaskFactory.<String, TestContext>builder() 
-        .inputSource(inputSource) //this is a kafka input source for example
-        .defaultOutputSource(defaultOutput) //this is a kafka output source for example
-        .read(INPUT_KEY, executor) //reading from kafka topic
-        .process(testContextProcessor) //processing etc
-        .write("result_topic"); //writing event to "result_topic"
+        .connector(connector)                //this is a kafka input and output connector for example
+        .read(INPUT_KEY, executor)           //reading from kafka topic
+        .process(x -> x)                     //processing etc
+        .write("result_topic");              //writing event to "result_topic"
 
-Obviously, you can mix and match these sources and even write your own. They only implement a single interface function
+You can mix and match these sources and even write your own. They only implement a single interface function.
 
 Currently supported are the following state sources:
 
@@ -274,7 +271,8 @@ request results in an error and you want to resume this process, you just need t
 processing again, via the
 provided [TaskReplayFactory](modules/meshinery-core/src/main/java/io/github/askmeagain/meshinery/core/task/TaskReplayFactory.java)
 
-Each InputSource gives you an easy way of replaying a single event, which feeds the event back into the scheduler to
+Most of the InputSource gives you an easy way of replaying a single event, which feeds the event back into the scheduler
+to
 work on.
 
 ### Replays of a DataContext
@@ -303,15 +301,6 @@ RoundRobingScheduler. You can throw here hard, turn off the scheduler, do some r
         return new TestContext(); //we return a new default value
       });
 
-## Logging
-
-This Framework already does the hard work with logging: Setting up the MDC for each thread correctly. Each log message
-in **each** processor, **even in threads created by CompletableFuture.runAsync()**,
-you will have a correct MDC value **automatically** of:
-
-* "task.name" -> taskName
-* "task.id" -> ContextId
-
 ## Monitoring
 
 * [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Monitoring)
@@ -323,7 +312,16 @@ package to expose metrics in a format compatible with prometheus. All metrics ar
 registry which can be shown via rest (already done in the meshinery-monitoring-spring package)
 and easily expanded by your needs.
 
-## Drawing Graphs
+### Logging
+
+This Framework already does the hard work with logging: Setting up the MDC for each thread correctly. Each log message
+in **each** processor, **even in threads created by CompletableFuture.runAsync()**,
+you will have a correct MDC value **automatically** of:
+
+* "task.name" -> taskName
+* "task.id" -> ContextId
+
+### Drawing Graphs
 
 * [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Draw)
 * [Spring Integration](https://github.com/AskMeAgain/Event-Meshinery/wiki/Draw-Spring)
@@ -357,5 +355,5 @@ Checkout the [Getting Started](https://github.com/AskMeAgain/Event-Meshinery/wik
 
 The following things are planned (not in order)
 
-* Quarkus/Micronaut integration
 * Sharding Possibilities in InputSources
+* Benchmarking

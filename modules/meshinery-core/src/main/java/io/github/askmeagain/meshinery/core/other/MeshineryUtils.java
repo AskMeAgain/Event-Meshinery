@@ -79,7 +79,8 @@ public class MeshineryUtils {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static <K, V extends MeshineryDataContext> MeshineryOutputSource<?, ? extends MeshineryDataContext> applyDecorator(
+  public static <K, V extends MeshineryDataContext> MeshineryOutputSource<?, ? extends MeshineryDataContext>
+  applyDecorator(
       MeshineryOutputSource<K, V> connector,
       List<OutputSourceDecoratorFactory> connectorDecoratorFactories
   ) {
