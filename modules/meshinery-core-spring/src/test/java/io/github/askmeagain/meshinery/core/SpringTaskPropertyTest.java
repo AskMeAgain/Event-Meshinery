@@ -5,7 +5,6 @@ import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.setup.AbstractCoreSpringTestBase;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -46,13 +45,13 @@ class SpringTaskPropertyTest extends AbstractCoreSpringTestBase {
     //Arrange --------------------------------------------------------------------------------
     var meshineryConnector = new MemoryConnector<String, TestContext>();
 
-    var testTask1 = MeshineryTaskFactory.<String, TestContext>builder()
+    var testTask1 = MeshineryTask.<String, TestContext>builder()
         .taskName("test-task")
         .inputSource(meshineryConnector)
         .putData("key-1", "nicevalue1")
         .build();
 
-    var testTask2 = MeshineryTaskFactory.<String, TestContext>builder()
+    var testTask2 = MeshineryTask.<String, TestContext>builder()
         .inputSource(meshineryConnector)
         .taskName("test-task-2")
         .putData("key-2", "nicevalue2")

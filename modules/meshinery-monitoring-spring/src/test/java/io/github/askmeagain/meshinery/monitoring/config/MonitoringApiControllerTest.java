@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.monitoring.config;
 
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
@@ -59,7 +59,7 @@ class MonitoringApiControllerTest {
 
     RoundRobinScheduler.builder()
         .registerStartupHook(List.of(config.executorRegistration()))
-        .task(MeshineryTaskFactory.<String, TestContext>builder()
+        .task(MeshineryTask.<String, TestContext>builder()
             .taskName("cool-task-name")
             .read("test")
             .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 1, 0, 0))
@@ -69,7 +69,7 @@ class MonitoringApiControllerTest {
             })
             .outputSource(new TestOutputSource())
             .build())
-        .task(MeshineryTaskFactory.<String, TestContext>builder()
+        .task(MeshineryTask.<String, TestContext>builder()
             .taskName("cool-task-name-2")
             .read("test2")
             .inputSource(new TestInputSource(List.of(TestContext.builder().build()), 1, 0, 0))

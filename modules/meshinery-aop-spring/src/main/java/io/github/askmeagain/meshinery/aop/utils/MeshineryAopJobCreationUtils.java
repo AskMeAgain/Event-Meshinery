@@ -9,7 +9,6 @@ import io.github.askmeagain.meshinery.aop.processors.AopJopEventRetryProcessor;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -39,7 +38,7 @@ public class MeshineryAopJobCreationUtils {
       throw new MeshineryAopWrongMethodParameterType(methodHandle);
     }
 
-    return MeshineryTaskFactory.<String, MeshineryDataContext>builder()
+    return MeshineryTask.<String, MeshineryDataContext>builder()
         .connector(provider.getObject())
         .taskName(calculateTaskName(annotation, readEvent))
         .putData(List.of(properties))
@@ -75,7 +74,7 @@ public class MeshineryAopJobCreationUtils {
       throw new MeshineryAopWrongMethodParameterType(methodHandle);
     }
 
-    return MeshineryTaskFactory.<String, MeshineryDataContext>builder()
+    return MeshineryTask.<String, MeshineryDataContext>builder()
         .connector(provider.getObject())
         .taskName(calculateTaskName(annotation, readEvent))
         .putData(List.of(properties))
@@ -120,7 +119,7 @@ public class MeshineryAopJobCreationUtils {
     if (onErrorEvent == null) {
       name = "aop-" + onSuccessEvent;
     }
-    return MeshineryTaskFactory.<String, MeshineryDataContext>builder()
+    return MeshineryTask.<String, MeshineryDataContext>builder()
         .connector(connector)
         .taskName(name)
         .putData(List.of(properties))

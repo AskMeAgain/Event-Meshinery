@@ -32,7 +32,7 @@ class TaskReplayFactoryTest {
     MeshinerySourceConnector<String, TestContext> outputSource = Mockito.mock(MeshinerySourceConnector.class);
 
     List<MeshineryTask<?, ? extends MeshineryDataContext>> tasks = List.of(
-        MeshineryTaskFactory.<String, TestContext>builder()
+        MeshineryTask.<String, TestContext>builder()
             .outputSource(outputSource)
             .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
             .read("")
@@ -43,7 +43,7 @@ class TaskReplayFactoryTest {
             .write("OutputKey")
             .putData("test", "1234")
             .build(),
-        MeshineryTaskFactory.<String, TestContext>builder()
+        MeshineryTask.<String, TestContext>builder()
             .taskName("test2")
             .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
             .read("")
@@ -65,11 +65,11 @@ class TaskReplayFactoryTest {
   void replayData() {
     //Arrange --------------------------------------------------------------------------------
     var memoryConnector = new MemoryConnector<String, TestContext>();
-    var task1 = MeshineryTaskFactory.<String, TestContext>builder()
+    var task1 = MeshineryTask.<String, TestContext>builder()
         .connector(memoryConnector)
         .read(KEY)
         .build();
-    var task2 = MeshineryTaskFactory.<String, TestContext>builder()
+    var task2 = MeshineryTask.<String, TestContext>builder()
         .connector(memoryConnector)
         .read(KEY)
         .taskName(TASK_2)

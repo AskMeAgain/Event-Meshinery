@@ -2,7 +2,7 @@ package io.github.askmeagain.meshinery.core.common;
 
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.decorators.TestInputSourceDecoratorFactory;
@@ -28,7 +28,7 @@ class ConnectorDecoratorTest {
     var inputCounter = new AtomicInteger();
     var executor = Executors.newSingleThreadExecutor();
 
-    var task = MeshineryTaskFactory.<String, TestContext>builder()
+    var task = MeshineryTask.<String, TestContext>builder()
         .taskName("Test")
         .read("Abc")
         .connector(connector)

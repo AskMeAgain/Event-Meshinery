@@ -2,7 +2,7 @@ package io.github.askmeagain.meshinery.core.common;
 
 import com.cronutils.model.CronType;
 import io.github.askmeagain.meshinery.core.source.CronInputSource;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.MeshineryTaskVerifier;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
@@ -19,7 +19,7 @@ class DuplicateTaskNameTest {
   @Test
   void duplicateName() {
     //Arrange ----------------------------------------------------------------------------------------------------------
-    var duplicateTask = MeshineryTaskFactory.<String, TestContext>builder()
+    var duplicateTask = MeshineryTask.<String, TestContext>builder()
         .taskName("duplicateTask")
         .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
         .read("")
@@ -37,13 +37,13 @@ class DuplicateTaskNameTest {
     //Arrange ----------------------------------------------------------------------------------------------------------
     var inputSource = TestInputSource.builder().build();
     var outputSource = new TestOutputSource();
-    var duplicateTask1 = MeshineryTaskFactory.<String, TestContext>builder()
+    var duplicateTask1 = MeshineryTask.<String, TestContext>builder()
         .taskName("task1")
         .inputSource(inputSource)
         .read("abc")
         .outputSource(outputSource)
         .build();
-    var duplicateTask2 = MeshineryTaskFactory.<String, TestContext>builder()
+    var duplicateTask2 = MeshineryTask.<String, TestContext>builder()
         .taskName("task2")
         .inputSource(inputSource)
         .outputSource(outputSource)
@@ -62,13 +62,13 @@ class DuplicateTaskNameTest {
     //Arrange ----------------------------------------------------------------------------------------------------------
     var inputSource = TestInputSource.builder().build();
     var outputSource = new TestOutputSource();
-    var duplicateTask1 = MeshineryTaskFactory.<String, TestContext>builder()
+    var duplicateTask1 = MeshineryTask.<String, TestContext>builder()
         .taskName("task1")
         .inputSource(inputSource)
         .read("abc")
         .outputSource(outputSource)
         .build();
-    var duplicateTask2 = MeshineryTaskFactory.<String, TestContext>builder()
+    var duplicateTask2 = MeshineryTask.<String, TestContext>builder()
         .taskName("task2")
         .inputSource(inputSource)
         .outputSource(outputSource)
@@ -86,13 +86,13 @@ class DuplicateTaskNameTest {
     //Arrange ----------------------------------------------------------------------------------------------------------
     var inputSource = new CronInputSource<>(CronType.SPRING, () -> TestContext.builder().build());
     var outputSource = new TestOutputSource();
-    var duplicateTask1 = MeshineryTaskFactory.<String, TestContext>builder()
+    var duplicateTask1 = MeshineryTask.<String, TestContext>builder()
         .taskName("task1")
         .inputSource(inputSource)
         .read("abc")
         .outputSource(outputSource)
         .build();
-    var duplicateTask2 = MeshineryTaskFactory.<String, TestContext>builder()
+    var duplicateTask2 = MeshineryTask.<String, TestContext>builder()
         .taskName("task2")
         .inputSource(inputSource)
         .outputSource(outputSource)

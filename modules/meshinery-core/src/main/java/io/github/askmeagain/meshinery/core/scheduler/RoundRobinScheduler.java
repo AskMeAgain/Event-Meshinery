@@ -1,5 +1,8 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
+import com.cronutils.utils.VisibleForTesting;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
+import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
@@ -8,6 +11,7 @@ import io.github.askmeagain.meshinery.core.task.TaskRun;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -18,6 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -166,7 +171,7 @@ public class RoundRobinScheduler {
         return Collections.emptyList();
       }
 
-      return taskRunLookupMap.get(work).getNewTaskRuns();
+      return getNewTaskRuns(taskRunLookupMap.get(work));
     } catch (Exception e) {
       if (gracefulShutdownOnError) {
         log.error("Error while requesting new input data. Shutting down scheduler", e);
@@ -174,6 +179,47 @@ public class RoundRobinScheduler {
         return Collections.emptyList();
       }
       throw e;
+    }
+  }
+
+  private final ConcurrentHashMap<String, Instant> lastExecutions = new ConcurrentHashMap<>();
+
+  /**
+   * Pulls the next batch of data from the input source. Keeps the backoff period in mind, which in this case returns
+   * empty list and doesnt poll the source
+   *
+   * @return returns TaskRuns
+   */
+  @VisibleForTesting
+  List<TaskRun> getNewTaskRuns(MeshineryTask<Object, ? extends MeshineryDataContext> task) {
+    var nextExecution = lastExecutions.computeIfAbsent(task.getTaskName(), k -> Instant.now());
+    var now = Instant.now();
+
+    if (!now.isAfter(nextExecution)) {
+      return Collections.emptyList();
+    }
+
+    try {
+      TaskData.setTaskData(task.getTaskData());
+      lastExecutions.put(task.getTaskName(), now.plusMillis(task.getBackoffTimeMilli()));
+      return task.getInputConnector()
+          .getInputs(task.getInputKeys())
+          .stream()
+          .map(input -> {
+            var processorList1 = task.getProcessorList();
+            var queue = new LinkedList<MeshineryProcessor>(processorList1);
+            return TaskRun.builder()
+                .taskName(task.getTaskName())
+                .taskData(task.getTaskData())
+                .context(input)
+                .handleError(
+                    (BiFunction<MeshineryDataContext, Throwable, MeshineryDataContext>) task.getHandleException())
+                .queue(queue)
+                .build();
+          })
+          .toList();
+    } finally {
+      TaskData.clearTaskData();
     }
   }
 

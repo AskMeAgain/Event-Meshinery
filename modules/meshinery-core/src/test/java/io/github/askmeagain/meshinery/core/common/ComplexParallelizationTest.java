@@ -3,7 +3,7 @@ package io.github.askmeagain.meshinery.core.common;
 import io.github.askmeagain.meshinery.core.processors.FluidProcessor;
 import io.github.askmeagain.meshinery.core.processors.ParallelProcessor;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.utils.AbstractTestBase;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.TestContextProcessor;
@@ -32,7 +32,7 @@ class ComplexParallelizationTest extends AbstractTestBase {
 
       MeshinerySourceConnector<String, TestContext> outputMock = Mockito.mock(MeshinerySourceConnector.class);
 
-      var task = MeshineryTaskFactory.<String, TestContext>builder()
+      var task = MeshineryTask.<String, TestContext>builder()
           .read("Test")
           .inputSource(inputSource)
           .outputSource(outputMock)

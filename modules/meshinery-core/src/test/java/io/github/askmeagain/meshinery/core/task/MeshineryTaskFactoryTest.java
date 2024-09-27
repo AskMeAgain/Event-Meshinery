@@ -12,7 +12,7 @@ class MeshineryTaskFactoryTest {
   void testImmutability() {
     //Arrange --------------------------------------------------------------------------------
     var memoryConnector = new MemoryConnector<String, TestContext>();
-    var baseTask = MeshineryTaskFactory.<String, TestContext>builder()
+    var baseTask = MeshineryTask.<String, TestContext>builder()
         .read("abc")
         .taskName("basename")
         .connector(memoryConnector);

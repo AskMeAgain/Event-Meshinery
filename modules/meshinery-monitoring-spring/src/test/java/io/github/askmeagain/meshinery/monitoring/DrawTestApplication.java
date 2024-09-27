@@ -4,7 +4,6 @@ import io.github.askmeagain.meshinery.core.EnableMeshinery;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.monitoring.apis.DrawerApiController;
 import io.github.askmeagain.meshinery.monitoring.config.MeshineryDrawerConfiguration;
@@ -70,7 +69,7 @@ class DrawTestApplication {
 
     @Bean
     MeshineryTask<String, TestContext> task1(MemoryConnector<String, TestContext> memoryConnector) {
-      return MeshineryTaskFactory.<String, TestContext>builder()
+      return MeshineryTask.<String, TestContext>builder()
           .connector(memoryConnector)
           .taskName("task1")
           .read("0/10 * * * * *")
@@ -80,7 +79,7 @@ class DrawTestApplication {
 
     @Bean
     MeshineryTask<String, TestContext> task2(MemoryConnector<String, TestContext> memoryConnector) {
-      return MeshineryTaskFactory.<String, TestContext>builder()
+      return MeshineryTask.<String, TestContext>builder()
           .connector(memoryConnector)
           .taskName("task2")
           .read("Output1")
@@ -90,7 +89,7 @@ class DrawTestApplication {
 
     @Bean
     MeshineryTask<String, TestContext> task3(MemoryConnector<String, TestContext> memoryConnector) {
-      return MeshineryTaskFactory.<String, TestContext>builder()
+      return MeshineryTask.<String, TestContext>builder()
           .connector(memoryConnector)
           .taskName("task3")
           .read("Output2")

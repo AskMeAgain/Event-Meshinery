@@ -4,6 +4,7 @@ import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
+import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +18,8 @@ public class RoundRobinSchedulerBuilder {
 
   private List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
   private List<ProcessorDecorator<? extends MeshineryDataContext>> processorDecorators = Collections.emptyList();
-  private List<InputSourceDecoratorFactory<?, ?>> connectorDecoratorFactories = Collections.emptyList();
+  private List<InputSourceDecoratorFactory<?, ? extends MeshineryDataContext>> connectorDecoratorFactories =
+      Collections.emptyList();
   private List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
 
   private int backpressureLimit = 200;
@@ -99,13 +101,17 @@ public class RoundRobinSchedulerBuilder {
   }
 
   public RoundRobinScheduler build() {
-
     //verifying tasks
-    tasks.forEach(MeshineryTask::verifyTask);
+    tasks.forEach(MeshineryUtils::verifyTask);
 
+    //adding the scheduler decorators
     var fixedTasks = tasks.stream()
-        .map(task -> task.addInputSourceDecorators(connectorDecoratorFactories))
-        .map(task -> task.addProcessorDecorators(processorDecorators))
+        .map(task -> task.toBuilder()
+            .registerInputSourceDecorator(connectorDecoratorFactories)
+            .build())
+        .map(task -> task.toBuilder()
+            .registerProcessorDecorator(processorDecorators)
+            .build())
         .toList();
 
     return new RoundRobinScheduler(

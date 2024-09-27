@@ -184,9 +184,9 @@ a list of processors to solve a part of the business logic and one or multiple o
 An input source takes an eventkey, which gets fed to the inputsource to produce data. This data is then given to the
 processors and multiple output sources, which spawn more events.
 
-    var meshineryTask = MeshineryTaskFactory.<String, TestContext>builder()
+    var meshineryTask = MeshineryTask.<String, TestContext>builder()
+        .connector(connector)                  //Kafka output source for example 
         .read("event-a", executorService)      //Input event name & thread config
-        .outputSource(outputSource)            //Kafka output source for example 
         .process(processorA)                   //Processing step
         .write("event-b")                      //Event "event-b" put to Kafka topic "event-b" with the result of processorA
         .process(processorB)                   //Another Processing step
@@ -240,7 +240,7 @@ sources to a single InputSource for joins for example. There can be any amount o
 
 Here "result_topic" and "input_topic" are event-keys and passed to the Source:
 
-    var task = MeshineryTaskFactory.<String, TestContext>builder() 
+    var task = MeshineryTask.<String, TestContext>builder() 
         .connector(connector)                //this is a kafka input and output connector for example
         .read(INPUT_KEY, executor)           //reading from kafka topic
         .process(x -> x)                     //processing etc
@@ -292,7 +292,7 @@ You can handle exceptions which happen **inside** a completable future (in a pro
 The default behaviour is that null is returned, which will then just stop the execution of this single event, by the
 RoundRobingScheduler. You can throw here hard, turn off the scheduler, do some rest/db calls and other stuff.
 
-    var task = MeshineryTaskFactory.<String, TestContext>builder()
+    var task = MeshineryTask.<String, TestContext>builder()
       [..]
       .read(KEY, executor)
       .process(new Processor())

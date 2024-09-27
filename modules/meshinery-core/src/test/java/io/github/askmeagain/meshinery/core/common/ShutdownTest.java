@@ -2,7 +2,7 @@ package io.github.askmeagain.meshinery.core.common;
 
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.source.StaticInputSource;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.utils.AbstractTestBase;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.TestContextProcessor;
@@ -33,7 +33,7 @@ class ShutdownTest extends AbstractTestBase {
         .build();
     var executor = Executors.newSingleThreadExecutor();
     var flag = new AtomicBoolean(false);
-    var task = MeshineryTaskFactory.<String, TestContext>builder()
+    var task = MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(new TestOutputSource())
         .read("")
@@ -76,7 +76,7 @@ class ShutdownTest extends AbstractTestBase {
     );
     var executor = Executors.newFixedThreadPool(5);
     var outputSource = Mockito.spy(new TestOutputSource());
-    var task = MeshineryTaskFactory.<String, TestContext>builder()
+    var task = MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(outputSource)
         .read("")

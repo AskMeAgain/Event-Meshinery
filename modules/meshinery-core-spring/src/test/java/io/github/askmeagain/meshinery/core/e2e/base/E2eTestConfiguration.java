@@ -3,7 +3,6 @@ package io.github.askmeagain.meshinery.core.e2e.base;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import java.util.concurrent.ExecutorService;
@@ -44,7 +43,7 @@ public class E2eTestConfiguration {
         .mapToObj(i -> TOPIC_PREFIX + i)
         .toArray(String[]::new);
 
-    return MeshineryTaskFactory.<String, TestContext>builder()
+    return MeshineryTask.<String, TestContext>builder()
         .connector(connector)
         .taskName("Task3Loop")
         .read(arr)
@@ -79,7 +78,7 @@ public class E2eTestConfiguration {
         .iterations(ITEMS)
         .build();
 
-    return MeshineryTaskFactory.<String, TestContext>builder()
+    return MeshineryTask.<String, TestContext>builder()
         .outputSource(connector)
         .inputSource(inputSource)
         .taskName("InputSpawner")

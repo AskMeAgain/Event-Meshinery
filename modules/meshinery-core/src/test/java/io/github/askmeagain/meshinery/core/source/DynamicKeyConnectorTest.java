@@ -2,7 +2,7 @@ package io.github.askmeagain.meshinery.core.source;
 
 import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import java.util.List;
@@ -31,7 +31,7 @@ class DynamicKeyConnectorTest {
         .innerOutputSource(innerOutputMock)
         .build();
 
-    var task = MeshineryTaskFactory.<String, TestContext>builder()
+    var task = MeshineryTask.<String, TestContext>builder()
         .connector(dynamicConnector)
         .read("outer key")
         .write("result")

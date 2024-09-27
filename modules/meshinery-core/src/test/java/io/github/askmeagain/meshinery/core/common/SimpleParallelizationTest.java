@@ -2,7 +2,7 @@ package io.github.askmeagain.meshinery.core.common;
 
 import io.github.askmeagain.meshinery.core.processors.ParallelProcessor;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.utils.AbstractTestBase;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.TestContextProcessor;
@@ -32,7 +32,7 @@ class SimpleParallelizationTest extends AbstractTestBase {
         .todo(new TestContext(0))
         .build();
 
-    var task = MeshineryTaskFactory.<String, TestContext>builder()
+    var task = MeshineryTask.<String, TestContext>builder()
         .read(KEY)
         .inputSource(inputSource)
         .outputSource(outputSource)

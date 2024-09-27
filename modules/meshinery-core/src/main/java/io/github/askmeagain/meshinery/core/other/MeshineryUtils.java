@@ -7,14 +7,18 @@ import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.OutputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import org.slf4j.MDC;
+
+import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_IGNORE_NO_KEYS_WARNING;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @UtilityClass
@@ -25,8 +29,7 @@ public class MeshineryUtils {
    * compose method.
    * Note that the input and output type of each processor can be different, but needs to be correct as long as
    * the output type of a processor is the input type of the next processor. Essentially this utility method
-   * collapses
-   * any list of processors
+   * collapses any list of processors
    *
    * @param processorList the list of processors which will run sequentially
    * @param context       the start context which will be passed to the first processor
@@ -105,5 +108,15 @@ public class MeshineryUtils {
     return Arrays.stream(inputKeys)
         .map(Object::toString)
         .collect(Collectors.joining("-"));
+  }
+
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  public static void verifyTask(MeshineryTask task) {
+    Objects.requireNonNull(task.getInputConnector(), "Input source not specified");
+
+    if (task.getInputKeys().isEmpty() && !task.getTaskData().has(TASK_IGNORE_NO_KEYS_WARNING)) {
+      throw new RuntimeException("Input Keys not defined for task %s. ".formatted(task.getTaskName())
+          + "If this is intended add %s property to task to ignore this".formatted(TASK_IGNORE_NO_KEYS_WARNING));
+    }
   }
 }

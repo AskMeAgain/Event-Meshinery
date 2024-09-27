@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.core.common;
 
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.utils.AbstractLogTestBase;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.OutputCapture;
@@ -26,7 +26,7 @@ class ThrowingOutputTest extends AbstractLogTestBase {
         .iterations(1)
         .build();
 
-    var task = MeshineryTaskFactory.<String, TestContext>builder()
+    var task = MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(new ThrowingOutputSource())
         .read(KEY)

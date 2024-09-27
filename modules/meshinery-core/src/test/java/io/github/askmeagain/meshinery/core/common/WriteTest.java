@@ -2,7 +2,7 @@ package io.github.askmeagain.meshinery.core.common;
 
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
@@ -28,7 +28,7 @@ class WriteTest {
     var context = new TestContext(0);
 
     var executor = Executors.newSingleThreadExecutor();
-    var task = MeshineryTaskFactory.<String, TestContext>builder()
+    var task = MeshineryTask.<String, TestContext>builder()
         .connector(memoryConnector)
         .read("input")
         .write("abc", c -> c.getId().equals("1"))
@@ -67,7 +67,7 @@ class WriteTest {
     MeshinerySourceConnector<String, TestContext> defaultOutputSource = Mockito.mock(MeshinerySourceConnector.class);
     var executor = Executors.newSingleThreadExecutor();
 
-    var task = MeshineryTaskFactory.<String, TestContext>builder()
+    var task = MeshineryTask.<String, TestContext>builder()
         .inputSource(mockInputSource)
         .outputSource(defaultOutputSource)
         .read(KEY)

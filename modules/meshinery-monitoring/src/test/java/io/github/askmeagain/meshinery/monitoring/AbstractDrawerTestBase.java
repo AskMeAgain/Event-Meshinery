@@ -2,7 +2,6 @@ package io.github.askmeagain.meshinery.monitoring;
 
 import io.github.askmeagain.meshinery.core.source.SignalingInputSource;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
@@ -51,7 +50,7 @@ public abstract class AbstractDrawerTestBase {
   }
 
   private MeshineryTask<String, TestContext> createTask(String name, String from, String to) {
-    return MeshineryTaskFactory.<String, TestContext>builder()
+    return MeshineryTask.<String, TestContext>builder()
         .outputSource(outputSource)
         .inputSource(inputSource)
         .read(from)
@@ -61,7 +60,7 @@ public abstract class AbstractDrawerTestBase {
   }
 
   private MeshineryTask<String, TestContext> createDoubleInputTask(String name, String from1, String from2, String to) {
-    return MeshineryTaskFactory.<String, TestContext>builder()
+    return MeshineryTask.<String, TestContext>builder()
         .outputSource(outputSource)
         .inputSource(inputSource)
         .read(from1)
@@ -79,7 +78,7 @@ public abstract class AbstractDrawerTestBase {
         .signalingInputSource(inputSource)
         .build();
 
-    return MeshineryTaskFactory.<String, TestContext>builder()
+    return MeshineryTask.<String, TestContext>builder()
         .outputSource(outputSource)
         .inputSource(signalingInputSource)
         .read(from1)

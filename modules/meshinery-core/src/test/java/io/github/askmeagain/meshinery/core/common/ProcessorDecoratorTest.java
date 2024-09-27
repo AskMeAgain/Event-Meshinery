@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.core.common;
 
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.processor.TestContextProcessor;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
@@ -39,7 +39,7 @@ class ProcessorDecoratorTest {
       }
     };
 
-    var task = MeshineryTaskFactory.<String, TestContext>builder()
+    var task = MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(mockOutputSource)
         .read("")
@@ -88,7 +88,7 @@ class ProcessorDecoratorTest {
       }
     };
 
-    var task = MeshineryTaskFactory.<String, TestContext>builder()
+    var task = MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(mockOutputSource)
         .read("")
@@ -110,8 +110,8 @@ class ProcessorDecoratorTest {
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(batchJobFinished).isTrue();
     Mockito.verify(mockOutputSource).writeOutput(any(), eq(TestContext.builder()
-        .id("2")
-        .index(2)
+        .id("3")
+        .index(4)
         .build()), any());
 
   }

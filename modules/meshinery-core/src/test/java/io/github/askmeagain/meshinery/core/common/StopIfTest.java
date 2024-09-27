@@ -1,7 +1,7 @@
 package io.github.askmeagain.meshinery.core.common;
 
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskFactory;
+import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,7 +38,7 @@ class StopIfTest {
         .build();
 
     var executor = Executors.newSingleThreadExecutor();
-    var task = MeshineryTaskFactory.<String, TestContext>builder()
+    var task = MeshineryTask.<String, TestContext>builder()
         .inputSource(inputSource)
         .outputSource(outputSource)
         .read(KEY)
