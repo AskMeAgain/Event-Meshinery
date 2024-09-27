@@ -6,6 +6,7 @@ import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
+import io.github.askmeagain.meshinery.core.task.MeshineryTaskVerifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -102,6 +103,8 @@ public class RoundRobinSchedulerBuilder {
 
   public RoundRobinScheduler build() {
     //verifying tasks
+    //TODO combine this
+    MeshineryTaskVerifier.verifyTasks(tasks);
     tasks.forEach(MeshineryUtils::verifyTask);
 
     //adding the scheduler decorators

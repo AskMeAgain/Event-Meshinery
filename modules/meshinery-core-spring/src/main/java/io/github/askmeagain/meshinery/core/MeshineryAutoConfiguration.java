@@ -16,7 +16,6 @@ import io.github.askmeagain.meshinery.core.task.TaskReplayFactory;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -33,7 +32,6 @@ import org.springframework.validation.annotation.Validated;
 @EnableConfigurationProperties
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Import({DataContextInjectApiController.class, ApplicationStartHookConfiguration.class, ShutdownApiController.class})
-@RequiredArgsConstructor
 public class MeshineryAutoConfiguration {
 
   @Bean

@@ -21,7 +21,7 @@ import org.springframework.core.ResolvableType;
 public class MeshineryAopJobCreationUtils {
 
   public static MeshineryTask<String, MeshineryDataContext> buildInMemoryRetryJob(
-      Method methodHandle,
+      Method method,
       Object beanInstance,
       MeshineryAopTask annotation,
       ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider,
@@ -29,24 +29,24 @@ public class MeshineryAopJobCreationUtils {
   ) {
     var unproxiedObject = MeshineryAopUtils.tryUnproxyingObject(beanInstance);
     var properties = annotation.properties();
-    var readEvent = MeshineryAopUtils.calculateNewEventName(annotation, methodHandle);
+    var readEvent = MeshineryAopUtils.calculateNewEventName(annotation, method);
     var writeEvent = annotation.write().isEmpty() ? new String[0] : new String[]{annotation.write()};
-    var contextClazz = methodHandle.getParameterTypes()[0];
-    var responseType = methodHandle.getReturnType();
+    var contextClazz = method.getParameterTypes()[0];
+    var responseType = method.getReturnType();
 
     if (!MeshineryDataContext.class.isAssignableFrom(contextClazz)) {
-      throw new MeshineryAopWrongMethodParameterType(methodHandle);
+      throw new MeshineryAopWrongMethodParameterType(method);
     }
 
     return MeshineryTask.<String, MeshineryDataContext>builder()
         .connector(provider.getObject())
-        .taskName(calculateTaskName(annotation, readEvent))
+        .taskName(calculateTaskName(annotation, method))
         .putData(List.of(properties))
         .read(readEvent)
         .process(new AopJobMemoryRetryProcessor(
             annotation.retryOnException(),
             annotation.retryCount(),
-            methodHandle,
+            method,
             unproxiedObject,
             responseType,
             readEvent,
@@ -57,7 +57,7 @@ public class MeshineryAopJobCreationUtils {
   }
 
   public static MeshineryTask<String, MeshineryDataContext> buildSimpleJob(
-      Method methodHandle,
+      Method method,
       Object beanInstance,
       MeshineryAopTask annotation,
       ObjectProvider<MeshinerySourceConnector<String, MeshineryDataContext>> provider,
@@ -65,22 +65,21 @@ public class MeshineryAopJobCreationUtils {
   ) {
     var unproxiedObject = MeshineryAopUtils.tryUnproxyingObject(beanInstance);
     var properties = annotation.properties();
-    var readEvent = MeshineryAopUtils.calculateNewEventName(annotation, methodHandle);
+    var readEvent = MeshineryAopUtils.calculateNewEventName(annotation, method);
     var writeEvent = annotation.write().isEmpty() ? new String[0] : new String[]{annotation.write()};
-    var contextClazz = methodHandle.getParameterTypes()[0];
-    var responseType = methodHandle.getReturnType();
+    var contextClazz = method.getParameterTypes()[0];
+    var responseType = method.getReturnType();
 
     if (!MeshineryDataContext.class.isAssignableFrom(contextClazz)) {
-      throw new MeshineryAopWrongMethodParameterType(methodHandle);
+      throw new MeshineryAopWrongMethodParameterType(method);
     }
 
     return MeshineryTask.<String, MeshineryDataContext>builder()
         .connector(provider.getObject())
-        .taskName(calculateTaskName(annotation, readEvent))
+        .taskName(calculateTaskName(annotation, method))
         .putData(List.of(properties))
         .read(readEvent)
-        .process(
-            new AopJobNoRetryProcessor(methodHandle, unproxiedObject, responseType, readEvent, aopFutureHolderService))
+        .process(new AopJobNoRetryProcessor(method, unproxiedObject, responseType, readEvent, aopFutureHolderService))
         .write(writeEvent)
         .build();
   }
@@ -115,9 +114,9 @@ public class MeshineryAopJobCreationUtils {
 
     var connector = provider.getObject();
 
-    var name = "aop-" + readEvent + "-" + iteration + "-of-" + annotation.retryCount();
+    var name = calculateTaskName(annotation, methodHandle) + "-" + iteration + "-of-" + annotation.retryCount();
     if (onErrorEvent == null) {
-      name = "aop-" + onSuccessEvent;
+      name = calculateTaskName(annotation, methodHandle) + "-" + onSuccessEvent;
     }
     return MeshineryTask.<String, MeshineryDataContext>builder()
         .connector(connector)
@@ -125,7 +124,8 @@ public class MeshineryAopJobCreationUtils {
         .putData(List.of(properties))
         .read(readEvent)
         .process(new AopJopEventRetryProcessor(methodHandle, unproxiedObject, responseType, originalInputKey,
-            aopFutureHolderService))
+            aopFutureHolderService
+        ))
         .exceptionHandler((ctx, exc) -> {
           if (annotation.retryCount() == iteration - 1) {
             return null;
@@ -141,7 +141,7 @@ public class MeshineryAopJobCreationUtils {
         .build();
   }
 
-  private static String calculateTaskName(MeshineryAopTask annotation, String readEvent) {
-    return annotation.taskName().isEmpty() ? "aop-" + readEvent.toLowerCase() : annotation.taskName();
+  private static String calculateTaskName(MeshineryAopTask annotation, Method method) {
+    return annotation.taskName().isEmpty() ? "aop-" + method.getName() : annotation.taskName();
   }
 }

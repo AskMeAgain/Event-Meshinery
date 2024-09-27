@@ -1,4 +1,4 @@
-package io.github.askmeagain.meshinery.core.task;
+package io.github.askmeagain.meshinery.core.exceptions;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeshineryTaskNotFoundException extends Exception {

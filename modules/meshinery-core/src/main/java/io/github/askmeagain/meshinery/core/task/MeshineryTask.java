@@ -84,11 +84,12 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
     this.listProcessorDecorators = listProcessorDecorators;
   }
 
+  public static <K, C extends MeshineryDataContext> MeshineryTaskFactory<K, C> builder() {
+    return new MeshineryTaskFactory<>();
+  }
+
   public MeshineryInputSource<K, C> getInputConnectorDecorated() {
-    return MeshineryUtils.applyDecorator(
-        inputConnectorInternal,
-        listInputSourceDecoratorFactories
-    );
+    return MeshineryUtils.applyDecorator(inputConnectorInternal, listInputSourceDecoratorFactories);
   }
 
   public List<MeshineryProcessor<C, C>> getProcessorListDecorated() {
@@ -97,10 +98,6 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
     return finalList.stream()
         .map(processor -> MeshineryUtils.applyDecorators(processor, listProcessorDecorators))
         .toList();
-  }
-
-  public static <K, C extends MeshineryDataContext> MeshineryTaskFactory<K, C> builder() {
-    return new MeshineryTaskFactory<>();
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
@@ -117,7 +114,7 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
   }
 
   public MeshineryTaskFactory<K, C> toBuilder() {
-    return new MeshineryTaskFactory<K, C>(
+    return new MeshineryTaskFactory<>(
         processorListInternal,
         taskName,
         inputConnectorInternal,

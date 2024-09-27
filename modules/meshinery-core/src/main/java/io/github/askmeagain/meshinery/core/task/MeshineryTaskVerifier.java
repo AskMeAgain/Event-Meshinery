@@ -22,7 +22,7 @@ import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_I
 public class MeshineryTaskVerifier {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static void verifyTasks(List<MeshineryTask<?, ?>> tasks) {
+  public static void verifyTasks(List<MeshineryTask> tasks) {
     log.info("Starting Scheduler with following Tasks: {}", getAndVerifyTaskList(tasks));
     log.info("Starting Scheduler with following Input Source: {}", getInputSources(tasks));
     log.info("Starting Scheduler with following Output Source: {}", getOutputSources(tasks));
@@ -30,21 +30,21 @@ public class MeshineryTaskVerifier {
     verifyReadKey(tasks);
   }
 
-  private static Set<String> getOutputSources(List<MeshineryTask<?, ?>> tasks) {
+  private static Set<String> getOutputSources(List<MeshineryTask> tasks) {
     return tasks.stream()
         .map(MeshineryTask::getOutputConnector)
         .map(MeshineryOutputSource::getName)
         .collect(Collectors.toSet());
   }
 
-  private static Set<String> getInputSources(List<MeshineryTask<?, ?>> tasks) {
+  private static Set<String> getInputSources(List<MeshineryTask> tasks) {
     return tasks.stream()
         .map(MeshineryTask::getInputConnector)
         .map(MeshineryInputSource::getName)
         .collect(Collectors.toSet());
   }
 
-  private static void verifyReadKey(List<MeshineryTask<?, ?>> tasks) {
+  private static void verifyReadKey(List<MeshineryTask> tasks) {
     var result = tasks.stream()
         .filter(task -> !task.getTaskData().has(TASK_IGNORE_DUPLICATE_READ_KEY))
         .map(MeshineryTask::getInputKeys)
@@ -59,7 +59,7 @@ public class MeshineryTaskVerifier {
     }
   }
 
-  private static List<String> getAndVerifyTaskList(List<MeshineryTask<?, ?>> tasks) {
+  private static List<String> getAndVerifyTaskList(List<MeshineryTask> tasks) {
     var result = tasks.stream()
         .map(MeshineryTask::getTaskName)
         .map(MeshineryTaskVerifier::verifyTaskName)

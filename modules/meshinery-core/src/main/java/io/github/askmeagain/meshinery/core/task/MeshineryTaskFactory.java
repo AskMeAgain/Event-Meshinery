@@ -292,7 +292,7 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
         .build();
   }
 
-  public MeshineryTaskFactory<K, C> registerInputSourceDecorator(InputSourceDecoratorFactory decorator) {
+  public MeshineryTaskFactory<K, C> registerInputSourceDecorator(InputSourceDecoratorFactory<K, C> decorator) {
     return toBuilder()
         .inputSourceDecorator(decorator)
         .build();
@@ -457,7 +457,11 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
         .build();
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  /**
+   * Build task from factory
+   *
+   * @return
+   */
   public MeshineryTask<K, C> build() {
     return new MeshineryTask<>(
         backoffTime,
