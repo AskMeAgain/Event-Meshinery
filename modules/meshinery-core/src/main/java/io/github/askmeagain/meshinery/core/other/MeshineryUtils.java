@@ -7,12 +7,15 @@ import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.OutputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
+import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
@@ -118,5 +121,27 @@ public class MeshineryUtils {
       throw new RuntimeException("Input Keys not defined for task %s. ".formatted(task.getTaskName())
           + "If this is intended add %s property to task to ignore this".formatted(TASK_IGNORE_NO_KEYS_WARNING));
     }
+  }
+
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  public static List<MeshineryTask<?, ?>> injectProperties(
+      List<MeshineryTask<?, ?>> tasks,
+      MeshineryCoreProperties coreProperties
+  ) {
+    var newList = new ArrayList<MeshineryTask<?, ?>>();
+
+    for (var task : tasks) {
+      if (coreProperties.getTaskProperties().containsKey(task.getTaskName())) {
+        var newTaskData = Optional.ofNullable(task.getTaskData()).orElse(new TaskData());
+        for (var kv : coreProperties.getTaskProperties().get(task.getTaskName()).entrySet()) {
+          newTaskData = newTaskData.with(kv.getKey(), kv.getValue());
+        }
+        newList.add(task.withTaskData(newTaskData));
+      } else {
+        newList.add(task);
+      }
+    }
+
+    return newList;
   }
 }

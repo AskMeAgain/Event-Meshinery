@@ -8,6 +8,7 @@ import io.github.askmeagain.meshinery.core.hooks.BatchJobTimingHooks;
 import io.github.askmeagain.meshinery.core.hooks.CustomizeShutdownHook;
 import io.github.askmeagain.meshinery.core.hooks.CustomizeStartupHook;
 import io.github.askmeagain.meshinery.core.injecting.DataContextInjectApiController;
+import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.shutdown.ShutdownApiController;
@@ -93,7 +94,7 @@ public class MeshineryAutoConfiguration {
       MeshineryCoreProperties meshineryCoreProperties,
       ExecutorService executorService
   ) {
-    var appliedPropertyTasks = PropertyTaskInjection.injectProperties(tasks, meshineryCoreProperties);
+    var appliedPropertyTasks = MeshineryUtils.injectProperties(tasks, meshineryCoreProperties);
 
     return RoundRobinScheduler.builder()
         .backpressureLimit(meshineryCoreProperties.getBackpressureLimit())
