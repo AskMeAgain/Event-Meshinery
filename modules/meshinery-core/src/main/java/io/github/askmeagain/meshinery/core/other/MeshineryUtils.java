@@ -7,25 +7,35 @@ import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.OutputSourceDecoratorFactory;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
+import io.github.askmeagain.meshinery.core.exceptions.DuplicateReadKeyException;
+import io.github.askmeagain.meshinery.core.exceptions.DuplicateTaskNameException;
+import io.github.askmeagain.meshinery.core.exceptions.TaskNameInvalidException;
 import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 
+import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_IGNORE_DUPLICATE_READ_KEY;
 import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_IGNORE_NO_KEYS_WARNING;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @UtilityClass
 public class MeshineryUtils {
+
+  private static final String VALID_LETTERS = "abcdefghijklmnopqrstuvwxyz_-1234567890";
 
   /**
    * This utility method takes a list of processors and chains them together sequentially via completable future
@@ -144,5 +154,72 @@ public class MeshineryUtils {
     }
 
     return newList;
+  }
+
+  public static Set<String> getOutputSources(List<MeshineryTask> tasks) {
+    return tasks.stream()
+        .map(MeshineryTask::getOutputConnector)
+        .map(MeshineryOutputSource::getName)
+        .collect(Collectors.toSet());
+  }
+
+  public static Set<String> getInputSources(List<MeshineryTask> tasks) {
+    return tasks.stream()
+        .map(MeshineryTask::getInputConnector)
+        .map(MeshineryInputSource::getName)
+        .collect(Collectors.toSet());
+  }
+
+  public static List<String> getAndVerifyTaskList(List<MeshineryTask> tasks) {
+    var result = tasks.stream()
+        .map(MeshineryTask::getTaskName)
+        .map(MeshineryUtils::verifyTaskName)
+        .toList();
+
+    var duplicates = findDuplicates(result);
+
+    if (!duplicates.isEmpty()) {
+      throw new DuplicateTaskNameException("Found duplicate task names: [" + String.join(", ", duplicates) + "]");
+    }
+
+    return result;
+  }
+
+  public static void verifyTasks(List<MeshineryTask> tasks) {
+    tasks.forEach(MeshineryUtils::verifyTask);
+
+    var result = tasks.stream()
+        .filter(task -> !task.getTaskData().has(TASK_IGNORE_DUPLICATE_READ_KEY))
+        .map(MeshineryTask::getInputKeys)
+        .flatMap(Collection::stream)
+        .map(Object::toString)
+        .toList();
+
+    var duplicates = findDuplicates(result);
+
+    if (!duplicates.isEmpty()) {
+      throw new DuplicateReadKeyException("Found duplicate Read keys: [" + String.join(", ", duplicates) + "]");
+    }
+  }
+
+  //https://stackoverflow.com/a/31641116/5563263
+  private static <T> Set<T> findDuplicates(Collection<T> collection) {
+    Set<T> uniques = new HashSet<>();
+    return collection.stream()
+        .filter(e -> !uniques.add(e))
+        .collect(Collectors.toSet());
+  }
+
+  private static String verifyTaskName(String name) {
+    for (var letter : name.toCharArray()) {
+      if (!VALID_LETTERS.contains(String.valueOf(letter).toLowerCase())) {
+        throw new TaskNameInvalidException(
+            "Task '%s' contains '%s', but only %s is allowed".formatted(name, letter, VALID_LETTERS));
+      }
+      if (StringUtils.isBlank(name)) {
+        throw new TaskNameInvalidException("Taskname cannot be blank");
+      }
+    }
+    return name;
   }
 }

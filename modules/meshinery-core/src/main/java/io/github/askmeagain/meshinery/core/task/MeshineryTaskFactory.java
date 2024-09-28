@@ -35,10 +35,10 @@ import static io.github.askmeagain.meshinery.core.other.MeshineryUtils.joinEvent
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
 
+  private long backoffTime;
   private List<K> inputKeys;
   private List<K> outputKeys = new ArrayList<>();
   private String taskName = "default-task-" + hashCode();
-  private long backoffTime;
   private MeshineryInputSource<K, C> inputConnector;
   private MeshineryOutputSource<K, C> outputConnector;
   private BiFunction<C, Throwable, C> handleException = (context, exc) -> {
@@ -294,12 +294,23 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
         .build();
   }
 
+  /**
+   * registers an input source decorator which decorates the input source for this task only
+   *
+   * @param decorator the decorator
+   * @return returns itself for builder pattern
+   */
   public MeshineryTaskFactory<K, C> registerInputSourceDecorator(InputSourceDecorator<K, C> decorator) {
     return toBuilder()
         .inputSourceDecorator(decorator)
         .build();
   }
 
+  /**
+   * registers multiple input source decorators which decorates the input source for this task only
+   * @param decorator the decorator
+   * @return returns itself for builder pattern
+   */
   public MeshineryTaskFactory<K, C> registerInputSourceDecorator(
       Collection<? extends InputSourceDecorator<K, C>> decorator
   ) {

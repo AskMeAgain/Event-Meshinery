@@ -34,27 +34,26 @@ import org.slf4j.MDC;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinScheduler {
 
-  private final List<MeshineryTask> tasks;
-  private final int backpressureLimit;
+  private Instant lastInputEntry;
   private final boolean isBatchJob;
-  private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
-  private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
-
-  private final boolean gracefulShutdownOnError;
+  private final int backpressureLimit;
+  private final List<MeshineryTask> tasks;
   private final int gracePeriodMilliseconds;
-
-  private final Queue<TaskRun> outputQueue = new ConcurrentLinkedQueue<>();
-  private final Queue<ConnectorKey> inputQueue = new ConcurrentLinkedQueue<>();
-
-  private final Map<ConnectorKey, MeshineryTask> taskRunLookupMap = new ConcurrentHashMap<>();
+  private final boolean gracefulShutdownOnError;
   private final ExecutorService taskExecutorService;
-  private final Set<DataInjectingExecutorService> executorServices = new HashSet<>();
   private final DataInjectingExecutorService taskExecutor;
   private final DataInjectingExecutorService inputExecutor;
-  private final AtomicBoolean gracefulShutdownTriggered = new AtomicBoolean();
-  private Instant lastInputEntry;
+  private final List<? extends Consumer<RoundRobinScheduler>> startupHook;
+  private final List<? extends Consumer<RoundRobinScheduler>> shutdownHook;
+
   private final Set<String> currentTasks = new HashSet<>();
+  private final Queue<TaskRun> outputQueue = new ConcurrentLinkedQueue<>();
+  private final AtomicBoolean gracefulShutdownTriggered = new AtomicBoolean();
+  private final Queue<ConnectorKey> inputQueue = new ConcurrentLinkedQueue<>();
+  private final Set<DataInjectingExecutorService> executorServices = new HashSet<>();
+  private final Map<ConnectorKey, MeshineryTask> taskRunLookupMap = new ConcurrentHashMap<>();
   private final Map<Integer, List<Integer>> mapIntegerListInteger = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, Instant> lastExecutions = new ConcurrentHashMap<>();
 
   RoundRobinScheduler(
       List<MeshineryTask> tasks,
@@ -99,17 +98,6 @@ public class RoundRobinScheduler {
     Thread.sleep(100);
     taskExecutor.execute(() -> runWorker(taskExecutor));
     return this;
-  }
-
-  private void createLookupMap() {
-    for (var task : tasks) {
-      var connectorKey = ConnectorKey.builder()
-          .connector(task.getInputConnector())
-          .key(task.getInputKeys())
-          .build();
-
-      taskRunLookupMap.put(connectorKey, task);
-    }
   }
 
   public void gracefulShutdown() {
@@ -185,8 +173,6 @@ public class RoundRobinScheduler {
     }
   }
 
-  private final ConcurrentHashMap<String, Instant> lastExecutions = new ConcurrentHashMap<>();
-
   /**
    * Pulls the next batch of data from the input source. Keeps the backoff period in mind, which in this case returns
    * empty list and doesnt poll the source
@@ -226,7 +212,6 @@ public class RoundRobinScheduler {
     }
   }
 
-  @SneakyThrows
   private void runWorker(ExecutorService executor) {
     Thread.currentThread().setName("meshinery-output");
     log.info("Starting processing worker thread");
@@ -290,5 +275,16 @@ public class RoundRobinScheduler {
         MDC.clear();
       }
     }, taskExecutorService);
+  }
+
+  private void createLookupMap() {
+    for (var task : tasks) {
+      var connectorKey = ConnectorKey.builder()
+          .connector(task.getInputConnector())
+          .key(task.getInputKeys())
+          .build();
+
+      taskRunLookupMap.put(connectorKey, task);
+    }
   }
 }

@@ -1,9 +1,9 @@
 package io.github.askmeagain.meshinery.core.common;
 
 import com.cronutils.model.CronType;
+import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.source.CronInputSource;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
-import io.github.askmeagain.meshinery.core.task.MeshineryTaskVerifier;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
 import io.github.askmeagain.meshinery.core.utils.sources.TestInputSource;
 import io.github.askmeagain.meshinery.core.utils.sources.TestOutputSource;
@@ -24,10 +24,15 @@ class DuplicateTaskNameTest {
         .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
         .read("")
         .build();
+    var duplicateTask2 = MeshineryTask.<String, TestContext>builder()
+        .taskName("duplicateTask2")
+        .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
+        .read("")
+        .build();
 
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
-    assertThatThrownBy(() -> MeshineryTaskVerifier.verifyTasks(List.of(duplicateTask, duplicateTask)))
+    assertThatThrownBy(() -> MeshineryUtils.verifyTasks(List.of(duplicateTask, duplicateTask2)))
         .isInstanceOf(RuntimeException.class)
         .hasMessage("Found duplicate task names: [duplicateTask]");
   }
@@ -52,7 +57,7 @@ class DuplicateTaskNameTest {
 
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
-    assertThatThrownBy(() -> MeshineryTaskVerifier.verifyTasks(List.of(duplicateTask1, duplicateTask2)))
+    assertThatThrownBy(() -> MeshineryUtils.verifyTasks(List.of(duplicateTask1, duplicateTask2)))
         .isInstanceOf(RuntimeException.class)
         .hasMessage("Found duplicate Read keys: [abc]");
   }
@@ -78,7 +83,7 @@ class DuplicateTaskNameTest {
 
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
-    MeshineryTaskVerifier.verifyTasks(List.of(duplicateTask1, duplicateTask2));
+    MeshineryUtils.verifyTasks(List.of(duplicateTask1, duplicateTask2));
   }
 
   @Test
@@ -101,7 +106,7 @@ class DuplicateTaskNameTest {
 
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
-    MeshineryTaskVerifier.verifyTasks(List.of(duplicateTask1, duplicateTask2));
+    MeshineryUtils.verifyTasks(List.of(duplicateTask1, duplicateTask2));
   }
 
 }
