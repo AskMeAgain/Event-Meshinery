@@ -8,7 +8,6 @@ import io.github.askmeagain.meshinery.core.common.MeshineryProcessor;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.processors.CommitProcessor;
-import io.github.askmeagain.meshinery.core.scheduler.ConnectorKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -30,7 +29,7 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
   @Getter
   private final String taskName;
   @Getter
-  private TaskData taskData;
+  private final TaskData taskData;
   @Getter
   private final MeshineryOutputSource<K, C> outputConnector;
   @Getter
@@ -82,11 +81,11 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
     return new MeshineryTaskFactory<>();
   }
 
-  public MeshineryInputSource<K, C> decorateInputSource() {
+  private MeshineryInputSource<K, C> decorateInputSource() {
     return MeshineryUtils.applyDecorator(internalInputSource, listInputSourceDecoratorFactories);
   }
 
-  public List<MeshineryProcessor<C, C>> decorateProcessors() {
+  private List<MeshineryProcessor<C, C>> decorateProcessors() {
     var finalList = new ArrayList<>(internalProcessorList);
     finalList.add(new CommitProcessor<C>(this::getInputConnector));
     return finalList.stream()
@@ -94,17 +93,10 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
         .toList();
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public ConnectorKey getConnectorKey() {
-    return ConnectorKey.builder()
-        .connector(decorateInputSource())
-        .key(inputKeys)
-        .build();
-  }
-
   public MeshineryTask<K, C> withTaskData(TaskData taskData) {
-    this.taskData = taskData;
-    return this;
+    return toBuilder()
+        .taskData(taskData)
+        .build();
   }
 
   public MeshineryTaskFactory<K, C> toBuilder() {

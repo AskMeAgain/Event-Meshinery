@@ -130,6 +130,7 @@ public class MeshineryUtils {
   ) {
     var newList = new ArrayList<MeshineryTask<?, ?>>();
 
+    //TODO this can eb probably changed to just inserting the KV directly without converting to taskdata
     for (var task : tasks) {
       if (coreProperties.getTaskProperties().containsKey(task.getTaskName())) {
         var newTaskData = Optional.ofNullable(task.getTaskData()).orElse(new TaskData());

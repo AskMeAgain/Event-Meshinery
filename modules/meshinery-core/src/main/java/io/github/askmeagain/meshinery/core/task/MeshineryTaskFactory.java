@@ -436,6 +436,18 @@ public class MeshineryTaskFactory<K, C extends MeshineryDataContext> {
         .build();
   }
 
+  /**
+   * Add task data to your task. Some connectors and processors use this for configuration
+   *
+   * @param taskData
+   * @return
+   */
+  public final MeshineryTaskFactory<K, C> taskData(TaskData taskData) {
+    return toBuilder()
+        .taskData(taskData)
+        .build();
+  }
+
   private MeshineryTaskFactory<K, C> addNewProcessor(MeshineryProcessor<C, C> newProcessor) {
     var meshineryTaskFactory = new MeshineryTaskFactory<K, C>(
         newProcessor,

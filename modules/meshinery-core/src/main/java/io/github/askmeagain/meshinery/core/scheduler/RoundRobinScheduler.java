@@ -161,7 +161,10 @@ public class RoundRobinScheduler {
 
   private List<ConnectorKey> fillQueueFromTasks() {
     return tasks.stream()
-        .map(MeshineryTask::getConnectorKey)
+        .map(task -> ConnectorKey.builder()
+            .connector(task.getInputConnector())
+            .key(task.getInputKeys())
+            .build())
         .toList();
   }
 
