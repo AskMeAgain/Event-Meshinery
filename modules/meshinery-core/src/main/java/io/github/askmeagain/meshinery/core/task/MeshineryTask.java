@@ -12,17 +12,13 @@ import io.github.askmeagain.meshinery.core.scheduler.ConnectorKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * A Meshinery task consists of an input source, a list of processors and multiple output sources.
  */
 @Slf4j
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MeshineryTask<K, C extends MeshineryDataContext> {
 
   @Getter
@@ -40,17 +36,15 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
   @Getter
   private final BiFunction<C, Throwable, C> handleException;
   @Getter(lazy = true)
-  private final List<MeshineryProcessor<C, C>> processorList = getProcessorListDecorated();
+  private final List<MeshineryProcessor<C, C>> processorList = decorateProcessors();
   @Getter(lazy = true)
-  private final MeshineryInputSource<K, C> inputConnector = getInputConnectorDecorated();
+  private final MeshineryInputSource<K, C> inputConnector = decorateInputSource();
 
-  @With(AccessLevel.PRIVATE)
   private final List<InputSourceDecoratorFactory<K, C>> listInputSourceDecoratorFactories;
-  @With(AccessLevel.PRIVATE)
   private final List<ProcessorDecorator<C>> listProcessorDecorators;
 
-  private final MeshineryInputSource<K, C> inputConnectorInternal;
-  private final List<MeshineryProcessor<C, C>> processorListInternal;
+  private final MeshineryInputSource<K, C> internalInputSource;
+  private final List<MeshineryProcessor<C, C>> internalProcessorList;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   MeshineryTask(
@@ -76,10 +70,10 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
     this.taskName = taskName;
     this.taskData = taskData;
 
-    this.inputConnectorInternal = inputConnector;
+    this.internalInputSource = inputConnector;
     this.outputConnector = outputConnector;
     this.handleException = handleException;
-    this.processorListInternal = processorList;
+    this.internalProcessorList = processorList;
     this.listInputSourceDecoratorFactories = listInputSourceDecoratorFactories;
     this.listProcessorDecorators = listProcessorDecorators;
   }
@@ -88,12 +82,12 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
     return new MeshineryTaskFactory<>();
   }
 
-  public MeshineryInputSource<K, C> getInputConnectorDecorated() {
-    return MeshineryUtils.applyDecorator(inputConnectorInternal, listInputSourceDecoratorFactories);
+  public MeshineryInputSource<K, C> decorateInputSource() {
+    return MeshineryUtils.applyDecorator(internalInputSource, listInputSourceDecoratorFactories);
   }
 
-  public List<MeshineryProcessor<C, C>> getProcessorListDecorated() {
-    var finalList = new ArrayList<>(processorListInternal);
+  public List<MeshineryProcessor<C, C>> decorateProcessors() {
+    var finalList = new ArrayList<>(internalProcessorList);
     finalList.add(new CommitProcessor<C>(this::getInputConnector));
     return finalList.stream()
         .map(processor -> MeshineryUtils.applyDecorators(processor, listProcessorDecorators))
@@ -103,7 +97,7 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public ConnectorKey getConnectorKey() {
     return ConnectorKey.builder()
-        .connector(getInputConnectorDecorated())
+        .connector(decorateInputSource())
         .key(inputKeys)
         .build();
   }
@@ -115,9 +109,9 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
 
   public MeshineryTaskFactory<K, C> toBuilder() {
     return new MeshineryTaskFactory<>(
-        processorListInternal,
+        internalProcessorList,
         taskName,
-        inputConnectorInternal,
+        internalInputSource,
         outputConnector,
         inputKeys,
         outputKeys,

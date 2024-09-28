@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.core;
 
 import io.github.askmeagain.meshinery.core.injecting.DataContextInjectApiController;
+import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.setup.AbstractCoreSpringTestBase;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
@@ -61,7 +62,7 @@ class SpringTaskPropertyTest extends AbstractCoreSpringTestBase {
     var taskList = List.<MeshineryTask<?, ?>>of(testTask1, testTask2);
 
     //Act ------------------------------------------------------------------------------------
-    var result = PropertyTaskInjection.injectProperties(taskList, properties);
+    var result = MeshineryUtils.injectProperties(taskList, properties);
 
     //Assert ---------------------------------------------------------------------------------
     assertThat(result.get(0).getTaskData().getProperties())
