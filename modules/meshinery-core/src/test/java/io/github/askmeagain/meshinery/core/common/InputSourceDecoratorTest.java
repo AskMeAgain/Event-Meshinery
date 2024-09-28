@@ -31,7 +31,7 @@ class InputSourceDecoratorTest {
     MeshinerySourceConnector<String, TestContext> mockOutputSource = Mockito.mock(MeshinerySourceConnector.class);
 
     var calledInputs = new ArrayList<String>();
-    var decorator = new InputSourceDecoratorFactory<String, TestContext>() {
+    var decorator = new InputSourceDecorator<String, TestContext>() {
       @Override
       public MeshineryInputSource<String, TestContext> decorate(MeshineryInputSource<String, TestContext> connector) {
         return new MeshineryInputSource<>() {

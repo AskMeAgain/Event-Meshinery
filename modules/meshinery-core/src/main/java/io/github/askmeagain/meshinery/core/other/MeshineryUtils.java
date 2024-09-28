@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core.other;
 
-import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecorator;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
@@ -73,7 +73,7 @@ public class MeshineryUtils {
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static <K, C extends MeshineryDataContext> MeshineryInputSource<K, C> applyDecorator(
       MeshineryInputSource<K, C> connector,
-      List<InputSourceDecoratorFactory<K, C>> connectorDecoratorFactories
+      List<InputSourceDecorator<K, C>> connectorDecoratorFactories
   ) {
     var innerConnector = connector;
 

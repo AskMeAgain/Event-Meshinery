@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core.utils.decorators;
 
-import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecorator;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import io.github.askmeagain.meshinery.core.common.MeshinerySourceConnector;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class TestInputSourceDecoratorFactory<K, C extends MeshineryDataContext>
-    implements InputSourceDecoratorFactory<K, C> {
+    implements InputSourceDecorator<K, C> {
 
   private final AtomicInteger atomicInteger;
 

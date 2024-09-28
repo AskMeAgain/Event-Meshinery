@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core;
 
-import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecorator;
 import io.github.askmeagain.meshinery.core.injecting.DataContextInjectApiController;
 import io.github.askmeagain.meshinery.core.setup.AbstractCoreSpringTestBase;
 import io.github.askmeagain.meshinery.core.source.MemoryConnector;
@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 class DecoratorBeansTest extends AbstractCoreSpringTestBase {
 
   @Autowired
-  InputSourceDecoratorFactory decorator;
+  InputSourceDecorator decorator;
   @SpyBean
   MemoryConnector<String, TestContext> connector;
 
@@ -57,7 +57,7 @@ class DecoratorBeansTest extends AbstractCoreSpringTestBase {
     }
 
     @Bean
-    public InputSourceDecoratorFactory connectorDecoratorFactory() {
+    public InputSourceDecorator connectorDecoratorFactory() {
       return Mockito.spy(new TestInputSourceDecoratorFactory(new AtomicInteger()));
     }
 

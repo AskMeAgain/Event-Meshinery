@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.monitoring.decorators;
 
-import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecorator;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class InputSourceTimingDecoratorFactory<K, C extends MeshineryDataContext>
-    implements InputSourceDecoratorFactory<K, C> {
+    implements InputSourceDecorator<K, C> {
 
   @Override
   public MeshineryInputSource<K, C> decorate(MeshineryInputSource<K, C> inputConnector) {

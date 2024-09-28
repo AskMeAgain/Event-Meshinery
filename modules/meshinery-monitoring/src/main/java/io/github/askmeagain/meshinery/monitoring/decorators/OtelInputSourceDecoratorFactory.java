@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.monitoring.decorators;
 
-import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecorator;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import io.opentelemetry.api.OpenTelemetry;
@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RequiredArgsConstructor
 public class OtelInputSourceDecoratorFactory<K, C extends MeshineryDataContext>
-    implements InputSourceDecoratorFactory<K, C> {
+    implements InputSourceDecorator<K, C> {
 
   private final OpenTelemetry openTelemetry;
 

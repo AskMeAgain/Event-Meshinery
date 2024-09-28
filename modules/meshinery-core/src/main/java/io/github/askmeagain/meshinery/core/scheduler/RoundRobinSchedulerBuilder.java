@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
-import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecorator;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
@@ -19,7 +19,7 @@ public class RoundRobinSchedulerBuilder {
 
   private List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
   private List<ProcessorDecorator<? extends MeshineryDataContext>> processorDecorators = Collections.emptyList();
-  private List<InputSourceDecoratorFactory<?, ? extends MeshineryDataContext>> connectorDecoratorFactories =
+  private List<InputSourceDecorator<?, ? extends MeshineryDataContext>> connectorDecoratorFactories =
       Collections.emptyList();
   private List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
 
@@ -70,7 +70,7 @@ public class RoundRobinSchedulerBuilder {
   }
 
   public RoundRobinSchedulerBuilder registerDecorators(
-      List<InputSourceDecoratorFactory<?, ? extends MeshineryDataContext>> factories
+      List<InputSourceDecorator<?, ? extends MeshineryDataContext>> factories
   ) {
     this.connectorDecoratorFactories = factories;
     return this;

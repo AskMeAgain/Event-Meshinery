@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core.task;
 
-import io.github.askmeagain.meshinery.core.common.InputSourceDecoratorFactory;
+import io.github.askmeagain.meshinery.core.common.InputSourceDecorator;
 import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import io.github.askmeagain.meshinery.core.common.MeshineryOutputSource;
@@ -10,14 +10,13 @@ import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.processors.CommitProcessor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * A Meshinery task consists of an input source, a list of processors and multiple output sources.
  */
-@Slf4j
 public class MeshineryTask<K, C extends MeshineryDataContext> {
 
   @Getter
@@ -39,13 +38,12 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
   @Getter(lazy = true)
   private final MeshineryInputSource<K, C> inputConnector = decorateInputSource();
 
-  private final List<InputSourceDecoratorFactory<K, C>> listInputSourceDecoratorFactories;
-  private final List<ProcessorDecorator<C>> listProcessorDecorators;
+  private final List<InputSourceDecorator<K, C>> inputSourceDecorators;
+  private final List<ProcessorDecorator<C>> processorDecorators;
 
   private final MeshineryInputSource<K, C> internalInputSource;
   private final List<MeshineryProcessor<C, C>> internalProcessorList;
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   MeshineryTask(
       long backoffTimeMilli,
       List<K> inputKeys,
@@ -56,8 +54,8 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
       MeshineryOutputSource<K, C> outputConnector,
       BiFunction<C, Throwable, C> handleException,
       List<MeshineryProcessor<C, C>> processorList,
-      List<InputSourceDecoratorFactory<K, C>> listInputSourceDecoratorFactories,
-      List<ProcessorDecorator<C>> listProcessorDecorators
+      List<InputSourceDecorator<K, C>> inputSourceDecorators,
+      List<ProcessorDecorator<C>> processorDecorators
   ) {
     if (inputConnector != null) {
       taskData = inputConnector.addToTaskData(taskData);
@@ -73,30 +71,12 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
     this.outputConnector = outputConnector;
     this.handleException = handleException;
     this.internalProcessorList = processorList;
-    this.listInputSourceDecoratorFactories = listInputSourceDecoratorFactories;
-    this.listProcessorDecorators = listProcessorDecorators;
+    this.inputSourceDecorators = inputSourceDecorators;
+    this.processorDecorators = processorDecorators;
   }
 
   public static <K, C extends MeshineryDataContext> MeshineryTaskFactory<K, C> builder() {
     return new MeshineryTaskFactory<>();
-  }
-
-  private MeshineryInputSource<K, C> decorateInputSource() {
-    return MeshineryUtils.applyDecorator(internalInputSource, listInputSourceDecoratorFactories);
-  }
-
-  private List<MeshineryProcessor<C, C>> decorateProcessors() {
-    var finalList = new ArrayList<>(internalProcessorList);
-    finalList.add(new CommitProcessor<C>(this::getInputConnector));
-    return finalList.stream()
-        .map(processor -> MeshineryUtils.applyDecorators(processor, listProcessorDecorators))
-        .toList();
-  }
-
-  public MeshineryTask<K, C> withTaskData(TaskData taskData) {
-    return toBuilder()
-        .taskData(taskData)
-        .build();
   }
 
   public MeshineryTaskFactory<K, C> toBuilder() {
@@ -109,9 +89,27 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
         outputKeys,
         taskData,
         handleException,
-        listProcessorDecorators,
-        listInputSourceDecoratorFactories,
+        processorDecorators,
+        inputSourceDecorators,
         backoffTimeMilli
     );
+  }
+
+  public MeshineryTask<K, C> withTaskData(TaskData taskData) {
+    return toBuilder()
+        .taskData(taskData)
+        .build();
+  }
+
+  private MeshineryInputSource<K, C> decorateInputSource() {
+    return MeshineryUtils.applyDecorator(internalInputSource, Objects.requireNonNull(inputSourceDecorators));
+  }
+
+  private List<MeshineryProcessor<C, C>> decorateProcessors() {
+    var finalList = new ArrayList<>(Objects.requireNonNull(internalProcessorList));
+    finalList.add(new CommitProcessor<C>(this::getInputConnector));
+    return finalList.stream()
+        .map(processor -> MeshineryUtils.applyDecorators(processor, Objects.requireNonNull(processorDecorators)))
+        .toList();
   }
 }
