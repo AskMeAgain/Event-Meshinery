@@ -2,6 +2,7 @@ package io.github.askmeagain.meshinery.core.common;
 
 import com.cronutils.model.CronType;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
+import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.source.CronInputSource;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;
@@ -24,15 +25,14 @@ class DuplicateTaskNameTest {
         .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
         .read("")
         .build();
-    var duplicateTask2 = MeshineryTask.<String, TestContext>builder()
-        .taskName("duplicateTask2")
-        .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
-        .read("")
-        .build();
 
     //Act --------------------------------------------------------------------------------------------------------------
+    var schedulerBuilder = RoundRobinScheduler.builder()
+        .task(duplicateTask)
+        .task(duplicateTask);
+
     //Assert -----------------------------------------------------------------------------------------------------------
-    assertThatThrownBy(() -> MeshineryUtils.verifyTasks(List.of(duplicateTask, duplicateTask2)))
+    assertThatThrownBy(schedulerBuilder::build)
         .isInstanceOf(RuntimeException.class)
         .hasMessage("Found duplicate task names: [duplicateTask]");
   }

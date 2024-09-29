@@ -95,12 +95,6 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
     );
   }
 
-  public MeshineryTask<K, C> withTaskData(TaskData taskData) {
-    return toBuilder()
-        .taskData(taskData)
-        .build();
-  }
-
   private MeshineryInputSource<K, C> decorateInputSource() {
     return MeshineryUtils.applyDecorator(internalInputSource, Objects.requireNonNull(inputSourceDecorators));
   }
