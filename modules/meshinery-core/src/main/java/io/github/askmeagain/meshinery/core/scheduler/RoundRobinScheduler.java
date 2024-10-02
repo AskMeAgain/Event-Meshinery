@@ -75,7 +75,7 @@ public class RoundRobinScheduler {
     this.taskExecutorService = taskExecutorService;
 
     //setup
-    createLookupMap();
+    createTaskRunLookupMap();
     executorServices.add(taskExecutorService);
 
     //the producer
@@ -122,10 +122,8 @@ public class RoundRobinScheduler {
 
       while (!inputQueue.isEmpty()) {
         var work = inputQueue.peek();
-
-        var newInputs = queryTaskRuns(work);
-
-        outputQueue.addAll(newInputs); //in this order so any queue is always filled
+        var newTaskRuns = queryTaskRuns(work);
+        outputQueue.addAll(newTaskRuns); //in this order so any queue is always filled
         inputQueue.remove();
       }
 
@@ -195,8 +193,8 @@ public class RoundRobinScheduler {
           .getInputs(task.getInputKeys())
           .stream()
           .map(input -> {
-            var processorList1 = task.getProcessorList();
-            var queue = new LinkedList<MeshineryProcessor>(processorList1);
+            var processorList = task.getProcessorList();
+            var queue = new LinkedList<MeshineryProcessor>(processorList);
             return TaskRun.builder()
                 .taskName(task.getTaskName())
                 .taskData(task.getTaskData())
@@ -217,18 +215,14 @@ public class RoundRobinScheduler {
     log.info("Starting processing worker thread");
 
     while (!executor.isShutdown()) {
-
       var taskRun = outputQueue.poll();
-
       if (taskRun == null) {
         if (gracefulShutdownTriggered.get()) {
-          //we shutdown in case we had a graceful shutdown
-          break;
+          break; //we shutdown in case we had a graceful shutdown
         }
         continue;
       }
-
-      getResultFuture(taskRun);
+      scheduleTaskRunOnExecutor(taskRun);
     }
 
     for (var executorService : executorServices) {
@@ -240,7 +234,7 @@ public class RoundRobinScheduler {
     shutdownHook.forEach(hook -> hook.accept(this));
   }
 
-  private void getResultFuture(TaskRun run) {
+  private void scheduleTaskRunOnExecutor(TaskRun run) {
     CompletableFuture.runAsync(() -> {
       var contextId = run.getContext().getId();
       try {
@@ -277,7 +271,7 @@ public class RoundRobinScheduler {
     }, taskExecutorService);
   }
 
-  private void createLookupMap() {
+  private void createTaskRunLookupMap() {
     for (var task : tasks) {
       var connectorKey = ConnectorKey.builder()
           .connector(task.getInputConnector())
