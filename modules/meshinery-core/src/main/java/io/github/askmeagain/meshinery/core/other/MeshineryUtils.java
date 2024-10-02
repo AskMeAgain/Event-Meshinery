@@ -10,7 +10,6 @@ import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.exceptions.DuplicateReadKeyException;
 import io.github.askmeagain.meshinery.core.exceptions.DuplicateTaskNameException;
 import io.github.askmeagain.meshinery.core.exceptions.TaskNameInvalidException;
-import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.task.TaskData;
 import java.util.ArrayList;

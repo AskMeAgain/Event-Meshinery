@@ -1,4 +1,4 @@
-package io.github.askmeagain.meshinery.core.scheduler;
+package io.github.askmeagain.meshinery.core.other;
 
 import io.github.askmeagain.meshinery.core.common.MeshineryInputSource;
 import java.util.List;

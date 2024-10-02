@@ -1,6 +1,6 @@
 package io.github.askmeagain.meshinery.core.common;
 
-import io.github.askmeagain.meshinery.core.scheduler.MeshineryCoreProperties;
+import io.github.askmeagain.meshinery.core.other.MeshineryCoreProperties;
 import io.github.askmeagain.meshinery.core.scheduler.RoundRobinScheduler;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import io.github.askmeagain.meshinery.core.utils.context.TestContext;

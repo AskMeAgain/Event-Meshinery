@@ -1,4 +1,4 @@
-package io.github.askmeagain.meshinery.core.scheduler;
+package io.github.askmeagain.meshinery.core.other;
 
 import jakarta.validation.constraints.NotBlank;
 import java.util.ArrayList;
