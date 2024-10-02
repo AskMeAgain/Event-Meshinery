@@ -1,12 +1,12 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
 import io.github.askmeagain.meshinery.core.common.InputSourceDecorator;
+import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
 import io.github.askmeagain.meshinery.core.task.MeshineryTask;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,10 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RoundRobinSchedulerBuilder {
 
-  private List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
+  private final List<Consumer<RoundRobinScheduler>> shutdownHook = new ArrayList<>();
   private final List<ProcessorDecorator<?>> processorDecorators = new ArrayList<>();
   private final List<InputSourceDecorator<?, ?>> inputSourceDecorators = new ArrayList<>();
-  private List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
+  private final List<Consumer<RoundRobinScheduler>> startupHooks = new ArrayList<>();
 
   private boolean isBatchJob;
   private int backpressureLimit = 200;
@@ -107,16 +107,32 @@ public class RoundRobinSchedulerBuilder {
    * @param decorators to be registered
    * @return returns itself for builder pattern
    */
-  public RoundRobinSchedulerBuilder registerProcessorDecorator(List<ProcessorDecorator<?>> decorators) {
+  public RoundRobinSchedulerBuilder registerProcessorDecorator(
+      List<ProcessorDecorator<? extends MeshineryDataContext>> decorators
+  ) {
     this.processorDecorators.addAll(decorators);
     return this;
   }
 
-  public RoundRobinSchedulerBuilder registerInputSourceDecorator(List<InputSourceDecorator<?, ?>> decorators) {
+  /**
+   * register an list of input source decorators
+   *
+   * @param decorators
+   * @return
+   */
+  public RoundRobinSchedulerBuilder registerInputSourceDecorator(
+      List<InputSourceDecorator<?, ? extends MeshineryDataContext>> decorators
+  ) {
     this.inputSourceDecorators.addAll(decorators);
     return this;
   }
 
+  /**
+   * register an input source decorator
+   *
+   * @param decorator
+   * @return
+   */
   public RoundRobinSchedulerBuilder registerInputSourceDecorator(InputSourceDecorator<?, ?> decorator) {
     this.inputSourceDecorators.add(decorator);
     return this;
@@ -129,7 +145,7 @@ public class RoundRobinSchedulerBuilder {
    * @return returns itself for builder pattern
    */
   public RoundRobinSchedulerBuilder registerShutdownHook(List<? extends Consumer<RoundRobinScheduler>> shutdownHooks) {
-    this.shutdownHook = shutdownHooks;
+    this.shutdownHook.addAll(shutdownHooks);
     return this;
   }
 
@@ -140,7 +156,7 @@ public class RoundRobinSchedulerBuilder {
    * @return returns itself for builder pattern
    */
   public RoundRobinSchedulerBuilder registerStartupHook(List<? extends Consumer<RoundRobinScheduler>> startupHook) {
-    this.startupHook = startupHook;
+    this.startupHooks.addAll(startupHook);
     return this;
   }
 
@@ -201,7 +217,7 @@ public class RoundRobinSchedulerBuilder {
         backpressureLimit,
         isBatchJob,
         shutdownHook,
-        startupHook,
+        startupHooks,
         gracefulShutdownOnError,
         gracePeriodMilliseconds,
         executorService

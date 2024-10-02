@@ -52,7 +52,7 @@ class ProcessorDecoratorTest {
         .batchJob(true)
         .task(task)
         .executorService(executor)
-        .registerProcessorDecorators(List.of(decorator))
+        .registerProcessorDecorator(List.of(decorator))
         .gracePeriodMilliseconds(0)
         .build()
         .start();
@@ -64,7 +64,6 @@ class ProcessorDecoratorTest {
         .id("2")
         .index(3)
         .build()), any());
-
   }
 
   @SneakyThrows

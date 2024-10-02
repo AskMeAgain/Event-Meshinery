@@ -41,7 +41,7 @@ class ConnectorDecoratorTest {
     //Act ------------------------------------------------------------------------------------
     RoundRobinScheduler.<String, TestContext>builder()
         .task(task)
-        .registerDecorators(List.of(spyDecorator))
+        .registerInputSourceDecorator(List.of(spyDecorator))
         .batchJob(true)
         .executorService(executor)
         .gracePeriodMilliseconds(500)
