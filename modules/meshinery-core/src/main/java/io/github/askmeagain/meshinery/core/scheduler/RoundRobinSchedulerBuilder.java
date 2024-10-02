@@ -1,7 +1,6 @@
 package io.github.askmeagain.meshinery.core.scheduler;
 
 import io.github.askmeagain.meshinery.core.common.InputSourceDecorator;
-import io.github.askmeagain.meshinery.core.common.MeshineryDataContext;
 import io.github.askmeagain.meshinery.core.common.ProcessorDecorator;
 import io.github.askmeagain.meshinery.core.other.DataInjectingExecutorService;
 import io.github.askmeagain.meshinery.core.other.MeshineryUtils;
@@ -19,9 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 public class RoundRobinSchedulerBuilder {
 
   private List<? extends Consumer<RoundRobinScheduler>> shutdownHook = Collections.emptyList();
-  private List<ProcessorDecorator<? extends MeshineryDataContext>> processorDecorators = Collections.emptyList();
-  private List<InputSourceDecorator<?, ? extends MeshineryDataContext>> inputSourceDecorators =
-      Collections.emptyList();
+  private final List<ProcessorDecorator<?>> processorDecorators = new ArrayList<>();
+  private final List<InputSourceDecorator<?, ?>> inputSourceDecorators = new ArrayList<>();
   private List<? extends Consumer<RoundRobinScheduler>> startupHook = Collections.emptyList();
 
   private boolean isBatchJob;
@@ -35,7 +33,6 @@ public class RoundRobinSchedulerBuilder {
       Executors.newVirtualThreadPerTaskExecutor()
   );
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public RoundRobinSchedulerBuilder properties(MeshineryCoreProperties meshineryCoreProperties) {
     return backpressureLimit(meshineryCoreProperties.getBackpressureLimit())
         .gracefulShutdownOnError(meshineryCoreProperties.isShutdownOnError())
@@ -43,45 +40,105 @@ public class RoundRobinSchedulerBuilder {
         .batchJob(meshineryCoreProperties.isBatchJob());
   }
 
-  public RoundRobinSchedulerBuilder task(MeshineryTask task) {
+  /**
+   * Add a task to the RoundRobinScheduler
+   *
+   * @param task to be added to the scheduler
+   * @return returns itself for builder pattern
+   */
+  public RoundRobinSchedulerBuilder task(MeshineryTask<?, ?> task) {
     tasks.add(task);
     return this;
   }
 
+  /**
+   * Add a list of tasks to the RoundRobinScheduler
+   *
+   * @param task to be added to the scheduler
+   * @return returns itself for builder pattern
+   */
+  public RoundRobinSchedulerBuilder task(List<MeshineryTask<?, ?>> task) {
+    tasks.addAll(task);
+    return this;
+  }
+
+  /**
+   * backpressure limit how many current task runs will be held in memory.
+   * There is a potential data loss when the scheduler fails while data is in memory, due to the
+   * input source working like a queue with at most once guarantee. Higher number means more throughput
+   * and more performance, lower number means that less data is hold back to feed into the scheduler
+   * and the sources have to be queried more often
+   *
+   * @param backpressureLimit
+   * @return itself for builder pattern
+   */
   public RoundRobinSchedulerBuilder backpressureLimit(int backpressureLimit) {
     this.backpressureLimit = backpressureLimit;
     return this;
   }
 
+  /**
+   * Executor service used to schedule all the tasks.
+   *
+   * @param executorService
+   * @return itself for builder pattern
+   */
   public RoundRobinSchedulerBuilder executorService(ExecutorService executorService) {
     this.executorService = new DataInjectingExecutorService("custom-executor-service", executorService);
     return this;
   }
 
-  public RoundRobinSchedulerBuilder tasks(List<MeshineryTask<?, ?>> task) {
-    tasks.addAll(task);
+  /**
+   * Register a processor decorator which will be applied to *all* processors. Also including
+   * internal processors for writing to a source etc
+   *
+   * @param decorator to be registered
+   * @return returns itself for builder pattern
+   */
+  public RoundRobinSchedulerBuilder registerProcessorDecorator(ProcessorDecorator<?> decorator) {
+    this.processorDecorators.add(decorator);
     return this;
   }
 
-  public RoundRobinSchedulerBuilder registerProcessorDecorators(
-      List<ProcessorDecorator<? extends MeshineryDataContext>> decorators
-  ) {
-    this.processorDecorators = decorators;
+  /**
+   * Register a list of processor decorators which will be applied to *all* processors. Also including
+   * internal processors for writing to a source etc
+   *
+   * @param decorators to be registered
+   * @return returns itself for builder pattern
+   */
+  public RoundRobinSchedulerBuilder registerProcessorDecorator(List<ProcessorDecorator<?>> decorators) {
+    this.processorDecorators.addAll(decorators);
     return this;
   }
 
-  public RoundRobinSchedulerBuilder registerDecorators(
-      List<InputSourceDecorator<?, ? extends MeshineryDataContext>> factories
-  ) {
-    this.inputSourceDecorators = factories;
+  public RoundRobinSchedulerBuilder registerInputSourceDecorator(List<InputSourceDecorator<?, ?>> decorators) {
+    this.inputSourceDecorators.addAll(decorators);
     return this;
   }
 
-  public RoundRobinSchedulerBuilder registerShutdownHook(List<? extends Consumer<RoundRobinScheduler>> shutdownHook) {
-    this.shutdownHook = shutdownHook;
+  public RoundRobinSchedulerBuilder registerInputSourceDecorator(InputSourceDecorator<?, ?> decorator) {
+    this.inputSourceDecorators.add(decorator);
     return this;
   }
 
+  /**
+   * registers a shutdown hook that runs before the round robin scheduler is shutdown
+   *
+   * @param shutdownHooks list of hooks
+   * @return returns itself for builder pattern
+   */
+  public RoundRobinSchedulerBuilder registerShutdownHook(List<? extends Consumer<RoundRobinScheduler>> shutdownHooks) {
+    this.shutdownHook = shutdownHooks;
+    return this;
+  }
+
+  /**
+   * Register a startup hook that runs before the round robin scheduler is started
+   *
+   * @param startupHook list of hooks
+   * @return returns itself for builder pattern
+   */
   public RoundRobinSchedulerBuilder registerStartupHook(List<? extends Consumer<RoundRobinScheduler>> startupHook) {
     this.startupHook = startupHook;
     return this;
