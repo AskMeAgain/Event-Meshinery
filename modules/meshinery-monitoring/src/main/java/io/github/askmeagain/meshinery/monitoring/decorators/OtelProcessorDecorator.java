@@ -39,7 +39,7 @@ public class OtelProcessorDecorator<C extends MeshineryDataContext> implements P
       );
 
       var span = tracer.spanBuilder("Processor: " + processor.getClass().getName())
-          .setAttribute("task_name", processorName) //TODO resolve correct name here
+          .setAttribute("task_name", processorName) // TODO resolve correct name here
           .setParent(Context.current().with(Span.wrap(remoteContext)))
           .startSpan();
 

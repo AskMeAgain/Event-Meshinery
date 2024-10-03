@@ -76,7 +76,8 @@ public class MeshineryAutoConfiguration {
       prefix = "meshinery.core",
       name = "shutdown-on-finished",
       havingValue = "true",
-      matchIfMissing = true)
+      matchIfMissing = true
+  )
   CustomizeShutdownHook shutdownHook(ApplicationContext context) {
     return scheduler -> ((ConfigurableApplicationContext) context).close();
   }
@@ -90,7 +91,6 @@ public class MeshineryAutoConfiguration {
       List<CustomizeStartupHook> startupHook,
       List<ProcessorDecorator<? extends MeshineryDataContext>> processorDecorators,
       List<InputSourceDecorator<?, ? extends MeshineryDataContext>> connectorDecoratorFactories,
-      //TODO add output decorator
       MeshineryCoreProperties meshineryCoreProperties,
       ExecutorService executorService
   ) {

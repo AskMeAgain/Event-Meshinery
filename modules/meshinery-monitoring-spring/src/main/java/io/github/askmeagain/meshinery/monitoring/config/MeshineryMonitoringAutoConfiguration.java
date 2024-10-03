@@ -34,12 +34,12 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties(MeshineryPushProperties.class)
 public class MeshineryMonitoringAutoConfiguration {
 
-  //@Bean
+  @Bean
   InputSourceTimingDecoratorFactory connectorTimingDecoratorFactory() {
     return new InputSourceTimingDecoratorFactory();
   }
 
-  //@Bean
+  @Bean
   ProcessorTimingDecorator<MeshineryDataContext> timingDecorator() {
     return new ProcessorTimingDecorator<>();
   }

@@ -34,8 +34,8 @@ public class MeshineryGrafanaPushConfiguration {
     requireNonNull(grafanaDashboardPush.getUsername());
 
     try (var stream = this.getClass().getClassLoader().getResourceAsStream("mermaid-template.json")) {
-      new MermaidJsonTemplatingEngine(
-          requireNonNull(stream), grafanaDashboardPush, objectMapper, tasks).sendDashboardToGrafana();
+      new MermaidJsonTemplatingEngine(requireNonNull(stream), grafanaDashboardPush, objectMapper, tasks)
+          .sendDashboardToGrafana();
     }
   }
 }

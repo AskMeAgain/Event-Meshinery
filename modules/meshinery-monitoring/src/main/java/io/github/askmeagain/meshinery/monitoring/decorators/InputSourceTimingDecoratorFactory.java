@@ -16,12 +16,11 @@ public class InputSourceTimingDecoratorFactory<K, C extends MeshineryDataContext
 
   @Override
   public MeshineryInputSource<K, C> decorate(MeshineryInputSource<K, C> inputConnector) {
-    return new ConnectorTimingDecorator<>(inputConnector);
+    return new TimingDecorator<>(inputConnector);
   }
 
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-  public static class ConnectorTimingDecorator<K, C extends MeshineryDataContext>
-      implements MeshineryInputSource<K, C> {
+  public static class TimingDecorator<K, C extends MeshineryDataContext> implements MeshineryInputSource<K, C> {
 
     private final MeshineryInputSource<K, C> innerConnector;
     @Getter(lazy = true)

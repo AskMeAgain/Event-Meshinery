@@ -11,8 +11,12 @@ import org.springframework.core.annotation.Order;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Configuration
 @RequiredArgsConstructor
-@ConditionalOnProperty(prefix = "meshinery.core", value = "start-immediately", havingValue = "true",
-    matchIfMissing = true)
+@ConditionalOnProperty(
+    prefix = "meshinery.core",
+    value = "start-immediately",
+    havingValue = "true",
+    matchIfMissing = true
+)
 public class ApplicationStartHookConfiguration {
 
   private final RoundRobinScheduler roundRobinScheduler;

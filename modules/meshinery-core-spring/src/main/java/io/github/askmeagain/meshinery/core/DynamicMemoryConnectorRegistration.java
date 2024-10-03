@@ -30,6 +30,9 @@ public class DynamicMemoryConnectorRegistration implements BeanDefinitionRegistr
 
     for (var tuple : beanNamesForAnnotation.entrySet()) {
       var result = applicationContext.findAnnotationOnBean(tuple.getKey(), EnableMeshinery.class);
+      if (result == null) {
+        continue;
+      }
       for (var container : result.connector()) {
         var beanDefinition = new RootBeanDefinition(
             MemoryConnector.class,

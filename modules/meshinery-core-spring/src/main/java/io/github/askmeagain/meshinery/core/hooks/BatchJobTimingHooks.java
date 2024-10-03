@@ -5,7 +5,9 @@ import java.time.Duration;
 import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
+/**
+ * Logs out the timing of the batchjob
+ */
 @Slf4j
 public class BatchJobTimingHooks implements CustomizeStartupHook, CustomizeShutdownHook {
 
