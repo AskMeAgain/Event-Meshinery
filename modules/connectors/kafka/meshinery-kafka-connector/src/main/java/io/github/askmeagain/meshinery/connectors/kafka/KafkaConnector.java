@@ -23,18 +23,14 @@ public class KafkaConnector<C extends MeshineryDataContext>
   private final KafkaOutputSource<C> outputSource;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public KafkaConnector(
-      Class<C> contextType, ObjectMapper objectMapper, MeshineryKafkaProperties meshineryKafkaProperties
-  ) {
-    this("kafka-default-connector", contextType, objectMapper, meshineryKafkaProperties);
+  public KafkaConnector(Class<C> contextType, ObjectMapper objectMapper, MeshineryKafkaProperties properties) {
+    this("kafka-default-connector", contextType, objectMapper, properties);
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public KafkaConnector(
-      String name, Class<C> clazz, ObjectMapper objectMapper, MeshineryKafkaProperties meshineryKafkaProperties
-  ) {
-    var kafkaConsumerFactory = new KafkaConsumerFactory(meshineryKafkaProperties);
-    var kafkaProducerFactory = new KafkaProducerFactory(meshineryKafkaProperties);
+  public KafkaConnector(String name, Class<C> clazz, ObjectMapper objectMapper, MeshineryKafkaProperties properties) {
+    var kafkaConsumerFactory = new KafkaConsumerFactory(properties);
+    var kafkaProducerFactory = new KafkaProducerFactory(properties);
 
     this.name = name;
     this.inputSource = new KafkaInputSource<>(name + "-input", clazz, objectMapper, kafkaConsumerFactory);

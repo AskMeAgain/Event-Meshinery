@@ -1,6 +1,7 @@
 package io.github.askmeagain.meshinery.connectors.kafka.factories;
 
 import io.github.askmeagain.meshinery.connectors.kafka.MeshineryKafkaProperties;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -39,7 +40,7 @@ public class KafkaConsumerFactory implements AutoCloseable {
     var stringKafkaConsumer = new KafkaConsumer<String, byte[]>(newProperties);
 
     stringKafkaConsumer.subscribe(topics);
-    stringKafkaConsumer.poll(0);
+    stringKafkaConsumer.poll(Duration.ZERO);
 
     return stringKafkaConsumer;
   }

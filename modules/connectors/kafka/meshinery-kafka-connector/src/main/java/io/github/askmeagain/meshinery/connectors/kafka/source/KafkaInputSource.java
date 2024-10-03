@@ -30,7 +30,7 @@ public class KafkaInputSource<C extends MeshineryDataContext>
   @Override
   @SneakyThrows
   public List<C> getInputs(List<String> keys) {
-    var result = kafkaConsumerFactory.get(keys).poll(Duration.ofMillis(0));
+    var result = kafkaConsumerFactory.get(keys).poll(Duration.ZERO);
 
     return StreamSupport.stream(result.spliterator(), true)
         .map(ConsumerRecord::value)
