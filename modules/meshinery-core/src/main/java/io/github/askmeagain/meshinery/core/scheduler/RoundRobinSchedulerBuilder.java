@@ -197,12 +197,6 @@ public class RoundRobinSchedulerBuilder {
   }
 
   public RoundRobinScheduler build() {
-    log.info("Starting Scheduler with following Tasks: {}", MeshineryUtils.getAndVerifyTaskList(tasks));
-    log.info("Starting Scheduler with following Input Source: {}", MeshineryUtils.getInputSources(tasks));
-    log.info("Starting Scheduler with following Output Source: {}", MeshineryUtils.getOutputSources(tasks));
-
-    MeshineryUtils.verifyTasks(tasks);
-
     //adding the scheduler decorators
     var fixedTasks = tasks.stream()
         .map(task -> task.toBuilder()
@@ -212,6 +206,14 @@ public class RoundRobinSchedulerBuilder {
             .registerProcessorDecorator(processorDecorators)
             .build())
         .toList();
+
+    fixedTasks.forEach(MeshineryTask::initialize);
+
+    log.info("Starting Scheduler with following Tasks: {}", MeshineryUtils.getAndVerifyTaskList(fixedTasks));
+    log.info("Starting Scheduler with following Input Source: {}", MeshineryUtils.getInputSources(fixedTasks));
+    log.info("Starting Scheduler with following Output Source: {}", MeshineryUtils.getOutputSources(fixedTasks));
+
+    MeshineryUtils.verifyTasks(fixedTasks);
 
     return new RoundRobinScheduler(
         fixedTasks,

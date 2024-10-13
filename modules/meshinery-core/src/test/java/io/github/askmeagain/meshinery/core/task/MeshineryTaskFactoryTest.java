@@ -18,8 +18,8 @@ class MeshineryTaskFactoryTest {
         .connector(memoryConnector);
 
     //Act ------------------------------------------------------------------------------------
-    var task1 = baseTask.process((c) -> c).build();
-    var task2 = baseTask.process((c) -> c).build();
+    var task1 = baseTask.process((c) -> c).build().initialize();
+    var task2 = baseTask.process((c) -> c).build().initialize();
 
     //Assert ---------------------------------------------------------------------------------
     //an internal processor is created aswell
