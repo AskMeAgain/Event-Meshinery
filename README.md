@@ -30,11 +30,12 @@
 Event Meshinery is a state store independent **signaling/event** framework and
 designed to easily structure **long running**, **multi step** processing tasks in a transparent and safe way.
 
-It is used as a way to **signal** the next processing step in your application, with transparent code and without hidden
+It is used as a way to signal the next processing step in your application, with transparent code and without hidden
 behaviour. You describe the event and the resulting processing task, the framework will route the work to each
 processing step
 
-It can connect any event/signal imaginable with any processing task and run on any state store,
+It can connect any event/signal imaginable with any processing task and run on any state store (mysql, postgres, kafka)
+etc,
 all with an **asynchronous** api to make sure that your events are processed as fast as possible.
 
 The Event-Meshinery framework assumes that the restricting resource is
@@ -67,8 +68,8 @@ this one only works in a Kafka only environment. The moment you need to bridge y
 different state store), you are on your own. This framework is exactly for this usecase: signaling, but in a state store
 independent way.
 
-This framework was originally written to replace KafkaStreams in a specific usecase, but you can use this framework
-without Kafka (postgres, mysql, pubsub, anything is possible)
+This framework was originally written to replace KafkaStreams in a specific usecase,
+but you can use this framework without Kafka (postgres, mysql, pubsub, anything is possible)
 
 ## Advantages of Event-Meshinery <a name="Advantages"></a>
 
@@ -83,7 +84,7 @@ without Kafka (postgres, mysql, pubsub, anything is possible)
 * Create a complete [event diagram](https://github.com/AskMeAgain/Event-Meshinery/wiki/Draw) to display your events and how they interact with
   each other, completely automated.
 * You can resume a process in case of error and you will start exactly where you left off (within bounds).
-* Automatic Prometheus Monitoring integration of all your tasks and their respective task queues.
+* Automatic Prometheus/Open telemetry Monitoring integration of all your tasks and their respective task queues.
 * Complete **Spring** integration: 1-3 Annotations start everything, you only need to define the business logic and wire
   it together (but can be used without spring).
 
@@ -121,17 +122,41 @@ without Kafka (postgres, mysql, pubsub, anything is possible)
 
 The general building blocks of this framework consist of 5 ideas:
 
-* [DataContext](#Context)
 * [MeshineryProcessor](#Processor)
+* [DataContext](#Context)
 * [MeshineryTask](#Task)
 * [RoundRobinScheduler](#Scheduler)
 * [Input/OutputSources](#Sources)
+
+### Meshinery Processors <a name="Processor"></a>
+
+[Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Processor)
+
+Meshinery Processors define the actual business work, like doing restcalls,
+calculating user information etc. They take
+in a DataContext return a context.
+You read data from the context, which was passed from an earlier processor, then do your computation,
+write the result back into the context for other processors downstream to use.
+
+    public class LongRunningRestcallProcessor implements MeshineryProcessor<TestContext, TestContext> {
+    
+        @Override
+        public TestContext process(TestContext context) {          //this is executed asynchronously
+            var response = thisIsASuperLongRestCall();             //some network io
+            return context.toBuilder()                             //enriching the existing data context
+              .restCallResponseId(response.getId())
+              .superImportantValue(response.getImportantValue())
+              .build();
+        }
+    }
+
+This code is completely async executed on the Scheduler
 
 ### DataContext <a name="Context"></a>
 
 [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-DataContext)
 
-A datacontext is literally the DTO which is passed between tasks/processors.
+A datacontext is the DTO which is passed between tasks/processors.
 Its the message body if you will.
 
     public class TestContext implements DataContext {
@@ -149,30 +174,6 @@ before.
 
 Resulting in: **Each state store also contains a step by step log on how each context got filled**
 
-### Meshinery Processors <a name="Processor"></a>
-
-[Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Processor)
-
-Meshinery Processors define the actual business work, like doing restcalls,
-calculating user information etc. They take
-in a DataContext return a context.
-You read data from the context, which was passed from an earlier processor, then do your computation,
-write the result back into the context for other processors downstream to use.
-
-    public class LongRunningRestcallProcessor implements MeshineryProcessor<TestContext, TestContext> {
-    
-        @Override
-        public TestContext process(TestContext context) {          //this is executed asynchronously
-            var response = thisIsASuperLongRestCall();             //some network io
-            return context.toBuilder()                             //enriching the existing executor
-              .restCallResponseId(response.getId())
-              .superImportantValue(response.getImportantValue())
-              .build();
-        }
-    }
-
-This code is completely async executed on the Scheduler
-
 ### MeshineryTasks <a name="Task"></a>
 
 [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Task)
@@ -185,7 +186,7 @@ An input source takes an eventkey, which gets fed to the inputsource to produce 
 processors and multiple output sources, which spawn more events.
 
     var meshineryTask = MeshineryTask.<String, TestContext>builder()
-        .connector(connector)                  //Kafka output source for example 
+        .connector(kafkaConnector)             //Kafka output source for example 
         .read("event-a", executorService)      //Input event name & thread config
         .process(processorA)                   //Processing step
         .write("event-b")                      //Event "event-b" put to Kafka topic "event-b" with the result of processorA
@@ -211,7 +212,7 @@ when all inputSources are exhausted (batch processing).
         .backpressureLimit(100)
         .buildAndStart();
 
-### Connectors
+### Connectors (input & output sources) <a name="Sources"></a>
 
 [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Connector)
 
@@ -222,12 +223,12 @@ InputSource). A MeshineryConnector implements both interfaces to connect a singl
 Think of an InputSource as a way to get data into the MeshineryFramework and OutputSources as a way to write to a state
 store
 
-Most of the time a signaling source can implement both Input and Output, like in mysql you can write data and read this
+Most of the time an state store can implement both Input and Output, like in mysql you can write data and read this
 exact data back again in different parts of your application. But sometimes this is not the case, for example if you
 receive data from a rest api, you can read this data, but you cannot write this data back to the original source.
 Example is
-the [CronInputSource](modules/meshinery-core/src/main/java/io/github/askmeagain/meshinery/core/source/CronInputSource.java)
-, which triggers based on a cron and allows you to schedule
+the [CronInputSource](modules/meshinery-core/src/main/java/io/github/askmeagain/meshinery/core/source/CronInputSource.java),
+which triggers based on a cron and allows you to schedule processing tasks in intervals.
 
 A Source describes a connection to a state store and takes an event-key as input, which is passed to the state
 store to read/write data to specific logically separated parts of the store. For example in Kafka an event-key would
@@ -238,13 +239,13 @@ differently, but you can imagine these as different states of the data/processin
 Technically there can only be a single InputSource definition on a MeshineryTask, but you can combine multiple input
 sources to a single InputSource for joins for example. There can be any amount of OutputSources for a MeshineryTask.
 
-Here "result_topic" and "input_topic" are event-keys and passed to the Source:
+Here "outputTopic" and "inputTopic" are event-keys and passed to the Source:
 
     var task = MeshineryTask.<String, TestContext>builder() 
         .connector(connector)                //this is a kafka input and output connector for example
-        .read(INPUT_KEY, executor)           //reading from kafka topic
+        .read("inputTopic", executor)        //reading from kafka topic
         .process(x -> x)                     //processing etc
-        .write("result_topic");              //writing event to "result_topic"
+        .write("outputTopic");               //writing event to "result_topic"
 
 You can mix and match these sources and even write your own. They only implement a single interface function.
 
@@ -255,7 +256,7 @@ Currently supported are the following state sources:
 * [Kafka](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka)
 * [PubSub](https://github.com/AskMeAgain/Event-Meshinery/wiki/PubSub)
 * [Kafka](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka)
-* [Memory](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Connector#utility-sources)
+* [In Memory](https://github.com/AskMeAgain/Event-Meshinery/wiki/Meshinery-Connector#utility-sources)
 
 And the following Utility Source:
 
@@ -265,15 +266,15 @@ And the following Utility Source:
 
 ## On Failure <a name="Failure"></a>
 
-This framework works with the at-most-once guarantee, which means that a state transition is only looked at once, since
+This framework works with the **at-most-once** guarantee, which means that a state transition is only looked at once,
+since
 it assumes that in case of a failure a use case specific error correction procedure needs to be called. If a processing
 request results in an error and you want to resume this process, you just need to replay the message, which triggers the
 processing again, via the
-provided [TaskReplayFactory](modules/meshinery-core/src/main/java/io/github/askmeagain/meshinery/core/task/TaskReplayFactory.java)
+provided [TaskReplayFactory](modules/meshinery-core/src/main/java/io/github/askmeagain/meshinery/core/task/TaskReplayFactory.java).
 
 Most of the InputSource gives you an easy way of replaying a single event, which feeds the event back into the scheduler
-to
-work on.
+to work on.
 
 ### Replays of a DataContext
 
@@ -288,7 +289,7 @@ the [meshinery-core-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/C
 
 ### Exception Handling <a name="ExceptionHandling"></a>
 
-You can handle exceptions which happen **inside** a completable future (in a processor), by setting a new error handler.
+You can handle exceptions which happen **inside** a processor, by setting a new error handler.
 The default behaviour is that null is returned, which will then just stop the execution of this single event, by the
 RoundRobingScheduler. You can throw here hard, turn off the scheduler, do some rest/db calls and other stuff.
 
@@ -306,11 +307,10 @@ RoundRobingScheduler. You can throw here hard, turn off the scheduler, do some r
 * [Detailed Documentation](https://github.com/AskMeAgain/Event-Meshinery/wiki/Monitoring)
 * [Spring Integration](https://github.com/AskMeAgain/Event-Meshinery/wiki/Monitoring-Spring)
 
-The Monitoring package adds a basic monitoring solution. It
-uses [prometheus/client_java](https://github.com/prometheus/client_java)
-package to expose metrics in a format compatible with prometheus. All metrics are written to an internal Prometheus
-registry which can be shown via rest (already done in the meshinery-monitoring-spring package)
-and easily expanded by your needs.
+The Monitoring package adds a basic monitoring solution using framework functionality:
+
+* [prometheus/client_java](https://github.com/prometheus/client_java) integration, with prometheus ready endpoint
+* open telemetry integration for full tracing of everything
 
 ### Logging
 
@@ -342,7 +342,8 @@ A picture can be generated of the actual topology layer.
 There is also a [Mermaid](https://mermaid-js.github.io/mermaid/#/) implementation which can be hooked
 into [Jeremy Branhams Diagram panel](https://grafana.com/grafana/plugins/jdbranham-diagram-panel/)
 plugin to provide a real time overview of the system and all its metrics in [Grafana](https://grafana.com/).
-The [meshinery-draw-spring](modules/meshinery-draw-spring/draw-spring.md) package provides an endpoint which can be
+The [meshinery-monitoring-spring](modules/meshinery-monitoring-spring/monitoring-spring.md) package provides an endpoint
+which can be
 passed into the plugin to display the topology directly, but you can easily implement this by yourself.
 
 ![example-mermaid-diagram](modules/meshinery-monitoring/grafana-graph.png)
