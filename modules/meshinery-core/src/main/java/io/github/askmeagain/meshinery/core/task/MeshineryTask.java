@@ -54,9 +54,9 @@ public class MeshineryTask<K, C extends MeshineryDataContext> {
   }
 
   public MeshineryTask<K, C> initialize() {
-    initialized = true;
     processorList = decorateProcessors();
     inputConnector = decorateInputSource();
+    initialized = true;
     return this;
   }
 

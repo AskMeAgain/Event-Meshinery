@@ -43,12 +43,14 @@ class TaskReplayFactoryTest {
             .process(testDataProcessor)
             .write("OutputKey")
             .putData("test", "1234")
-            .build(),
+            .build()
+            .initialize(),
         MeshineryTask.<String, TestContext>builder()
             .taskName("test2")
             .inputSource(new TestInputSource(Collections.emptyList(), 0, 0, 0))
             .read("")
             .build()
+            .initialize()
     );
     var taskReplayFactory = new TaskReplayFactory(tasks);
 
@@ -69,12 +71,14 @@ class TaskReplayFactoryTest {
     var task1 = MeshineryTask.<String, TestContext>builder()
         .connector(memoryConnector)
         .read(KEY)
-        .build();
+        .build()
+        .initialize();
     var task2 = MeshineryTask.<String, TestContext>builder()
         .connector(memoryConnector)
         .read(KEY)
         .taskName(TASK_2)
-        .build();
+        .build()
+        .initialize();
 
     var taskReplayFactory = new TaskReplayFactory(List.of(task1, task2));
     var context = TestContext.builder()

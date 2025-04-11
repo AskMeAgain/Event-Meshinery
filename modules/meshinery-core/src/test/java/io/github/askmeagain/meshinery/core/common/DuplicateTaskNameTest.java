@@ -47,13 +47,15 @@ class DuplicateTaskNameTest {
         .inputSource(inputSource)
         .read("abc")
         .outputSource(outputSource)
-        .build();
+        .build()
+        .initialize();
     var duplicateTask2 = MeshineryTask.<String, TestContext>builder()
         .taskName("task2")
         .inputSource(inputSource)
         .outputSource(outputSource)
         .read("abc")
-        .build();
+        .build()
+        .initialize();
 
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
@@ -72,14 +74,16 @@ class DuplicateTaskNameTest {
         .inputSource(inputSource)
         .read("abc")
         .outputSource(outputSource)
-        .build();
+        .build()
+        .initialize();
     var duplicateTask2 = MeshineryTask.<String, TestContext>builder()
         .taskName("task2")
         .inputSource(inputSource)
         .outputSource(outputSource)
         .read("abc")
         .putData(TASK_IGNORE_DUPLICATE_READ_KEY)
-        .build();
+        .build()
+        .initialize();
 
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------
@@ -96,13 +100,15 @@ class DuplicateTaskNameTest {
         .inputSource(inputSource)
         .read("abc")
         .outputSource(outputSource)
-        .build();
+        .build()
+        .initialize();
     var duplicateTask2 = MeshineryTask.<String, TestContext>builder()
         .taskName("task2")
         .inputSource(inputSource)
         .outputSource(outputSource)
         .read("abc")
-        .build();
+        .build()
+        .initialize();
 
     //Act --------------------------------------------------------------------------------------------------------------
     //Assert -----------------------------------------------------------------------------------------------------------

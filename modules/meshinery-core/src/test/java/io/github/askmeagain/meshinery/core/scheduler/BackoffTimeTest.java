@@ -22,17 +22,15 @@ class BackoffTimeTest {
         .todo(new TestContext(0))
         .iterations(3)
         .build();
-
-    var scheduler = RoundRobinScheduler.builder().build();
-
     var inputSourceSpy = Mockito.spy(inputSource);
-
     var task = MeshineryTask.<Object, TestContext>builder()
         .inputSource((MeshineryInputSource<Object, TestContext>) inputSourceSpy)
         .read("")
         .backoffTime(180)
         .process(processor)
-        .build();
+        .build()
+        .initialize();
+    var scheduler = RoundRobinScheduler.builder().build();
 
     //Act --------------------------------------------------------------------------------------------------------------
     var result1 = scheduler.getNewTaskRuns(task);
@@ -45,12 +43,11 @@ class BackoffTimeTest {
 
     //Assert -----------------------------------------------------------------------------------------------------------
     assertThat(result1).hasSize(1);
-    assertThat(result3).hasSize(1);
-
     assertThat(result2).isEmpty();
+    assertThat(result3).hasSize(1);
     assertThat(result4).isEmpty();
 
-    Mockito.verify(inputSourceSpy,Mockito.times(2)).getInputs(any());
+    Mockito.verify(inputSourceSpy, Mockito.times(2)).getInputs(any());
 
   }
 }

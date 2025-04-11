@@ -28,6 +28,7 @@ import org.slf4j.MDC;
 
 import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_IGNORE_DUPLICATE_READ_KEY;
 import static io.github.askmeagain.meshinery.core.task.TaskDataProperties.TASK_IGNORE_NO_KEYS_WARNING;
+import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @UtilityClass
@@ -123,7 +124,7 @@ public class MeshineryUtils {
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static void verifyTask(MeshineryTask task) {
-    Objects.requireNonNull(task.getInputConnector(), "Input source not specified");
+    requireNonNull(task.getInputConnector(), "Input connector not set for task '%s'".formatted(task.getTaskName()));
 
     if (task.getInputKeys().isEmpty() && !task.getTaskData().has(TASK_IGNORE_NO_KEYS_WARNING)) {
       throw new RuntimeException("Input Keys not defined for task %s. ".formatted(task.getTaskName())
@@ -156,6 +157,7 @@ public class MeshineryUtils {
   public static Set<String> getOutputSources(List<MeshineryTask> tasks) {
     return tasks.stream()
         .map(MeshineryTask::getOutputConnector)
+        .filter(Objects::nonNull)
         .map(MeshineryOutputSource::getName)
         .collect(Collectors.toSet());
   }
@@ -163,6 +165,7 @@ public class MeshineryUtils {
   public static Set<String> getInputSources(List<MeshineryTask> tasks) {
     return tasks.stream()
         .map(MeshineryTask::getInputConnector)
+        .filter(Objects::nonNull)
         .map(MeshineryInputSource::getName)
         .collect(Collectors.toSet());
   }
