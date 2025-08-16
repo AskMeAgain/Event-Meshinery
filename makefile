@@ -5,7 +5,7 @@ publish-local: ## publish lib locally for testing
 	./gradlew publishToMavenLocal
 
 checkstyle:
-	./gradlew checkstyle
+	./gradlew checkstyleMain
 
 help: ## show this help
 	@sed -ne "s/^##\(.*\)/\1/p" $(MAKEFILE_LIST)
