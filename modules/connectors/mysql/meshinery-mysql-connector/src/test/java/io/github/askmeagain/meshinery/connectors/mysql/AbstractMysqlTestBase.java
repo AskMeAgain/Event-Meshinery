@@ -11,7 +11,7 @@ public abstract class AbstractMysqlTestBase {
 
   private static final String DB_NAME = "db";
 
-  private static final MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql")
+  private static final MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.0.36")
       .withDatabaseName(DB_NAME)
       .withPassword("password")
       .withUsername("user")

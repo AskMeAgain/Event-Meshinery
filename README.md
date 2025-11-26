@@ -90,31 +90,31 @@ but you can use this framework without Kafka (postgres, mysql, pubsub, anything 
 
 ## Module Structure <a name="Module-Structure"></a>
 
-* [meshinery-core](https://github.com/AskMeAgain/Event-Meshinery/wiki/Core) contains the scheduler and everything basic you need. You only need
+* [core](https://github.com/AskMeAgain/Event-Meshinery/wiki/Core) contains the scheduler and everything basic you need. You only need
   this to start. This library exposes the basic api on which the other packages depend on.
-    * [meshinery-core-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Core-Spring) contains the **Spring** AutoConfiguration
+    * [core-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Core-Spring) contains the **Spring** AutoConfiguration
       for the core library, like starting the Scheduler automatically and providing some utility hooks
-* [meshinery-monitoring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Monitoring) contains a prometheus monitoring solution
-    * [meshinery-monitoring-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Monitoring-Spring) contains the **Spring**
+    * [aop-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Aop) Uses Spring AOP for even easier Job
+        integration
+* [monitoring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Monitoring) contains a prometheus/open telemetry monitoring solution
+    * [monitoring-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Monitoring-Spring) contains the **Spring**
       AutoConfiguration of the monitoring
-* [meshinery-connectors-mysql](https://github.com/AskMeAgain/Event-Meshinery/wiki/Mysql) has the Mysql state store
+* [connectors-mysql](https://github.com/AskMeAgain/Event-Meshinery/wiki/Mysql) has the Mysql state store
   integration
-    * [meshinery-connectors-mysql-spring](modules/connectors/mysql/meshinery-mysql-connector-spring/mysql-spring.md) has
+    * [connectors-mysql-spring](modules/connectors/mysql/meshinery-mysql-connector-spring/mysql-spring.md) has
       the Spring AutoConfiguration for Mysql
-* [meshinery-connectors-postgres](https://github.com/AskMeAgain/Event-Meshinery/wiki/Postgres) has the Postgres state store
+* [connectors-postgres](https://github.com/AskMeAgain/Event-Meshinery/wiki/Postgres) has the Postgres state store
   integration
-    * [meshinery-connectors-postgres-spring](modules/connectors/postgres/meshinery-postgres-connector-spring/postgres-spring.md) has
+    * [connectors-postgres-spring](modules/connectors/postgres/meshinery-postgres-connector-spring/postgres-spring.md) has
       the Spring AutoConfiguration for Postgres
-* [meshinery-connectors-kafka](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka) has the Kafka state store
+* [connectors-kafka](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka) has the Kafka state store
   integration
-    * [meshinery-connectors-kafka-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka-Spring)
+    * [connectors-kafka-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Kafka-Spring)
       has the Spring AutoConfiguration for Kafka
-* [meshinery-connectors-pubsub](https://github.com/AskMeAgain/Event-Meshinery/wiki/PubSub) has the PubSub state store
+* [connectors-pubsub](https://github.com/AskMeAgain/Event-Meshinery/wiki/PubSub) has the PubSub state store
   integration
-    * [meshinery-connectors-pubsub-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/PubSub-Spring)
+    * [connectors-pubsub-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/PubSub-Spring)
       has the Spring AutoConfiguration for PubSub
-* [meshinery-aop-spring](https://github.com/AskMeAgain/Event-Meshinery/wiki/Aop) Uses Spring AOP for even easier Job
-  integration
 
 ## Architecture <a name="Architecture"></a>
 
