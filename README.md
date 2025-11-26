@@ -27,7 +27,7 @@
 
 ## Description
 
-Event Meshinery is a state store independent **signaling/event** framework and
+Event Meshinery is a state store independent signaling/event/durable-execution framework and
 designed to easily structure **long running**, **multi step** processing tasks in a transparent and safe way.
 
 It is used as a way to signal the next processing step in your application, with transparent code and without hidden
